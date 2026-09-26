@@ -37,6 +37,77 @@ docker compose up -d
 uvicorn mewhelp.main:app --reload
 ```
 
+## 验收演示(Ch01)
+
+先起服务:
+
+```bash
+uvicorn mewhelp.main:app --reload
+```
+
+**必须在仓库根目录启动。** `mewhelp.config.Settings` 的 `env_file=".env"` 是相对**当前工作目录**
+解析的:换到别的目录跑就读不到 `.env`,启动时报 `openai_api_key` 缺失。那是工作目录的问题,
+不是代码的问题 —— 解决方式是回到仓库根目录,不是往代码里塞密钥。
+
+以下命令用 **Git Bash**。PowerShell 里 `curl` 是 `Invoke-WebRequest` 的别名,
+要改用 `curl.exe` 并把 JSON 写成 here-string。
+
+### ① 流式对话
+
+```bash
+curl -N -X POST http://127.0.0.1:8000/ch01/chat/stream \
+  -H "Content-Type: application/json" \
+  -d '{"message":"你们一般几点发货?"}'
+```
+
+`-N` 必须有,否则 curl 会缓冲,看不出逐 token。
+
+### ② 多轮上下文(同一个 session_id)
+
+```bash
+curl -N -X POST http://127.0.0.1:8000/ch01/chat/stream \
+  -H "Content-Type: application/json" \
+  -d '{"session_id":"demo","message":"我上周买的跑鞋到现在还没发货"}'
+
+curl -N -X POST http://127.0.0.1:8000/ch01/chat/stream \
+  -H "Content-Type: application/json" \
+  -d '{"session_id":"demo","message":"那我还要等多久?"}'
+```
+
+### ③ 售后描述结构化
+
+```bash
+curl -X POST http://127.0.0.1:8000/ch01/extract \
+  -H "Content-Type: application/json" \
+  -d '{"description":"订单 20240915001,我买的鞋尺码不对想换大一码,能直接换吗?"}'
+```
+
+### 浏览器里看
+
+打开 <http://127.0.0.1:8000/> 是聊天页。
+
+### 中文 body 在 Git Bash 里传不进去(本机实测)
+
+上面三条命令里的中文 body 会被 Git Bash 转坏。Git Bash 把命令行参数交给
+`/mingw64/bin/curl`(原生 Windows 程序)时按**系统 ANSI 代码页**(本机 936/GBK)转换,
+中文变成 GBK 字节,服务端按 UTF-8 解析,直接返回:
+
+```
+{"detail":"There was an error parsing the body"}
+```
+
+这不是服务端的问题 —— 同样的 JSON 存成 UTF-8 文件用 `-d @body.json` 发就没问题。
+要让中文照原样留在命令里,把 body 从**标准输入**喂进去(不经参数转换):
+
+```bash
+curl -N -X POST http://127.0.0.1:8000/ch01/chat/stream \
+  -H "Content-Type: application/json" --data-binary @- <<'JSON'
+{"message":"你们一般几点发货?"}
+JSON
+```
+
+三条命令都能这么改:把 `-d '{...}'` 换成 `--data-binary @-` 加 here-doc。
+
 ## 目录结构
 
 ```
