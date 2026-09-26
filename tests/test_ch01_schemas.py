@@ -77,6 +77,9 @@ def test_intent_values_are_pinned_verbatim_in_order():
     (如「优惠券补偿」→「优惠券」),评估会静默误判,套件却不会响 ——
     测量工具本身失准是最坏的盲点。
     顺序也要钉:spec 第十节固定了成员顺序。整表比对一行同时钉住取值、顺序与数量。
+    成员名同样要钉 —— reviewer 实测:把 `coupon` 改名成 `voucher` 而值一字不动,
+    只看 value 的断言整套测试仍然全绿,但下游按成员名引用枚举的地方会静默失配。
+    spec 第十节对成员名的约束力与取值相同,所以两条序列一起钉。
     """
     assert [m.value for m in AfterSalesIntent] == [
         "退款",
@@ -89,10 +92,21 @@ def test_intent_values_are_pinned_verbatim_in_order():
         "投诉",
         "其他",
     ]
+    assert [m.name for m in AfterSalesIntent] == [
+        "refund",
+        "return_goods",
+        "exchange",
+        "repair",
+        "reship",
+        "compensation",
+        "consultation",
+        "complaint",
+        "other",
+    ]
 
 
 def test_expected_solution_values_are_pinned_verbatim_in_order():
-    """同 `test_intent_values_are_pinned_verbatim_in_order`,钉住另一组字面量。"""
+    """同 `test_intent_values_are_pinned_verbatim_in_order`:值 + 成员名,都逐字有序钉死。"""
     assert [m.value for m in ExpectedSolution] == [
         "全额退款",
         "部分退款",
@@ -102,6 +116,16 @@ def test_expected_solution_values_are_pinned_verbatim_in_order():
         "优惠券补偿",
         "仅需解释",
         "未提及",
+    ]
+    assert [m.name for m in ExpectedSolution] == [
+        "full_refund",
+        "partial_refund",
+        "exchange",
+        "repair",
+        "reship",
+        "coupon",
+        "explanation",
+        "unspecified",
     ]
 
 
