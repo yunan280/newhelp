@@ -47,6 +47,28 @@ async def collect(session_id: str, message: str) -> tuple[str, list]:
     return "".join(chunks), history
 
 
+# 本文件所有用例一律把历史预算钉在这个固定值上,不吃 `mewhelp.config` 的现值。
+# 这不是洁癖,是为了堵两类坑:
+#
+# 1. **静默失活**(最要命的):预算小到把历史裁空时,凡是"某内容出现在 prompt 里 /
+#    没出现在 prompt 里"的断言都会失去判别力。实测 `test_sessions_do_not_leak_into_each_other`
+#    在预算 ≤ 8 时,即使把三个 store 调用全钉成同一个 session_id(彻底的隔离破坏),
+#    它照样绿 —— 泄漏的证据在拼 prompt 前就被裁掉了:判据还在,只是永远不成立,
+#    测试照样报 PASS。这是最坏的一种坏。
+# 2. **归错因**:依赖"历史进了 prompt"的用例会因此变红,而失败信息容易被读成
+#    "锁没生效",把人带偏。
+#
+# 用 autouse 而不是逐用例 monkeypatch:新增用例不会再继承一个被改过的预算。
+# 需要故意把预算压小的用例(如 `test_works_when_history_is_fully_trimmed`)
+# 在自己的函数体里再 setattr 一次即可 —— 后设的覆盖前者。
+PINNED_TOKEN_BUDGET = 4096
+
+
+@pytest.fixture(autouse=True)
+def _pin_history_budget(monkeypatch):
+    monkeypatch.setattr(service, "HISTORY_TOKEN_BUDGET", PINNED_TOKEN_BUDGET)
+
+
 async def test_yields_the_full_reply_text(monkeypatch):
     service.store = SessionStore()
     patch_model(monkeypatch, "您好,一般 48 小时内发货。")
@@ -110,10 +132,7 @@ async def test_concurrent_turns_on_same_session_are_serialised(monkeypatch):
     断言的**主力**是 seen 的 prompt 长度,不是最终历史 —— 理由见下。
     """
     service.store = SessionStore()
-    # 本用例把预算钉死,不吃 `service.HISTORY_TOKEN_BUDGET` 的现值:预算 ≤ 8 时,
-    # 即使锁完全正确,第二轮的历史也会被裁空,prompt 长度同样是 1 —— 那就成了
-    # "预算太小"伪装成"锁没生效",下面的失败信息会冤枉锁。钉住后,长度不对就只能是锁。
-    monkeypatch.setattr(service, "HISTORY_TOKEN_BUDGET", 4096)
+    # 预算由文件级 autouse fixture 钉在 PINNED_TOKEN_BUDGET,这里不再重复钉一遍
     patch_model(monkeypatch, "A 的回答", "B 的回答")
     seen: list[list] = []
     patch_prompt(monkeypatch, seen)
@@ -146,8 +165,9 @@ async def test_concurrent_turns_on_same_session_are_serialised(monkeypatch):
     # 不假定哪一轮先跑,故断言多重集而非顺序。
     assert sorted(len(p) for p in seen) == [1, 3], (
         f"两轮拿到的 prompt 长度是 {sorted(len(p) for p in seen)},期望 [1, 3]。"
-        "本用例已把 HISTORY_TOKEN_BUDGET 钉在 4096,历史不可能被裁空 —— "
-        "所以若看到 [1, 1],只可能是两轮读到了同一份空历史:锁没盖住整轮读-改-写。"
+        f"本文件已用 autouse fixture 把 HISTORY_TOKEN_BUDGET 钉在 {PINNED_TOKEN_BUDGET},"
+        "历史不可能被裁空 —— 所以若看到 [1, 1],"
+        "只可能是两轮读到了同一份空历史:锁没盖住整轮读-改-写。"
     )
 
 
@@ -214,6 +234,7 @@ async def test_session_is_still_usable_after_a_failed_turn(monkeypatch):
     [
         pytest.param("no_chunks", id="一个块都没有"),
         pytest.param("empty_chunks", id="只有空 text 的块"),
+        pytest.param("whitespace_chunks", id="只有空白的块"),
     ],
 )
 async def test_empty_completion_is_a_failed_turn(monkeypatch, stream):
@@ -222,17 +243,25 @@ async def test_empty_completion_is_a_failed_turn(monkeypatch, stream):
     写回 `AIMessage(content="")` 的代价不只是"这条难看":它会成为该会话后续**每一轮**
     都重放的空 assistant 消息,而客户端只看得到"这轮一个 token 都没有",像个成功的空回答。
     spec §8 要求这类异常以 error 浮出来,不是静默丢掉。
+
+    `只有空白的块` 那一档是判据的分水岭:纯空白串**不是 falsy**,
+    `if not reply_text` 会放它过去,于是 `' \\n'` 照样进历史、照样永久重放 ——
+    与空回复同害。判据必须看 strip 之后的文本。
     """
     service.store = SessionStore()
 
     class Silent:
-        """上游没调工具/没吐字:要么一个块都不给,要么只给空 text 的块。"""
+        """上游没调工具/没吐字:一个块都不给 / 只给空 text 的块 / 只给空白块。"""
 
         def __init__(self, kind: str):
             self.kind = kind
 
         async def astream(self, messages):
             if self.kind == "no_chunks":
+                return
+            if self.kind == "whitespace_chunks":
+                for piece in [" \n", "  "]:
+                    yield AIMessageChunk(content=piece)
                 return
             yield AIMessageChunk(content="")
 
@@ -241,7 +270,7 @@ async def test_empty_completion_is_a_failed_turn(monkeypatch, stream):
     with pytest.raises(RuntimeError, match="没有产出任何内容"):
         await collect("s1", "在吗")
 
-    # 关键:历史**原封不动**,而不是 ['在吗', '']
+    # 关键:历史**原封不动**,而不是 ['在吗', ''] 或 ['在吗', ' \n  ']
     assert await service.store.get("s1") == []
 
 

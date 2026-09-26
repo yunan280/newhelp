@@ -35,10 +35,14 @@ async def stream_chat(session_id: str, message: str) -> AsyncIterator[str]:
             collected = chunk if collected is None else collected + chunk
 
         reply_text = collected.text if collected is not None else ""
-        if not reply_text:
+        if not reply_text.strip():
             # 空回复按失败处理,不写回历史。写进去就是一条真正的空 assistant 消息,
             # 之后每一轮都会被重放进上下文;而客户端只看到"这轮一个 token 都没有",
             # 误以为是成功的空回答。交 api 层转成 SSE error 事件。
+            #
+            # 判据看的是 strip 之后的文本:只有空白字符的回复(几个空格、一个换行)
+            # 与真正的空回复同害,但它不是 falsy,`if not reply_text` 会放它过去。
+            # 存进历史的仍是**未 strip** 的原文,别把回复里有意义的首尾空白吃掉。
             raise RuntimeError("模型没有产出任何内容,本轮按失败处理")
 
         await store.append(session_id, human, AIMessage(content=reply_text))
