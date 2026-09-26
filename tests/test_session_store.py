@@ -26,6 +26,23 @@ async def test_sessions_are_isolated():
     assert [m.content for m in await store.get("s2")] == ["二"]
 
 
+async def test_append_keeps_every_message_when_one_call_carries_several():
+    """一轮对话的真实调用形状是 `append(sid, human, reply)` —— 一次写两条。
+
+    这条专门钉住变参语义:只保留最后一条(例如 `extend(messages[-1:])`)时它必红。
+    漏掉人类那条的症状极其隐蔽:长度断言照过,但模型永远看不到用户刚说的话。
+    """
+    store = SessionStore()
+    human = HumanMessage(content="我要退款")
+    reply = AIMessage(content="好的,请提供订单号")
+    await store.append("s1", human, reply)
+
+    msgs = await store.get("s1")
+    assert [type(m) for m in msgs] == [HumanMessage, AIMessage]
+    assert [m.content for m in msgs] == ["我要退款", "好的,请提供订单号"]
+    assert len(await store.get("s1")) == 2
+
+
 async def test_get_returns_a_copy_so_callers_cannot_mutate_internal_state():
     store = SessionStore()
     await store.append("s1", HumanMessage(content="一"))
@@ -41,6 +58,19 @@ async def test_clear_removes_the_session():
     assert await store.get("s1") == []
 
 
+# 注意:名字叫 concurrent,但它**不是**并发覆盖,别拿它当并发证据。
+#
+# 它实际覆盖的只有「顺序追加 50 条不丢」这一件事,原因有两个:
+#
+# 1. 锁是**测试自己**拿的;而 `append()` 内部根本不取锁(按设计由 service 层
+#    持锁包住一整轮对话),所以这把锁对被测行为毫无约束。
+# 2. `append()` 体内没有 await,协程一旦被 await 就一口气跑完、不让出事件循环,
+#    50 次追加必然顺序执行。
+#
+# 因此它**测不出锁坏掉** —— 把 `lock()` 改成每次返回一把新锁,这条依然绿。
+# 它也不是恒真断言(若 `append` 变成 no-op 它会红,但那与并发无关),
+# 只是它证明不了并发。真正验证并发语义的是下面那条
+# `test_lock_prevents_two_turns_from_reading_the_same_stale_history`。
 async def test_concurrent_appends_do_not_lose_messages():
     store = SessionStore()
     async with store.lock("s1"):
