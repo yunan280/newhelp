@@ -76,13 +76,19 @@ def _raw_text(raw: AIMessage, parsing_error: BaseException | None) -> str:
     content 为空有两种情形,都得说清"到底发生了什么" —— 空字符串对定位毫无用处:
     - 模型调了工具,但参数过不了 schema(`parsing_error` 里有 pydantic 的报错);
     - 模型这一轮既没输出文本也没调工具。
+
+    这两条信息**互不替代**:模型完全可能一边说着话、一边调了个参数不合法的工具。
+    只回散文的话,真正的 schema 报错就整段丢了 —— 而"便于定位"正是这个字段存在的
+    唯一理由(spec §十)。所以只要 `parsing_error` 存在就带上:有散文时**追加**在它后面,
+    没有散文时它就是正文;两者都没有,才轮到"什么都没发生"那句兜底。
     """
     content = raw.content if isinstance(raw.content, str) else str(raw.content)
-    if content.strip():
-        return content
+    schema_note = None
     if parsing_error is not None:
-        return f"模型调用了工具,但参数不满足 schema:{parsing_error}"
-    return "模型这一轮没有输出任何文本,也没有调用工具"
+        schema_note = f"模型调用了工具,但参数不满足 schema:{parsing_error}"
+    if content.strip():
+        return content if schema_note is None else f"{content}\n{schema_note}"
+    return schema_note or "模型这一轮没有输出任何文本,也没有调用工具"
 
 
 async def extract_ticket(description: str) -> ExtractionResult:

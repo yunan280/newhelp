@@ -114,6 +114,9 @@ def test_model_returning_none_yields_422_not_500(client, monkeypatch):
     # 这条盯的是"既没文本、也没调工具"那条兜底分支(另一条由下面那条 parsing_error 用例守),
     # 它此前没有任何断言:把这条分支改成 `return content`(给出空串),别的用例全绿。
     assert "没有输出任何文本" in detail
+    # detail 里唯一**可操作**的一句:客户端据此知道"换一段描述重试"就行,不必去查上游。
+    # 它此前没人钉 —— 把这句话整段删掉,全套用例照样全绿(只断"结构化"盖不到它)。
+    assert "请换一段更具体的描述重试" in detail
 
 
 def test_422_detail_carries_the_model_raw_output(client, monkeypatch):
@@ -131,8 +134,9 @@ def test_422_detail_carries_the_model_raw_output(client, monkeypatch):
 
     assert resp.status_code == 422
     assert raw_text in resp.json()["detail"]
-    # 原来那句人类可读的说明不能被 raw 挤掉:客户端要能区分"我该重试"和"模型坏了"
-    assert "结构化" in resp.json()["detail"]
+    # 原来那句可操作的说明不能被 raw 挤掉 —— 而且不能只剩"结构化"三个字:客户端要的是
+    # "换一段更具体的描述重试"这句指引,不是"模型坏了"的诊断。
+    assert "请换一段更具体的描述重试" in resp.json()["detail"]
     assert captured["include_raw"] is True
 
 
@@ -149,12 +153,36 @@ def test_long_raw_output_is_truncated_and_says_so(client, monkeypatch):
 
     assert raw_text[:500] in detail
     assert "【尾巴标记】" not in detail  # 尾巴确实被切掉了
-    assert "已截断" in detail
-    assert str(len(raw_text)) in detail  # 说清原始有多长
-    # 上面四条只钉住"切了",钉不住"切到多短":把上限从 500 改成 800 它们照样绿
+    # 截断标记必须**逐字**对上。原来这里是 `str(len(raw_text)) in detail` —— 数字子串式的
+    # 弱谓词:长度写成 `len+4000`(4916 里含 "916")照样绿,正是本项目反复关掉的那类陷阱。
+    # 现在整段比对,长度、措辞、省略号一起钉住 —— 连"已截断"那句也一并盖住(它在这段标记里)。
+    # 措辞被钉死是刻意的:这段字是发给客户端看的,改文案就该同时改测试,而不是悄悄改掉。
+    assert detail.endswith(f"…(已截断,原始输出共 {len(raw_text)} 字符)")
+    # 上面几条只钉住"切了",钉不住"切到多短":把上限从 500 改成 800 它们照样绿
     # (前缀仍在前 800 里,尾巴仍在 916 之外)。这条钉的是**量级** ——
     # 嵌入的 raw 是 O(500) 的定长前缀,不跟着 raw 长度一起长,那才是设上限的目的。
     assert len(detail) < 700
+
+
+def test_parsing_error_is_reported_even_when_the_model_also_wrote_prose(client, monkeypatch):
+    """模型一边说话、一边调了个参数不合法的工具时,schema 报错不能被散文顶掉。
+
+    `include_raw=True` 的三种形态里,这是唯一一种**两条信息同时存在**的:content 有内容,
+    parsing_error 也非空。此前的 `_raw_text` 一看到 content 非空就 early return —— 散文照回,
+    pydantic 的报错整段消失,而"便于定位"正是 spec §十 要这个字段的唯一理由。
+    调用方拿到的是一句通顺的模型白话,看不出模型其实**调了工具、只是参数写坏了**,
+    于是"重试一条更具体的描述"和"换个模型"这两条路根本无从区分。
+    """
+    raw_text = "好的,我先帮你查一下这一单——"
+    patch_structured(
+        monkeypatch, None, raw=raw_text, parsing_error=ValueError("intent 不是合法取值")
+    )
+
+    detail = client.post("/ch01/extract", json={"description": "嗯"}).json()["detail"]
+
+    assert raw_text in detail  # 散文原样保留,不能被报错顶掉
+    assert "intent 不是合法取值" in detail  # 报错也要在
+    assert "不满足 schema" in detail  # 且说清了是"调了工具但参数不合法"
 
 
 def test_raw_output_of_exactly_the_limit_is_not_called_truncated(client, monkeypatch):
