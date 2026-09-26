@@ -132,6 +132,30 @@ def test_message_whitespace_reaches_the_model_verbatim(client, monkeypatch):
     assert [m.content for m in humans] == ["\t  几点发货?  "]
 
 
+def test_unknown_field_is_rejected_instead_of_silently_dropped(client, monkeypatch):
+    """聊天接口不认的字段必须 422,不能静默丢掉。
+
+    把 `message` 拼错、或从别处抄了一个 body 过来时,静默吞字段意味着**用户那句话
+    根本没进模型**,而服务端照常回一句像样的答复 —— 没有异常、没有报错、没有痕迹。
+
+    与 extract 侧那条用例同形但**各自独立**:两个请求模型各有一行
+    `model_config = ConfigDict(extra="forbid")`,没有共用基类 —— 所以这里删掉
+    chat 那行,extract 那条照样绿,只有本用例会红。
+    """
+    called = False
+
+    def spy(**kw):
+        nonlocal called
+        called = True
+        return GenericFakeChatModel(messages=iter([AIMessage(content="x")]))
+
+    monkeypatch.setattr(service, "get_chat_model", spy)
+    resp = post(client, {"message": "在吗", "whatever": 1})
+
+    assert resp.status_code == 422
+    assert called is False  # 在花掉上游调用之前就拒掉
+
+
 @pytest.mark.parametrize(
     "session_id",
     [

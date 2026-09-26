@@ -106,8 +106,14 @@ def test_model_returning_none_yields_422_not_500(client, monkeypatch):
     """Review Focus #4:function_calling 下模型可能压根不调工具,`parsed` 是 None。"""
     patch_structured(monkeypatch, None)
     resp = client.post("/ch01/extract", json={"description": "嗯"})
+    detail = resp.json()["detail"]
+
     assert resp.status_code == 422
-    assert "结构化" in resp.json()["detail"]
+    assert "结构化" in detail
+    # raw 为空时 detail 不能停在"模型原始输出:"的空冒号后面 —— 空串恰恰是最需要解释的失败。
+    # 这条盯的是"既没文本、也没调工具"那条兜底分支(另一条由下面那条 parsing_error 用例守),
+    # 它此前没有任何断言:把这条分支改成 `return content`(给出空串),别的用例全绿。
+    assert "没有输出任何文本" in detail
 
 
 def test_422_detail_carries_the_model_raw_output(client, monkeypatch):
@@ -145,6 +151,27 @@ def test_long_raw_output_is_truncated_and_says_so(client, monkeypatch):
     assert "【尾巴标记】" not in detail  # 尾巴确实被切掉了
     assert "已截断" in detail
     assert str(len(raw_text)) in detail  # 说清原始有多长
+    # 上面四条只钉住"切了",钉不住"切到多短":把上限从 500 改成 800 它们照样绿
+    # (前缀仍在前 800 里,尾巴仍在 916 之外)。这条钉的是**量级** ——
+    # 嵌入的 raw 是 O(500) 的定长前缀,不跟着 raw 长度一起长,那才是设上限的目的。
+    assert len(detail) < 700
+
+
+def test_raw_output_of_exactly_the_limit_is_not_called_truncated(client, monkeypatch):
+    """恰好等于上限的 raw 要**整段**放行,不能挂上"已截断"的牌子。
+
+    上面那条的 916 字与最前面几条的十几个字,都在 `len(raw) <= LIMIT` 这个判断的
+    两端之外:把 `<=` 写成 `<`,恰好 500 字的 raw 会被"截断"——前缀其实一个字节没少,
+    牌子却说"已截断,原始输出共 500 字符"。这正是那个字段存在的唯一目的
+    (说清到底发生了什么)上的一次谎报:客户端会以为还有内容没看到。
+    """
+    raw_text = "很" * 500
+    patch_structured(monkeypatch, None, raw=raw_text)
+
+    detail = client.post("/ch01/extract", json={"description": "嗯"}).json()["detail"]
+
+    assert raw_text in detail  # 一个字都没丢
+    assert "已截断" not in detail  # 也就不能说自己截断了
 
 
 def test_empty_raw_output_reports_the_parsing_error_instead(client, monkeypatch):
