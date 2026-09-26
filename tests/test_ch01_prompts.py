@@ -8,6 +8,7 @@ from mewhelp.ch01.prompts import (
     EXTRACT_SYSTEM_PROMPT,
     SYSTEM_PROMPT,
 )
+from mewhelp.ch01.schemas import AfterSalesTicket
 
 
 def test_chat_prompt_puts_system_message_first():
@@ -60,6 +61,34 @@ def test_extract_system_prompt_defines_refund_vs_return_boundary():
         in EXTRACT_SYSTEM_PROMPT
     )
     assert "- 「退货」:用户**要把商品寄回去**。" in EXTRACT_SYSTEM_PROMPT
+
+
+def test_extract_system_prompt_defines_the_explanation_boundary():
+    """「仅需解释」的判据原文必须钉住 —— 27 条标注的 key 是从这段规则推出来的。
+
+    与上面退款/退货那条同理:钉判据原文,不钉关键词。措辞一改,标注集的基准就
+    悄悄失效,而失效会以"模型变差了"的形式出现(修复轮 1 实测过一次:两条散文
+    通道对问句给出相反答案,模型的预测跟着翻)。要改这句话,测试必须同步改。
+    """
+    assert "- expected_solution:用户**希望怎么解决**。用户要的是**信息**" in EXTRACT_SYSTEM_PROMPT
+    assert (
+        "而不是要我们做退款/换货/维修/补发/补偿这类动作时,填「仅需解释」" in EXTRACT_SYSTEM_PROMPT
+    )
+    assert "才填「未提及」。" in EXTRACT_SYSTEM_PROMPT
+
+
+def test_explanation_boundary_is_worded_identically_in_both_prose_channels():
+    """两条散文通道必须说同一条规则(修复轮 2 裁定 2)。
+
+    修复轮 1 的实际状态:prompts.py 写「没提要求→未提及」,Field description 写
+    「只在问→仅需解释」,对问句给出**相反**答案 —— 实测模型跟的是 Field description。
+    两条通道互相打架本身就是缺陷,不管哪条赢,所以这里钉"两边共有同一段判据原文"。
+    """
+    rule_chunk = "而不是要我们做退款/换货/维修/补发/补偿这类动作时,填「仅需解释」"
+    description = AfterSalesTicket.model_fields["expected_solution"].description
+    assert rule_chunk in EXTRACT_SYSTEM_PROMPT
+    assert rule_chunk in description, "Field description 跑偏了,两条通道又开始打架"
+    assert "才填「未提及」。" in description
 
 
 def test_no_secret_looking_strings_in_prompts():
