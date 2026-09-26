@@ -34,5 +34,11 @@ async def stream_chat(session_id: str, message: str) -> AsyncIterator[str]:
                 yield chunk.text
             collected = chunk if collected is None else collected + chunk
 
-        reply = AIMessage(content=collected.text if collected is not None else "")
-        await store.append(session_id, human, reply)
+        reply_text = collected.text if collected is not None else ""
+        if not reply_text:
+            # 空回复按失败处理,不写回历史。写进去就是一条真正的空 assistant 消息,
+            # 之后每一轮都会被重放进上下文;而客户端只看到"这轮一个 token 都没有",
+            # 误以为是成功的空回答。交 api 层转成 SSE error 事件。
+            raise RuntimeError("模型没有产出任何内容,本轮按失败处理")
+
+        await store.append(session_id, human, AIMessage(content=reply_text))

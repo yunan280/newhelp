@@ -7,7 +7,7 @@ import asyncio
 
 import pytest
 from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
-from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
 
 from mewhelp.ch01 import service
 from mewhelp.memory import SessionStore
@@ -110,6 +110,10 @@ async def test_concurrent_turns_on_same_session_are_serialised(monkeypatch):
     断言的**主力**是 seen 的 prompt 长度,不是最终历史 —— 理由见下。
     """
     service.store = SessionStore()
+    # 本用例把预算钉死,不吃 `service.HISTORY_TOKEN_BUDGET` 的现值:预算 ≤ 8 时,
+    # 即使锁完全正确,第二轮的历史也会被裁空,prompt 长度同样是 1 —— 那就成了
+    # "预算太小"伪装成"锁没生效",下面的失败信息会冤枉锁。钉住后,长度不对就只能是锁。
+    monkeypatch.setattr(service, "HISTORY_TOKEN_BUDGET", 4096)
     patch_model(monkeypatch, "A 的回答", "B 的回答")
     seen: list[list] = []
     patch_prompt(monkeypatch, seen)
@@ -142,7 +146,8 @@ async def test_concurrent_turns_on_same_session_are_serialised(monkeypatch):
     # 不假定哪一轮先跑,故断言多重集而非顺序。
     assert sorted(len(p) for p in seen) == [1, 3], (
         f"两轮拿到的 prompt 长度是 {sorted(len(p) for p in seen)},期望 [1, 3]。"
-        "若是 [1, 1],说明两轮读到了同一份空历史 —— 锁没盖住整轮读-改-写。"
+        "本用例已把 HISTORY_TOKEN_BUDGET 钉在 4096,历史不可能被裁空 —— "
+        "所以若看到 [1, 1],只可能是两轮读到了同一份空历史:锁没盖住整轮读-改-写。"
     )
 
 
@@ -164,3 +169,101 @@ async def test_model_exception_propagates_to_caller(monkeypatch):
 
     # 失败的一轮不写回历史
     assert await service.store.get("s1") == []
+
+
+async def test_session_is_still_usable_after_a_failed_turn(monkeypatch):
+    """失败路径也必须把锁放掉 —— 否则该会话**永久死锁**:无异常、无日志、无超时。
+
+    这是并发那条 `[1, 3]` 断言守的同一份保证的另一半:能串行,也得能解锁。
+    把 `async with` 换成"手动 acquire + 只在成功路径 release"后,
+    `test_model_exception_propagates_to_caller` 照样绿,只有本用例会红。
+    """
+    service.store = SessionStore()
+
+    class FlakyOnce:
+        """第一轮断上游,第二轮正常 —— 一次失败不该毒死整个会话。"""
+
+        def __init__(self):
+            self.calls = 0
+
+        async def astream(self, messages):
+            self.calls += 1
+            if self.calls == 1:
+                raise RuntimeError("上游断了")
+            yield AIMessageChunk(content="第二次成功")
+
+    # 实例建在 lambda 外面:lambda 每次调用都 new 一个的话,计数器会被重置,
+    # 第二轮又会走失败分支
+    flaky = FlakyOnce()
+    monkeypatch.setattr(service, "get_chat_model", lambda **kw: flaky)
+
+    with pytest.raises(RuntimeError, match="上游断了"):
+        await collect("s1", "第一轮")
+
+    # 必须给超时:锁没释放时这行会**永久挂住**(本仓库没装 pytest-timeout,挂住比红更糟,
+    # 整个套件会一直卡到 CI 的全局超时)。2 秒是乐观路径(~毫秒级)的千倍以上,
+    # 慢机器上不会误判,真死锁时又能干净地报 TimeoutError,而不是把套件挂死。
+    text, history = await asyncio.wait_for(collect("s1", "第二轮"), timeout=2.0)
+    assert text == "第二次成功"
+    # 失败的那轮没留下任何痕迹
+    assert [m.content for m in history] == ["第二轮", "第二次成功"]
+
+
+@pytest.mark.parametrize(
+    "stream",
+    [
+        pytest.param("no_chunks", id="一个块都没有"),
+        pytest.param("empty_chunks", id="只有空 text 的块"),
+    ],
+)
+async def test_empty_completion_is_a_failed_turn(monkeypatch, stream):
+    """空回复按失败处理,不写回历史。
+
+    写回 `AIMessage(content="")` 的代价不只是"这条难看":它会成为该会话后续**每一轮**
+    都重放的空 assistant 消息,而客户端只看得到"这轮一个 token 都没有",像个成功的空回答。
+    spec §8 要求这类异常以 error 浮出来,不是静默丢掉。
+    """
+    service.store = SessionStore()
+
+    class Silent:
+        """上游没调工具/没吐字:要么一个块都不给,要么只给空 text 的块。"""
+
+        def __init__(self, kind: str):
+            self.kind = kind
+
+        async def astream(self, messages):
+            if self.kind == "no_chunks":
+                return
+            yield AIMessageChunk(content="")
+
+    monkeypatch.setattr(service, "get_chat_model", lambda **kw: Silent(stream))
+
+    with pytest.raises(RuntimeError, match="没有产出任何内容"):
+        await collect("s1", "在吗")
+
+    # 关键:历史**原封不动**,而不是 ['在吗', '']
+    assert await service.store.get("s1") == []
+
+
+async def test_empty_text_chunks_are_not_yielded(monkeypatch):
+    """夹带的空 text 块不上抛 —— 真实 OpenAI 兼容流会这么干。
+
+    断言的是**产出块序列**,不是拼接后的文本:`"".join` 会把空串吃掉,
+    所以只看拼接结果的话,把 `if chunk.text:` 去掉照样绿 —— 那样这条就测不到东西。
+    """
+    service.store = SessionStore()
+
+    class ChunkedFake:
+        async def astream(self, messages):
+            for piece in ["您好,", "", "48 ", "", "", "小时内发货。"]:
+                yield AIMessageChunk(content=piece)
+
+    monkeypatch.setattr(service, "get_chat_model", lambda **kw: ChunkedFake())
+
+    chunks = [c async for c in service.stream_chat("s1", "几点发货?")]
+    # 空块一个都不许出现
+    assert chunks == ["您好,", "48 ", "小时内发货。"]
+
+    # 回写仍然拼出完整回复(空块参与累加,但不产出)
+    history = await service.store.get("s1")
+    assert history[1].content == "您好,48 小时内发货。"
