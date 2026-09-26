@@ -1,5 +1,7 @@
 """会话历史 —— 进程内存储 + token 预算裁剪。"""
 
+import asyncio
+
 from langchain_core.messages import BaseMessage
 from langchain_core.messages.utils import (
     count_tokens_approximately,
@@ -33,3 +35,42 @@ def trim_history(
         max_tokens=max_tokens,
         start_on="human",
     )
+
+
+class SessionStore:
+    """进程内会话存储。
+
+    本章够用:单 worker 运行,进程重启会话即丢。后续换成 MySQL / Redis
+    只需要替换这个类,调用方(service 层)不用动 —— 所以这几个方法
+    现在就是 async 的,哪怕它们还不做 IO。
+
+    已知局限:没有上限和淘汰,会话数一直涨会持续吃内存。
+    """
+
+    def __init__(self) -> None:
+        self._sessions: dict[str, list[BaseMessage]] = {}
+        self._locks: dict[str, asyncio.Lock] = {}
+
+    def lock(self, session_id: str) -> asyncio.Lock:
+        """拿到该会话的锁。
+
+        同一会话的并发请求必须串行:否则两个请求会读到同一份旧历史,
+        各自追加一轮,第二轮丢失可见性。service 层用一整轮对话包住这把锁。
+        """
+        if session_id not in self._locks:
+            self._locks[session_id] = asyncio.Lock()
+        return self._locks[session_id]
+
+    async def get(self, session_id: str) -> list[BaseMessage]:
+        """返回**副本**,调用方改它不会污染内部状态。"""
+        return list(self._sessions.get(session_id, []))
+
+    async def append(self, session_id: str, *messages: BaseMessage) -> None:
+        self._sessions.setdefault(session_id, []).extend(messages)
+
+    async def clear(self, session_id: str) -> None:
+        self._sessions.pop(session_id, None)
+
+
+# 进程级单例。ch01 的 service 直接用这个。
+store = SessionStore()
