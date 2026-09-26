@@ -61,3 +61,31 @@ def test_structured_model_pins_temperature_to_zero(monkeypatch):
     assert captured["schema"] is FakeSchema
     # spec 要求显式声明 function_calling,不吃默认值
     assert captured["kwargs"]["method"] == "function_calling"
+
+
+def test_structured_model_forwards_include_raw(monkeypatch):
+    """`include_raw` 必须原样转发给 with_structured_output。
+
+    它是 `extract_ticket` 拿到"模型这一轮原始输出"的唯一通路(spec §十 的
+    "422 + 原始返回文本"),而漏传是**静默**的:拿到的是裸返回值,不是
+    `{"raw", "parsed", "parsing_error"}` 字典 —— 真模型下 raw 就此永久丢失。
+    默认 False 是给不需要 raw 的调用方留的,所以两条都钉。
+    """
+    patch_settings(monkeypatch)
+    captured = {}
+
+    def fake_with_structured_output(self, schema, **kwargs):
+        captured["kwargs"] = kwargs
+        return "structured-model"
+
+    monkeypatch.setattr(
+        "langchain_openai.ChatOpenAI.with_structured_output",
+        fake_with_structured_output,
+    )
+
+    assert get_structured_model(FakeSchema, include_raw=True) == "structured-model"
+    assert captured["kwargs"]["include_raw"] is True
+    assert captured["kwargs"]["method"] == "function_calling"
+
+    get_structured_model(FakeSchema)
+    assert captured["kwargs"]["include_raw"] is False

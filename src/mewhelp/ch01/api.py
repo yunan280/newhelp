@@ -31,29 +31,49 @@ from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException
 from fastapi.sse import EventSourceResponse, ServerSentEvent
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from .schemas import AfterSalesTicket
 from .service import EmptyCompletionError, extract_ticket, stream_chat
 
 router = APIRouter(prefix="/ch01", tags=["ch01"])
 
+# 422 的 detail 里最多嵌多少个字符的模型原始输出:detail 是发给客户端的,
+# 而坏掉的模型可能吐出一大段。超长就截断,并**明说**截断了。
+_RAW_TEXT_LIMIT = 500
 
-def _reject_blank(value: str, field: str) -> str:
-    """空串与纯空白都拒掉,非空白的原样返回。
+
+def _reject_blank(value: str | None, field: str) -> str | None:
+    """空串与纯空白都拒掉,其余原样返回。
 
     `min_length=1` 只拦得住空串。纯空白长度够、却不是内容,而且照常花掉一次真实
     的上游调用 —— 与空串同害。`field` 只用来拼错误文案(422 的 detail 要指明是哪个字段)。
 
     只校验,不 strip:文本原样往下传,由模型去理解首尾空白。把返回值改成 `.strip()`
     会把用户真正说的那句话改掉 —— 拒绝能力一点没丢,改掉的是被回答的那句话本身。
+
+    **None 是"这个字段没传",不是空白**,原样放行:`session_id` 是 Optional,
+    这里若直接 `value.strip()` 会 AttributeError(落到客户端是 500 而不是 422)。
     """
+    if value is None:
+        return None
     if not value.strip():
         raise ValueError(f"{field} 不能只有空白字符")
     return value
 
 
+def _embed_raw(raw: str) -> str:
+    """把模型原始输出嵌进 422 的 detail —— 超长截断,并说清截断了。"""
+    if len(raw) <= _RAW_TEXT_LIMIT:
+        return raw
+    return f"{raw[:_RAW_TEXT_LIMIT]}…(已截断,原始输出共 {len(raw)} 字符)"
+
+
 class ChatRequest(BaseModel):
+    # 端点不认的字段必须 422,不能静默丢掉:客户端把 `session_id` 拼错成别的名字时,
+    # 看着一切正常,实际每一轮都在开新会话。
+    model_config = ConfigDict(extra="forbid")
+
     session_id: str | None = Field(
         default=None,
         description="会话 id。不传则服务端生成,并从 session 事件返回。",
@@ -71,10 +91,9 @@ class ChatRequest(BaseModel):
         但 Task 11 的聊天页就是 JS 写的),所以这里显式拦掉。
 
         id 是不透明串:非空白的原样放行,**不 strip** —— 服务端不该改写客户端给的标识。
-        判定交给 `_reject_blank`,和 `message` / `description` 共用同一条规则。
+        判定交给 `_reject_blank`,和 `message` / `description` 共用同一条规则;
+        "没传"(None)由它原样放行。
         """
-        if value is None:
-            return None
         return _reject_blank(value, "session_id")
 
     @field_validator("message")
@@ -89,6 +108,10 @@ class ChatRequest(BaseModel):
 
 
 class ExtractRequest(BaseModel):
+    # 同 ChatRequest:多传的字段直接 422。{..., "session_id": "abc"} 这种把聊天接口的
+    # body 顺手复用过来的调用,静默吞掉字段比报错更难查 —— 这条接口根本没有会话。
+    model_config = ConfigDict(extra="forbid")
+
     description: str = Field(min_length=1, description="一段售后描述,不能为空。")
 
     @field_validator("description")
@@ -122,17 +145,32 @@ async def chat_stream(req: ChatRequest) -> AsyncIterable[ServerSentEvent]:
 
 @router.post("/extract")
 async def extract(req: ExtractRequest) -> AfterSalesTicket:
-    """把售后描述抽成结构化工单要素。模型没给出结构化结果时返回 422。
+    """把售后描述抽成结构化工单要素。模型没给出结构化结果时返回 422 + 原始输出。
 
-    与 `/chat/stream` 不同,这条接口是无状态的一次性调用:没有 session、没有历史,
-    返回体就是 `AfterSalesTicket` 本身(FastAPI 用它的 JSON 序列化,
-    枚举字段因此是「换货」这样的中文值,不是 `AfterSalesIntent.exchange`)。
+    **返回注解 `-> AfterSalesTicket` 是承重的,别拆**:FastAPI 拿它当 response_model,
+    于是(1)枚举按 JSON 序列化成「换货」这样的中文值,不是 `AfterSalesIntent.exchange`
+    ——手搓响应体、对枚举做 f-string 都会在这里变成 500;(2)nullable 字段的 `null`
+    靠它兜住:`order_id` / `reason` 为 None 时给的是 `null` 而不是把键丢掉。
+
+    第 (2) 条尤其容易搞反:`response_model_exclude_none` 的默认值是 `False`,
+    **正是这个默认**(而不是某个显式开关)保住了 null —— 一旦加上
+    `response_model_exclude_none=True`,两个键会整段消失,
+    `test_null_fields_are_preserved_in_the_response` 会红。
+    反过来,service 侧写 `model_dump(exclude_none=True)` 是吃不掉的:响应模型会拿 dict
+    重新校验、把默认值补回来 —— 开关在装饰器这一层,不在 service 那边。
+
+    与 `/chat/stream` 不同,这条接口是无状态的一次性调用:没有 session、没有历史。
     """
-    ticket = await extract_ticket(req.description)
-    if ticket is None:
-        # 上游是通的,是模型没按工具约定给结果 —— 与 5xx 区分开:重试一条更具体的描述有意义
+    result = await extract_ticket(req.description)
+    if result.ticket is None:
+        # 上游是通的,是模型没按工具约定给结果 —— 与 5xx 区分开:重试一条更具体的描述有意义。
+        # detail 里带上模型这一轮的原始输出(spec §十 的"422 + 原始返回文本"):
+        # 固定一句话只能让人猜,原文才说得清"它到底说了什么"。
         raise HTTPException(
             status_code=422,
-            detail="模型未能返回结构化结果,请换一段更具体的描述重试。",
+            detail=(
+                "模型未能返回结构化结果,请换一段更具体的描述重试。"
+                f"模型原始输出:{_embed_raw(result.raw)}"
+            ),
         )
-    return ticket
+    return result.ticket

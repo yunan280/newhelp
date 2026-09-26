@@ -3,6 +3,7 @@
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from langchain_core.messages import AIMessage
 
 from mewhelp.ch01 import service
 from mewhelp.ch01.api import router
@@ -16,15 +17,54 @@ def client():
     return TestClient(app)
 
 
-def patch_structured(monkeypatch, result):
-    """把 service 里取的结构化模型换成固定返回值的假对象。"""
+def patch_structured(monkeypatch, result, *, raw="", parsing_error=None, captured=None):
+    """把 service 里取的结构化模型换成固定返回值的假对象。
+
+    假对象返回的是 `include_raw=True` 的形状(实测于 langchain-core 1.6.5 的
+    `{"raw", "parsed", "parsing_error"}`),**别改成裸返回值** —— 那个形状是 service
+    与 llm 之间的真实契约,假对象跟着它走,漏传 `include_raw` 这类坏法才看得见。
+    `captured` 传字典时,把工厂收到的 kwargs 记进去。
+    """
 
     class FakeStructured:
         async def ainvoke(self, messages):
-            return result
+            return {
+                "raw": AIMessage(content=raw),
+                "parsed": result,
+                "parsing_error": parsing_error,
+            }
 
-    monkeypatch.setattr(service, "get_structured_model", lambda *a, **kw: FakeStructured())
-    return FakeStructured
+    def factory(schema, **kwargs):
+        if captured is not None:
+            captured.update(kwargs)
+        return FakeStructured()
+
+    monkeypatch.setattr(service, "get_structured_model", factory)
+
+
+def spy_structured(monkeypatch):
+    """只记录"有没有被调用"的假结构化模型 —— 返回记录列表,空列表即没被调用。
+
+    被调用时给一张**合法**的票:这样"本该被拒的请求却走到了模型"会以 200 现形,
+    不会被"模型返回 None 于是也 422"顺手遮住 —— 状态码在这里本来就不可信。
+    """
+
+    called: list = []
+
+    class Spy:
+        async def ainvoke(self, messages):
+            called.append(True)
+            return {
+                "raw": AIMessage(content="好的"),
+                "parsed": AfterSalesTicket(
+                    intent=AfterSalesIntent.refund,
+                    expected_solution=ExpectedSolution.unspecified,
+                ),
+                "parsing_error": None,
+            }
+
+    monkeypatch.setattr(service, "get_structured_model", lambda *a, **kw: Spy())
+    return called
 
 
 def test_extract_returns_the_ticket_as_json(client, monkeypatch):
@@ -63,11 +103,76 @@ def test_null_fields_are_preserved_in_the_response(client, monkeypatch):
 
 
 def test_model_returning_none_yields_422_not_500(client, monkeypatch):
-    """Review Focus #4:function_calling 下模型可能压根不调工具,返回 None。"""
+    """Review Focus #4:function_calling 下模型可能压根不调工具,`parsed` 是 None。"""
     patch_structured(monkeypatch, None)
     resp = client.post("/ch01/extract", json={"description": "嗯"})
     assert resp.status_code == 422
     assert "结构化" in resp.json()["detail"]
+
+
+def test_422_detail_carries_the_model_raw_output(client, monkeypatch):
+    """spec §十:模型不调工具时,422 要带上**原始返回文本**,便于定位。
+
+    固定一句话的 detail 只留给人猜;模型这一轮的原话才说得清"它到底说了什么"。
+    顺带钉住 `include_raw=True` 真的传到了工厂 —— 假对象无论收到什么 kwargs 都照返回
+    那个形状,所以"只断言 detail 里有 raw"是守不住漏传的,必须断言 kwargs 本身。
+    """
+    raw_text = "我看不懂你的意思,你要退的是哪一件?"
+    captured: dict = {}
+    patch_structured(monkeypatch, None, raw=raw_text, captured=captured)
+
+    resp = client.post("/ch01/extract", json={"description": "嗯"})
+
+    assert resp.status_code == 422
+    assert raw_text in resp.json()["detail"]
+    # 原来那句人类可读的说明不能被 raw 挤掉:客户端要能区分"我该重试"和"模型坏了"
+    assert "结构化" in resp.json()["detail"]
+    assert captured["include_raw"] is True
+
+
+def test_long_raw_output_is_truncated_and_says_so(client, monkeypatch):
+    """detail 是发给客户端的:坏掉的模型可能吐出一大段,不能原样转发。
+
+    截断必须**说出来** —— 静默截断会让人以为自己看到的就是全部,
+    恰好在"便于定位"这个字段存在的唯一目的上骗人。
+    """
+    raw_text = "坏掉的模型开始复读:" + "很抱歉" * 300 + "【尾巴标记】"
+    patch_structured(monkeypatch, None, raw=raw_text)
+
+    detail = client.post("/ch01/extract", json={"description": "嗯"}).json()["detail"]
+
+    assert raw_text[:500] in detail
+    assert "【尾巴标记】" not in detail  # 尾巴确实被切掉了
+    assert "已截断" in detail
+    assert str(len(raw_text)) in detail  # 说清原始有多长
+
+
+def test_empty_raw_output_reports_the_parsing_error_instead(client, monkeypatch):
+    """raw 为空时不能给一个空串 —— 那恰恰是最需要解释的一种失败。
+
+    模型调了工具、参数却过不了 schema 时,`raw.content` 就是空的(实测于
+    langchain-core 1.6.5),这时 detail 要说清"调了工具但参数不合法",并带上报错本身。
+    """
+    patch_structured(monkeypatch, None, raw="", parsing_error=ValueError("intent 不是合法取值"))
+
+    detail = client.post("/ch01/extract", json={"description": "嗯"}).json()["detail"]
+
+    assert "intent 不是合法取值" in detail
+    assert "不满足 schema" in detail
+
+
+def test_unknown_field_is_rejected_instead_of_silently_dropped(client, monkeypatch):
+    """这条接口不认的字段必须 422,不能静默丢掉。
+
+    把聊天接口的 body 顺手复用过来(`{"description": ..., "session_id": "abc"}`)
+    是很自然的调用方式。静默吞掉 `session_id` 的话,客户端以为自己续上了会话
+    —— 而这条接口根本没有会话 —— 两边对不上却全程无报错。
+    """
+    called = spy_structured(monkeypatch)
+    resp = client.post("/ch01/extract", json={"description": "能退吗", "session_id": "abc"})
+
+    assert resp.status_code == 422
+    assert called == []  # 在花掉上游调用之前就拒掉
 
 
 @pytest.mark.parametrize(
@@ -87,18 +192,11 @@ def test_blank_description_is_rejected_before_calling_the_model(client, monkeypa
     空串那一档就算把校验全删了,路由里的 `ticket is None` 分支也会给出 422,
     于是只有 `called` 会红。别指望状态码能守住它。
     """
-    called = False
-
-    class Spy:
-        async def ainvoke(self, messages):
-            nonlocal called
-            called = True  # 隐式返回 None —— 与"模型不调工具"同形
-
-    monkeypatch.setattr(service, "get_structured_model", lambda *a, **kw: Spy())
+    called = spy_structured(monkeypatch)
     resp = client.post("/ch01/extract", json={"description": description})
 
     assert resp.status_code == 422
-    assert called is False
+    assert called == []
 
 
 def test_description_reaches_the_prompt_verbatim(client, monkeypatch):
@@ -116,10 +214,14 @@ def test_description_reaches_the_prompt_verbatim(client, monkeypatch):
 
         async def ainvoke(self, messages):
             seen.append(messages)
-            return AfterSalesTicket(
-                intent=AfterSalesIntent.exchange,
-                expected_solution=ExpectedSolution.unspecified,
-            )
+            return {
+                "raw": AIMessage(content="好的"),
+                "parsed": AfterSalesTicket(
+                    intent=AfterSalesIntent.exchange,
+                    expected_solution=ExpectedSolution.unspecified,
+                ),
+                "parsing_error": None,
+            }
 
     monkeypatch.setattr(service, "get_structured_model", lambda *a, **kw: Capturing())
     resp = client.post("/ch01/extract", json={"description": "\t  订单 20240915001 想换大一码  "})

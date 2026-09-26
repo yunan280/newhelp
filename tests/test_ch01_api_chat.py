@@ -163,6 +163,27 @@ def test_blank_session_id_is_rejected_not_treated_as_absent(client, monkeypatch,
     assert called is False
 
 
+def test_explicit_null_session_id_is_treated_as_absent(client, monkeypatch):
+    """显式传 `"session_id": null` 等同"没传":服务端生成一个,不能 500。
+
+    `session_id` 是 Optional,校验器必须容得下 None。它走的是**显式传值**这条路 ——
+    字段缺省时 pydantic 压根不调校验器(默认 `validate_default=False`),所以
+    "不带 session_id"的那几条用例盖不到这里:把 `_reject_blank` 里 `value is None`
+    那两行删掉,缺省路径一切照旧,**只有这条**会红在
+    `AttributeError: 'NoneType' object has no attribute 'strip'`。
+
+    这也是 JS 客户端很常见的写法:JSON.stringify 一个未赋值的变量给的正是 null,
+    而它既不该被当成空白拒掉,也不该把 null 当 id 用。
+    """
+    patch_model(monkeypatch, "在的")
+    events = parse_sse(post(client, {"session_id": None, "message": "在吗"}).text)
+
+    assert events[0][0] == "session"
+    generated = json.loads(events[0][1])["session_id"]
+    assert generated  # 服务端生成了 id,而不是把 null 原样回给客户端
+    assert len(service.store._sessions[generated]) == 2  # 这一轮真的落进了那个会话
+
+
 def test_whitespace_bearing_session_id_is_echoed_and_reused_verbatim(client, monkeypatch):
     """会话 id 是不透明串:非空白的原样放行 —— 不 strip,也不重新生成。
 

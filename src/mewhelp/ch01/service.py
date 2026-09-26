@@ -4,6 +4,7 @@
 """
 
 from collections.abc import AsyncIterator
+from typing import NamedTuple
 
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
 
@@ -58,11 +59,39 @@ async def stream_chat(session_id: str, message: str) -> AsyncIterator[str]:
         await store.append(session_id, human, AIMessage(content=reply_text))
 
 
-async def extract_ticket(description: str) -> AfterSalesTicket | None:
+class ExtractionResult(NamedTuple):
+    """一次结构化抽取的结果:票 + 模型这一轮的原始输出。
+
+    `raw` 是为 spec §十 的"422 + 原始返回文本"留的:模型不调工具时,原始文本
+    是唯一能说明"它到底说了什么"的东西。
+    """
+
+    ticket: AfterSalesTicket | None
+    raw: str
+
+
+def _raw_text(raw: AIMessage, parsing_error: BaseException | None) -> str:
+    """把 `include_raw` 的结果翻译成一段能进 422 detail 的文本。
+
+    content 为空有两种情形,都得说清"到底发生了什么" —— 空字符串对定位毫无用处:
+    - 模型调了工具,但参数过不了 schema(`parsing_error` 里有 pydantic 的报错);
+    - 模型这一轮既没输出文本也没调工具。
+    """
+    content = raw.content if isinstance(raw.content, str) else str(raw.content)
+    if content.strip():
+        return content
+    if parsing_error is not None:
+        return f"模型调用了工具,但参数不满足 schema:{parsing_error}"
+    return "模型这一轮没有输出任何文本,也没有调用工具"
+
+
+async def extract_ticket(description: str) -> ExtractionResult:
     """从一段售后描述里抽取工单要素。
 
-    模型没能给出结构化结果时返回 None —— 由 api 层转成 422。
+    模型没能给出结构化结果时 `ticket` 为 None,`raw` 仍带着它这一轮的原话 ——
+    由 api 层一起转成 422。
     这里不重试:重试策略等评估跑出数据再定。
     """
     messages = EXTRACT_PROMPT.format_messages(description=description)
-    return await get_structured_model(AfterSalesTicket).ainvoke(messages)
+    out = await get_structured_model(AfterSalesTicket, include_raw=True).ainvoke(messages)
+    return ExtractionResult(ticket=out["parsed"], raw=_raw_text(out["raw"], out["parsing_error"]))
