@@ -163,6 +163,36 @@ def test_blank_session_id_is_rejected_not_treated_as_absent(client, monkeypatch,
     assert called is False
 
 
+def test_whitespace_bearing_session_id_is_echoed_and_reused_verbatim(client, monkeypatch):
+    """会话 id 是不透明串:非空白的原样放行 —— 不 strip,也不重新生成。
+
+    与空消息那条同形:`_reject_blank_session_id` 的 docstring 承诺"非空白的原样放行,
+    **不 strip**",但在此之前唯一走到的非空白值是 `"mine"` —— 没有空白可丢,
+    把 `return value` 改成 `return value.strip()` 全套用例照样绿。这条补那个空洞。
+
+    断言的是**可观测契约**,不是校验器的返回值:
+
+    1. `session` 事件逐字节回显客户端给的 id;
+    2. 拿同一个 id 再发一轮,两轮落进同一个会话。
+
+    第 2 条才是客户端真正依赖的("同一个 id 就是同一个会话"),也是验收标准②的底座:
+    id 一旦被 strip 或重新生成,客户端手里那个 id 就指向一个空会话,
+    而它拿到的回显看不出任何异常 —— 上下文整段丢,无任何报错。
+    """
+    patch_model(monkeypatch, "第一轮", "第二轮")
+    sid = "  demo-session  "
+
+    first = parse_sse(post(client, {"session_id": sid, "message": "第一个问题"}).text)
+    assert json.loads(first[0][1])["session_id"] == sid
+
+    second = parse_sse(post(client, {"session_id": sid, "message": "第二个问题"}).text)
+    assert json.loads(second[0][1])["session_id"] == sid
+
+    # 刻意读私有字段,理由同 test_generated_session_id_is_returned_and_reusable:
+    # TestClient 自己管事件循环,这里没有 await 的余地。两轮 = 4 条。
+    assert len(service.store._sessions[sid]) == 4
+
+
 def test_model_failure_mid_stream_keeps_tokens_and_ends_with_error_event(client, monkeypatch):
     """Review Focus #2:已推出的 token 保留,补一个 error 事件收尾,不断连。"""
 
