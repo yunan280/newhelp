@@ -14,6 +14,15 @@ from mewhelp.memory import store, trim_history
 from .prompts import CHAT_PROMPT
 
 
+class EmptyCompletionError(RuntimeError):
+    """模型没有产出任何内容 —— 判定为空回复的失败回合。
+
+    特意做成 RuntimeError 的子类:调用方想区分"空回复"与"上游断流",
+    就看这个类型;不关心的调用方 `except RuntimeError` 照旧兜得住。
+    两者共用一套异常,靠正则匹配 message 文案来分辨,是这条子类要消灭的东西。
+    """
+
+
 async def stream_chat(session_id: str, message: str) -> AsyncIterator[str]:
     """跑一轮对话,逐段产出回复文本。
 
@@ -43,6 +52,6 @@ async def stream_chat(session_id: str, message: str) -> AsyncIterator[str]:
             # 判据看的是 strip 之后的文本:只有空白字符的回复(几个空格、一个换行)
             # 与真正的空回复同害,但它不是 falsy,`if not reply_text` 会放它过去。
             # 存进历史的仍是**未 strip** 的原文,别把回复里有意义的首尾空白吃掉。
-            raise RuntimeError("模型没有产出任何内容,本轮按失败处理")
+            raise EmptyCompletionError("模型没有产出任何内容,本轮按失败处理")
 
         await store.append(session_id, human, AIMessage(content=reply_text))
