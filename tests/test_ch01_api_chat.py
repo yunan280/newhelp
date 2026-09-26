@@ -173,13 +173,26 @@ def test_whitespace_bearing_session_id_is_echoed_and_reused_verbatim(client, mon
     断言的是**可观测契约**,不是校验器的返回值:
 
     1. `session` 事件逐字节回显客户端给的 id;
-    2. 拿同一个 id 再发一轮,两轮落进同一个会话。
+    2. 拿同一个 id 再发一轮,两轮落进同一个会话(写侧);
+    3. **第二轮真的看得见第一轮**(读侧)—— 见下。
 
-    第 2 条才是客户端真正依赖的("同一个 id 就是同一个会话"),也是验收标准②的底座:
-    id 一旦被 strip 或重新生成,客户端手里那个 id 就指向一个空会话,
-    而它拿到的回显看不出任何异常 —— 上下文整段丢,无任何报错。
+    第 3 条是这里最要紧的一条,也是最容易被漏掉的。只断 1、2 的话,
+    把 `service.py` 的 `store.get(session_id)` 改成 `store.get(session_id.strip())`
+    全场照样绿:写进去的键仍是原样的 id(所以第 2 条的 store 断言仍然成立),
+    读却去读了另一个键 —— `SessionStore.get` 对未知键**返回空列表而不是抛异常**,
+    于是第二轮只拿到 `[system, 本轮提问]`,第一轮整段丢,无异常、无报错、无任何痕迹。
+    这正是验收标准②失效的那个形态,只是从写侧挪到了读侧。
     """
-    patch_model(monkeypatch, "第一轮", "第二轮")
+    seen: list[list] = []
+
+    class Capturing:
+        """记下每次调用实际收到的 messages —— 读侧的洞只有在模型这一端才看得见。"""
+
+        async def astream(self, messages):
+            seen.append(messages)
+            yield AIMessageChunk(content="第一轮的回答" if len(seen) == 1 else "第二轮的回答")
+
+    monkeypatch.setattr(service, "get_chat_model", lambda **kw: Capturing())
     sid = "  demo-session  "
 
     first = parse_sse(post(client, {"session_id": sid, "message": "第一个问题"}).text)
@@ -188,9 +201,16 @@ def test_whitespace_bearing_session_id_is_echoed_and_reused_verbatim(client, mon
     second = parse_sse(post(client, {"session_id": sid, "message": "第二个问题"}).text)
     assert json.loads(second[0][1])["session_id"] == sid
 
-    # 刻意读私有字段,理由同 test_generated_session_id_is_returned_and_reusable:
+    # 写侧:刻意读私有字段,理由同 test_generated_session_id_is_returned_and_reusable:
     # TestClient 自己管事件循环,这里没有 await 的余地。两轮 = 4 条。
     assert len(service.store._sessions[sid]) == 4
+
+    # 读侧:第二轮送进模型的整串对话消息,逐字精确、且顺序正确。
+    # 用 `==` 而不是 `in`:顺序反了、多了一条、少了一条都要红 ——
+    # 顺序敏感的断言才能盖住"两条都在但前后颠倒"这种半坏状态。
+    second_turn_contents = [m.content for m in seen[1]]
+    # [0] 是 CHAT_PROMPT 渲染出的 SystemMessage,内容与本契约无关,故从 [1:] 起比。
+    assert second_turn_contents[1:] == ["第一个问题", "第一轮的回答", "第二个问题"]
 
 
 def test_model_failure_mid_stream_keeps_tokens_and_ends_with_error_event(client, monkeypatch):
