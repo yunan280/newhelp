@@ -4,22 +4,23 @@ version = "0.1.0"
 description = "电商 AI 智能客服 - Agent 应用开发实战"
 requires-python = ">=3.11"
 dependencies = [
-    "fastapi>=0.115",
-    "uvicorn[standard]>=0.32",
+    "fastapi>=0.141",
+    "uvicorn[standard]>=0.54",
     "pydantic>=2.9",
-    "pydantic-settings>=2.6",
+    "pydantic-settings>=2.15",
     "python-dotenv>=1.0",
     "sqlalchemy>=2.0",
     "pymysql>=1.1",
     "httpx>=0.27",
+    "langchain-core>=1.6",
+    "langchain-openai>=1.6",
 ]
 
 [project.optional-dependencies]
 # 按章节逐步启用,学一章装一章
 agent = [
+    "langchain>=1.4",
     "langgraph>=0.2",
-    "langchain>=0.3",
-    "langchain-openai>=0.2",
 ]
 rag = [
     "pymilvus>=2.4",
@@ -49,3 +50,7 @@ target-version = "py311"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+addopts = "-m 'not eval'"
+markers = [
+    "eval: 需要真实调用上游模型的评估,默认不跑,用 pytest -m eval 手动触发",
+]
