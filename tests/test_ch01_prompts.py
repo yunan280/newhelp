@@ -47,10 +47,19 @@ def test_system_prompt_states_the_six_hard_constraints():
 
 
 def test_extract_system_prompt_defines_refund_vs_return_boundary():
-    """退款/退货语义重叠,边界必须写死在 Prompt 里,否则评估会大面积混淆。"""
-    assert "退款" in EXTRACT_SYSTEM_PROMPT
-    assert "退货" in EXTRACT_SYSTEM_PROMPT
-    assert "寄回" in EXTRACT_SYSTEM_PROMPT
+    """退款/退货语义重叠,边界必须写死在 Prompt 里,否则评估会大面积混淆。
+
+    这里钉的是**判据原文**,不是关键词是否出现过。关键词断言不够:只要「寄回」
+    二字还留在别处(退款那一行本来就有),整条「退货」判据被删掉、或被换成自相矛盾的
+    说法,也照样为真。这两行是 Task 10 评估集据以标注的判据 —— 它一旦被"简化",
+    评估会大面积混淆,而混淆又会被误读成"该合并枚举",那是一次 spec 明确要求
+    先问用户的 schema 变更。所以逐字钉死:措辞要改,测试必须同步改,不能悄悄漂移。
+    """
+    assert (
+        "- 「退款」:用户**只要钱**,不打算把商品寄回。包括退差价、退会员费。"
+        in EXTRACT_SYSTEM_PROMPT
+    )
+    assert "- 「退货」:用户**要把商品寄回去**。" in EXTRACT_SYSTEM_PROMPT
 
 
 def test_no_secret_looking_strings_in_prompts():

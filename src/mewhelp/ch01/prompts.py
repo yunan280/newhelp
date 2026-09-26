@@ -1,4 +1,9 @@
-"""Prompt 管理 —— 客服角色与行为约束集中在这里,不散落到业务代码里。"""
+"""Prompt 管理 —— 客服角色与行为约束集中在这里,不散落到业务代码里。
+
+下面两段 Prompt 会被 ChatPromptTemplate 当模板解析,正文里若要出现字面花括号,
+必须转义成 `{{` / `}}`,否则会被当成输入变量,在 format 时报 KeyError
+—— 落在请求链路上就是 500,而且是调用那一刻才炸,不是 import 期。
+"""
 
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
