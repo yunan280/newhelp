@@ -52,6 +52,14 @@ uvicorn mewhelp.main:app --reload
 以下命令用 **Git Bash**。PowerShell 里 `curl` 是 `Invoke-WebRequest` 的别名,
 要改用 `curl.exe` 并把 JSON 写成 here-string。
 
+> **中文 body 在本机 Git Bash 里传不进去 —— 下面三条命令会直接报 400。**
+> ① 流式对话、② 多轮上下文、③ 售后描述结构化,三条都带中文 body,粘进本机 Git Bash 会拿到
+> `HTTP 400` 和 `{"detail":"There was an error parsing the body"}`。
+> **这不是服务端的问题**(同一份 body 存成 UTF-8 文件发过去一切正常),是**命令形式**的问题:
+> Git Bash 把参数按系统 ANSI 代码页(936/GBK)转给 `curl` 了。可直接跑通的 here-doc 写法在
+> 本节末尾的「中文 body 在 Git Bash 里传不进去(本机实测)」。
+> 下面三条命令**保持原样不改** —— 它们在不经过这层转换的 UTF-8 Git Bash 上是正确的。
+
 ### ① 流式对话
 
 ```bash
@@ -90,7 +98,7 @@ curl -X POST http://127.0.0.1:8000/ch01/extract \
 
 上面三条命令里的中文 body 会被 Git Bash 转坏。Git Bash 把命令行参数交给
 `/mingw64/bin/curl`(原生 Windows 程序)时按**系统 ANSI 代码页**(本机 936/GBK)转换,
-中文变成 GBK 字节,服务端按 UTF-8 解析,直接返回:
+中文变成 GBK 字节,服务端按 UTF-8 解析,直接返回 **HTTP 400**:
 
 ```
 {"detail":"There was an error parsing the body"}

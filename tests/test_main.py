@@ -15,6 +15,17 @@ def test_index_serves_the_chat_page():
     assert "text/html" in resp.headers["content-type"]
 
 
+def test_static_mount_serves_the_chat_page_assets():
+    """`app.mount("/static", ...)` 光靠另外三条测试钉不住 —— 把它删掉,它们照样全绿。
+
+    只断言 200 与 content-type,**不断言页面内容**:`static/index.html` 是占位页,
+    内容归 Task 11,这里断言内容会在 Task 11 干活那天变红,而错不在它。
+    """
+    resp = TestClient(app).get("/static/index.html")
+    assert resp.status_code == 200
+    assert "text/html" in resp.headers["content-type"]
+
+
 def test_openapi_lists_the_ch01_routes():
     paths = TestClient(app).get("/openapi.json").json()["paths"]
     assert "/ch01/chat/stream" in paths
