@@ -42,6 +42,22 @@ class ChatRequest(BaseModel):
     )
     message: str = Field(min_length=1, description="用户这一轮说的话,不能为空。")
 
+    @field_validator("session_id")
+    @classmethod
+    def _reject_blank_session_id(cls, value: str | None) -> str | None:
+        """传了空白的会话 id 要拒,不能当成"没传"。
+
+        `req.session_id or uuid4().hex` 会把 `""` 吞掉,于是**每一轮都开一个新会话** ——
+        客户端拿回一个看着完全正常的新 id,上下文却整段丢失,全程没有任何报错。
+        JS 里 `""` 是 falsy、变量未赋值读作空串,踩中的成本极低(本章没有客户端,
+        但 Task 11 的聊天页就是 JS 写的),所以这里显式拦掉。
+
+        id 是不透明串:非空白的原样放行,**不 strip** —— 服务端不该改写客户端给的标识。
+        """
+        if value is not None and not value.strip():
+            raise ValueError("session_id 不能只有空白字符")
+        return value
+
     @field_validator("message")
     @classmethod
     def _reject_blank_message(cls, value: str) -> str:

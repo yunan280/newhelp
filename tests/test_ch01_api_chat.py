@@ -45,6 +45,9 @@ def test_event_sequence_is_session_then_tokens_then_done(client, monkeypatch):
 
     assert events[0][0] == "session"
     assert events[-1][0] == "done"
+    # done 的 payload 也要断言:只断事件名的话,`data={}` 照样绿 —— 客户端拿到的
+    # 收尾信号里没有任何可判读的字段,却没有任何测试会响。
+    assert json.loads(events[-1][1])["finish_reason"] == "stop"
 
     tokens = [json.loads(d)["text"] for e, d in events if e == "token"]
     assert "".join(tokens) == "您好 一般 四十八 小时 内 发货"
@@ -80,11 +83,14 @@ def test_generated_session_id_is_returned_and_reusable(client, monkeypatch):
 def test_blank_message_is_rejected_before_calling_the_model(client, monkeypatch, message):
     """Review Focus #1:空消息必须在花掉一次上游调用之前就被拒。
 
-    `只有空白` 那两档是 `Field(min_length=1)` 拦不住的 —— 长度够,但不是内容。
+    `只有空白` 那一档是 `Field(min_length=1)` 拦不住的 —— 长度够,但不是内容。
     只测空串的话,把 field_validator 删掉照样绿。
 
     `called` 是这条测试的真正主力:`422` 只能证明请求被拒,**证明不了没花上游调用**。
-    把校验挪到路由函数体内(先建模型再校验)时,422 依旧,只有这里会红。
+    能不能红?实测**不能**靠"把校验挪进路由函数体":生成器里、首个 yield 之前
+    raise HTTPException,客户端收到的是 200 加空 body 而不是 422,会先红在状态码上。
+    真正的变异是把模型改成 `Depends` 注入 —— 依赖先于 body 校验解析,于是 422 依旧、
+    模型却已经被建出来了,这条断言这才红。别指望状态码能守住它。
     """
     called = False
 
@@ -95,6 +101,63 @@ def test_blank_message_is_rejected_before_calling_the_model(client, monkeypatch,
 
     monkeypatch.setattr(service, "get_chat_model", spy)
     resp = post(client, {"message": message})
+
+    assert resp.status_code == 422
+    assert called is False
+
+
+def test_message_whitespace_reaches_the_model_verbatim(client, monkeypatch):
+    """`_reject_blank_message` 的 docstring 承诺"只校验,不 strip" —— 这条守那个承诺。
+
+    请求里的首尾空白必须**一个字节不动**地到模型手里。把校验器改成
+    `return value.strip()` 时,拒空白的能力一点没丢(上面那条用例照样绿),
+    改写掉的只有用户真正问的那句话 —— 用户问的和他被回答的不再是同一条,
+    而且服务端写回历史的也是被改写过的那条。
+    """
+    seen: list[list] = []
+
+    class Capturing:
+        """把送进模型的 messages 原样记下来。"""
+
+        async def astream(self, messages):
+            seen.append(messages)
+            yield AIMessageChunk(content="好的")
+
+    monkeypatch.setattr(service, "get_chat_model", lambda **kw: Capturing())
+    resp = post(client, {"message": "\t  几点发货?  "})
+
+    assert resp.status_code == 200
+    # CHAT_PROMPT 渲染出 [system] + history,再拼本轮 HumanMessage;这里只关心后者
+    humans = [m for m in seen[0] if m.type == "human"]
+    assert [m.content for m in humans] == ["\t  几点发货?  "]
+
+
+@pytest.mark.parametrize(
+    "session_id",
+    [
+        pytest.param("", id="空串"),
+        pytest.param("   ", id="只有空白"),
+    ],
+)
+def test_blank_session_id_is_rejected_not_treated_as_absent(client, monkeypatch, session_id):
+    """空白的 session_id 必须 422,不能当成"没传"。
+
+    `req.session_id or uuid4().hex` 会把 `""` 吞掉,于是**每一轮都开一个新会话**:
+    客户端每轮都拿回一个看着完全正常的新 id,上下文却整段丢,验收标准②
+    ("连问两轮,第二轮要接上第一轮")在无任何报错的情况下失效。
+    JS 里 `""` 是 falsy、变量未赋值读作空串,踩中的成本极低。
+
+    与空消息同一类:都在**花掉上游调用之前**拒掉,所以 `called` 也一起断言。
+    """
+    called = False
+
+    def spy(**kw):
+        nonlocal called
+        called = True
+        return GenericFakeChatModel(messages=iter([AIMessage(content="x")]))
+
+    monkeypatch.setattr(service, "get_chat_model", spy)
+    resp = post(client, {"session_id": session_id, "message": "在吗"})
 
     assert resp.status_code == 422
     assert called is False
