@@ -296,3 +296,24 @@ async def test_empty_text_chunks_are_not_yielded(monkeypatch):
     # 回写仍然拼出完整回复(空块参与累加,但不产出)
     history = await service.store.get("s1")
     assert history[1].content == "您好,48 小时内发货。"
+
+
+async def test_reply_whitespace_is_preserved_verbatim(monkeypatch):
+    """回复文本原样产出、原样入历史 —— strip 只用来判空,不用来改写。
+
+    判据必须落在这两条上:把回写改成 `AIMessage(content=reply_text.strip())`,
+    这条必须变红。只断言"历史里有那条回复"是拦不住的。
+    """
+    service.store = SessionStore()
+
+    class Spaced:
+        async def astream(self, messages):
+            for piece in ["  ", "您好,", "48 小时内发货。", "\n"]:
+                yield AIMessageChunk(content=piece)
+
+    monkeypatch.setattr(service, "get_chat_model", lambda **kw: Spaced())
+
+    text, history = await collect("s1", "几点发货?")
+
+    assert text == "  您好,48 小时内发货。\n"
+    assert history[1].content == "  您好,48 小时内发货。\n"
