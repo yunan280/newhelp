@@ -68,10 +68,41 @@ def test_expected_solution_is_required():
         AfterSalesTicket(**p)
 
 
-def test_all_intent_members_have_nonempty_chinese_labels():
-    for member in AfterSalesIntent:
-        assert member.value.strip()
-        assert member.value != member.name
+def test_intent_values_are_pinned_verbatim_in_order():
+    """17 个中文字面量是模型被要求 emit 的字符串,也是 Task 10 评估集的标注基准。
+
+    这里必须逐字 + 有序整表比对。原先的 `value.strip()` + `value != name`
+    是假把关:实测 `other = "别的"`、`exchange = "换东西"` 这类替换能让整套测试
+    全绿 —— 因为它们既非空、也不等于成员名。而字面量一旦被"顺手改短"
+    (如「优惠券补偿」→「优惠券」),评估会静默误判,套件却不会响 ——
+    测量工具本身失准是最坏的盲点。
+    顺序也要钉:spec 第十节固定了成员顺序。整表比对一行同时钉住取值、顺序与数量。
+    """
+    assert [m.value for m in AfterSalesIntent] == [
+        "退款",
+        "退货",
+        "换货",
+        "维修",
+        "补发",
+        "补偿",
+        "咨询",
+        "投诉",
+        "其他",
+    ]
+
+
+def test_expected_solution_values_are_pinned_verbatim_in_order():
+    """同 `test_intent_values_are_pinned_verbatim_in_order`,钉住另一组字面量。"""
+    assert [m.value for m in ExpectedSolution] == [
+        "全额退款",
+        "部分退款",
+        "换货",
+        "维修",
+        "补发",
+        "优惠券补偿",
+        "仅需解释",
+        "未提及",
+    ]
 
 
 def test_enum_member_counts_match_the_spec():
