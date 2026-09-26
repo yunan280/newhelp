@@ -48,7 +48,12 @@ class AfterSalesTicket(BaseModel):
         description="用户的核心诉求类型,从枚举里选最贴近的一个。",
     )
     expected_solution: ExpectedSolution = Field(
-        description="用户希望怎么解决。只描述问题没提要求时填「未提及」。",
+        description=(
+            "用户希望怎么解决。"
+            "用户**只在问**(问时间、问规则、问进度、问东西到哪了)、要的就是一个答复时,"
+            "填「仅需解释」;整句里**既没提诉求、也没问什么**(只是在陈述一件事)时,"
+            "才填「未提及」。"
+        ),
     )
     reason: str | None = Field(
         default=None,

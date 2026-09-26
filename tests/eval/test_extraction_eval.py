@@ -25,6 +25,12 @@ CASES_PATH = Path(__file__).parent / "aftersales_cases.jsonl"
 INTENT_ACCURACY_BAR = 0.85
 ORDER_ID_ACCURACY_BAR = 0.90
 
+# expected_solution **故意不设门槛** —— 这是诊断量,不是闸门。
+# 原因:当前实测值(70%)本身就不是一个"可接受"的水平,把它钉成门槛等于把一个
+# 已知不好的数字固化成"合格线",还会因为模型的正常波动让套件时红时绿。
+# 它照常打印、照常进混淆矩阵,给人看趋势;要不要设门槛、设多少,等这个字段的
+# 边界定清楚之后再说。**别把"这里没有 assert"读成漏了。**
+
 # 模型不调工具时把原始输出截到这么长。整段 raw 可能有几百字,会淹没报告。
 RAW_PREVIEW_LIMIT = 200
 
@@ -49,7 +55,14 @@ def _preview(raw: str) -> str:
 
 async def test_extraction_accuracy():
     cases = load_cases()
-    assert len(cases) == 20, f"标注样例应为 20 条,实际 {len(cases)} 条"
+    # 标注集在修复轮 1 从 20 条长到 27 条,是**有意的**,不是漂移:
+    #   +5 条「仅需解释」正样本 —— 原 20 条里该值出现 0 次,而模型生产得最多,
+    #      没有正样本就只剩"从错误方向看见它";
+    #   +1 条「维修」、+1 条「其他」 —— 两处标注缺陷改判之后,这两个 intent
+    #      各只剩 1 条,破了本集「9 个 intent 各至少 2 条」的约定。
+    # 分母因此从 20 变成 27;下面的准确率是**对着 27 条**算的,不要与 20 条时的
+    # 数字直接比。数量对不上要红,静悄悄地变才最坏。
+    assert len(cases) == 27, f"标注样例应为 27 条,实际 {len(cases)} 条"
 
     intent_hits = 0
     order_id_hits = 0

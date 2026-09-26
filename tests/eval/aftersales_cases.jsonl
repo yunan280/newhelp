@@ -6,7 +6,7 @@
 {"id": 6, "description": "订单 A12345 发错货了,我要换正确的型号", "order_id": "A12345", "intent": "换货", "expected_solution": "换货"}
 {"id": 7, "description": "我买的 XL 想换成 L,可以吗", "order_id": null, "intent": "换货", "expected_solution": "换货"}
 {"id": 8, "description": "订单 888001 的耳机一边不响了,能修吗", "order_id": "888001", "intent": "维修", "expected_solution": "维修"}
-{"id": 9, "description": "电饭煲用了两周就坏了,还在保修期内吗", "order_id": null, "intent": "维修", "expected_solution": "未提及"}
+{"id": 9, "description": "电饭煲用了两周就坏了,还在保修期内吗", "order_id": null, "intent": "咨询", "expected_solution": "未提及"}
 {"id": 10, "description": "订单 20240915003 少发了一件,麻烦补发", "order_id": "20240915003", "intent": "补发", "expected_solution": "补发"}
 {"id": 11, "description": "我买的三件套只到了两件,能补发吗", "order_id": null, "intent": "补发", "expected_solution": "补发"}
 {"id": 12, "description": "订单 20240915004 延误了三天,给张券补偿一下吧", "order_id": "20240915004", "intent": "补偿", "expected_solution": "优惠券补偿"}
@@ -16,5 +16,12 @@
 {"id": 16, "description": "帮我查下订单 20240915008 到哪了", "order_id": "20240915008", "intent": "咨询", "expected_solution": "未提及"}
 {"id": 17, "description": "订单 20240915006 客服态度太差了,我要投诉", "order_id": "20240915006", "intent": "投诉", "expected_solution": "未提及"}
 {"id": 18, "description": "买了三次都有问题,太失望了,要个说法", "order_id": null, "intent": "投诉", "expected_solution": "未提及"}
-{"id": 19, "description": "订单 20240915009 我要给快递员差评,这事你们管吗", "order_id": "20240915009", "intent": "其他", "expected_solution": "未提及"}
+{"id": 19, "description": "订单 20240915009 我要给快递员差评,这事你们管吗", "order_id": "20240915009", "intent": "投诉", "expected_solution": "未提及"}
 {"id": 20, "description": "你们公司地址在哪", "order_id": null, "intent": "其他", "expected_solution": "未提及"}
+{"id": 21, "description": "订单 20240915010 大概几天能发货", "order_id": "20240915010", "intent": "咨询", "expected_solution": "仅需解释"}
+{"id": 22, "description": "退款一般几天到账", "order_id": null, "intent": "咨询", "expected_solution": "仅需解释"}
+{"id": 23, "description": "你们支持七天无理由退货吗", "order_id": null, "intent": "咨询", "expected_solution": "仅需解释"}
+{"id": 24, "description": "订单 20240915011 的发票怎么申请", "order_id": "20240915011", "intent": "咨询", "expected_solution": "仅需解释"}
+{"id": 25, "description": "保修期一般是多久", "order_id": null, "intent": "咨询", "expected_solution": "仅需解释"}
+{"id": 26, "description": "订单 20240915012 的洗衣机不转了,能安排师傅上门修吗", "order_id": "20240915012", "intent": "维修", "expected_solution": "维修"}
+{"id": 27, "description": "订单 20240915014 的东西收到了,挺好的", "order_id": "20240915014", "intent": "其他", "expected_solution": "未提及"}
