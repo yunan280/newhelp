@@ -8,10 +8,11 @@ from collections.abc import AsyncIterator
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
 
 from mewhelp.config import HISTORY_TOKEN_BUDGET
-from mewhelp.llm import get_chat_model
+from mewhelp.llm import get_chat_model, get_structured_model
 from mewhelp.memory import store, trim_history
 
-from .prompts import CHAT_PROMPT
+from .prompts import CHAT_PROMPT, EXTRACT_PROMPT
+from .schemas import AfterSalesTicket
 
 
 class EmptyCompletionError(RuntimeError):
@@ -55,3 +56,13 @@ async def stream_chat(session_id: str, message: str) -> AsyncIterator[str]:
             raise EmptyCompletionError("模型没有产出任何内容,本轮按失败处理")
 
         await store.append(session_id, human, AIMessage(content=reply_text))
+
+
+async def extract_ticket(description: str) -> AfterSalesTicket | None:
+    """从一段售后描述里抽取工单要素。
+
+    模型没能给出结构化结果时返回 None —— 由 api 层转成 422。
+    这里不重试:重试策略等评估跑出数据再定。
+    """
+    messages = EXTRACT_PROMPT.format_messages(description=description)
+    return await get_structured_model(AfterSalesTicket).ainvoke(messages)

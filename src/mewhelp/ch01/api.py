@@ -21,18 +21,36 @@
   本轮已推给客户端的 token 依旧作数,但服务端不留痕。
 
 两种情况都**不是**换一条 session_id 能解决的,客户端别因为一个 error 就丢掉会话。
+
+以上都是 `/chat/stream` 的契约。同模块的 `/extract` 是另一类接口:普通 JSON、无状态、
+不流式 —— 失败时是 422 加一个 `detail` 字符串,没有 `error` 事件这回事。
 """
 
 from collections.abc import AsyncIterable
 from uuid import uuid4
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.sse import EventSourceResponse, ServerSentEvent
 from pydantic import BaseModel, Field, field_validator
 
-from .service import EmptyCompletionError, stream_chat
+from .schemas import AfterSalesTicket
+from .service import EmptyCompletionError, extract_ticket, stream_chat
 
 router = APIRouter(prefix="/ch01", tags=["ch01"])
+
+
+def _reject_blank(value: str, field: str) -> str:
+    """空串与纯空白都拒掉,非空白的原样返回。
+
+    `min_length=1` 只拦得住空串。纯空白长度够、却不是内容,而且照常花掉一次真实
+    的上游调用 —— 与空串同害。`field` 只用来拼错误文案(422 的 detail 要指明是哪个字段)。
+
+    只校验,不 strip:文本原样往下传,由模型去理解首尾空白。把返回值改成 `.strip()`
+    会把用户真正说的那句话改掉 —— 拒绝能力一点没丢,改掉的是被回答的那句话本身。
+    """
+    if not value.strip():
+        raise ValueError(f"{field} 不能只有空白字符")
+    return value
 
 
 class ChatRequest(BaseModel):
@@ -53,10 +71,11 @@ class ChatRequest(BaseModel):
         但 Task 11 的聊天页就是 JS 写的),所以这里显式拦掉。
 
         id 是不透明串:非空白的原样放行,**不 strip** —— 服务端不该改写客户端给的标识。
+        判定交给 `_reject_blank`,和 `message` / `description` 共用同一条规则。
         """
-        if value is not None and not value.strip():
-            raise ValueError("session_id 不能只有空白字符")
-        return value
+        if value is None:
+            return None
+        return _reject_blank(value, "session_id")
 
     @field_validator("message")
     @classmethod
@@ -64,11 +83,19 @@ class ChatRequest(BaseModel):
         """`min_length=1` 只拦得住空串,拦不住 `"   "`。
 
         纯空白既不是内容,又会照常花掉一次真实的上游调用 —— 与空串同害。
-        这里只校验,不 strip:消息文本原样往下传,由模型去理解首尾空白。
+        规则本体在 `_reject_blank`,和 `session_id` / `description` 共用,不在这里复制一份。
         """
-        if not value.strip():
-            raise ValueError("message 不能只有空白字符")
-        return value
+        return _reject_blank(value, "message")
+
+
+class ExtractRequest(BaseModel):
+    description: str = Field(min_length=1, description="一段售后描述,不能为空。")
+
+    @field_validator("description")
+    @classmethod
+    def _reject_blank_description(cls, value: str) -> str:
+        """与 `message` 同一条规则:纯空白既不是内容,也会白花一次上游调用。"""
+        return _reject_blank(value, "description")
 
 
 @router.post("/chat/stream", response_class=EventSourceResponse)
@@ -91,3 +118,21 @@ async def chat_stream(req: ChatRequest) -> AsyncIterable[ServerSentEvent]:
         return
 
     yield ServerSentEvent(event="done", data={"finish_reason": "stop"})
+
+
+@router.post("/extract")
+async def extract(req: ExtractRequest) -> AfterSalesTicket:
+    """把售后描述抽成结构化工单要素。模型没给出结构化结果时返回 422。
+
+    与 `/chat/stream` 不同,这条接口是无状态的一次性调用:没有 session、没有历史,
+    返回体就是 `AfterSalesTicket` 本身(FastAPI 用它的 JSON 序列化,
+    枚举字段因此是「换货」这样的中文值,不是 `AfterSalesIntent.exchange`)。
+    """
+    ticket = await extract_ticket(req.description)
+    if ticket is None:
+        # 上游是通的,是模型没按工具约定给结果 —— 与 5xx 区分开:重试一条更具体的描述有意义
+        raise HTTPException(
+            status_code=422,
+            detail="模型未能返回结构化结果,请换一段更具体的描述重试。",
+        )
+    return ticket
