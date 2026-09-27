@@ -1,1 +1,297 @@
-<!doctype html><meta charset="utf-8"><title>MewHelp</title><p>聊天页待实现(Task 11)。
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MewHelp 客服</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --line: #e3e6ea;
+    --text: #1c1f23;
+    --muted: #6b7280;
+    --me-bg: #1f6feb;
+    --me-fg: #ffffff;
+    --ai-bg: #eef0f3;
+    --err: #b42318;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --bg: #16181c;
+      --panel: #1e2126;
+      --line: #2c3037;
+      --text: #e6e8eb;
+      --muted: #9aa1ab;
+      --me-bg: #2f6fdc;
+      --me-fg: #ffffff;
+      --ai-bg: #262a31;
+      --err: #ff8a80;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.6 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  }
+  header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  header h1 { margin: 0; font-size: 16px; font-weight: 600; }
+  #sid {
+    color: var(--muted);
+    font-size: 12px;
+    font-family: ui-monospace, Consolas, monospace;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 820px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .row { display: flex; }
+  .row.me { justify-content: flex-end; }
+  .bubble {
+    max-width: 78%;
+    padding: 9px 13px;
+    border-radius: 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .me .bubble { background: var(--me-bg); color: var(--me-fg); border-bottom-right-radius: 4px; }
+  .ai .bubble { background: var(--ai-bg); border-bottom-left-radius: 4px; }
+  .ai .bubble.err { color: var(--err); }
+  .hint {
+    align-self: center;
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+    max-width: 560px;
+  }
+  /* 等第一个 token 的那段静默期,让"在等"和"卡住"看得出来 */
+  .dots::after { content: ''; animation: dots 1.2s steps(4, end) infinite; }
+  @keyframes dots {
+    0%   { content: ''; }
+    25%  { content: '.'; }
+    50%  { content: '..'; }
+    75%  { content: '...'; }
+  }
+  @media (prefers-reduced-motion: reduce) { .dots::after { animation: none; content: '…'; } }
+  form {
+    border-top: 1px solid var(--line);
+    background: var(--panel);
+    padding: 12px 20px;
+    display: flex;
+    gap: 10px;
+    max-width: 820px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  input {
+    flex: 1;
+    padding: 10px 13px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--text);
+    font: inherit;
+  }
+  input:focus { outline: 2px solid var(--me-bg); outline-offset: -1px; }
+  button {
+    padding: 10px 18px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--me-bg);
+    color: var(--me-fg);
+    font: inherit;
+    cursor: pointer;
+  }
+  button:disabled { opacity: .45; cursor: default; }
+</style>
+</head>
+<body>
+<header>
+  <h1>MewHelp 客服</h1>
+  <span id="sid"></span>
+</header>
+
+<div id="log"></div>
+
+<form id="f">
+  <input id="q" autocomplete="off" placeholder="说点什么…" autofocus>
+  <button id="send">发送</button>
+</form>
+
+<script>
+const log = document.getElementById('log');
+const sidEl = document.getElementById('sid');
+const input = document.getElementById('q');
+const sendBtn = document.getElementById('send');
+
+// session_id 存 sessionStorage:刷新页面还能接着上一轮聊。
+// 用 sessionStorage 而不是 localStorage —— 关掉标签页就换一个新会话,符合"客服"的直觉;
+// 服务端重启后这个 id 会指向一个空历史,表现是"它忘了",重开一个即可。
+let sessionId = sessionStorage.getItem('mewhelp_session_id');
+
+function renderSid() {
+  sidEl.textContent = sessionId ? '会话 ' + sessionId.slice(0, 12) : '';
+  sidEl.title = sessionId || '';
+}
+renderSid();
+
+const hint = document.createElement('div');
+hint.className = 'hint';
+hint.textContent = '第 1 章:纯对话。可以问发货、售后、退换货这类问题。';
+log.appendChild(hint);
+
+function bubble(who, text) {
+  const row = document.createElement('div');
+  row.className = 'row ' + who;
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  b.textContent = text;
+  row.appendChild(b);
+  log.appendChild(row);
+  log.scrollTop = log.scrollHeight;
+  return b;
+}
+
+// SSE 一个事件一个块,块之间空行分隔;行尾可能是 \n 也可能是 \r\n。
+// 按"找到完整分隔符"切,而不是 split('\n\n') —— 后者遇到 \r\n\r\n 会切不开。
+const SEP = /\r?\n\r?\n/;
+
+function parseBlock(block) {
+  let event = 'message';
+  const dataLines = [];
+  for (const rawLine of block.split(/\r?\n/)) {
+    if (rawLine.startsWith(':')) continue;              // 注释行(心跳 / 保活)
+    if (rawLine.startsWith('event:')) event = rawLine.slice(6).trim();
+    else if (rawLine.startsWith('data:')) dataLines.push(rawLine.slice(5).replace(/^ /, ''));
+  }
+  return { event: event, data: dataLines.join('\n') };
+}
+
+const ERROR_LABEL = { empty_completion: '模型没答上来', upstream_error: '上游出错' };
+
+async function send(text) {
+  bubble('me', text);
+  const reply = bubble('ai', '');
+  reply.classList.add('dots');   // 先转圈,第一个 token 到了再摘掉
+  let started = false;
+  let gotAnything = false;
+
+  const handle = ({ event, data }) => {
+    if (!data) return;
+    let payload;
+    try {
+      payload = JSON.parse(data);
+    } catch (e) {
+      return;   // 解析不了的块(心跳之类)忽略掉,不能让它把整条流打断
+    }
+
+    if (event === 'session') {
+      sessionId = payload.session_id;
+      sessionStorage.setItem('mewhelp_session_id', sessionId);
+      renderSid();
+    } else if (event === 'token') {
+      if (!started) { reply.classList.remove('dots'); started = true; }
+      reply.textContent += payload.text;
+      gotAnything = true;
+      log.scrollTop = log.scrollHeight;
+    } else if (event === 'error') {
+      // 服务端契约:这一轮**没有**写进会话历史,重发同一条消息即可重试,不用换会话。
+      if (!started) { reply.classList.remove('dots'); started = true; }
+      reply.classList.add('err');
+      reply.textContent += (gotAnything ? '\n\n' : '')
+        + '[' + (ERROR_LABEL[payload.code] || '出错') + '] ' + payload.message;
+    }
+  };
+
+  try {
+    const resp = await fetch('/ch01/chat/stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId, message: text }),
+    });
+
+    if (!resp.ok) {
+      // 参数不合法走的是普通 JSON 错误(422 + detail),不是 SSE —— 这层得单独接住。
+      let detail = resp.status + ' ' + resp.statusText;
+      try {
+        const body = await resp.json();
+        if (body.detail) detail = JSON.stringify(body.detail);
+      } catch (e) { /* 不是 JSON 就退回状态码 */ }
+      reply.classList.remove('dots');
+      reply.classList.add('err');
+      reply.textContent = '[请求被拒] ' + detail;
+      return;
+    }
+
+    // 必须 fetch + getReader(),不能用 EventSource —— EventSource 只发 GET,这接口是 POST。
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let carry = '';
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      carry += decoder.decode(value, { stream: true });
+
+      let m;
+      while ((m = SEP.exec(carry)) !== null) {
+        const block = carry.slice(0, m.index);
+        carry = carry.slice(m.index + m[0].length);
+        if (block.trim()) handle(parseBlock(block));
+      }
+    }
+
+    carry += decoder.decode();
+    if (carry.trim()) handle(parseBlock(carry));   // 最后一块可能没有结尾空行
+  } catch (err) {
+    // 响应头都没拿到(服务没起、断网),或读流中途断开。这一轮没写进历史,重发即可。
+    reply.classList.remove('dots');
+    reply.classList.add('err');
+    reply.textContent += (gotAnything ? '\n\n' : '') + '[连接中断] ' + err.message;
+  } finally {
+    reply.classList.remove('dots');
+    if (!reply.textContent) reply.textContent = '[空回复]';
+  }
+}
+
+document.getElementById('f').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  input.disabled = true;
+  sendBtn.disabled = true;
+  try {
+    await send(text);
+  } finally {
+    input.disabled = false;
+    sendBtn.disabled = false;
+    input.focus();
+  }
+});
+</script>
+</body>
+</html>
