@@ -87,15 +87,25 @@
     text-align: center;
     max-width: 560px;
   }
-  /* 等第一个 token 的那段静默期,让"在等"和"卡住"看得出来 */
-  .dots::after { content: ''; animation: dots 1.2s steps(4, end) infinite; }
-  @keyframes dots {
-    0%   { content: ''; }
-    25%  { content: '.'; }
-    50%  { content: '..'; }
-    75%  { content: '...'; }
+  /* 等第一个 token 的那段静默期,让"在等"和"卡住"看得出来。
+     两件事必须同时成立,缺一个就等于没有:
+     1. `::after` 的 `content` 是**静态**的省略号 —— 这段静默期在任何浏览器里都
+        看得见东西,不会是一个空气泡;
+     2. "在动"只靠 `opacity` 的呼吸。
+     之前那版用 `@keyframes` 逐帧改 `content`('' → '.' → '..' → '...')。`content`
+     在 CSS 里是 discrete-animation 属性,支持面不均匀 —— 一旦不生效,首 token 前那
+     ~1 秒里用户看到的就是一个完全空的气泡,而"让这段静默可见"正是它存在的全部理由。 */
+  .dots::after {
+    content: '…';
+    display: inline-block;
+    opacity: .5;
+    animation: pulse 1.2s ease-in-out infinite;
   }
-  @media (prefers-reduced-motion: reduce) { .dots::after { animation: none; content: '…'; } }
+  @keyframes pulse {
+    0%, 100% { opacity: .3; }
+    50%      { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) { .dots::after { animation: none; opacity: .6; } }
   form {
     border-top: 1px solid var(--line);
     background: var(--panel);
@@ -150,7 +160,23 @@ const sendBtn = document.getElementById('send');
 // session_id 存 sessionStorage:刷新页面还能接着上一轮聊。
 // 用 sessionStorage 而不是 localStorage —— 关掉标签页就换一个新会话,符合"客服"的直觉;
 // 服务端重启后这个 id 会指向一个空历史,表现是"它忘了",重开一个即可。
-let sessionId = sessionStorage.getItem('mewhelp_session_id');
+//
+// 但 sessionStorage **不是一定可用**:隐私模式、站点数据被阻止时,访问它是**抛异常**
+// 而不是返回 null。两处访问的代价各不相同,都得接住:
+//   读 —— 在脚本顶层,抛出去整个页面的 JS 就不再有下文(连输入框都按不动);
+//   写 —— 在流处理里,抛出去会被外层 catch 误判成"连接中断"。
+// 读不到就当"没有会话 id"(服务端会发一个新的),写不进去只丢掉"刷新续聊"这个便利。
+const SESSION_KEY = 'mewhelp_session_id';
+
+function readStoredSessionId() {
+  try { return sessionStorage.getItem(SESSION_KEY); } catch (e) { return null; }
+}
+
+function storeSessionId(id) {
+  try { sessionStorage.setItem(SESSION_KEY, id); } catch (e) { /* 存不下不影响这一轮对话 */ }
+}
+
+let sessionId = readStoredSessionId();
 
 function renderSid() {
   sidEl.textContent = sessionId ? '会话 ' + sessionId.slice(0, 12) : '';
@@ -210,7 +236,7 @@ async function send(text) {
 
     if (event === 'session') {
       sessionId = payload.session_id;
-      sessionStorage.setItem('mewhelp_session_id', sessionId);
+      storeSessionId(sessionId);
       renderSid();
     } else if (event === 'token') {
       if (!started) { reply.classList.remove('dots'); started = true; }
