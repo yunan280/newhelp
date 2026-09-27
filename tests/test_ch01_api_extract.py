@@ -235,6 +235,10 @@ def test_unknown_field_is_rejected_instead_of_silently_dropped(client, monkeypat
     [
         pytest.param("", id="空串"),
         pytest.param("   ", id="只有空白"),
+        # 第三个共用 `_reject_blank` 的字段(另两个在 test_ch01_api_chat.py:
+        # `message` 与 `session_id`)。零宽字符既不是空白、也不是内容,却同样会白花
+        # 一次真实上游调用;三个入口的行为必须一致,所以三处都要有这一档。
+        pytest.param("\u200b\u200c\u200d\ufeff", id="只有零宽字符"),
     ],
 )
 def test_blank_description_is_rejected_before_calling_the_model(client, monkeypatch, description):
@@ -242,6 +246,8 @@ def test_blank_description_is_rejected_before_calling_the_model(client, monkeypa
 
     `只有空白` 那一档是 `Field(min_length=1)` 拦不住的 —— 长度够,但不是内容,
     而且照常花掉一次真实的上游调用。只测空串的话,把 `field_validator` 删掉照样绿。
+    `只有零宽字符` 那一档更隐蔽:`str.strip()` 按 `str.isspace()` 语义工作,而
+    U+200B / U+200C / U+200D / U+FEFF 都不在其中 —— 肉眼看不见,却照样烧调用。
 
     `called` 是这条测试的真正主力:`422` 只能证明请求被拒,**证明不了没花上游调用** ——
     空串那一档就算把校验全删了,路由里的 `ticket is None` 分支也会给出 422,

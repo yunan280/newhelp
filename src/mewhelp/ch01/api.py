@@ -5,7 +5,11 @@
 事件契约(客户端按这个来写,别去猜):
 - `session`:永远是第一个事件,带 `session_id`。客户端存下来,下一轮原样传回。
 - `token`:零到多个,带 `text`(一段文本,不是增量语义上的字符)。拼接即完整回复。
-- `done`:成功收尾,带 `finish_reason`。
+- `done`:成功收尾,带 `finish_reason`。**这个字段当前恒为 `"stop"`(硬编码的字面量),
+  不代表上游真实的截断状态 —— 别拿它判断"答完了"还是"被截断了"。** 上游因长度限制
+  截断答复时,客户端收到的仍是 `"stop"`;契约里这个字段承诺得比实现多,所以在这里
+  如实写明当前值,而不是让客户端去猜。要拿真值,得从 `collected.response_metadata`
+  取(那是 service 返回契约的一次改动),本章不做。
 - `error`:失败收尾,带 `message`(人类可读)与 `code`(机器可判,见下)。
 
 关于 `error` —— 这是客户端最需要知道的一条:
@@ -42,23 +46,35 @@ router = APIRouter(prefix="/ch01", tags=["ch01"])
 # 而坏掉的模型可能吐出一大段。超长就截断,并**明说**截断了。
 _RAW_TEXT_LIMIT = 500
 
+# 「空白」这一类的第二个码位族。`str.strip()` 按 `str.isspace()` 语义工作,而
+# U+200B 这类零宽字符**不在其中** —— 只判 `strip()` 的话,一个由零宽空格拼成的
+# message 会照常花掉一次真实的上游调用,与空串同害,只是肉眼看不见。
+# 顺序:零宽空格 / 零宽非连接符 / 零宽连接符 / 零宽不换行空格(BOM)。
+_ZERO_WIDTH_CHARS = "\u200b\u200c\u200d\ufeff"
+_ZERO_WIDTH_TABLE = str.maketrans("", "", _ZERO_WIDTH_CHARS)
+
 
 def _reject_blank(value: str | None, field: str) -> str | None:
-    """空串与纯空白都拒掉,其余原样返回。
+    """空串、纯空白、纯零宽字符都拒掉,其余原样返回。
 
     `min_length=1` 只拦得住空串。纯空白长度够、却不是内容,而且照常花掉一次真实
-    的上游调用 —— 与空串同害。`field` 只用来拼错误文案(422 的 detail 要指明是哪个字段)。
+    的上游调用 —— 与空串同害。零宽字符是同一件事的另一个码位:`str.strip()` 按
+    `str.isspace()` 语义工作,U+200B / U+200C / U+200D / U+FEFF 都不在其中,于是
+    `{"message": "\u200b"}` 能一路走到上游。复制粘贴带零宽字符的文本成本极低,
+    所以这里把两类一起去掉之后再判空。`field` 只用来拼错误文案(422 的 detail
+    要指明是哪个字段)。
 
     只校验,不 strip:文本原样往下传,由模型去理解首尾空白。把返回值改成 `.strip()`
     会把用户真正说的那句话改掉 —— 拒绝能力一点没丢,改掉的是被回答的那句话本身。
+    零宽字符同理:只在**判定**时去掉,返回值里一个字节都不动。
 
     **None 是"这个字段没传",不是空白**,原样放行:`session_id` 是 Optional,
     这里若直接 `value.strip()` 会 AttributeError(落到客户端是 500 而不是 422)。
     """
     if value is None:
         return None
-    if not value.strip():
-        raise ValueError(f"{field} 不能只有空白字符")
+    if not value.translate(_ZERO_WIDTH_TABLE).strip():
+        raise ValueError(f"{field} 不能只有空白或零宽字符")
     return value
 
 

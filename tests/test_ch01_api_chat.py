@@ -78,13 +78,18 @@ def test_generated_session_id_is_returned_and_reusable(client, monkeypatch):
     [
         pytest.param("", id="空串"),
         pytest.param("   ", id="只有空白"),
+        # 零宽字符是"空白"这一类里 `str.strip()` 抓不到的码位:U+200B / U+200C /
+        # U+200D / U+FEFF 都不满足 `str.isspace()`,所以 `{"message": "\u200b"}`
+        # 会一路走到上游、白烧一次真实调用 —— 与空串同害,只是肉眼看不见。
+        pytest.param("\u200b\u200c\u200d\ufeff", id="只有零宽字符"),
     ],
 )
 def test_blank_message_is_rejected_before_calling_the_model(client, monkeypatch, message):
     """Review Focus #1:空消息必须在花掉一次上游调用之前就被拒。
 
     `只有空白` 那一档是 `Field(min_length=1)` 拦不住的 —— 长度够,但不是内容。
-    只测空串的话,把 field_validator 删掉照样绿。
+    只测空串的话,把 field_validator 删掉照样绿。`只有零宽字符` 那一档更隐蔽:
+    它连 `str.strip()` 都绕得过去(零宽字符不属于 `str.isspace()`)。
 
     `called` 是这条测试的真正主力:`422` 只能证明请求被拒,**证明不了没花上游调用**。
     能不能红?实测**不能**靠"把校验挪进路由函数体":生成器里、首个 yield 之前
@@ -132,6 +137,31 @@ def test_message_whitespace_reaches_the_model_verbatim(client, monkeypatch):
     assert [m.content for m in humans] == ["\t  几点发货?  "]
 
 
+def test_zero_width_characters_inside_real_text_reach_the_model_verbatim(client, monkeypatch):
+    """零宽字符只在**判定**时去掉,进模型的那句话一个字节都不动。
+
+    与 `test_message_whitespace_reaches_the_model_verbatim` 同形:`_reject_blank` 现在
+    要拿"去掉零宽字符之后还剩不剩东西"来判空,顺手把返回值也换成那个干净版本是极自然的
+    写法 —— 而用户真正问的那句话就被改掉了,服务端写回历史的也是改过的那条。
+    判空与改写是两件事,这条守的是后一件。
+    """
+    seen: list[list] = []
+
+    class Capturing:
+        """把送进模型的 messages 原样记下来。"""
+
+        async def astream(self, messages):
+            seen.append(messages)
+            yield AIMessageChunk(content="好的")
+
+    monkeypatch.setattr(service, "get_chat_model", lambda **kw: Capturing())
+    resp = post(client, {"message": "订单\u200b20240915001 到哪了"})
+
+    assert resp.status_code == 200
+    humans = [m for m in seen[0] if m.type == "human"]
+    assert [m.content for m in humans] == ["订单\u200b20240915001 到哪了"]
+
+
 def test_unknown_field_is_rejected_instead_of_silently_dropped(client, monkeypatch):
     """聊天接口不认的字段必须 422,不能静默丢掉。
 
@@ -161,6 +191,11 @@ def test_unknown_field_is_rejected_instead_of_silently_dropped(client, monkeypat
     [
         pytest.param("", id="空串"),
         pytest.param("   ", id="只有空白"),
+        # 与 message 那一档同一件事:零宽字符不是空白(`str.isspace()` 不认它),
+        # 却同样什么内容都不是。session_id / message / description **共用**
+        # `_reject_blank` 这一条规则,三个字段的这套用例必须一起在 —— 只给一个入口
+        # 打补丁(比如在 message 的校验器里单独加一句)就会在这里露馅。
+        pytest.param("\u200b\u200c\u200d\ufeff", id="只有零宽字符"),
     ],
 )
 def test_blank_session_id_is_rejected_not_treated_as_absent(client, monkeypatch, session_id):
