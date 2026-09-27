@@ -99,7 +99,7 @@
 | 2026-09-26 | ch01 结构化抽取 Prompt(9 类 intent 闭集) | 未测 | intent 85% · order_id 100% · expected_solution 70% | 20 条标注集,`pytest -m eval -s`,DeepSeek `deepseek-chat` |
 | 2026-09-26 | 修复轮 1:标注集 20 → 27 条,补「仅需解释」正样本,给 `expected_solution` 补字段边界 | intent 85% · order_id 100% · expected_solution 70%(20 条) | intent 96% · order_id 100% · expected_solution 70%(27 条);**同一批 20 条上 expected_solution 反而 70% → 60%** | 同上,temperature 0 |
 | 2026-09-26 | 修复轮 2:写下「仅需解释」的规则、按规则重推 27 条标注、对齐两条散文通道 | intent 96% · order_id 100% · expected_solution 70%(27 条) | intent 96% · order_id 100% · expected_solution **93%**(27 条;+7 来自 key 对齐,−1 来自 #18)→ **已作废**,终评修复轮后为 96%,见下一行 | 同上,temperature 0 |
-| 2026-09-27 | 终评修复轮:`#18` 按规则标定为「仅需解释」、两条散文通道的钉子升级为整段相等 | intent 96% · order_id 100% · expected_solution **93%**(27 条) | intent 96% · order_id 100% · expected_solution **96%**(27 条;+1 来自 `#18` 标定,唯一 remaining miss 是刻意保留的对照错例 `#4`) | 同上,temperature 0,`pytest -m eval` |
+| 2026-09-27 | 终评修复轮:`#18` 按规则标定为「仅需解释」、两条散文通道的钉子升级为整段相等 | intent 96% · order_id 100% · expected_solution **93%**(27 条) | intent 96% · order_id 100% · expected_solution **26/27 = 96%**(27 条;+1 来自 `#18` 标定,`#18`/`#19` 都判对了,唯一 miss 是刻意保留的对照错例 `#4`)。**同一状态下再跑一次是 27/27 = 100%** —— `#4`「鞋码太大,我想退回去」的预测在轮次间漂移(`换货` ↔ `全额退款`),两个数都如实记下,intent 两次都是 26/27(miss 固定在 `#20`) | 同上,temperature 0,`pytest -m eval`;`expected_solution` 是诊断量、不设门槛 |
 | 2026-09-26 | 中文下的 token 近似计数 | — | 近似值低估约 2.26x | 134 字中文段:近似 38 token vs 上游实测 86 token |
 
 **细节(2026-09-26,Task 10 评估集)**
