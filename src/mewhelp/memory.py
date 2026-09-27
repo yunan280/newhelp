@@ -23,8 +23,8 @@ def trim_history(
       开头 —— 模型看到"自己刚说过话"却没有对应提问,容易答非所问
 
     count_tokens_approximately 是字符数启发式,中文会低估。本章预算 2048
-    远小于 DeepSeek 的 128K 窗口,低估不会溢出。要更准就把 token_counter
-    换成 tiktoken 或自造的 CJK 计数器 —— 这个参数就是留给那时的口子。
+    远小于 DeepSeek 的 128K 窗口,低估不会溢出。要更准就换一个 CJK 感知的
+    计数器 —— `token_counter` 这个参数就是留给那时的口子。
     """
     if not history:
         return []

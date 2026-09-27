@@ -9,13 +9,13 @@ class FakeSchema:
 
 
 def fake_settings(**over):
-    base = dict(
-        _env_file=None,
-        openai_api_key="k",
-        openai_base_url="https://example.test/v1",
-        llm_model="test-model",
-        llm_temperature=0.3,
-    )
+    base = {
+        "_env_file": None,
+        "openai_api_key": "k",
+        "openai_base_url": "https://example.test/v1",
+        "llm_model": "test-model",
+        "llm_temperature": 0.3,
+    }
     base.update(over)
     return Settings(**base)
 
