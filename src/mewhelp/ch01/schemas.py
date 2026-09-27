@@ -47,6 +47,14 @@ class AfterSalesTicket(BaseModel):
     intent: AfterSalesIntent = Field(
         description="用户的核心诉求类型,从枚举里选最贴近的一个。",
     )
+    # 已知缺口(留作第 2 章的 schema 问题):有**显式诉求**却既不是要信息、也不在
+    # 退款/换货/维修/补发/补偿这五类动作里时(如「我要投诉」),当前 8 个值没有归属;
+    # 评估集保持现状,不为它新增取值。
+    # 为什么不写进模型看得见的那两条说明(Prompt 的 expected_solution 一段 / 本字段的
+    # description):实测写进去之后模型会把这类描述判成「未提及」—— #18/#19 从
+    # 「仅需解释」翻转过去(schema 侧单独加这句话,#18 连续 5 次全翻)。那正是本章反复
+    # 修掉的缺陷形状:「未提及」的定义是"通篇看不出诉求",拿它当"清单外兜底"的下场,
+    # 就是下游把"用户明确要求处理"读成"用户没说"。要新的取值就动 schema,那是第 2 章的事。
     expected_solution: ExpectedSolution = Field(
         description=(
             "用户希望怎么解决。"

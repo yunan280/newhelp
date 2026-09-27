@@ -77,18 +77,74 @@ def test_extract_system_prompt_defines_the_explanation_boundary():
     assert "才填「未提及」。" in EXTRACT_SYSTEM_PROMPT
 
 
+_EXPECTED_SOLUTION_BULLET = "- expected_solution:"
+
+
+def _expected_solution_rule_in_prompt() -> str:
+    """切出 EXTRACT_SYSTEM_PROMPT 里 expected_solution 那一条规则的**正文**。
+
+    正文 = 从 `- expected_solution:` 起、连同它后面所有缩进的续行,直到空行或下一个
+    顶格行为止。切出来的是这一条规则的**整段**,不是其中一个共享片段 —— 这正是与旧
+    断言的关键区别(旧断言只问"那段话还在不在",在一侧末尾追加一段直接矛盾的字照样绿)。
+    """
+    lines = EXTRACT_SYSTEM_PROMPT.splitlines()
+    start = next(i for i, line in enumerate(lines) if line.startswith(_EXPECTED_SOLUTION_BULLET))
+    block = [lines[start][len(_EXPECTED_SOLUTION_BULLET):]]
+    for line in lines[start + 1:]:
+        if not line.strip() or not line[:1].isspace():
+            break
+        block.append(line)
+    return "\n".join(block)
+
+
+def _rule_fingerprint(text: str) -> str:
+    """判据比对前的归一化:**只抹平排版,一个字都不动。**
+
+    Prompt 里那段是缩进的 bullet,「希望怎么解决」还带着 `**`;Field description 是
+    拼接好的单串、没有那对 `**`。说的到底是不是同一件事,不该被这两处排版差异挡住 ——
+    但也**只**归一化这两样:任何多出来的字(比如顺手追加的一句话)都会让比较不等,
+    这正是它比"共享子串还在"强的地方。
+    """
+    return "".join(text.replace("**", "").split())
+
+
 def test_explanation_boundary_is_worded_identically_in_both_prose_channels():
-    """两条散文通道必须说同一条规则(修复轮 2 裁定 2)。
+    """两条散文通道必须**整段**说同一条规则(修复轮 2 裁定 2;终评 Important-2 加固)。
 
     修复轮 1 的实际状态:prompts.py 写「没提要求→未提及」,Field description 写
     「只在问→仅需解释」,对问句给出**相反**答案 —— 实测模型跟的是 Field description。
-    两条通道互相打架本身就是缺陷,不管哪条赢,所以这里钉"两边共有同一段判据原文"。
+    两条通道互相打架本身就是缺陷,不管哪条赢。
+
+    旧版本的钉子只钉"两处共有同一段子串"。终评拿三个变异量过它:**在一侧末尾追加一段
+    直接矛盾的话、共享片段原样保留 ⇒ 99 passed,一次都没红**;而真模型探针显示矛盾一加,
+    `#18` 立刻翻成「未提及」。这段散文是 27 条标注的基准,锚点漂了会表现成"模型变差了",
+    所以钉子升级成:**两边这一段判据归一化后必须逐字相等**。
     """
-    rule_chunk = "而不是要我们做退款/换货/维修/补发/补偿这类动作时,填「仅需解释」"
     description = AfterSalesTicket.model_fields["expected_solution"].description
-    assert rule_chunk in EXTRACT_SYSTEM_PROMPT
-    assert rule_chunk in description, "Field description 跑偏了,两条通道又开始打架"
-    assert "才填「未提及」。" in description
+    prompt_rule = _expected_solution_rule_in_prompt()
+    prompt_fp = _rule_fingerprint(prompt_rule)
+    description_fp = _rule_fingerprint(description)
+
+    # 先挡住"切空了 / 被删瘦了"这类退化解 —— 空串和空串当然相等。
+    assert len(prompt_fp) > 80, (
+        f"expected_solution 判据段只剩 {len(prompt_fp)} 个字,像是被删了:{prompt_rule!r}"
+    )
+
+    assert prompt_fp == description_fp, (
+        "两条散文通道对 expected_solution 的说法不再相同:\n"
+        f"  prompts.py : {prompt_rule!r}\n"
+        f"  schemas.py : {description!r}"
+    )
+
+    # 上面的等式只管"这一段"。一段矛盾的话完全可以**另起一行**追加在别处,共享的那段
+    # 原样不动 —— 那样等式照样成立,而 Prompt 已经自相矛盾。判据里只有这两个取值名,
+    # 任何关于本字段的新规则几乎必然点到其中一个,所以要求它们**只出现在这一段里**,
+    # 把"另起一行"那条路一起堵上。(不点这两个名字的改写仍可能溜过,这是本守卫的已知边界。)
+    outside_the_rule = EXTRACT_SYSTEM_PROMPT.replace(prompt_rule, "")
+    for token in ("仅需解释", "未提及"):
+        assert token not in outside_the_rule, (
+            f"「{token}」出现在 expected_solution 判据段之外 —— 两条通道又在各说各话"
+        )
 
 
 def test_no_secret_looking_strings_in_prompts():
