@@ -1,0 +1,24 @@
+{"question": "订单 1001 的物流到哪了", "expected_tool": "query_logistics", "category": "订单物流商品"}
+{"question": "帮我查下订单 2002 现在什么状态", "expected_tool": "query_order", "category": "订单物流商品"}
+{"question": "包裹怎么还没到,单号 3003", "expected_tool": "query_logistics", "category": "订单物流商品"}
+{"question": "轻量跑鞋还有货吗", "expected_tool": "query_product", "category": "订单物流商品"}
+{"question": "订单 4004 是哪天下的", "expected_tool": "query_order", "category": "订单物流商品"}
+{"question": "降噪耳机多少钱", "expected_tool": "query_product", "category": "订单物流商品"}
+{"question": "退货政策是什么", "expected_tool": "query_faq", "category": "政策问答"}
+{"question": "保修期多久", "expected_tool": "query_faq", "category": "政策问答"}
+{"question": "怎么申请换货", "expected_tool": "query_faq", "category": "政策问答"}
+{"question": "支付失败怎么办", "expected_tool": "query_faq", "category": "政策问答"}
+{"question": "物流信息多久更新一次", "expected_tool": "query_faq", "category": "政策问答"}
+{"question": "邮费是多少", "expected_tool": "query_faq", "category": "同义词漏召回", "note": "调了但 0 行命中 —— 验收③"}
+{"question": "寄回去要多少钱", "expected_tool": "query_faq", "category": "同义词漏召回", "note": "同上,换个说法"}
+{"question": "我要投诉,转人工", "expected_tool": "create_ticket", "category": "转人工", "note": "type 预期为 投诉"}
+{"question": "商品有质量问题,帮我找人处理", "expected_tool": "create_ticket", "category": "转人工"}
+{"question": "你们客服能回电话吗,这个事说不清", "expected_tool": "create_ticket", "category": "转人工"}
+{"question": "这个问题拖了半个月了,我要找人理论", "expected_tool": "create_ticket", "category": "转人工"}
+{"question": "你好", "expected_tool": null, "category": "不该调工具"}
+{"question": "谢谢,没事了", "expected_tool": null, "category": "不该调工具"}
+{"question": "你们家发货挺快的,赞", "expected_tool": null, "category": "不该调工具"}
+{"question": "再见", "expected_tool": null, "category": "不该调工具"}
+{"question": "发票怎么开", "expected_tool": "query_faq", "category": "不该凭知识直答", "note": "模型知道答案,但必须查表"}
+{"question": "七天无理由是从哪天开始算的", "expected_tool": "query_faq", "category": "不该凭知识直答"}
+{"question": "你们支持信用卡吗", "expected_tool": "query_faq", "category": "不该凭知识直答"}
