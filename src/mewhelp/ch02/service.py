@@ -332,3 +332,63 @@ async def stream_agent_turn(
 
         persist_turn(session_factory, prepared, answer=answer)
         yield DoneEvent()
+
+
+@dataclass(frozen=True)
+class AgentTurnResult:
+    """一轮的完整结果 —— eval、脚本与单测的唯一数据源。"""
+
+    session_id: str
+    conversation_id: int
+    resumed: bool
+    answer: str
+    tool_calls: list[dict]
+    tool_results: list[ToolResult]
+
+
+async def run_agent_turn(
+    session_factory: SessionFactory,
+    *,
+    session_id: str | None,
+    user_id: str,
+    message: str,
+) -> AgentTurnResult:
+    """跑一轮,一次性返回完整轨迹 + 答案。
+
+    与 `stream_agent_turn` 共用 `_prepare_turn`,只在收敛那步不同:
+    这里用 `ainvoke` 拿完整文本,不逐 token 吐。存在的理由是**可观测** ——
+    `curl /ch02/agent` 一眼看到模型选了哪个工具,评估集也省掉解 SSE 的活。
+
+    生成 id 与加锁的理由与流式出口**逐条相同**(那个出口的 docstring 里有完整说明)
+    —— 两个出口必须成对地做这两件事,少一个就有一种调用方式不受保护。
+    """
+    resolved = session_id or uuid4().hex
+
+    async with store.lock(resolved):
+        prepared = await _prepare_turn(
+            session_factory, session_id=resolved, user_id=user_id, message=message
+        )
+
+        if prepared.ai.tool_calls:
+            # 收敛:同样**不 bind_tools**。单轮是两个出口共同的硬约束。
+            convergence_messages = [*prepared.messages, prepared.ai, *prepared.tool_messages]
+            ai = await get_chat_model().ainvoke(convergence_messages)
+            answer = ai.content if isinstance(ai.content, str) else str(ai.content)
+        else:
+            answer = prepared.ai.content if isinstance(prepared.ai.content, str) else ""
+
+        if not answer.strip():
+            raise EmptyCompletionError("模型没有产出任何内容,本轮按失败处理")
+
+        persist_turn(session_factory, prepared, answer=answer)
+
+        # return 在 `async with` **里面** —— 挪到外面就是锁外返回,而那正是
+        # "两个出口必须成对做这两件事"里最容易漏掉的一半。
+        return AgentTurnResult(
+            session_id=prepared.session_id,
+            conversation_id=prepared.conversation_id,
+            resumed=prepared.resumed,
+            answer=answer,
+            tool_calls=list(prepared.ai.tool_calls),
+            tool_results=list(prepared.tool_results),
+        )
