@@ -9,7 +9,7 @@
 """
 
 from dataclasses import dataclass
-from typing import Literal, Union
+from typing import Literal
 
 from mewhelp.tools.infra import ToolResult
 
@@ -46,7 +46,7 @@ class DoneEvent:
     finish_reason: str = "stop"
 
 
-AgentEvent = Union[SessionEvent, ToolEvent, TokenEvent, DoneEvent]
+AgentEvent = SessionEvent | ToolEvent | TokenEvent | DoneEvent
 
 
 def tool_event_from(result: ToolResult, *, phase: Literal["start", "end"]) -> ToolEvent:
