@@ -460,7 +460,13 @@ async function send(text) {
   // 发出去之前本地有没有会话 id —— 用来判断 session 帧的 resumed=false 该不该提示。
   // 首次发言时本地本来就没有，服务端新建一个，那不是"丢了历史"。
   const hadLocalSession = Boolean(sessionId);
-  // 工具名 → 徽章节点。start 时放进来，end 时取走 —— 一轮里同名工具只会出现一次。
+  // 工具名 → 这个工具名下**还没收尾**的徽章队列。用队列而不是单值：一轮里同一个工具
+  // 可以被调两次（「订单 1001 和 1002 的物流到哪了」→ 两个 query_logistics）。
+  // 按名字只存一个节点的话，第二个 start 会覆盖第一个，第一个徽章就永远转圈了。
+  //
+  // 先进先出凭什么对：服务端先按调用顺序发**全部** start，再按**同一个顺序**发全部 end
+  // （ch02/service.py 的 _prepare_turn_events，run_all 保序），所以同名的那几个 start
+  // 与 end 一一对应。这条顺序由 tests/test_ch02_service_stream.py 的两个用例钉住。
   const badges = new Map();
   let started = false;
   let gotAnything = false;
@@ -485,14 +491,19 @@ async function send(text) {
     name.textContent = '🔧 ' + (TOOL_LABEL[payload.name] || payload.name);
     el.append(spin, name);
     reply.tools.appendChild(el);
-    badges.set(payload.name, el);
+    const queue = badges.get(payload.name);
+    if (queue) queue.push(el);
+    else badges.set(payload.name, [el]);
     log.scrollTop = log.scrollHeight;
   };
 
   const finishBadge = (payload) => {
-    const el = badges.get(payload.name);
+    const queue = badges.get(payload.name);
+    // 先 start 的先收尾，与服务端发 end 的顺序一致
+    const el = queue && queue.length ? queue.shift() : null;
+    // 这个名字收完了就整个删掉（留个空数组在 Map 里没有意义）
+    if (queue && queue.length === 0) badges.delete(payload.name);
     if (!el) return;                 // 没收到 start(理论上不会):宁可不补，也不挂个孤儿徽章
-    badges.delete(payload.name);
     el.className = 'badge ' + (payload.ok ? 'done' : 'fail');
     const spin = el.querySelector('.spin');
     if (spin) spin.remove();

@@ -95,6 +95,35 @@ async def test_one_tool_frame_pair_per_call(session_factory, monkeypatch):
     assert [e.name for e in ends] == ["query_order", "query_logistics"]
 
 
+async def test_same_name_called_twice_keeps_start_and_end_in_step(
+    session_factory, monkeypatch
+):
+    """同一个工具在一轮里被调两次时,start 与 end 必须**一一对应**。
+
+    前端是按**名字**给徽章排队的:同名的那几个 start 进队,收到 end 就从头取一个
+    (见 `index.html` 的 `badges`)。它凭什么对 —— 全押在"先 start 的先收尾"这条
+    顺序上。顺序一破,页面会把**第一个调用的耗时标到第二个调用的徽章上**:
+    徽章照样收尾、照样有 ms,是一份**看起来正常的错数据**。
+
+    同名调用是真实问法:「订单 1001 和 1002 的物流到哪了」。
+    """
+    patch_model(monkeypatch, FakeToolChatModel(rounds=[
+        tool_call_chunks("query_logistics", '{"order_id": "1001"}', call_id="c1", index=0)
+        + tool_call_chunks("query_logistics", '{"order_id": "1002"}', call_id="c2", index=1),
+        text_chunks("两个都在路上。"),
+    ]))
+    events = await collect(
+        session_factory=session_factory, session_id="s1", user_id="u1",
+        message="订单 1001 和 1002 的物流到哪了",
+    )
+
+    starts = [e for e in events if isinstance(e, ToolEvent) and e.phase == "start"]
+    ends = [e for e in events if isinstance(e, ToolEvent) and e.phase == "end"]
+    assert [e.name for e in starts] == ["query_logistics", "query_logistics"]
+    # 名字分不出这两个调用 —— 能分出的是 args,所以断言落在 args 上
+    assert [e.args for e in starts] == [e.args for e in ends]
+
+
 async def test_convergence_does_not_bind_tools(session_factory, monkeypatch):
     """收敛那一步**没有**绑定工具 —— 单轮的结构性保证(spec §11)。
 
@@ -282,6 +311,118 @@ async def test_the_second_turn_sees_the_first_turns_answer(session_factory, monk
 
     # [0] 是 system prompt,与契约无关,从 [1:] 起比;顺序敏感,错序也要红
     assert [m.content for m in seen[1][1:]] == ["第一问", "第一答", "第二问"]
+
+
+async def test_the_lock_covers_the_whole_tool_turn(session_factory, monkeypatch):
+    """锁罩住的是**整轮**,不只是读历史那一半 —— 上面那条用例证明不了这件事。
+
+    上面那条走的是**无工具**轮次:无工具时所有模型调用都发生在 `_prepare_turn`
+    里面,把锁收窄到只包 `_prepare_turn`,它照样绿。Focus #1 真正要防的那一段
+    —— 收敛与落库 —— 恰好在 `_prepare_turn` **外面**,只有**带工具**的轮次才碰得到。
+
+    这条不靠时序,靠**事件归属**:把锁的进出、两次模型调用、落库都记进同一条
+    时间线,再断言两个轮次各自成块、互不夹花。锁被收窄的话,第二轮会在第一轮
+    收敛之前就挤进来,块就散了。
+
+    刻意的对照:同一次运行里 `test_concurrent_turns_on_the_same_session_are_serialized`
+    仍然是绿的 —— 它守的是"锁生效了",这条守的是"锁罩得够长"。
+    """
+    import asyncio
+
+    from langchain_core.messages import ToolMessage
+
+    from mewhelp.ch02 import service as service_module
+
+    timeline: list[tuple[str, str]] = []
+
+    def user_text(messages) -> str:
+        return next(
+            (m.content for m in reversed(messages) if m.type == "human"), "?"
+        )
+
+    class ToolThenAnswer(FakeToolChatModel):
+        """按**消息内容**决定这一步干什么:见到 ToolMessage 就收敛,否则定工具。
+
+        不用 `rounds` 队列 —— 两个并发轮次共用队列时,消费顺序本身就在被测范围内,
+        一乱就分不清是"锁坏了"还是"剧本被吃串了"。自路由没这个问题。
+        """
+
+        async def _astream(self, messages, stop=None, run_manager=None, **kwargs):
+            from langchain_core.outputs import ChatGenerationChunk
+
+            tag = user_text(messages)
+            converging = any(isinstance(m, ToolMessage) for m in messages)
+            timeline.append((tag, "收敛" if converging else "定工具"))
+            await asyncio.sleep(0.02)
+            if converging:
+                for chunk in text_chunks(f"{tag} 的答复"):
+                    yield ChatGenerationChunk(message=chunk)
+            else:
+                for chunk in tool_call_chunks(
+                    "query_order", '{"order_id": "1001"}', call_id=f"c-{tag}", index=0
+                ):
+                    yield ChatGenerationChunk(message=chunk)
+
+    patch_model(monkeypatch, ToolThenAnswer())
+
+    real_persist = service_module.persist_turn
+
+    def recording_persist(factory, prepared, *, answer):
+        timeline.append((user_text(prepared.messages), "落库"))
+        return real_persist(factory, prepared, answer=answer)
+
+    monkeypatch.setattr(service_module, "persist_turn", recording_persist)
+
+    # 锁的进出也记进同一条时间线 —— 这样"某轮的事件落在另一轮的锁区间里"
+    # 就是一条可以直接断言的顺序事实,不依赖 sleep 的长短。
+    real_lock = service_module.store.lock
+
+    def recording_lock(session_id):
+        # 真正那把锁的上下文管理器只取**一次** —— 每调一次 `real_lock` 拿到的
+        # 是另一个对象,进出两次就会锁在两个不同的东西上,时序断言失去意义。
+        cm = real_lock(session_id)
+
+        class Locked:
+            async def __aenter__(self):
+                timeline.append(("<锁>", f"{session_id} 进"))
+                return await cm.__aenter__()
+
+            async def __aexit__(self, *exc):
+                timeline.append(("<锁>", f"{session_id} 出"))
+                return await cm.__aexit__(*exc)
+
+        return Locked()
+
+    monkeypatch.setattr(service_module.store, "lock", recording_lock)
+
+    # 用一个别的用例不会碰的 session_id:store 的锁是**按 id 缓存**的,复用别的用例
+    # 用过的 id 会拿到一把绑在别的事件循环上的旧锁,pytest-asyncio 下报
+    # "bound to a different event loop" —— 那与本条要验的顺序毫无关系。
+    await asyncio.gather(
+        collect(
+            session_factory=session_factory, session_id="lock-scope", user_id="u1", message="甲"
+        ),
+        collect(
+            session_factory=session_factory, session_id="lock-scope", user_id="u1", message="乙"
+        ),
+    )
+
+    # 每一轮自己的四件事,按发生顺序
+    assert [e for e in timeline if e[0] == "甲"] == [
+        ("甲", "定工具"), ("甲", "收敛"), ("甲", "落库")
+    ], timeline
+    assert [e for e in timeline if e[0] == "乙"] == [
+        ("乙", "定工具"), ("乙", "收敛"), ("乙", "落库")
+    ], timeline
+
+    # 把同一轮的事件压成块:锁罩整轮的话正好两块,收窄就散成四块
+    blocks: list[str] = []
+    for who, _what in timeline:
+        if who == "<锁>":
+            continue
+        if not blocks or blocks[-1] != who:
+            blocks.append(who)
+    assert blocks in (["甲", "乙"], ["乙", "甲"]), f"轮次夹花了:{timeline}"
 
 
 async def test_upstream_failure_propagates_to_the_api_layer(session_factory, monkeypatch):
