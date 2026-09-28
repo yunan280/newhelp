@@ -238,6 +238,16 @@ env PYTHONIOENCODING=utf-8 PYTHONUTF8=1 .venv/Scripts/python.exe -m pytest -m ev
 
 它只打印命中率、**不设门槛**。2026-09-28 三次实测:19/24、20/24、19/24。
 
+聊天页有个**不用浏览器**的冒烟脚本(要 Node,不在 pytest 套件里),改完 `index.html` 手动跑一次:
+
+```bash
+node tests/page-smoke.js src/mewhelp/static/index.html
+```
+
+它用最小 DOM 替身把 SSE 帧喂进页面的 `send()`,断言徽章、正文与等待动画的取舍。
+第 2 章收尾时抓出的"同名工具调两次 → 徽章配错结果"就是它拦下的 —— 那是个后端测试
+看不见的缺陷。
+
 ## 目录结构
 
 ```
