@@ -117,6 +117,120 @@ JSON
 
 三条命令都能这么改:把 `-d '{...}'` 换成 `--data-binary @-` 加 here-doc。
 
+## 验收演示(Ch02 · Function Calling 工具链)
+
+第 2 章给客服加上了**工具调用**:用户提问后由模型自己决定调哪个工具,工具结果回灌给模型,
+再收敛成答复。五个工具:`query_order` / `query_product` / `query_logistics`(内部造数,不连真实 API)、
+`query_faq`(查 `faq` 表)、`create_ticket`(写 `tickets` 表)。**单轮**:调一次工具就收敛,不做多轮 Agent Loop。
+
+### 0. 起依赖服务
+
+`faq` / `conversations` / `messages` / `tickets` 四张表在 MySQL 里,`query_faq` 和 `create_ticket` 要用。
+
+```bash
+# 本机 3306 常被 Windows 自带的 MySQL 服务占着 —— 先停掉它,再起容器
+powershell -Command "Stop-Service MySQL80"        # 需要管理员权限的终端
+docker compose up -d && docker compose ps
+
+# 建表 + 灌种子(faq 表里的问答条目)
+docker compose exec -T mysql mysql -uroot -p"$MYSQL_PASSWORD" mewhelp < sql/ch02-ddl.sql
+PYTHONIOENCODING=utf-8 PYTHONUTF8=1 .venv/Scripts/python.exe -m mewhelp.db.seed
+```
+
+### 1. 起服务
+
+```bash
+PYTHONIOENCODING=utf-8 PYTHONUTF8=1 .venv/Scripts/python.exe -m uvicorn mewhelp.main:app --reload
+```
+
+同样**必须在仓库根目录启动**(理由见 Ch01 一节)。
+
+### 2. 浏览器里看工具轨迹
+
+打开 <http://127.0.0.1:8000/>,逐条问:
+
+| 问 | 该看到 |
+| --- | --- |
+| 订单 1001 的物流到哪了 | 气泡上出现「🔧 查物流」徽章,收尾成 `✓ … ms`,答复基于工具返回的物流节点 |
+| 退货政策是什么 | 「🔧 查 FAQ」徽章,答复里是 `faq` 表里的 7 天无理由 |
+| 邮费是多少 | **徽章出现**(工具确实被调了),但答复是「没查到」 |
+| 降噪耳机多少钱 | 「🔧 查商品」徽章 |
+
+第 3 条是本章有意展示的**检索语义鸿沟**:`faq` 表里存的是「运费怎么计算」,
+用 `LIKE '%邮费%'` 查不到 —— 关键词检索对同义词无能为力,这正是第 3 章向量检索要解决的东西。
+
+> **实测提醒(2026-09-28):** 真机上第 3 条**未必**照上面这样演。三次实测里,模型都自己把
+> 「邮费」改写成了 `keyword="运费"` 再查,于是**命中了**。表侧的事实没变
+> (`find_faq(keyword="邮费")` 仍是 0 行,由 `tests/test_db_seed.py` 离线守着),
+> 变的是这条鸿沟**被模型在"选关键词"这一步自己填上了一半**。
+> 看到命中不要以为坏了 —— 看一下徽章里的参数,那才是这一轮真正发生的事。
+
+### 3. 程序化看工具轨迹(不解析 SSE)
+
+```bash
+curl -X POST http://127.0.0.1:8000/ch02/agent \
+  -H "Content-Type: application/json" \
+  --data-binary @- <<'JSON'
+{"session_id":"demo","message":"订单 1001 的物流到哪了"}
+JSON
+```
+
+返回 JSON,`tool_calls` 是模型选了哪些工具,`tool_results` 是每个工具的结果与耗时:
+
+```json
+{
+  "session_id": "demo",
+  "conversation_id": 1,
+  "resumed": false,
+  "answer": "订单 1001 已由顺丰发出,目前在中转场……",
+  "tool_calls": [{"name": "query_logistics", "args": {"order_id": "1001"}, "id": "call_..."}],
+  "tool_results": [{"name": "query_logistics", "ok": true, "content": "...", "elapsed_ms": 3, "attempts": 1}]
+}
+```
+
+上游出错或模型没产出内容一律 **502**(`detail` 里的文字区分是哪一种)，重发即可重试。
+
+> 中文 body 与 Ch01 一样传不进本机 Git Bash,这里已经用 `--data-binary @-` + here-doc 的写法。
+> PowerShell 版见下。
+
+### PowerShell 版
+
+PowerShell 里 `curl` 是 `Invoke-WebRequest` 的别名,单引号 JSON 会失败。用 `curl.exe` +
+here-string(`@'…'@` 的收尾 `'@` 必须顶格):
+
+```powershell
+$env:PYTHONIOENCODING = "utf-8"; $env:PYTHONUTF8 = "1"
+.venv\Scripts\python.exe -m uvicorn mewhelp.main:app --reload
+```
+
+```powershell
+curl.exe -X POST http://127.0.0.1:8000/ch02/agent `
+  -H "Content-Type: application/json" `
+  --data-binary "@body.json"
+```
+
+here-string 直接管道给 `curl.exe` 在 PowerShell 5.1 下会带上 BOM 和 CRLF,服务端照样 400 ——
+**先写成 UTF-8 文件再 `--data-binary "@body.json"`**,这是本机唯一稳的写法。
+
+```powershell
+# 写文件时显式指定 utf8(Set-Content 默认走系统 ANSI 代码页,中文会坏)
+'{"session_id":"demo","message":"订单 1001 的物流到哪了"}' | Out-File -Encoding utf8 body.json
+```
+
+### 4. 跑测试
+
+```bash
+env PYTHONIOENCODING=utf-8 PYTHONUTF8=1 .venv/Scripts/python.exe -m pytest
+```
+
+工具选择的**质量数字**在标注集里(24 条),真调上游,默认不跑:
+
+```bash
+env PYTHONIOENCODING=utf-8 PYTHONUTF8=1 .venv/Scripts/python.exe -m pytest -m eval -s
+```
+
+它只打印命中率、**不设门槛**。2026-09-28 三次实测:19/24、20/24、19/24。
+
 ## 目录结构
 
 ```

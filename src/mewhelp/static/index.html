@@ -146,9 +146,39 @@
   .ai .bubble.err { color: var(--err); background: var(--err-bg); border-color: currentColor; }
   .ai .bubble.err::before { content: '⚠ '; }
 
+  /* 气泡里是**两个**节点:tools 专放工具徽章,text 专放正文。
+     分开是必须的 —— 正文是边流边 `+=` 上去的，而撤掉等待动画用的是
+     `textContent = ''`，那会把子节点一并抹掉；徽章挂在同一个节点上就会被抹没。
+     (徽章还可能**晚于首字**到达:turn1 的正文本来就是边流边吐的 —— 所以它是插在
+     正文之上的，绝不能反过来重置已经渲染的文本。) */
+  .bubble .tools { display: flex; flex-direction: column; gap: 6px; }
+  .bubble .tools:empty { display: none; }
+  .bubble .tools:not(:empty) { margin-bottom: 8px; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    align-self: flex-start;
+    padding: 3px 10px;
+    font-size: 12px; line-height: 1.6;
+    color: var(--brand-deep);
+    background: var(--brand-soft);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+  }
+  .badge .spin {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--brand);
+    animation: breath 1.2s ease-in-out infinite;
+  }
+  /* 跑完就降调，"已发生"不该抢正文的注意力;失败则升调 —— 那是用户要知道的。 */
+  .badge.done { color: var(--muted); background: var(--bg); }
+  .badge.fail { color: var(--err); background: var(--err-bg); border-color: currentColor; }
+
   /* 流式光标:靠 `::after` 加一个方块,不碰 textContent 里累积的正文。
-     `content` 只设静态值、动画只动 `opacity` —— 同 .dots 的理由,见下。 */
-  .bubble.streaming::after {
+     `content` 只设静态值、动画只动 `opacity` —— 同 .dots 的理由,见下。
+     挂在 .text 上而不是 .bubble 上:气泡里现在多了 tools 那一层，`.bubble` 的
+     `::after` 会落到整个气泡块的末尾(也就是徽章下面)，光标就跑错位置了。 */
+  .bubble .text.streaming::after {
     content: '';
     display: inline-block;
     width: 2px; height: 1em;
@@ -179,8 +209,8 @@
     50%      { opacity: 1;   transform: translateY(-2px); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .dots i, .bubble.streaming::after, .bubble { animation: none; }
-    .dots i { opacity: .6; }
+    .dots i, .bubble .text.streaming::after, .badge .spin, .bubble { animation: none; }
+    .dots i, .badge .spin { opacity: .6; }
   }
 
   .hint {
@@ -282,13 +312,14 @@
 
 <div id="log"><div class="hint">
   你好~ 我是 MewHelp 的智能客服。发货、售后、退换货都可以问我。<br>
-  <span style="font-size:12px">第 1 章 · 纯对话演示</span>
+  <span style="font-size:12px">第 2 章 · 工具调用演示（气泡上的徽章就是这次调的工具）</span>
 </div></div>
 
 <div id="chips">
-  <button type="button" data-q="我的快递到哪了?">我的快递到哪了?</button>
-  <button type="button" data-q="我想退货,鞋码买大了">我想退货,鞋码买大了</button>
-  <button type="button" data-q="我要改收货地址">我要改收货地址</button>
+  <button type="button" data-q="订单 1001 的物流到哪了">订单 1001 的物流到哪了</button>
+  <button type="button" data-q="退货政策是什么">退货政策是什么</button>
+  <button type="button" data-q="邮费是多少">邮费是多少</button>
+  <button type="button" data-q="降噪耳机多少钱">降噪耳机多少钱</button>
 </div>
 
 <form id="f">
@@ -324,6 +355,29 @@ function storeSessionId(id) {
 
 let sessionId = readStoredSessionId();
 
+// user_id 存 localStorage，和 session_id 的存储分开 —— 两者生命周期不同:
+// 会话是"关掉标签页就换一个"，而用户身份要跨会话稳定(工单的归属人就是它)。
+// 同样接住异常(隐私模式、站点数据被阻止时访问是**抛异常**)，
+// 拿不到就退回一个固定的匿名标识 —— 服务端还有兜底默认值。
+const USER_KEY = 'mewhelp_user_id';
+
+function readOrCreateUserId() {
+  try {
+    const kept = localStorage.getItem(USER_KEY);
+    if (kept) return kept;
+    const fresh = 'web-' + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem(USER_KEY, fresh);
+    return fresh;
+  } catch (e) {
+    return 'web-anon';
+  }
+}
+
+const userId = readOrCreateUserId();
+
+// 返回气泡的三个把手:整体、徽章容器、正文容器。
+// AI 气泡的两者必须分开(理由见 CSS 里 `.bubble .tools` 那段);用户气泡没有徽章，
+// 两个把手都指向气泡本身，调用方因此不必分支。
 function bubble(who, text) {
   const row = document.createElement('div');
   row.className = 'wrap';
@@ -336,13 +390,32 @@ function bubble(who, text) {
 
   const b = document.createElement('div');
   b.className = 'bubble';
-  b.textContent = text;
+
+  let tools = b;
+  let body = b;
+  if (who === 'ai') {
+    tools = document.createElement('div');
+    tools.className = 'tools';
+    body = document.createElement('div');
+    body.className = 'text';
+    b.append(tools, body);
+  }
+  body.textContent = text;
 
   inner.append(avatar, b);
   row.appendChild(inner);
   log.appendChild(row);
   log.scrollTop = log.scrollHeight;
-  return b;
+  return { bubble: b, tools, text: body };
+}
+
+// 系统提示行(会话丢失之类)。刻意不做成消息气泡 —— 它不是对话的一方说的话。
+function note(text) {
+  const el = document.createElement('div');
+  el.className = 'hint';
+  el.textContent = text;
+  log.appendChild(el);
+  log.scrollTop = log.scrollHeight;
 }
 
 // SSE 一个事件一个块,块之间空行分隔;行尾可能是 \n 也可能是 \r\n。
@@ -362,6 +435,16 @@ function parseBlock(block) {
 
 const ERROR_LABEL = { empty_completion: '模型没答上来', upstream_error: '上游出错' };
 
+// 工具名 → 人话。没列到的直接显示原名:多一个新工具时页面不会瞎猜一个中文名。
+// (服务端的工具名是英文契约，这个映射是纯粹的展示层。)
+const TOOL_LABEL = {
+  query_order: '查订单',
+  query_product: '查商品',
+  query_logistics: '查物流',
+  query_faq: '查 FAQ',
+  create_ticket: '建工单',
+};
+
 // 三个点必须是真 DOM 节点,不能靠 CSS 的 `content` 逐帧变 —— 理由见上面 .dots 的注释。
 function makeDots() {
   const d = document.createElement('span');
@@ -373,7 +456,12 @@ function makeDots() {
 async function send(text) {
   bubble('me', text);
   const reply = bubble('ai', '');
-  reply.appendChild(makeDots());
+  reply.text.appendChild(makeDots());
+  // 发出去之前本地有没有会话 id —— 用来判断 session 帧的 resumed=false 该不该提示。
+  // 首次发言时本地本来就没有，服务端新建一个，那不是"丢了历史"。
+  const hadLocalSession = Boolean(sessionId);
+  // 工具名 → 徽章节点。start 时放进来，end 时取走 —— 一轮里同名工具只会出现一次。
+  const badges = new Map();
   let started = false;
   let gotAnything = false;
 
@@ -382,8 +470,38 @@ async function send(text) {
   const start = () => {
     if (started) return;
     started = true;
-    reply.textContent = '';            // 设置 textContent 会把子节点(那三个点)一并移除
-    reply.classList.add('streaming');
+    reply.text.textContent = '';       // 设置 textContent 会把子节点(那三个点)一并移除
+    reply.text.classList.add('streaming');
+  };
+
+  // 工具跑的这段时间里正文区**保留**那三个点:撤掉的话那一两秒就是个空气泡,
+  // 看着像卡住 —— 而这段时间恰恰是本页最需要"看得见在动"的一段。
+  const startBadge = (payload) => {
+    const el = document.createElement('span');
+    el.className = 'badge';
+    const spin = document.createElement('span');
+    spin.className = 'spin';
+    const name = document.createElement('span');
+    name.textContent = '🔧 ' + (TOOL_LABEL[payload.name] || payload.name);
+    el.append(spin, name);
+    reply.tools.appendChild(el);
+    badges.set(payload.name, el);
+    log.scrollTop = log.scrollHeight;
+  };
+
+  const finishBadge = (payload) => {
+    const el = badges.get(payload.name);
+    if (!el) return;                 // 没收到 start(理论上不会):宁可不补，也不挂个孤儿徽章
+    badges.delete(payload.name);
+    el.className = 'badge ' + (payload.ok ? 'done' : 'fail');
+    const spin = el.querySelector('.spin');
+    if (spin) spin.remove();
+    const tail = document.createElement('span');
+    tail.textContent = payload.ok
+      ? '✓ ' + Math.round(payload.elapsed_ms) + ' ms'
+      : '✗ ' + (payload.error || '失败');
+    el.appendChild(tail);
+    log.scrollTop = log.scrollHeight;
   };
 
   const handle = ({ event, data }) => {
@@ -398,26 +516,35 @@ async function send(text) {
     if (event === 'session') {
       sessionId = payload.session_id;
       storeSessionId(sessionId);
+      if (hadLocalSession && payload.resumed === false) {
+        note('服务端没有这段会话的记录，下面是一段新对话。');
+      }
+    } else if (event === 'tool') {
+      // 不碰正文、也不撤等待动画 —— 见 startBadge 上面的注释。
+      if (payload.phase === 'end') finishBadge(payload);
+      else startBadge(payload);
     } else if (event === 'token') {
       if (!started) start();
-      reply.textContent += payload.text;
+      reply.text.textContent += payload.text;
       gotAnything = true;
       log.scrollTop = log.scrollHeight;
     } else if (event === 'error') {
       // 服务端契约:这一轮**没有**写进会话历史,重发同一条消息即可重试,不用换会话。
       if (!started) start();
-      reply.classList.remove('streaming');
-      reply.classList.add('err');
-      reply.textContent += (gotAnything ? '\n\n' : '')
+      reply.text.classList.remove('streaming');
+      reply.bubble.classList.add('err');
+      reply.text.textContent += (gotAnything ? '\n\n' : '')
         + '[' + (ERROR_LABEL[payload.code] || '出错') + '] ' + payload.message;
     }
   };
 
   try {
-    const resp = await fetch('/ch01/chat/stream', {
+    const resp = await fetch('/ch02/chat/stream', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session_id: sessionId, message: text }),
+      // session_id 可能是 null —— **不能**把它换成空串:服务端那条"空白一律 422"的
+      // 规则对空串同样生效。null 表示"我还没有会话"，服务端会发一个新的。
+      body: JSON.stringify({ session_id: sessionId, user_id: userId, message: text }),
     });
 
     if (!resp.ok) {
@@ -427,9 +554,9 @@ async function send(text) {
         const body = await resp.json();
         if (body.detail) detail = JSON.stringify(body.detail);
       } catch (e) { /* 不是 JSON 就退回状态码 */ }
-      reply.classList.remove('streaming');
-      reply.classList.add('err');
-      reply.textContent = '[请求被拒] ' + detail;
+      reply.text.classList.remove('streaming');
+      reply.bubble.classList.add('err');
+      reply.text.textContent = '[请求被拒] ' + detail;
       return;
     }
 
@@ -455,12 +582,13 @@ async function send(text) {
     if (carry.trim()) handle(parseBlock(carry));   // 最后一块可能没有结尾空行
   } catch (err) {
     // 响应头都没拿到(服务没起、断网),或读流中途断开。这一轮没写进历史,重发即可。
-    reply.classList.remove('streaming');
-    reply.classList.add('err');
-    reply.textContent += (gotAnything ? '\n\n' : '') + '[连接中断] ' + err.message;
+    reply.text.classList.remove('streaming');
+    reply.bubble.classList.add('err');
+    reply.text.textContent += (gotAnything ? '\n\n' : '') + '[连接中断] ' + err.message;
   } finally {
-    reply.classList.remove('streaming');
-    if (!reply.textContent) reply.textContent = '[空回复]';
+    reply.text.classList.remove('streaming');
+    // 判空只看正文 —— 徽章不算答复。工具调了但一个字没吐，仍然是"空回复"。
+    if (!reply.text.textContent) reply.text.textContent = '[空回复]';
   }
 }
 
