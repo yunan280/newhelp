@@ -7,11 +7,13 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from mewhelp.ch01.api import router as ch01_router
+from mewhelp.ch02.api import router as ch02_router
 
 STATIC_DIR = Path(__file__).parent / "static"
 
 app = FastAPI(title="MewHelp", version="0.1.0")
 app.include_router(ch01_router)
+app.include_router(ch02_router)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
