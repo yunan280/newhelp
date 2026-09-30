@@ -7,19 +7,25 @@ from pathlib import Path
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="知识库建库、回填与检索任务")
-    parser.add_argument("command", choices=["init-db", "ingest", "sync", "mine", "search", "status", "reindex", "audit-index", "check-query"])
+    parser.add_argument("command", choices=["init-db", "ingest", "sync", "mine", "search", "status", "reindex", "audit-index", "check-query", "check-answer"])
     parser.add_argument("--docs", type=Path, default=Path("knowledge-docs"))
     parser.add_argument("--question", default="邮费是多少")
     parser.add_argument("--collection", default=None)
     parser.add_argument("--samples", type=Path, default=Path("eval/ch04/query-understanding-samples.jsonl"))
     args = parser.parse_args(argv)
 
-    if args.command == "check-query":
+    if args.command in ("check-query", "check-answer"):
         import asyncio
 
-        from .query import check_query_samples
+        if args.command == "check-query":
+            from .query import check_query_samples
 
-        raise SystemExit(bool(asyncio.run(check_query_samples(args.samples))))
+            failed = asyncio.run(check_query_samples(args.samples))
+        else:
+            from .answering import check_answer_samples
+
+            failed = asyncio.run(check_answer_samples(args.samples))
+        raise SystemExit(bool(failed))
 
     from mewhelp.db.engine import SessionFactory
 
