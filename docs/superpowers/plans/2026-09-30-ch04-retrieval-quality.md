@@ -8,7 +8,7 @@
 
 **Tech Stack:** 已有 FastAPI / SQLAlchemy / MySQL / LangChain；PyMilvus 2.6.x 与 Milvus 原生 BM25；BGE-M3；BAAI/bge-reranker-v2-m3；原生 HTML/CSS/JavaScript。
 
-**Spec:** [2026-09-30-ch04-retrieval-quality-design.md](../specs/2026-09-30-ch04-retrieval-quality-design.md)，用户已答复「已确认」。本计划状态：待用户评审及执行方式选择。
+**Spec:** [2026-09-30-ch04-retrieval-quality-design.md](../specs/2026-09-30-ch04-retrieval-quality-design.md)，用户已答复「已确认」。本计划已获用户评审通过；用户选择「用Native」，在本会话执行。
 
 ## Global Constraints
 

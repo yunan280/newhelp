@@ -51,6 +51,7 @@ class TurnMessage:
     content: str | None = None
     tool_calls: list[dict[str, Any]] | None = None
     tool_call_id: str | None = None
+    citations: list[dict] | None = None
 
 
 # ---------- 会话身份 ----------
@@ -109,6 +110,7 @@ def append_messages(
                 content=row.content,
                 tool_calls=row.tool_calls,
                 tool_call_id=row.tool_call_id,
+                citations=row.citations,
             )
         )
 
@@ -135,9 +137,7 @@ def load_replay_messages(session: Session, *, conversation_id: int) -> list[Mess
     )
     keep: list[Message] = []
     for row in rows:
-        if row.role is MsgRole.user:
-            keep.append(row)
-        elif (
+        if row.role is MsgRole.user or (
             row.role is MsgRole.assistant
             and row.tool_calls is None
             and (row.content or "").strip()

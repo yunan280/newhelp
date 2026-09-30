@@ -1,7 +1,5 @@
-"""四张表的 ORM 映射 —— SQLite 内存库,不需要 Docker。"""
+"""ORM 映射 —— SQLite 内存库,不需要 Docker。"""
 
-import datetime as dt
-import enum
 
 import pytest
 from sqlalchemy import create_engine, select
@@ -10,7 +8,6 @@ from sqlalchemy.orm import Session
 
 from mewhelp.db.base import Base
 from mewhelp.db.models import (
-    BIGINT_PK,
     Conversation,
     ConvStatus,
     Faq,
@@ -20,6 +17,8 @@ from mewhelp.db.models import (
     TicketStatus,
     TicketType,
 )
+from mewhelp.knowledge import store as knowledge_store  # noqa: F401 — 注册 ch03 表到 Base
+from mewhelp.knowledge.refusals import LowConfidenceQuestion  # noqa: F401
 
 
 @pytest.fixture
@@ -43,6 +42,9 @@ def test_tables_are_created(engine):
         "messages",
         "faq",
         "tickets",
+        "knowledge_chunks",
+        "qa_extraction_staging",
+        "low_confidence_questions",
     }
 
 

@@ -128,6 +128,7 @@ class Message(Base):
     content: Mapped[str | None] = mapped_column(Text, nullable=True)
     tool_calls: Mapped[list | None] = mapped_column(JSON_COLUMN, nullable=True)
     tool_call_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    citations: Mapped[list[dict] | None] = mapped_column(JSON_COLUMN, nullable=True)
     created_at: Mapped[dt.datetime] = mapped_column(
         DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP")
     )
