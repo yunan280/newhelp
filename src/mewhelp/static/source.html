@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>知识来源 · MewHelp</title>
+<style>
+  :root { color-scheme: light dark; --bg:#fff8f3; --panel:#fff; --text:#3d2b1f; --muted:#9a8375; --line:#f2e3d8; --brand:#e8551f; }
+  @media (prefers-color-scheme:dark) { :root { --bg:#1a1310; --panel:#241a15; --text:#f5eae2; --muted:#b39b8c; --line:#4d382d; --brand:#ff7a45; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.7 "Segoe UI","Microsoft YaHei",sans-serif; }
+  main { max-width:900px; margin:24px auto; padding:24px; background:var(--panel); border:1px solid var(--line); border-radius:18px; }
+  h1 { font-size:22px; margin:0 0 14px; } h2 { font-size:18px; }
+  .meta { color:var(--muted); font-size:13px; overflow-wrap:anywhere; }
+  pre { font:inherit; white-space:pre-wrap; overflow-wrap:anywhere; padding:16px; background:var(--bg); border-radius:12px; }
+  a { color:var(--brand); } #status { padding:10px 0; } .target { border-left:4px solid var(--brand); padding-left:12px; scroll-margin-top:20px; background:var(--bg); }
+  #document section { padding:4px 12px; } #document section pre { padding:4px 0; background:transparent; }
+  @media(max-width:600px) { main { margin:10px; padding:16px; } }
+</style>
+</head>
+<body>
+<main>
+  <a href="/">← 回到客服聊天</a>
+  <h1>知识来源</h1>
+  <div id="status" role="status">正在读取原文…</div>
+  <article id="chunk" hidden>
+    <div id="path" class="meta"></div><p id="meta" class="meta"></p>
+    <h2 id="question"></h2><pre id="answer"></pre>
+  </article>
+  <article id="document" hidden>
+    <h2 id="filename"></h2><p id="location" class="meta"></p>
+    <div id="sections"></div>
+  </article>
+</main>
+<script>
+const status = document.getElementById('status');
+const match = location.pathname.match(/^\/kb\/source\/([1-9][0-9]{0,18})$/);
+const id = match?.[1]; // BIGINT 始终是字符串。
+
+function renderDocument(documentSource) {
+  document.getElementById('document').hidden = false;
+  document.getElementById('filename').textContent = documentSource.filename;
+  const sectionPath = documentSource.section_path.includes('::')
+    ? documentSource.section_path.split('::').slice(1).join('::') : documentSource.section_path;
+  document.getElementById('location').textContent = '目标章节：' + sectionPath;
+  const targetParts = sectionPath.split('/').map(part => part.trim()).filter(Boolean);
+  const targetTitle = targetParts[targetParts.length - 1];
+  const stack = [], container = document.getElementById('sections');
+  let current = document.createElement('section');
+  let body = document.createElement('pre'); current.append(body); container.append(current);
+  let target = null, fenced = false;
+  for (const line of documentSource.markdown.split(/\r?\n/)) {
+    if (/^\s*(```|~~~)/.test(line)) fenced = !fenced;
+    const heading = !fenced && line.match(/^(#{1,6})\s+(.+?)\s*#*$/);
+    if (heading) {
+      const level = heading[1].length, title = heading[2].trim();
+      stack.length = level - 1; stack.push(title);
+      current = document.createElement('section');
+      const h = document.createElement('h' + Math.min(level + 1, 6)); h.textContent = title;
+      body = document.createElement('pre'); current.append(h, body); container.append(current);
+      if (!target && (stack.filter(Boolean).join(' / ') === targetParts.join(' / ')
+        || (targetParts.length === 1 && title === targetTitle))) {
+        target = current; current.classList.add('target');
+      }
+    } else body.append(document.createTextNode(line + '\n'));
+  }
+  if (target) target.scrollIntoView({block:'start'});
+  else document.getElementById('location').textContent += '（章节已变化，展示完整文档供查阅）';
+}
+
+async function loadSource() {
+  if (!id) { status.textContent = '来源地址无效。'; return; }
+  try {
+    const response = await fetch('/api/kb/chunks/' + encodeURIComponent(id));
+    if (response.status === 404) { status.textContent = '来源不存在、已删除或尚未发布。'; return; }
+    if (!response.ok) throw new Error('原文读取失败');
+    const source = await response.json();
+    if (source.chunk_id !== id) throw new Error('来源编号不一致');
+    document.getElementById('chunk').hidden = false;
+    document.getElementById('path').textContent = source.section_path;
+    document.getElementById('meta').textContent = [source.category, source.product_category, '来源 ID：' + id].filter(Boolean).join(' · ');
+    document.getElementById('question').textContent = source.questions;
+    document.getElementById('answer').textContent = source.answer;
+    const snapshot = new URLSearchParams(location.search).get('snapshot');
+    status.textContent = snapshot && snapshot !== source.content_hash
+      ? '当前内容已更新。此页展示当前原文，回答使用的历史快照请返回聊天查看。' : '已加载当前知识原文。';
+    try {
+      const docResponse = await fetch('/api/kb/chunks/' + encodeURIComponent(id) + '/document');
+      if (docResponse.status === 404) return;
+      if (!docResponse.ok) throw new Error('文档读取失败');
+      renderDocument(await docResponse.json());
+    } catch (e) { status.textContent += ' 完整文档暂时无法读取，知识原文仍可查阅。'; }
+  } catch (e) { status.textContent = '来源读取失败，请稍后重试。'; }
+}
+loadSource();
+</script>
+</body>
+</html>

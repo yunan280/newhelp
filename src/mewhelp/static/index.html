@@ -145,6 +145,33 @@
   }
   .ai .bubble.err { color: var(--err); background: var(--err-bg); border-color: currentColor; }
   .ai .bubble.err::before { content: '⚠ '; }
+  .citation {
+    display: inline; padding: 0 3px; margin: 0 1px; font: inherit;
+    font-size: .9em; color: var(--brand-deep); background: var(--brand-soft);
+    border: 0; border-radius: 4px; cursor: pointer;
+  }
+  .citation:hover { text-decoration: underline; }
+  .feedback { display: flex; align-items: center; gap: 6px; margin-top: 10px; white-space: normal; }
+  .feedback button {
+    padding: 3px 8px; font: inherit; background: transparent; border: 1px solid transparent;
+    border-radius: 7px; cursor: pointer; filter: grayscale(1); opacity: .55;
+  }
+  .feedback button:hover:not(:disabled) { background: var(--brand-soft); opacity: 1; }
+  .feedback button.selected { filter: none; opacity: 1; background: var(--brand-soft); border-color: var(--brand); }
+  .feedback button:disabled { cursor: default; }
+  .feedback .status { color: var(--muted); font-size: 12px; }
+  dialog {
+    width: min(620px, calc(100vw - 28px)); max-height: 85vh; padding: 22px;
+    color: var(--text); background: var(--panel); border: 1px solid var(--line-strong);
+    border-radius: 18px; box-shadow: var(--shadow); overflow: auto;
+  }
+  dialog::backdrop { background: rgba(30, 20, 14, .45); }
+  dialog h2 { margin: 0 0 12px; font-size: 18px; }
+  dialog .close { float: right; padding: 4px 10px; font: inherit; color: var(--muted); background: transparent; border: 0; cursor: pointer; }
+  dialog .path, dialog .meta { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+  dialog pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; padding: 14px; background: var(--bg); border-radius: 10px; }
+  dialog a { color: var(--brand-deep); }
+  #source-status { font-size: 13px; margin: 12px 0; }
 
   /* 气泡里是**两个**节点:tools 专放工具徽章,text 专放正文。
      分开是必须的 —— 正文是边流边 `+=` 上去的，而撤掉等待动画用的是
@@ -312,7 +339,7 @@
 
 <div id="log"><div class="hint">
   你好~ 我是 MewHelp 的智能客服。发货、售后、退换货都可以问我。<br>
-  <span style="font-size:12px">第 2 章 · 工具调用演示（气泡上的徽章就是这次调的工具）</span>
+  <span style="font-size:12px">回答里的引用可查看依据，也欢迎留下满意度反馈。</span>
 </div></div>
 
 <div id="chips">
@@ -326,6 +353,17 @@
   <input id="q" autocomplete="off" placeholder="说点什么…" autofocus>
   <button id="send" type="submit">发送</button>
 </form>
+
+<dialog id="source-dialog" aria-labelledby="source-title">
+  <button class="close" id="source-close" type="button" aria-label="关闭来源">✕</button>
+  <h2 id="source-title">回答依据</h2>
+  <div id="source-path" class="path"></div>
+  <p id="source-meta" class="meta"></p>
+  <h3 id="source-question"></h3>
+  <pre id="source-answer"></pre>
+  <div id="source-status" role="status"></div>
+  <a id="source-link" target="_blank" rel="noopener">查看当前原文与章节 ↗</a>
+</dialog>
 
 <script>
 const log = document.getElementById('log');
@@ -374,6 +412,122 @@ function readOrCreateUserId() {
 }
 
 const userId = readOrCreateUserId();
+
+const HISTORY_KEY = 'mewhelp_ch04_history:' + userId;
+const FEEDBACK_KEY = 'mewhelp_ch04_feedback';
+let history = [];
+
+function freshAnswerId() {
+  return typeof crypto.randomUUID === 'function' ? crypto.randomUUID()
+    : 'answer-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
+}
+
+function saveHistory() {
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify({session_id: sessionId, messages: history.slice(-200)})); }
+  catch (e) { /* 存储不可用时，当前页面仍可聊天和锁定反馈。 */ }
+}
+
+function normalizeSources(sources) {
+  if (!Array.isArray(sources)) return [];
+  const seen = new Set();
+  return sources.filter(source => {
+    if (!source || !Number.isSafeInteger(source.number) || source.number < 1 || seen.has(source.number)
+      || typeof source.chunk_id !== 'string' || !/^[1-9][0-9]{0,18}$/.test(source.chunk_id)
+      || typeof source.answer !== 'string' || typeof source.questions !== 'string'
+      || typeof source.section_path !== 'string') return false;
+    seen.add(source.number);
+    return true;
+  });
+}
+
+const sourceDialog = document.getElementById('source-dialog');
+let sourceRequest = 0;
+document.getElementById('source-close').addEventListener('click', () => sourceDialog.close());
+sourceDialog.addEventListener('click', e => { if (e.target === sourceDialog) sourceDialog.close(); });
+
+async function openCitation(source) {
+  const request = ++sourceRequest;
+  document.getElementById('source-title').textContent = '回答依据 [' + source.number + ']';
+  document.getElementById('source-path').textContent = source.section_path;
+  document.getElementById('source-meta').textContent = [source.category, source.product_category,
+    '来源 ID：' + source.chunk_id].filter(Boolean).join(' · ');
+  document.getElementById('source-question').textContent = source.questions;
+  document.getElementById('source-answer').textContent = source.answer;
+  const status = document.getElementById('source-status');
+  status.textContent = '这里展示本次回答使用的原文快照。正在核对当前来源…';
+  document.getElementById('source-link').href = '/kb/source/' + encodeURIComponent(source.chunk_id)
+    + '?snapshot=' + encodeURIComponent(source.content_hash || '');
+  if (!sourceDialog.open) sourceDialog.showModal();
+  try {
+    const response = await fetch('/api/kb/chunks/' + encodeURIComponent(source.chunk_id));
+    if (request !== sourceRequest || !sourceDialog.open) return;
+    if (response.status === 404) { status.textContent = '当前来源已删除或尚未发布；本次回答的原文快照仍保留。'; return; }
+    if (!response.ok) throw new Error('读取失败');
+    const current = await response.json();
+    if (request !== sourceRequest || !sourceDialog.open) return;
+    status.textContent = current.content_hash !== source.content_hash
+      ? '当前内容已更新；这里仍展示本次回答的原文快照。可打开当前原文查看变化。'
+      : '本次回答的原文快照与当前来源一致。';
+  } catch (e) {
+    if (request === sourceRequest && sourceDialog.open) status.textContent = '暂时无法核对当前来源；这里展示本次回答的原文快照。';
+  }
+}
+
+function renderAnswer(body, text, sources) {
+  const map = new Map(normalizeSources(sources).map(source => [String(source.number), source]));
+  body.replaceChildren();
+  let offset = 0;
+  for (const match of text.matchAll(/\[([1-9][0-9]*)\]/g)) {
+    body.append(document.createTextNode(text.slice(offset, match.index)));
+    const source = map.get(match[1]);
+    if (source) {
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'citation'; button.textContent = match[0];
+      button.setAttribute('aria-label', '查看引用 ' + match[1]);
+      button.addEventListener('click', () => openCitation(source));
+      body.append(button);
+    } else body.append(document.createTextNode(match[0]));
+    offset = match.index + match[0].length;
+  }
+  body.append(document.createTextNode(text.slice(offset)));
+}
+
+function attachFeedback(reply, record) {
+  if (!record.complete || record.error || reply.bubble.querySelector('.feedback')) return;
+  const group = document.createElement('div');
+  group.className = 'feedback'; group.setAttribute('role', 'group'); group.setAttribute('aria-label', '回答满意度');
+  const status = document.createElement('span'); status.className = 'status'; status.setAttribute('role', 'status');
+  const buttons = ['up', 'down'].map(choice => {
+    const button = document.createElement('button');
+    button.type = 'button'; button.textContent = choice === 'up' ? '👍' : '👎';
+    button.setAttribute('aria-label', choice === 'up' ? '满意' : '不满意');
+    button.addEventListener('click', () => {
+      if (record.feedback) return;
+      record.feedback = {answer_id: record.answer_id, session_id: record.session_id || sessionId,
+        choice, created_at: new Date().toISOString()};
+      refresh(); // 先锁定，再尝试存储；存储失败也不能改选。
+      try {
+        const stored = JSON.parse(localStorage.getItem(FEEDBACK_KEY) || '[]');
+        const signals = Array.isArray(stored) ? stored : [];
+        signals.push(record.feedback);
+        localStorage.setItem(FEEDBACK_KEY, JSON.stringify(signals));
+      } catch (e) { /* 纯前端信号，当前页面锁定仍保留。 */ }
+      saveHistory();
+    });
+    group.append(button);
+    return button;
+  });
+  function refresh() {
+    buttons.forEach((button, i) => {
+      const selected = record.feedback && record.feedback.choice === (i === 0 ? 'up' : 'down');
+      button.disabled = Boolean(record.feedback);
+      button.classList.toggle('selected', Boolean(selected));
+      button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    });
+    status.textContent = record.feedback ? '已反馈' : '';
+  }
+  group.append(status); reply.bubble.append(group); refresh();
+}
 
 // 返回气泡的三个把手:整体、徽章容器、正文容器。
 // AI 气泡的两者必须分开(理由见 CSS 里 `.bubble .tools` 那段);用户气泡没有徽章，
@@ -455,6 +609,10 @@ function makeDots() {
 
 async function send(text) {
   bubble('me', text);
+  history.push({who: 'me', text, session_id: sessionId});
+  const record = {who: 'ai', text: '', sources: [], answer_id: freshAnswerId(),
+    session_id: sessionId, feedback: null, complete: false, error: false};
+  history.push(record);
   const reply = bubble('ai', '');
   reply.text.appendChild(makeDots());
   // 发出去之前本地有没有会话 id —— 用来判断 session 帧的 resumed=false 该不该提示。
@@ -470,6 +628,8 @@ async function send(text) {
   const badges = new Map();
   let started = false;
   let gotAnything = false;
+  let completed = false;
+  let failed = false;
 
   // 第一个 token 到达:撤掉等待动画、换上流式光标。
   // 早于第一个 token 挂光标会出现"三个点 + 光标"并存的怪相,所以放在这里。
@@ -527,6 +687,7 @@ async function send(text) {
     if (event === 'session') {
       sessionId = payload.session_id;
       storeSessionId(sessionId);
+      record.session_id = sessionId;
       if (hadLocalSession && payload.resumed === false) {
         note('服务端没有这段会话的记录，下面是一段新对话。');
       }
@@ -534,18 +695,28 @@ async function send(text) {
       // 不碰正文、也不撤等待动画 —— 见 startBadge 上面的注释。
       if (payload.phase === 'end') finishBadge(payload);
       else startBadge(payload);
+    } else if (event === 'sources') {
+      record.sources = normalizeSources(payload.sources);
+      record.refused = payload.refused === true;
+      if (record.text) renderAnswer(reply.text, record.text, record.sources);
     } else if (event === 'token') {
       if (!started) start();
-      reply.text.textContent += payload.text;
+      record.text += typeof payload.text === 'string' ? payload.text : '';
+      renderAnswer(reply.text, record.text, record.sources);
       gotAnything = true;
       log.scrollTop = log.scrollHeight;
     } else if (event === 'error') {
+      failed = true; record.error = true; record.complete = false;
       // 服务端契约:这一轮**没有**写进会话历史,重发同一条消息即可重试,不用换会话。
       if (!started) start();
       reply.text.classList.remove('streaming');
       reply.bubble.classList.add('err');
       reply.text.textContent += (gotAnything ? '\n\n' : '')
         + '[' + (ERROR_LABEL[payload.code] || '出错') + '] ' + payload.message;
+    } else if (event === 'done' && !failed && gotAnything && record.text.trim()) {
+      completed = true; record.complete = true;
+      attachFeedback(reply, record);
+      saveHistory();
     }
   };
 
@@ -559,6 +730,7 @@ async function send(text) {
     });
 
     if (!resp.ok) {
+      failed = true; record.error = true;
       // 参数不合法走的是普通 JSON 错误(422 + detail),不是 SSE —— 这层得单独接住。
       let detail = resp.status + ' ' + resp.statusText;
       try {
@@ -592,6 +764,8 @@ async function send(text) {
     carry += decoder.decode();
     if (carry.trim()) handle(parseBlock(carry));   // 最后一块可能没有结尾空行
   } catch (err) {
+    failed = true; record.error = true; record.complete = false;
+    reply.bubble.querySelector('.feedback')?.remove();
     // 响应头都没拿到(服务没起、断网),或读流中途断开。这一轮没写进历史,重发即可。
     reply.text.classList.remove('streaming');
     reply.bubble.classList.add('err');
@@ -600,6 +774,13 @@ async function send(text) {
     reply.text.classList.remove('streaming');
     // 判空只看正文 —— 徽章不算答复。工具调了但一个字没吐，仍然是"空回复"。
     if (!reply.text.textContent) reply.text.textContent = '[空回复]';
+    if (!completed && !failed && gotAnything) {
+      record.error = true;
+      reply.bubble.classList.add('err');
+      reply.text.append(document.createTextNode('\n\n[连接中断] 回复未完成，请重试。'));
+    }
+    if (record.error || !completed) record.text = reply.text.textContent;
+    saveHistory();
   }
 }
 
@@ -637,6 +818,27 @@ chipsEl.addEventListener('click', (e) => {
 });
 
 humanBtn.addEventListener('click', () => submit('我要转人工'));
+
+// 兼容旧历史缺少 sources / answer_id / feedback 字段。
+try {
+  const stored = JSON.parse(localStorage.getItem(HISTORY_KEY) || 'null');
+  const messages = Array.isArray(stored) ? stored : stored?.messages;
+  if (Array.isArray(messages) && (Array.isArray(stored) || stored.session_id === sessionId)) {
+    history = messages.filter(record => record && typeof record.text === 'string'
+      && ['me', 'ai'].includes(record.who)).map(record => ({...record,
+        sources: normalizeSources(record.sources), answer_id: record.answer_id || freshAnswerId(),
+        complete: record.complete === undefined ? !record.error : record.complete,
+        feedback: ['up', 'down'].includes(record.feedback?.choice) ? record.feedback : null}));
+    for (const record of history) {
+      const reply = bubble(record.who, record.text);
+      if (record.who === 'ai') {
+        renderAnswer(reply.text, record.text, record.sources);
+        if (record.error) reply.bubble.classList.add('err');
+        attachFeedback(reply, record);
+      }
+    }
+  }
+} catch (e) { /* 损坏/不可用的存储不影响当前页面。 */ }
 </script>
 </body>
 </html>
