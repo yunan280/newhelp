@@ -1,0 +1,10 @@
+{
+  "model_id": "BAAI/bge-reranker-v2-m3",
+  "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+  "model_type": "xlm-roberta",
+  "max_position_embeddings": 8194,
+  "pad_token_id": 1,
+  "tokenizer_model_max_length": 8192,
+  "max_length": 8192,
+  "pair_tokens": 24
+}
