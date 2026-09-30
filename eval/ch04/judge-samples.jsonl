@@ -1,0 +1,5 @@
+{"id":"supported","question":"HX-210蓝牙版本？","answer":"HX-210支持蓝牙5.2[1]。","evidence":["HX-210支持蓝牙5.2。"],"expected_score":1.0}
+{"id":"unsupported","question":"电池容量？","answer":"HX-210电池容量400mAh[1]。","evidence":["HX-210支持蓝牙5.2。"],"expected_score":0.0}
+{"id":"partially_supported","question":"规格？","answer":"HX-210支持蓝牙5.2[1]。HX-210电池容量400mAh[1]。","evidence":["HX-210支持蓝牙5.2。"],"expected_score":0.5}
+{"id":"wrong_condition","question":"可以退吗？","answer":"任何商品随时都能退货[1]。","evidence":["耳机未拆封且签收7天以内可申请无理由退货。"],"expected_score":0.0}
+{"id":"no_facts","question":"退款何时到账？","answer":"现有知识不足，无法确认，建议联系人工客服核实。","evidence":[],"expected_score":null}
