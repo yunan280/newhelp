@@ -1,0 +1,9 @@
+{
+  "scope": "online_existing_knowledge",
+  "base_url": "http://127.0.0.1:8000",
+  "started_at_utc": "2026-09-30T12:27:04.550564Z",
+  "records": [],
+  "passed": false,
+  "error": "AssertionError: known answer needs verified sources",
+  "completed_at_utc": "2026-09-30T12:27:16.923071+00:00"
+}

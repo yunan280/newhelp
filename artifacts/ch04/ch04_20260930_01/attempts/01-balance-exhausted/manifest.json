@@ -30,5 +30,5 @@
       "score_transform": "sigmoid"
     }
   },
-  "comparison_status": "complete"
+  "comparison_status": "completed_with_errors"
 }

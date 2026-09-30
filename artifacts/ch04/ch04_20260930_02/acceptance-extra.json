@@ -1,0 +1,363 @@
+{
+  "scope": "isolated_example_live_http",
+  "records": [
+    {
+      "case": {
+        "id": "negative_policy",
+        "question": "退款政策是否承诺具体到账时间？",
+        "filters": {},
+        "expected": "evidence-backed negative answer",
+        "basis": "冻结语料的退款条款与隔离跳转文档明确不承诺具体到账时间。"
+      },
+      "payload": {
+        "session_id": "fd6b1214c66d4f07abcda4bc35d5431b",
+        "conversation_id": 2,
+        "resumed": false,
+        "answer": "不承诺具体到账时间[1][2]。退款到账取决于支付渠道与处理状态[1]，且不保证退款审核通过[1][2]。",
+        "sources": [
+          {
+            "number": 1,
+            "chunk_id": "8726520542148684757",
+            "questions": "退款到账承诺边界",
+            "answer": "退款到账取决于支付渠道与处理状态；客服不承诺具体到账时间，也不保证退款审核通过。",
+            "section_path": "示例业务 / 通用 / 退款到账承诺边界",
+            "category": "退款",
+            "product_category": null,
+            "content_hash": "a398deef6a5ce68cf2abe4ed2b7e3c61a56c42b0ede0afbc4e26ba594512bc24",
+            "source_url": "/kb/source/8726520542148684757"
+          },
+          {
+            "number": 2,
+            "chunk_id": "388096528642092668",
+            "questions": "退款边界",
+            "answer": "退款到账取决于支付渠道；不承诺具体到账时间，不保证审批通过。",
+            "section_path": "corpus:dff2efef45e17684/policy-acceptance.md::验收示例文档 / 退款边界",
+            "category": "验收示例文档",
+            "product_category": null,
+            "content_hash": "48fc45673f5819c2d3b9259350ac2c871829fe898eec87e4b6860347cf818b1e",
+            "source_url": "/kb/source/388096528642092668"
+          },
+          {
+            "number": 3,
+            "chunk_id": "8886517135266059912",
+            "questions": "充电器无理由退货条件",
+            "answer": "充电器签收15天以内且包装完整可申请无理由退货；超过15天不适用无理由退货。",
+            "section_path": "示例业务 / 充电器 / 充电器无理由退货条件",
+            "category": "退换货",
+            "product_category": "充电器",
+            "content_hash": "84628968a5ebaff88db6c33157e2050a139a795aa0bab0ce70d3f4335c3e8d9c",
+            "source_url": "/kb/source/8886517135266059912"
+          },
+          {
+            "number": 4,
+            "chunk_id": "170309569868960708",
+            "questions": "耳机无理由退货条件",
+            "answer": "耳机签收7天以内且未拆封可申请无理由退货；已拆封不适用无理由退货。",
+            "section_path": "示例业务 / 耳机 / 耳机无理由退货条件",
+            "category": "退换货",
+            "product_category": "耳机",
+            "content_hash": "25394a4d38c3f76b5066a999a402a78255ca94efbbb68dc2df34ab6758b980cb",
+            "source_url": "/kb/source/170309569868960708"
+          },
+          {
+            "number": 5,
+            "chunk_id": "1964454034013061827",
+            "questions": "路由器无理由退货条件",
+            "answer": "路由器签收7天以内且包装完整可申请无理由退货；已有硬件损坏的不适用该规则。",
+            "section_path": "示例业务 / 路由器 / 路由器无理由退货条件",
+            "category": "退换货",
+            "product_category": "路由器",
+            "content_hash": "47e4b34b9515789bcd2158373b7ffc84515772204239b14db3e2ba188073dd4a",
+            "source_url": "/kb/source/1964454034013061827"
+          },
+          {
+            "number": 6,
+            "chunk_id": "8276196952920494508",
+            "questions": "鼠标无理由退货条件",
+            "answer": "鼠标签收7天以内且未拆封可申请无理由退货；缺少接收器或包装不完整的不适用。",
+            "section_path": "示例业务 / 鼠标 / 鼠标无理由退货条件",
+            "category": "退换货",
+            "product_category": "鼠标",
+            "content_hash": "54ad7a9e6e24ebca6cfc128fb1db6a76aabf3e8eae50aaebecd5879b2b712ba5",
+            "source_url": "/kb/source/8276196952920494508"
+          },
+          {
+            "number": 7,
+            "chunk_id": "8118120745982789586",
+            "questions": "吸尘器无理由退货条件",
+            "answer": "吸尘器签收7天以内且未使用可申请无理由退货；已使用或尘盒有污物的不适用。",
+            "section_path": "示例业务 / 吸尘器 / 吸尘器无理由退货条件",
+            "category": "退换货",
+            "product_category": "吸尘器",
+            "content_hash": "825cd2d95abdf76e1513af4bb2aad4e0dce442c47385c0458f7760ebe4e8cefb",
+            "source_url": "/kb/source/8118120745982789586"
+          },
+          {
+            "number": 8,
+            "chunk_id": "8664217779218293492",
+            "questions": "显示器坏点处理条件",
+            "answer": "显示器签收3天以内发现亮点，可提供点亮照片申请检测；检测确认质量问题后进入换货审核，不保证审批通过。",
+            "section_path": "示例业务 / 显示器 / 显示器坏点处理条件",
+            "category": "退换货",
+            "product_category": "显示器",
+            "content_hash": "84c038ec8009b49a15c8ad3fc8e9bece37d0a3a58101e271280cab25e6464db6",
+            "source_url": "/kb/source/8664217779218293492"
+          },
+          {
+            "number": 9,
+            "chunk_id": "1660065301341573748",
+            "questions": "耳机保修规则",
+            "answer": "耳机提供12个月有限保修，申请时须提供订单凭证；进水或人为损坏不在保修范围内。",
+            "section_path": "示例业务 / 耳机 / 耳机保修规则",
+            "category": "保修",
+            "product_category": "耳机",
+            "content_hash": "cf96fede1e84a52f1145cacd2ff2c128a0c26c712d9c67215e8d5721b2834bfd",
+            "source_url": "/kb/source/1660065301341573748"
+          },
+          {
+            "number": 10,
+            "chunk_id": "2378695459295241603",
+            "questions": "充电器保修规则",
+            "answer": "充电器提供24个月有限保修，申请时须提供订单凭证；私自拆修不在保修范围内。",
+            "section_path": "示例业务 / 充电器 / 充电器保修规则",
+            "category": "保修",
+            "product_category": "充电器",
+            "content_hash": "224c52d4d14268ad96befe32863d9f3b1551ec94ac1c5c637982c48f7098658f",
+            "source_url": "/kb/source/2378695459295241603"
+          }
+        ],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "tool_calls": [
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "退款政策是否承诺具体到账时间？"
+            },
+            "id": "9cbb95a94d9b4ef8ac1fc1889d05bbaa",
+            "type": "tool_call"
+          }
+        ],
+        "tool_results": [
+          {
+            "name": "query_faq",
+            "ok": true,
+            "content": "已复核 50 条候选证据",
+            "error": null,
+            "elapsed_ms": 20468,
+            "attempts": 1
+          }
+        ]
+      },
+      "pool": null
+    },
+    {
+      "case": {
+        "id": "missing_launch_date",
+        "question": "请确认 HX-210S 支持蓝牙5.3，并告诉我 HX-210S 的首发日期。",
+        "filters": {
+          "product_category": "耳机"
+        },
+        "expected": "refusal",
+        "basis": "冻结原文有 HX-210S 蓝牙5.3，没有该型号的首发日期；不能完整回答。"
+      },
+      "payload": {
+        "session_id": "3c290f84b3f94e88805b9cc327927bfd",
+        "conversation_id": 4,
+        "resumed": false,
+        "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。",
+        "sources": [],
+        "refused": true,
+        "low_confidence_question_id": "3",
+        "tool_calls": [
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "请确认 HX-210S 支持蓝牙5.3，并告诉我 HX-210S 的首发日期。"
+            },
+            "id": "4d210e65e4534dcc8044fb4ca3f2d0a4",
+            "type": "tool_call"
+          }
+        ],
+        "tool_results": [
+          {
+            "name": "query_faq",
+            "ok": true,
+            "content": "已复核 15 条候选证据",
+            "error": null,
+            "elapsed_ms": 12406,
+            "attempts": 1
+          }
+        ]
+      },
+      "pool": {
+        "id": "3",
+        "original_question": "请确认 HX-210S 支持蓝牙5.3，并告诉我 HX-210S 的首发日期。",
+        "conversation_id": "4",
+        "entry_point": "agent",
+        "stage": "generation",
+        "reason_code": "insufficient_evidence",
+        "reason": "证据[1]可确认HX-210S的蓝牙版本为蓝牙5.3，但全部证据中没有任何关于HX-210S首发日期（上市/发布/开售时间）的内容，缺少所问参数，无法完整回答。",
+        "created_at_utc": "2026-09-30T13:14:03.002944Z"
+      }
+    },
+    {
+      "case": {
+        "id": "missing_pps_range",
+        "question": "CX-65 的 USB-C 输出功率是多少？PPS 电压范围是什么？",
+        "filters": {
+          "product_category": "充电器"
+        },
+        "expected": "refusal",
+        "basis": "冻结原文有 USB-C 输出功率，无 PPS 输出电压范围；不能完整回答。"
+      },
+      "payload": {
+        "session_id": "0d7c04eb6a2948bab6b98859a6789166",
+        "conversation_id": 5,
+        "resumed": false,
+        "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。",
+        "sources": [],
+        "refused": true,
+        "low_confidence_question_id": "4",
+        "tool_calls": [
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "CX-65 的 USB-C 输出功率是多少？PPS 电压范围是什么？"
+            },
+            "id": "0cac394eb6244ce69a182fa6a38f9d8c",
+            "type": "tool_call"
+          }
+        ],
+        "tool_results": [
+          {
+            "name": "query_faq",
+            "ok": true,
+            "content": "已复核 15 条候选证据",
+            "error": null,
+            "elapsed_ms": 13625,
+            "attempts": 1
+          }
+        ]
+      },
+      "pool": {
+        "id": "4",
+        "original_question": "CX-65 的 USB-C 输出功率是多少？PPS 电压范围是什么？",
+        "conversation_id": "5",
+        "entry_point": "agent",
+        "stage": "generation",
+        "reason_code": "insufficient_evidence",
+        "reason": "证据可回答CX-65的USB-C单口输出功率为最高65W[1]，但PPS电压范围无任何证据：证据5仅说明CX-65不支持PPS，未给出PPS电压范围；证据8的PPS支持属于CX-65P，型号不同，不能替代。故无法完整回答全部条件。",
+        "created_at_utc": "2026-09-30T13:14:17.953240Z"
+      }
+    },
+    {
+      "case": {
+        "id": "missing_processor",
+        "question": "RX-300S 的无线标准是什么？它的处理器具体型号是什么？",
+        "filters": {
+          "product_category": "路由器"
+        },
+        "expected": "refusal",
+        "basis": "冻结原文有无线标准，无处理器型号；不能完整回答。"
+      },
+      "payload": {
+        "session_id": "fdae4ea878604abe8f006d9a091805c4",
+        "conversation_id": 6,
+        "resumed": false,
+        "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。",
+        "sources": [],
+        "refused": true,
+        "low_confidence_question_id": "5",
+        "tool_calls": [
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "RX-300S 的无线标准是什么？它的处理器具体型号是什么？"
+            },
+            "id": "c0a99c72bfbc4d78ad20d2a99c58b716",
+            "type": "tool_call"
+          }
+        ],
+        "tool_results": [
+          {
+            "name": "query_faq",
+            "ok": true,
+            "content": "已复核 14 条候选证据",
+            "error": null,
+            "elapsed_ms": 4938,
+            "attempts": 1
+          }
+        ]
+      },
+      "pool": {
+        "id": "5",
+        "original_question": "RX-300S 的无线标准是什么？它的处理器具体型号是什么？",
+        "conversation_id": "6",
+        "entry_point": "agent",
+        "stage": "generation",
+        "reason_code": "insufficient_evidence",
+        "reason": "证据[1]可回答RX-300S的无线标准为Wi-Fi6，但所有证据均未提供RX-300S的处理器具体型号，缺少所问参数，无法完整回答。",
+        "created_at_utc": "2026-09-30T13:14:23.809045Z"
+      }
+    },
+    {
+      "case": {
+        "id": "missing_panel_supplier",
+        "question": "MX-24P 的屏幕分辨率是什么？面板供应商是哪家？",
+        "filters": {
+          "product_category": "显示器"
+        },
+        "expected": "refusal",
+        "basis": "冻结原文有分辨率，无面板供应商；不能完整回答。"
+      },
+      "payload": {
+        "session_id": "bae18068bf2c4803b1b86e426e1bb340",
+        "conversation_id": 7,
+        "resumed": false,
+        "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。",
+        "sources": [],
+        "refused": true,
+        "low_confidence_question_id": "6",
+        "tool_calls": [
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "MX-24P 的屏幕分辨率是什么？面板供应商是哪家？"
+            },
+            "id": "3bd46d5569304d7d9a01b80c16d177d8",
+            "type": "tool_call"
+          }
+        ],
+        "tool_results": [
+          {
+            "name": "query_faq",
+            "ok": true,
+            "content": "已复核 14 条候选证据",
+            "error": null,
+            "elapsed_ms": 13312,
+            "attempts": 1
+          }
+        ]
+      },
+      "pool": {
+        "id": "6",
+        "original_question": "MX-24P 的屏幕分辨率是什么？面板供应商是哪家？",
+        "conversation_id": "7",
+        "entry_point": "agent",
+        "stage": "generation",
+        "reason_code": "insufficient_evidence",
+        "reason": "证据仅能回答 MX-24P 的分辨率为 1920×1080[1]，但所有证据均未提及 MX-24P 的面板供应商，缺少该问题的对应参数，故无法完整回答。",
+        "created_at_utc": "2026-09-30T13:14:38.022522Z"
+      }
+    }
+  ],
+  "passed": true,
+  "generation_insufficiency_cases": [
+    "missing_launch_date",
+    "missing_pps_range",
+    "missing_processor",
+    "missing_panel_supplier"
+  ],
+  "completed_at_utc": "2026-09-30T13:14:38.036630+00:00"
+}

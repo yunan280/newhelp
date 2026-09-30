@@ -1,0 +1,14 @@
+{
+  "scope": "real_isolated_application",
+  "base_url": "http://127.0.0.1:8001/",
+  "confirmation_source": "human user reply",
+  "user_verbatim": "效果正常",
+  "question": "HX-210S 的蓝牙版本是什么？",
+  "confirmed": [
+    "引用可点开来源原文和章节路径",
+    "点击满意度后点亮所选、显示已反馈、两个按钮一次性锁定"
+  ],
+  "recorded_at_utc": "2026-09-30T13:16:37.406519+00:00",
+  "automatic_browser_limitation": "CUA getTab URL security policy rejected binding; did not retry or circumvent.",
+  "prior_automated_protocol_ui_evidence": "artifacts/ch04/frontend/ six screenshots; separate protocol fixtures, not live retrieval"
+}

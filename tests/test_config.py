@@ -9,7 +9,14 @@ from mewhelp.config import HISTORY_TOKEN_BUDGET, Settings, get_settings
 @pytest.fixture(autouse=True)
 def isolate_llm_settings(monkeypatch):
     """BaseSettings 优先读进程环境；测试临时 .env 前先清理宿主覆盖值。"""
-    for name in ("OPENAI_API_KEY", "OPENAI_BASE_URL", "LLM_MODEL", "LLM_TEMPERATURE"):
+    for name in (
+        "OPENAI_API_KEY",
+        "OPENAI_BASE_URL",
+        "LLM_MODEL",
+        "LLM_TEMPERATURE",
+        "RAG_CALIBRATION_PATH",
+        "RAG_CONTEXT_BUDGET",
+    ):
         monkeypatch.delenv(name, raising=False)
 
 

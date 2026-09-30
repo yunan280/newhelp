@@ -1,5 +1,5 @@
 {
-  "recorded_at_utc": "2026-09-30T10:43:36.295717+00:00",
+  "recorded_at_utc": "2026-09-30T13:08:28.716810+00:00",
   "runtime": {
     "python": "3.12.14",
     "os": "Windows",
@@ -111,7 +111,8 @@
     "target_collection": "knowledge_ch04",
     "target_index_audit_errors": 0,
     "schema_migration_runs": 2,
-    "application_cutover_completed": false,
-    "reason": "Paid provider API exhausted during formal comparison; await restoration before online HTTP acceptance and cutover."
+    "application_cutover_completed": true,
+    "reason": "Actual online JSON/SSE known citations and unknown committed pool passed; mining task restored enabled.",
+    "calibration_run": "ch04_20260930_02"
   }
 }

@@ -1,0 +1,209 @@
+[
+  {
+    "attempt": 0,
+    "parsed": {
+      "answerable": true,
+      "reason": "证据1、2、3均直接说明运费计算规则：单笔满99元包邮，不满99元按收货地收取8元起，条件与结论一致，足以完整回答。",
+      "answer": "单笔订单实付金额满 99 元包邮[2]。不满 99 元按收货地收取 8 元起的配送费用[2]。",
+      "citation_numbers": [
+        2
+      ]
+    },
+    "parsing_error": "None",
+    "raw": {
+      "content": "",
+      "additional_kwargs": {
+        "refusal": null
+      },
+      "response_metadata": {
+        "token_usage": {
+          "completion_tokens": 157,
+          "prompt_tokens": 2427,
+          "total_tokens": 2584,
+          "completion_tokens_details": null,
+          "prompt_tokens_details": {
+            "audio_tokens": null,
+            "cache_write_tokens": null,
+            "cached_tokens": 768,
+            "image_tokens": null,
+            "text_tokens": null
+          },
+          "prompt_cache_hit_tokens": 768,
+          "prompt_cache_miss_tokens": 1659
+        },
+        "model_provider": "openai",
+        "model_name": "deepseek-flash",
+        "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669",
+        "id": "618c4661-3da0-4325-bd22-ad2b6da9b5c1",
+        "finish_reason": "tool_calls",
+        "logprobs": null
+      },
+      "type": "ai",
+      "name": null,
+      "id": "lc_run--01a0f254-7e3b-7a60-873e-748a5378ebdd-0",
+      "tool_calls": [
+        {
+          "name": "AnswerAssessment",
+          "args": {
+            "answerable": true,
+            "reason": "证据1、2、3均直接说明运费计算规则：单笔满99元包邮，不满99元按收货地收取8元起，条件与结论一致，足以完整回答。",
+            "answer": "单笔订单实付金额满 99 元包邮[2]。不满 99 元按收货地收取 8 元起的配送费用[2]。",
+            "citation_numbers": [
+              2
+            ]
+          },
+          "id": "call_00_twSsOf9gcotYO4xdnDYz5460",
+          "type": "tool_call"
+        }
+      ],
+      "invalid_tool_calls": [],
+      "usage_metadata": {
+        "input_tokens": 2427,
+        "output_tokens": 157,
+        "total_tokens": 2584,
+        "input_token_details": {
+          "cache_read": 768
+        },
+        "output_token_details": {}
+      }
+    }
+  },
+  {
+    "attempt": 1,
+    "parsed": {
+      "answerable": true,
+      "reason": "证据1、2、3均直接说明运费计算规则：单笔满99元包邮，不满99元按收货地收取8元起，条件一致无矛盾，足以完整回答。",
+      "answer": "单笔订单实付金额满 99 元包邮[2]。不满 99 元按收货地收取 8 元起的配送费用[2]。",
+      "citation_numbers": [
+        2
+      ]
+    },
+    "parsing_error": "None",
+    "raw": {
+      "content": "",
+      "additional_kwargs": {
+        "refusal": null
+      },
+      "response_metadata": {
+        "token_usage": {
+          "completion_tokens": 157,
+          "prompt_tokens": 2427,
+          "total_tokens": 2584,
+          "completion_tokens_details": null,
+          "prompt_tokens_details": {
+            "audio_tokens": null,
+            "cache_write_tokens": null,
+            "cached_tokens": 2176,
+            "image_tokens": null,
+            "text_tokens": null
+          },
+          "prompt_cache_hit_tokens": 2176,
+          "prompt_cache_miss_tokens": 251
+        },
+        "model_provider": "openai",
+        "model_name": "deepseek-flash",
+        "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669",
+        "id": "a675ebcd-d671-4c37-b8dc-8b54e9aff99a",
+        "finish_reason": "tool_calls",
+        "logprobs": null
+      },
+      "type": "ai",
+      "name": null,
+      "id": "lc_run--01a0f254-83c5-7022-9fb3-d25d407fa3f5-0",
+      "tool_calls": [
+        {
+          "name": "AnswerAssessment",
+          "args": {
+            "answerable": true,
+            "reason": "证据1、2、3均直接说明运费计算规则：单笔满99元包邮，不满99元按收货地收取8元起，条件一致无矛盾，足以完整回答。",
+            "answer": "单笔订单实付金额满 99 元包邮[2]。不满 99 元按收货地收取 8 元起的配送费用[2]。",
+            "citation_numbers": [
+              2
+            ]
+          },
+          "id": "call_00_j9ywPCoAOVDZcG2EIe0Y9202",
+          "type": "tool_call"
+        }
+      ],
+      "invalid_tool_calls": [],
+      "usage_metadata": {
+        "input_tokens": 2427,
+        "output_tokens": 157,
+        "total_tokens": 2584,
+        "input_token_details": {
+          "cache_read": 2176
+        },
+        "output_token_details": {}
+      }
+    }
+  },
+  {
+    "attempt": 2,
+    "parsed": {
+      "answerable": true,
+      "reason": "证据1、2、3均直接说明运费计算规则：单笔满99元包邮，不满99元按收货地收取8元起，条件与结论一致，足以完整回答。",
+      "answer": "单笔订单实付金额满 99 元包邮[2]。不满 99 元按收货地收取 8 元起的配送费用[2]。",
+      "citation_numbers": [
+        2
+      ]
+    },
+    "parsing_error": "None",
+    "raw": {
+      "content": "",
+      "additional_kwargs": {
+        "refusal": null
+      },
+      "response_metadata": {
+        "token_usage": {
+          "completion_tokens": 157,
+          "prompt_tokens": 2427,
+          "total_tokens": 2584,
+          "completion_tokens_details": null,
+          "prompt_tokens_details": {
+            "audio_tokens": null,
+            "cache_write_tokens": null,
+            "cached_tokens": 2176,
+            "image_tokens": null,
+            "text_tokens": null
+          },
+          "prompt_cache_hit_tokens": 2176,
+          "prompt_cache_miss_tokens": 251
+        },
+        "model_provider": "openai",
+        "model_name": "deepseek-flash",
+        "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669",
+        "id": "a4c39935-3dc5-4297-afbf-ba73407a7461",
+        "finish_reason": "tool_calls",
+        "logprobs": null
+      },
+      "type": "ai",
+      "name": null,
+      "id": "lc_run--01a0f254-88ef-7a40-86b9-6c1e1e55fa9b-0",
+      "tool_calls": [
+        {
+          "name": "AnswerAssessment",
+          "args": {
+            "answerable": true,
+            "reason": "证据1、2、3均直接说明运费计算规则：单笔满99元包邮，不满99元按收货地收取8元起，条件与结论一致，足以完整回答。",
+            "answer": "单笔订单实付金额满 99 元包邮[2]。不满 99 元按收货地收取 8 元起的配送费用[2]。",
+            "citation_numbers": [
+              2
+            ]
+          },
+          "id": "call_00_buXq1CpF1hOGcZ7sdPmr2290",
+          "type": "tool_call"
+        }
+      ],
+      "invalid_tool_calls": [],
+      "usage_metadata": {
+        "input_tokens": 2427,
+        "output_tokens": 157,
+        "total_tokens": 2584,
+        "input_token_details": {
+          "cache_read": 2176
+        },
+        "output_token_details": {}
+      }
+    }
+  }
+]

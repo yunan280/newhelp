@@ -293,7 +293,18 @@ Get-ScheduledTaskInfo -TaskName MewHelp-Ch03-KnowledgeMining
 
 ## Ch04 · 混合检索、证据门控与评估
 
-当前 Task 11 尚未完成：2026-09-30 正式 compare 中途遇到供应商 402 余额不足，已保留 160 条实际输出与 73 条错误；线上应用尚未切换，完整 HTTP 验收与最终后端评审待余额恢复后进行。现有 `report.md` 标为 completed_with_errors，不能当完整效果结论；独立检索验证见同目录 `retrieval-only.md/json`，不调用生成或 judge。下面为复跑/演示命令，未验收的步骤不宣称已经执行成功。
+正式报告为 [ch04_20260930_02/report.md](artifacts/ch04/ch04_20260930_02/report.md)：40条正式测试×4策略共160次，服务/judge错误0；包含类型、难度、交叉桶和有效分母。原生 BM25、重排与生成均为真实模型调用。线上 MySQL / knowledge_ch04 的 JSON/SSE 引用和未知拒答入池已实际通过，原定时挖掘状态已恢复。run01 保留早期余额不足及 Prompt 修复前的结果，完整新结果以 run02 为准；历史失败不作为最新完成报告。
+
+实际总表（检索GT分母每策略32，未知问题每策略8；Faithfulness仅计算完成回答）：
+
+| 策略 | Recall@50 / @10 | MRR@10 | Faithfulness | 回答/40 | 未知正确拒答/8 |
+| --- | --- | --- | --- | --- | --- |
+| dense | 1.0000 / 1.0000 | 1.0000 | 0.9892 | 31 | 8 |
+| BM25 | 1.0000 / 1.0000 | 0.9635 | 0.9889 | 30 | 8 |
+| hybrid | 1.0000 / 1.0000 | 0.9844 | 0.9896 | 32 | 7 |
+| hybrid_rerank | 1.0000 / 1.0000 | 1.0000 | 0.9892 | 31 | 8 |
+
+混合策略有1次误放；其余每策略有1/2/1次误拒（dense/BM25/重排），混合也有1次误拒。这里 dense 已达到检索上限，结果不能证明混合重排在真实商品库上整体更好。生产阈值单独用20条校准，消融报告不使用该门控。
 
 本章以 [设计](docs/superpowers/specs/2026-09-30-ch04-retrieval-quality-design.md)、[计划](docs/superpowers/plans/2026-09-30-ch04-retrieval-quality.md) 和 [阶段记录](dev-notes/ch04.md) 为准，替代上述 Ch03 的 dense-only 查询步骤。Milvus 原生 BM25 的中文 analyzer 与 BGE-M3 dense 各召回 50，`hybrid_search` 用 RRF(k=60) 融合；本地 `BAAI/bge-reranker-v2-m3` 精排 10。证据编号沿相关性排名固定，放入 Prompt 的顺序为 1,3,5,7,9,10,8,6,4,2。`category` 是知识主题，独立的可选 `product_category` 是商品品类；过滤在两路召回前生效。
 
@@ -304,7 +315,7 @@ $pyCh04 = (Resolve-Path .venv-ch03/Scripts/python.exe).Path
 $env:PYTHONUTF8 = '1'
 $env:OMP_NUM_THREADS = '4'
 $env:MKL_NUM_THREADS = '4'
-$env:RAG_CONTEXT_BUDGET = '32000' # 本次已核实供应商限制；换配置后须重新核实
+$env:RAG_CONTEXT_BUDGET = '32000' # UTF-8字节总预算，不是供应商token上限
 docker compose up -d mysql
 docker compose -f milvus-compose.yml up -d
 # 已有 Ch03 数据库先做一致性备份，再执行可重入的增量迁移
@@ -328,7 +339,7 @@ docker compose -f milvus-compose.yml up -d
 实际标注是明确编写的**示例商品/条款**，不是线上商品事实；[标注审计](eval/ch04/annotation-audit.md) 为作者逐例核查。冻结 80 块、60 问：20 条只用于校准，40 条只用于报告，五类问法各 8 条正式测试。生成和 judge 真实调用配置的供应商，可能产生费用。用新的 run ID 运行；同一 run 禁止修改语料、Prompt、归一缓存或模型。
 
 ```powershell
-$runCh04 = 'ch04_20260930_01' # 改输入/Prompt/模型时使用新 ID
+$runCh04 = 'ch04_20260930_02' # 已完成的冻结运行；复跑改为新 ID，例如 ch04_20261001_01
 $workCh04 = "artifacts/ch04/$runCh04"
 & $pyCh04 -X utf8 -m mewhelp.knowledge.evaluation prepare --dataset eval/ch04 --workdir $workCh04 --run-id $runCh04
 & $pyCh04 -X utf8 -m mewhelp.knowledge.evaluation calibrate --dataset eval/ch04 --workdir $workCh04 --run-id $runCh04
@@ -348,7 +359,7 @@ $workCh04 = "artifacts/ch04/$runCh04"
 & $pyCh04 -X utf8 -m mewhelp.knowledge.cli search --question '邮费是多少' --category 物流 --collection knowledge_ch04
 ```
 
-具体型号和文档跳转在**独立验收应用**演示，使用真实 Milvus/模型，SQLite `acceptance.sqlite` 隔离会话/原文/问题池；80 条示例及另一个跳转文档不写线上库，也不改正式对比集合。设置进程环境后启动；同一端口不要同时启动两个服务。
+具体型号和文档跳转在**独立验收应用**演示，使用真实 Milvus/模型，SQLite `acceptance.sqlite` 隔离会话/原文/问题池；80 条示例及另一个跳转文档不写线上库，也不改正式对比集合。设置进程环境后启动；同一端口不要同时启动两个服务；本机16GB内存，先停止本任务8000进程再启动8001，验收后恢复8000。
 
 ```powershell
 $acceptCh04 = 'artifacts/ch04/acceptance_ch04_20260930_01'
@@ -358,15 +369,22 @@ $env:RAG_CALIBRATION_PATH = (Resolve-Path "$workCh04/calibration.json").Path
 & $pyCh04 -X utf8 scripts/smoke_ch04_acceptance.py --base-url http://127.0.0.1:8001 --ledger-db "$acceptCh04/acceptance.sqlite" --report-dir $workCh04
 ```
 
-打开 `http://127.0.0.1:8001/`，问“HX-210S 的蓝牙版本是什么？”，点击答案的 [N] 查看原文和路径；文档来源可跳入原章节。问“今天店里新增的外星球旅行险承保条款是什么？”得到拒答。JSON/SSE 验收报告分别保存来源映射、拒答、已提交的问题池字段与原生 BM25 型号命中。每段完成回答左下角 👍/👎 点一次后点亮、“已反馈”并锁定；信号只写浏览器本地，错误/中断回答不出现反馈。
+打开 `http://127.0.0.1:8001/`，问“HX-210S 的蓝牙版本是什么？”，点击答案的 [N] 查看原文和路径；文档来源可跳入原章节。问“今天店里新增的外星球旅行险承保条款是什么？”得到拒答。JSON/SSE 验收报告分别保存来源映射、拒答、已提交的问题池字段与原生 BM25 型号命中。每段完成回答左下角 👍/👎 点一次后点亮、“已反馈”并锁定；信号只写浏览器本地，错误/中断回答不出现反馈。真实8001页面由用户手动确认「效果正常」，自动绑定页面被浏览器URL策略拦截，未绕过；协议样例的完整UI检查截图另见 artifacts/ch04/frontend/，不能冒充真实检索截图。
 
-回退必须成对恢复旧代码和旧集合：停止新版及发布，在原目录使用迁移前保存的可运行代码目录和旧 `.env` 启动旧应用（它指向 `knowledge`）。本次私人基线位于 `C:/Users/27497/projects/ch04-baselines/20260930-native/files`，配置为同目录 `before-ch04.env`，数据库备份为 `mewhelp-before-ch04.sql`，均不进 Git。不要用 `git reset --hard` 覆盖原工作区，也不要删卷；Ch04 增量列可保留。如果切换后有新知识发布，先用旧代码的 `reindex` 同步旧集合，再恢复发布。恢复数据库备份只用于明确需要回退数据的维护窗口，会丢失备份后的写入，不能当默认代码回退步骤。
+本次线上与隔离 HTTP 报告为 run02/acceptance-online.json、acceptance-isolated.json，均4/4通过。额外5条预先标注问法见 acceptance-extra-inputs.json / acceptance-extra.json：退款明确不承诺到账，4条缺关键参数问题均在 generation 阶段以 insufficient_evidence 入池。需要复跑时在8001运行期间执行（PYTHONPATH只为根目录的验收脚本导入）：
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path '.').Path
+& $pyCh04 -X utf8 artifacts/ch04/ch04_20260930_02/verify-acceptance-extra.py
+```
+
+回退必须成对恢复旧代码和旧集合：停止新版及发布，在原目录使用迁移前保存的可运行代码目录和旧 `.env` 启动旧应用（它指向 `knowledge`）。本次私人基线位于 `C:/Users/27497/projects/ch04-baselines/20260930-native/files`，切换前最新恢复后的配置为同目录 `before-cutover-restored-provider.env`（初始 before-ch04.env 仅留作历史备份），数据库备份为 `mewhelp-before-ch04.sql`，均不进 Git。不要用 `git reset --hard` 覆盖原工作区，也不要删卷；Ch04 增量列可保留。如果切换后有新知识发布，先用旧代码的 `reindex` 同步旧集合，再恢复发布。恢复数据库备份只用于明确需要回退数据的维护窗口，会丢失备份后的写入，不能当默认代码回退步骤。
 
 ```powershell
 # 只在实际回退时于新终端运行；先停止新版和发布
 $oldCh04 = 'C:/Users/27497/projects/ch04-baselines/20260930-native/files'
 $pyCh04 = 'C:/Users/27497/projects/mewhelp-wt/ch02-tools/.venv-ch03/Scripts/python.exe'
-Copy-Item -LiteralPath 'C:/Users/27497/projects/ch04-baselines/20260930-native/before-ch04.env' -Destination "$oldCh04/.env"
+Copy-Item -LiteralPath 'C:/Users/27497/projects/ch04-baselines/20260930-native/before-cutover-restored-provider.env' -Destination "$oldCh04/.env"
 Set-Location -LiteralPath $oldCh04
 $env:PYTHONPATH = "$oldCh04/src" # 明确使用旧源码，避开 editable 安装指向新版的问题
 $env:MILVUS_COLLECTION = 'knowledge'

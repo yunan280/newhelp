@@ -1,6 +1,6 @@
 {
-  "run_id": "ch04_20260930_01",
-  "collection": "ch04_eval_ch04_20260930_01",
+  "run_id": "ch04_20260930_02",
+  "collection": "ch04_eval_ch04_20260930_02",
   "frozen": true,
   "ready": true,
   "input_corpus_hash": "38e1da505d18474c9b9f35a7b8f12c96526c3a981dee2c4508f2270379bf5ae2",
@@ -11,7 +11,7 @@
   "corpus_count": 80,
   "prompt_hashes": {
     "query": "ce5d74ae62fa6e63bf7c698b8f17b505846b11bbfd5e21118b8c8234dd1875f2",
-    "answer": "82910838b0c317e0e7a2ecb3661523428e3603014b551892e7e4a764c05173d2",
+    "answer": "c08202c75892404364e4f47c53f447aae8fc64d5a5b6dddbe81874596d1fde41",
     "judge": "a0029a5089b5360b58b4e9365040258376cee7447dd8740048da559b3065c99e"
   },
   "index_audit_errors": 0,

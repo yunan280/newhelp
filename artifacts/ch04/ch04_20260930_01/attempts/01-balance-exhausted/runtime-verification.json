@@ -86,14 +86,7 @@
       }
     ],
     "observation_source": "eval/ch04/answering-results.jsonl, same-session live labeled checks; comparison does not pin a provider weight revision",
-    "identity_limit": "Official docs planned retirement of deepseek-chat on 2026-07-24, but current-session responses still return deepseek-flash. Exact alias mapping/weight version is not independently established; retain both names.",
-    "probe_after_reset": {
-      "checked_at_utc": "2026-09-30T12:12:44.329338+00:00",
-      "request_model": "deepseek-chat",
-      "response_model": "deepseek-flash",
-      "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669",
-      "reply": "OK"
-    }
+    "identity_limit": "Official docs planned retirement of deepseek-chat on 2026-07-24, but current-session responses still return deepseek-flash. Exact alias mapping/weight version is not independently established; retain both names."
   },
   "context_budget": {
     "configured_utf8_bytes_upper_bound": 32000,

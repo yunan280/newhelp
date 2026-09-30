@@ -1,0 +1,14 @@
+{
+  "started_at_utc": "2026-09-30T12:20:16.167640+00:00",
+  "mining_task": "MewHelp-Ch03-KnowledgeMining",
+  "previously_enabled": true,
+  "paused_for_cutover": true,
+  "completed": true,
+  "completed_at_utc": "2026-09-30T13:08:28.714697+00:00",
+  "mining_restored_enabled": true,
+  "target_collection": "knowledge_ch04",
+  "calibration_run": "ch04_20260930_02",
+  "context_budget_utf8_bytes": 32000,
+  "online_http_acceptance": "acceptance-online.json",
+  "provider_backup": "private before-cutover-restored-provider.env outside Git"
+}

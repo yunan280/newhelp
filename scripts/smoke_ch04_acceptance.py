@@ -101,7 +101,8 @@ def _verify_refusal(payload, factory, question, entry, started):
             row.created_at is not None
             and started - dt.timedelta(seconds=2)
             <= row.created_at
-            <= dt.datetime.now(dt.UTC).replace(tzinfo=None),
+            # MySQL DATETIME(0) may round fractional seconds into the next second.
+            <= dt.datetime.now(dt.UTC).replace(tzinfo=None) + dt.timedelta(seconds=1),
             "pool timestamp missing/stale",
         )
         return {

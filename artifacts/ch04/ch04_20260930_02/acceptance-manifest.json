@@ -1,0 +1,7 @@
+{
+  "collection": "ch04_eval_acceptance_ch04_20260930_01",
+  "database": "acceptance.sqlite",
+  "corpus_count": 80,
+  "demo_docs": "demo-docs",
+  "index_audit_errors": 0
+}

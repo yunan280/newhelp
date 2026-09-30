@@ -1,3 +1,4 @@
+import datetime as dt
 import importlib.util
 import json
 from pathlib import Path
@@ -163,3 +164,47 @@ def test_false_success_is_rejected(smoke, ledger, tmp_path, monkeypatch, damage)
     factory, snapshot = ledger
     install_client(smoke, factory, snapshot, monkeypatch, damage)
     assert smoke.main("http://fixture", report_dir=tmp_path, session_factory=factory) != 0
+
+
+@pytest.mark.parametrize("offset,accepted", [(0.2, True), (3, False), (-30, False)])
+def test_pool_timestamp_allows_only_second_precision_rounding(
+    smoke, ledger, monkeypatch, offset, accepted
+):
+    factory, _snapshot = ledger
+    wall_clock = dt.datetime(2026, 9, 30, 13, 2, 32, 800000, tzinfo=dt.UTC).replace(
+        tzinfo=None
+    )
+    with factory() as session:
+        row = LowConfidenceQuestion(
+            original_question=smoke.UNKNOWN_QUESTION,
+            source_conversation_id=1,
+            entry_point="agent",
+            trigger_stage="retrieval",
+            reason_code="no_evidence",
+            reason="无匹配原文",
+            created_at=wall_clock + dt.timedelta(seconds=offset),
+        )
+        session.add(row)
+        session.flush()
+        pool_id = str(row.id)
+        session.commit()
+
+    class FixedDatetime(dt.datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return wall_clock.replace(tzinfo=tz)
+
+    monkeypatch.setattr(smoke.dt, "datetime", FixedDatetime)
+    payload = {
+        "refused": True,
+        "sources": [],
+        "answer": "依据不足，无法确认。",
+        "conversation_id": 1,
+        "low_confidence_question_id": pool_id,
+    }
+    args = (payload, factory, smoke.UNKNOWN_QUESTION, "agent", wall_clock)
+    if accepted:
+        assert smoke._verify_refusal(*args)["id"] == pool_id
+    else:
+        with pytest.raises(AssertionError, match="timestamp"):
+            smoke._verify_refusal(*args)
