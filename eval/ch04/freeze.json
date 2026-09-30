@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "corpus_hash": "4348decce0c4b8f81edebb0d15df8afc5213aa8ca85ee0f555c5fbc46cca55a4",
+  "query_hash": "aed316a9d3560560d2828abfc72b1e2468d96c721c7b8e38f20f66fe2d93adc8",
+  "annotation_audit_hash": "ca685bbd690453afd03253b5feb7de7ff2888ad006f7eff930f6ae79571a989b",
+  "corpus_count": 80,
+  "case_count": 60,
+  "calibration_count": 20,
+  "test_count": 40,
+  "labeler": "author; source-first checks; no independent second labeler",
+  "status": "frozen before retrieval"
+}
