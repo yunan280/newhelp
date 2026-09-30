@@ -50,7 +50,7 @@ async def test_ticket_no_follows_the_documented_format(create_ticket, session_fa
     await create_ticket.ainvoke({"description": "x", "ticket_type": "咨询"})
     with session_factory() as s:
         ticket_no = s.scalars(select(Ticket.ticket_no)).one()
-    assert ticket_no.startswith(f"T{dt.date.today():%Y%m%d}")
+    assert ticket_no.startswith(f"T{dt.date.today():%Y%m%d}")  # noqa: DTZ011 — 工单编号沿用本地日期
     assert len(ticket_no) == len("T20260928001")
 
 
@@ -124,7 +124,7 @@ async def test_gives_up_gracefully_and_rolls_back_when_the_number_keeps_collidin
     (实测这一步靠的是 `with session` 退出时的隐式回滚,`ticket.py` 里那句显式
     `rollback()` 并非它的必要条件 —— 别把功劳记错,注释里已写明。)
     """
-    today = dt.date.today()
+    today = dt.date.today()  # noqa: DTZ011 — 与工单编号的本地日期一致
     stamp = f"T{today:%Y%m%d}"
     with session_factory() as s:
         s.add(Ticket(ticket_no=f"{stamp}001", conversation_id=1,
@@ -159,13 +159,17 @@ def test_registry_holds_all_five_tools(session_factory):
 def test_create_ticket_is_marked_not_retryable(session_factory):
     """写类工具没有幂等设施 —— 重试会重复建单。
 
-    用户投诉一次、工单出来两张,是这个洞的形态。四个读类工具仍可重试。
+    用户投诉一次、工单出来两张,是这个洞的形态。普通读工具仍可重试；
+    FAQ 读工具因为大模型冷加载且超时线程不会取消，单次执行给更长时限。
     """
     registry = build_registry(session_factory, conversation_id=1)
 
     assert registry.get("create_ticket").retryable is False
-    for name in ("query_order", "query_product", "query_logistics", "query_faq"):
+    for name in ("query_order", "query_product", "query_logistics"):
         assert registry.get(name).retryable is True
+    assert registry.get("query_faq").retryable is False
+    # 本机 Docker 与模型同时冷启动时 FAQ 曾耗时 58.6 秒，需留出明显余量。
+    assert registry.get("query_faq").timeout_seconds >= 90.0
 
 
 def test_registry_tools_are_all_bindable(session_factory):

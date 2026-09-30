@@ -6,6 +6,7 @@ MySQL 上炸;SQLite 不校验长度,所以这个坑在测试里**看不见**,只
 """
 
 import datetime as dt
+from typing import ClassVar
 
 from sqlalchemy import DateTime, String, event
 from sqlalchemy.engine import Engine
@@ -13,7 +14,7 @@ from sqlalchemy.orm import DeclarativeBase
 
 
 class Base(DeclarativeBase):
-    type_annotation_map = {
+    type_annotation_map: ClassVar[dict] = {
         # 默认给 255。需要更长的地方显式 mapped_column(String(N)) 覆盖。
         str: String(255),
         dt.datetime: DateTime,

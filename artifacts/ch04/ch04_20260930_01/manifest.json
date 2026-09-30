@@ -1,0 +1,34 @@
+{
+  "run_id": "ch04_20260930_01",
+  "collection": "ch04_eval_ch04_20260930_01",
+  "frozen": true,
+  "ready": true,
+  "input_corpus_hash": "38e1da505d18474c9b9f35a7b8f12c96526c3a981dee2c4508f2270379bf5ae2",
+  "input_query_hash": "283bed271404be2cbd343bac276bfc03d4749682c050844ad03efb537de5d085",
+  "corpus_hash": "4348decce0c4b8f81edebb0d15df8afc5213aa8ca85ee0f555c5fbc46cca55a4",
+  "query_hash": "aed316a9d3560560d2828abfc72b1e2468d96c721c7b8e38f20f66fe2d93adc8",
+  "query_count": 60,
+  "corpus_count": 80,
+  "prompt_hashes": {
+    "query": "ce5d74ae62fa6e63bf7c698b8f17b505846b11bbfd5e21118b8c8234dd1875f2",
+    "answer": "82910838b0c317e0e7a2ecb3661523428e3603014b551892e7e4a764c05173d2",
+    "judge": "a0029a5089b5360b58b4e9365040258376cee7447dd8740048da559b3065c99e"
+  },
+  "index_audit_errors": 0,
+  "query_cache_hash": "e6df6cd705aa85e0221c25251f9792241bf084a73bc22e55e9febd331ac5559a",
+  "model_metadata": {
+    "embedding": {
+      "model_id": "BAAI/bge-m3",
+      "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+      "dimension": 1024,
+      "normalize_embeddings": true
+    },
+    "reranker": {
+      "model_id": "BAAI/bge-reranker-v2-m3",
+      "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+      "max_length": 8192,
+      "score_transform": "sigmoid"
+    }
+  },
+  "comparison_status": "completed_with_errors"
+}

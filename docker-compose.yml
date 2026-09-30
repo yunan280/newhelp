@@ -1,5 +1,5 @@
-# ch02 的 MySQL。宿主 3306 —— 所以本机的 MySQL80 服务必须停掉(它也占 3306)。
-# 账号密码取自 .env 的 MYSQL_*;compose 会自动读同目录的 .env。
+# ch02/ch03 的 MySQL。宿主端口取 .env 的 MYSQL_PORT，默认 3307，避开本机 MySQL 的 3306。
+# 只绑定回环地址；账号密码取自 .env 的 MYSQL_*。
 services:
   mysql:
     image: mysql:8.0
@@ -9,7 +9,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
-      - "3306:3306"
+      - "127.0.0.1:${MYSQL_PORT:-3307}:3306"
     volumes:
       - mewhelp-mysql-data:/var/lib/mysql
     healthcheck:

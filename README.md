@@ -128,8 +128,7 @@ JSON
 `faq` / `conversations` / `messages` / `tickets` 四张表在 MySQL 里,`query_faq` 和 `create_ticket` 要用。
 
 ```bash
-# 本机 3306 常被 Windows 自带的 MySQL 服务占着 —— 先停掉它,再起容器
-powershell -Command "Stop-Service MySQL80"        # 需要管理员权限的终端
+# 项目 MySQL 监听 .env 的 MYSQL_PORT（默认 3307），可与本机 3306 的 MySQL 并存
 docker compose up -d && docker compose ps
 
 # 建表 + 灌种子(faq 表里的问答条目)
@@ -247,6 +246,141 @@ node tests/page-smoke.js src/mewhelp/static/index.html
 它用最小 DOM 替身把 SSE 帧喂进页面的 `send()`,断言徽章、正文与等待动画的取舍。
 第 2 章收尾时抓出的"同名工具调两次 → 徽章配错结果"就是它拦下的 —— 那是个后端测试
 看不见的缺陷。
+
+## Ch03 · 语义知识库演示
+
+打开 <http://localhost:8000/kb> 可手工录入知识。填写分类、问法或章节标题、答案，以及可选元数据；提交后先保存 MySQL 原文，再尝试向量化。页面显示最近 50 条知识的 `pending` / `done` 状态；待向量化条目可点“重试向量化”。同一次提交使用固定 UUID，网络失败重试不会重复建行。
+
+`query_faq(keyword: str) -> str` 契约不变。内部使用 BGE-M3 dense 向量在 Milvus `knowledge` 集合查 Top-K，再按主键从 MySQL `knowledge_chunks` 读原文。MySQL 表结构见 [sql/ch03-ddl.sql](sql/ch03-ddl.sql)，设计与计划见 `docs/superpowers/`，开发留痕见 [dev-notes/ch03.md](dev-notes/ch03.md)。
+
+本机使用 Python 3.12、PyMilvus 2.6.x 与 Milvus 2.6.24。首次 BGE-M3 下载约 2.3 GB 权重，需要联网及充足内存。项目根目录运行：
+
+```powershell
+uv venv .venv-ch03 --python 3.12
+uv pip install --python .venv-ch03\Scripts\python.exe -e '.[rag,dev]'
+docker compose up -d mysql
+docker compose -f milvus-compose.yml up -d
+.venv-ch03\Scripts\python.exe -m mewhelp.knowledge.cli init-db
+.venv-ch03\Scripts\python.exe -m mewhelp.db.seed
+.venv-ch03\Scripts\python.exe -m mewhelp.knowledge.cli ingest
+.venv-ch03\Scripts\python.exe -m mewhelp.knowledge.cli sync
+$env:PYTHONIOENCODING = 'utf-8'
+.venv-ch03\Scripts\python.exe -m mewhelp.knowledge.cli search --question '邮费是多少'
+.venv-ch03\Scripts\python.exe scripts\smoke_ch03_recovery.py
+```
+
+`ingest` 从现有 FAQ 及 `knowledge-docs/*.md` 建库。Markdown 章节、完整句重叠和大表表头保留在纯 Python 切分器中；在章节正文加入 `<!-- key-clause -->` 可标记关键条款，此标记不进向量文本。`sync` 扫描 `pending` 并按相同主键 upsert，可在中断后重跑。
+
+历史对话任务由 Windows 计划任务调用 [scripts/run_knowledge_mining.ps1](scripts/run_knowledge_mining.ps1)，该脚本先抽取到 `qa_extraction_staging`，整批去重后发布，再执行向量补偿。手动演示：
+
+```powershell
+powershell.exe -NoProfile -File scripts\run_knowledge_mining.ps1
+.venv-ch03\Scripts\python.exe -m mewhelp.knowledge.cli status
+.venv-ch03\Scripts\python.exe -m pytest -q
+.venv-ch03\Scripts\python.exe -m pytest -m eval tests\eval\test_knowledge_mining_eval.py -q
+```
+
+注册每日 02:00 的 Windows 计划任务（可用 `-At '03:30'` 改时间）：
+
+```powershell
+powershell.exe -NoProfile -File scripts\register_knowledge_mining.ps1
+Get-ScheduledTaskInfo -TaskName MewHelp-Ch03-KnowledgeMining
+```
+
+任务使用当前登录用户的模型缓存和 `.env`；请保持该用户登录，且让 Docker Desktop 在任务运行时可用。本机已注册，下一次计划时间为 2026-09-29 02:00。手动脚本已执行成功；当前非交互式开发会话中，任务计划程序的手动触发处于 `Queued`，尚未验证调度器实际启动脚本。
+
+本机实测：「邮费是多少」召回“运费说明”和“运费怎么计算”，均给出满 99 元包邮；模拟 MySQL 提交后中断，补偿 1 块并恢复 `done`。网页端同一问法的 FAQ 工具调用成功，答出满 99 元包邮、不满 99 元运费 8 元起。BGE-M3 首次加载视机器状态可能需要几十秒，本机曾测得 58.6 秒；FAQ 工具单次时限为 120 秒，模型加载后查询较快。此前全量离线测试 339 passed、5 deselected；本次连接修复的相关用例 9 passed，真实抽取标注评估 1 passed。实际结果以复跑输出为准。
+
+## Ch04 · 混合检索、证据门控与评估
+
+当前 Task 11 尚未完成：2026-09-30 正式 compare 中途遇到供应商 402 余额不足，已保留 160 条实际输出与 73 条错误；线上应用尚未切换，完整 HTTP 验收与最终后端评审待余额恢复后进行。现有 `report.md` 标为 completed_with_errors，不能当完整效果结论；独立检索验证见同目录 `retrieval-only.md/json`，不调用生成或 judge。下面为复跑/演示命令，未验收的步骤不宣称已经执行成功。
+
+本章以 [设计](docs/superpowers/specs/2026-09-30-ch04-retrieval-quality-design.md)、[计划](docs/superpowers/plans/2026-09-30-ch04-retrieval-quality.md) 和 [阶段记录](dev-notes/ch04.md) 为准，替代上述 Ch03 的 dense-only 查询步骤。Milvus 原生 BM25 的中文 analyzer 与 BGE-M3 dense 各召回 50，`hybrid_search` 用 RRF(k=60) 融合；本地 `BAAI/bge-reranker-v2-m3` 精排 10。证据编号沿相关性排名固定，放入 Prompt 的顺序为 1,3,5,7,9,10,8,6,4,2。`category` 是知识主题，独立的可选 `product_category` 是商品品类；过滤在两路召回前生效。
+
+所有命令从项目根目录运行。下例使用当前 `.venv-ch03`（Python 3.11+）；新环境执行 `uv venv .venv-ch03 --python 3.11` 和 `uv pip install --python .venv-ch03/Scripts/python.exe -e '.[rag,dev]'`。复制 `.env.example` 填入自己的凭据，不覆盖现有 `.env`。Docker Desktop 必须运行，两个固定模型首次下载需要网络、磁盘与内存。本次 CPU 运行限定计算线程，16GB 机器建议顺序启动评估、线上及隔离验收进程。
+
+```powershell
+$pyCh04 = (Resolve-Path .venv-ch03/Scripts/python.exe).Path
+$env:PYTHONUTF8 = '1'
+$env:OMP_NUM_THREADS = '4'
+$env:MKL_NUM_THREADS = '4'
+$env:RAG_CONTEXT_BUDGET = '32000' # 本次已核实供应商限制；换配置后须重新核实
+docker compose up -d mysql
+docker compose -f milvus-compose.yml up -d
+# 已有 Ch03 数据库先做一致性备份，再执行可重入的增量迁移
+& $pyCh04 -X utf8 scripts/migrate_ch04_schema.py
+& $pyCh04 -X utf8 -m mewhelp.knowledge.cli reindex --collection knowledge_ch04
+& $pyCh04 -X utf8 -m mewhelp.knowledge.cli sync --collection knowledge_ch04
+& $pyCh04 -X utf8 -m mewhelp.knowledge.cli audit-index --collection knowledge_ch04
+```
+
+新数据库先执行 Ch02 的 `sql/ch02-ddl.sql`（或使用 ORM 创建 Ch02 表），再 seed 示例 FAQ 和创建 Ch03 表，然后迁移、`ingest --docs knowledge-docs`、回填。不在有业务数据的库里初始化/seed。成功审计输出 `[]`；漂移或版本不匹配报错，不能切回 Python BM25 或 Milvus Lite。
+
+```powershell
+# 仅用于新的空数据库；导入 models 注册 Ch02 表，seed 本身不建表
+& $pyCh04 -X utf8 -c 'from mewhelp.db import models; from mewhelp.db.base import Base; from mewhelp.db.engine import engine; Base.metadata.create_all(engine)'
+& $pyCh04 -X utf8 -m mewhelp.db.seed
+& $pyCh04 -X utf8 -m mewhelp.knowledge.cli init-db
+& $pyCh04 -X utf8 scripts/migrate_ch04_schema.py
+& $pyCh04 -X utf8 -m mewhelp.knowledge.cli ingest --docs knowledge-docs
+```
+
+实际标注是明确编写的**示例商品/条款**，不是线上商品事实；[标注审计](eval/ch04/annotation-audit.md) 为作者逐例核查。冻结 80 块、60 问：20 条只用于校准，40 条只用于报告，五类问法各 8 条正式测试。生成和 judge 真实调用配置的供应商，可能产生费用。用新的 run ID 运行；同一 run 禁止修改语料、Prompt、归一缓存或模型。
+
+```powershell
+$runCh04 = 'ch04_20260930_01' # 改输入/Prompt/模型时使用新 ID
+$workCh04 = "artifacts/ch04/$runCh04"
+& $pyCh04 -X utf8 -m mewhelp.knowledge.evaluation prepare --dataset eval/ch04 --workdir $workCh04 --run-id $runCh04
+& $pyCh04 -X utf8 -m mewhelp.knowledge.evaluation calibrate --dataset eval/ch04 --workdir $workCh04 --run-id $runCh04
+& $pyCh04 -X utf8 -m mewhelp.knowledge.evaluation compare --dataset eval/ch04 --workdir $workCh04 --run-id $runCh04
+```
+
+报告为 `$workCh04/report.md`、`summary.json`、`cases.jsonl`，校准为 `calibration.json`。四策略为 dense/bm25/hybrid/hybrid_rerank；消融关闭生产相关性阈值和入池，前三种不调用重排。报告包括 Recall@50/MRR@50、最终 Recall@5/10/MRR@10、声明支持率 Faithfulness、类型/难度/交叉桶 N、有效分母、覆盖、误放/误拒、服务/judge 错误。拒答不计 Faithfulness，有评分错误会非零退出；不保证混合重排必然胜出。供应商请求别名与实际响应模型、本机服务版本及预算依据记录在实际运行的 `runtime-verification.json`。
+
+切换前停止旧应用及知识发布/定时挖掘，补偿 pending/deleting 后审计。备份旧代码、`.env` 与 MySQL，保留旧 `knowledge` 集合。`.env` 设置 `MILVUS_COLLECTION=knowledge_ch04`、`RAG_CALIBRATION_PATH=<实际 calibration.json 路径>`、`RAG_CONTEXT_BUDGET=32000`、`KNOWLEDGE_DOCS_ROOT=<与 ingest 相同的目录>`，重启新版后恢复原来的定时任务状态。没有校准或显式预算时知识问答报配置错误。
+
+```powershell
+& $pyCh04 -X utf8 -m uvicorn mewhelp.main:app --host 127.0.0.1 --port 8000
+# 另开终端（同样设置线程/UTF-8）；验证实际 MySQL 的原有知识和未知问题
+& $pyCh04 -X utf8 scripts/smoke_ch04_acceptance.py --base-url http://127.0.0.1:8000 --report-dir $workCh04
+& $pyCh04 -X utf8 -m mewhelp.knowledge.cli search --question '邮费是多少' --collection knowledge_ch04
+# 主题过滤只命中该主题；商品品类 NULL 不绕过商品过滤
+& $pyCh04 -X utf8 -m mewhelp.knowledge.cli search --question '邮费是多少' --category 物流 --collection knowledge_ch04
+```
+
+具体型号和文档跳转在**独立验收应用**演示，使用真实 Milvus/模型，SQLite `acceptance.sqlite` 隔离会话/原文/问题池；80 条示例及另一个跳转文档不写线上库，也不改正式对比集合。设置进程环境后启动；同一端口不要同时启动两个服务。
+
+```powershell
+$acceptCh04 = 'artifacts/ch04/acceptance_ch04_20260930_01'
+$env:RAG_CALIBRATION_PATH = (Resolve-Path "$workCh04/calibration.json").Path
+& $pyCh04 -X utf8 scripts/smoke_ch04_acceptance.py --serve --workdir $acceptCh04 --collection ch04_eval_acceptance_ch04_20260930_01 --calibration "$workCh04/calibration.json" --port 8001
+# 另开终端
+& $pyCh04 -X utf8 scripts/smoke_ch04_acceptance.py --base-url http://127.0.0.1:8001 --ledger-db "$acceptCh04/acceptance.sqlite" --report-dir $workCh04
+```
+
+打开 `http://127.0.0.1:8001/`，问“HX-210S 的蓝牙版本是什么？”，点击答案的 [N] 查看原文和路径；文档来源可跳入原章节。问“今天店里新增的外星球旅行险承保条款是什么？”得到拒答。JSON/SSE 验收报告分别保存来源映射、拒答、已提交的问题池字段与原生 BM25 型号命中。每段完成回答左下角 👍/👎 点一次后点亮、“已反馈”并锁定；信号只写浏览器本地，错误/中断回答不出现反馈。
+
+回退必须成对恢复旧代码和旧集合：停止新版及发布，在原目录使用迁移前保存的可运行代码目录和旧 `.env` 启动旧应用（它指向 `knowledge`）。本次私人基线位于 `C:/Users/27497/projects/ch04-baselines/20260930-native/files`，配置为同目录 `before-ch04.env`，数据库备份为 `mewhelp-before-ch04.sql`，均不进 Git。不要用 `git reset --hard` 覆盖原工作区，也不要删卷；Ch04 增量列可保留。如果切换后有新知识发布，先用旧代码的 `reindex` 同步旧集合，再恢复发布。恢复数据库备份只用于明确需要回退数据的维护窗口，会丢失备份后的写入，不能当默认代码回退步骤。
+
+```powershell
+# 只在实际回退时于新终端运行；先停止新版和发布
+$oldCh04 = 'C:/Users/27497/projects/ch04-baselines/20260930-native/files'
+$pyCh04 = 'C:/Users/27497/projects/mewhelp-wt/ch02-tools/.venv-ch03/Scripts/python.exe'
+Copy-Item -LiteralPath 'C:/Users/27497/projects/ch04-baselines/20260930-native/before-ch04.env' -Destination "$oldCh04/.env"
+Set-Location -LiteralPath $oldCh04
+$env:PYTHONPATH = "$oldCh04/src" # 明确使用旧源码，避开 editable 安装指向新版的问题
+$env:MILVUS_COLLECTION = 'knowledge'
+# 有切换后新知识时，先同步旧集合；没有新写入可直接启动
+& $pyCh04 -X utf8 -m mewhelp.knowledge.cli reindex
+& $pyCh04 -X utf8 -m uvicorn mewhelp.main:app --host 127.0.0.1 --port 8000
+```
+
+```powershell
+& $pyCh04 -X utf8 -m pytest -q
+& $pyCh04 -X utf8 -m ruff check src tests scripts/smoke_ch04_acceptance.py scripts/migrate_ch04_schema.py
+```
+
+查询是单轮归一，同义词只扩展检索文本；不做指代消解/多轮改写。低置信度、空证据、生成自评不足及引用不合格共用明确拒答并独立提交问题池；基础设施错误返回错误，不伪装成完成的拒答。当前示例评估不能证明真实商品库上的泛化提升，需要以后补充真实匿名问题的人工标注。
 
 ## 目录结构
 

@@ -18,7 +18,7 @@ AGENT_SYSTEM = """你是 MewHelp 商城的智能客服助手,负责处理订单�
 - query_order(order_id):查订单状态、金额、下单时间
 - query_product(product_name):查商品价格与库存
 - query_logistics(order_id):查物流轨迹与当前位置
-- query_faq(keyword):查常见问题知识库,拿关键词去匹配
+- query_faq(keyword):语义检索知识库,keyword 可传用户的完整问法
 - create_ticket(description, ticket_type):为用户创建人工工单
 
 ## 硬约束

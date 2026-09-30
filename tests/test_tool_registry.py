@@ -7,6 +7,26 @@ from mewhelp.tools.infra import ToolResult
 from mewhelp.tools.registry import ToolRegistry, ToolSpec
 
 
+async def test_faq_retrieval_can_outlast_generic_three_second_tool_deadline(monkeypatch):
+    """BGE-M3 首次载入会超过旧工具 3 秒时限；FAQ 应返回答案而非超时。"""
+    import time
+
+    from mewhelp.tools import ticket
+
+    @tool
+    def query_faq(keyword: str) -> str:
+        """模拟首次载入嵌入模型后按用户问法检索。"""
+        time.sleep(3.2)
+        return "满 99 元包邮。"
+
+    monkeypatch.setattr(ticket, "build_knowledge_tools", lambda _factory: [query_faq])
+    registry = ticket.build_registry(lambda: None, conversation_id=1)
+    result = await registry.run("query_faq", {"keyword": "邮费是多少"})
+    assert result.ok is True
+    assert result.content == "满 99 元包邮。"
+    assert result.attempts == 1
+
+
 @tool
 def ok_tool(text: str) -> str:
     """成功。"""

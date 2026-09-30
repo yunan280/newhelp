@@ -1,7 +1,6 @@
 """人工录入知识的 HTTP 边界；原文先提交，向量失败时保留待补偿行。"""
 
 import logging
-import os
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -10,6 +9,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
@@ -22,11 +22,18 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/kb", tags=["knowledge"])
 
 
+class KnowledgeSourceSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+    )
+    knowledge_docs_root: Path = Path("knowledge-docs")
+
+
 @dataclass(frozen=True)
 class KbRuntime:
     session_factory: Callable[[], Session]
     publish: Callable[[int], None]
-    docs_root: Path = field(default_factory=lambda: Path(os.environ.get("KNOWLEDGE_DOCS_ROOT", "knowledge-docs")))
+    docs_root: Path = field(default_factory=lambda: KnowledgeSourceSettings().knowledge_docs_root)
 
 
 def get_kb_runtime() -> KbRuntime:

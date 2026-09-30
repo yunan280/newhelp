@@ -15,6 +15,28 @@ from mewhelp.knowledge.store import ChunkSnapshot, KnowledgeChunk
 from mewhelp.main import app
 
 
+def test_default_document_root_reads_dotenv(monkeypatch, tmp_path):
+    from mewhelp.knowledge.api import KbRuntime
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("KNOWLEDGE_DOCS_ROOT", raising=False)
+    root = tmp_path / "original-documents"
+    (tmp_path / ".env").write_text(
+        f"KNOWLEDGE_DOCS_ROOT={root.as_posix()}\nUNRELATED_SETTING=ignored\n", encoding="utf-8"
+    )
+    runtime = KbRuntime(lambda: None, lambda _: None)
+    assert runtime.docs_root == root
+
+
+def test_document_root_environment_overrides_dotenv(monkeypatch, tmp_path):
+    from mewhelp.knowledge.api import KbRuntime
+
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / ".env").write_text("KNOWLEDGE_DOCS_ROOT=dotenv-documents\n", encoding="utf-8")
+    monkeypatch.setenv("KNOWLEDGE_DOCS_ROOT", "process-documents")
+    assert KbRuntime(lambda: None, lambda _: None).docs_root == Path("process-documents")
+
+
 def document_chunk(root, filename="manual.md"):
     value = root.resolve().as_posix()
     if os.name == "nt":
