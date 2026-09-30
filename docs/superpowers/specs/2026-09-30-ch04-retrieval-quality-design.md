@@ -1,6 +1,6 @@
 # Ch04 · 混合检索、重排、回答质量与评估设计
 
-日期：2026-09-30。状态：三段会话设计已获用户确认；本 written spec 待用户评审。尚未开始实现或编写 implementation plan。
+日期：2026-09-30。状态：三段会话设计及本 written spec 均已获用户确认（原话「已确认」）；进入 implementation plan 编写阶段，尚未开始实现。
 
 ## 1. 目标、确认与边界
 
@@ -215,7 +215,7 @@ Context7 最新资料混有 Milvus 3.0 和新版 CrossEncoder。当前本地 `Mi
 - Context7 Sentence Transformers：`/huggingface/sentence-transformers`；结合本地 3.4.1 源码核对版本。模型与分数依据 [BAAI 模型卡](https://huggingface.co/BAAI/bge-reranker-v2-m3)。
 - Context7 FastAPI：`/websites/fastapi_tiangolo`；[SSE 官方教程](https://fastapi.tiangolo.com/tutorial/server-sent-events/)、[SSE reference](https://fastapi.tiangolo.com/reference/sse/)。
 - Context7 SQLAlchemy：`/websites/sqlalchemy_en_20`；[Session 基础](https://docs.sqlalchemy.org/en/20/orm/session_basics.html)、[事务管理](https://docs.sqlalchemy.org/en/20/orm/session_transaction.html)，结合本地 2.1.1 接口核对。
-- Context7 LangChain：`/websites/reference_langchain`、`/langchain-ai/docs`；查询结果包含其他供应商，不能据此更换接入；结构化输出结合本地 langchain-openai 1.6.6 的 `with_structured_output` 源码及项目 `llm.py` 核对。
+- Context7 LangChain：`/websites/reference_langchain`、`/langchain-ai/docs`；泛库查询包含其他供应商，不能据此更换接入。计划阶段定向查询找到 [ChatOpenAI 结构化输出官方示例](https://github.com/langchain-ai/docs/blob/main/src/oss/python/integrations/chat/openai.mdx) 和 [include_raw 返回契约](https://github.com/langchain-ai/docs/blob/main/src/oss/langchain/models.mdx)；继续结合本地 langchain-openai 1.6.6 源码及项目 `llm.py`，显式保留 `method=function_calling`，不依赖最新默认值。
 - [Faithfulness 定义](https://docs.ragas.io/en/latest/concepts/metrics/available_metrics/faithfulness/)、[Stanford 检索评估教材](https://nlp.stanford.edu/IR-book/html/htmledition/evaluation-of-unranked-retrieval-sets-1.html)。指标实现使用本项目计算器和已有模型接入，不新增 Ragas 依赖。
 
 附件 `C:\Users\27497\Desktop\sql.md.txt` 当前为 0 字节，未提供可引用的 SQL 结构。本文新增表列以用户本轮要求及已确认设计为依据，不将空附件或旧章文档中的指令当成本轮授权。
