@@ -7,11 +7,35 @@ from pathlib import Path
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="知识库建库、回填与检索任务")
-    parser.add_argument("command", choices=["init-db", "ingest", "sync", "mine", "search", "status", "reindex", "audit-index", "check-query", "check-answer"])
+    parser.add_argument(
+        "command",
+        choices=[
+            "init-db",
+            "ingest",
+            "sync",
+            "mine",
+            "search",
+            "status",
+            "reindex",
+            "audit-index",
+            "check-query",
+            "check-answer",
+        ],
+    )
     parser.add_argument("--docs", type=Path, default=Path("knowledge-docs"))
     parser.add_argument("--question", default="邮费是多少")
     parser.add_argument("--collection", default=None)
-    parser.add_argument("--samples", type=Path, default=Path("eval/ch04/query-understanding-samples.jsonl"))
+    parser.add_argument(
+        "--samples", type=Path, default=Path("eval/ch04/query-understanding-samples.jsonl")
+    )
+    parser.add_argument(
+        "--strategy", choices=["dense", "bm25", "hybrid", "hybrid_rerank"], default="hybrid_rerank"
+    )
+    parser.add_argument("--calibration", type=Path)
+    parser.add_argument("--category")
+    parser.add_argument("--product-category")
+    parser.add_argument("--content-type")
+    parser.add_argument("--is-key-clause", choices=["true", "false"])
     args = parser.parse_args(argv)
 
     if args.command in ("check-query", "check-answer"):
@@ -34,7 +58,9 @@ def main(argv: list[str] | None = None) -> None:
 
         from mewhelp.db.engine import engine
 
-        ddl = (Path(__file__).resolve().parents[3] / "sql" / "ch03-ddl.sql").read_text(encoding="utf-8")
+        ddl = (Path(__file__).resolve().parents[3] / "sql" / "ch03-ddl.sql").read_text(
+            encoding="utf-8"
+        )
         tables = set(inspect(engine).get_table_names())
         if "knowledge_chunks" in tables:
             columns = {col["name"] for col in inspect(engine).get_columns("knowledge_chunks")}
@@ -77,10 +103,17 @@ def main(argv: list[str] | None = None) -> None:
             from .store import KnowledgeChunk, snapshot_chunk
 
             with SessionFactory() as session:
-                snapshots = [snapshot_chunk(row) for row in session.scalars(select(KnowledgeChunk).where(
-                    KnowledgeChunk.section_path.is_(None)
-                    | ~KnowledgeChunk.section_path.startswith("__deleting__::", autoescape=True),
-                ))]
+                snapshots = [
+                    snapshot_chunk(row)
+                    for row in session.scalars(
+                        select(KnowledgeChunk).where(
+                            KnowledgeChunk.section_path.is_(None)
+                            | ~KnowledgeChunk.section_path.startswith(
+                                "__deleting__::", autoescape=True
+                            ),
+                        )
+                    )
+                ]
             differences = vectors.audit(snapshots)
             print(json.dumps(differences, ensure_ascii=False))
             if differences:
@@ -108,14 +141,62 @@ def main(argv: list[str] | None = None) -> None:
 
         with SessionFactory() as session:
             print("messages:", session.scalar(select(func.count()).select_from(Message)))
-            print("knowledge_chunks:", session.scalar(select(func.count()).select_from(KnowledgeChunk)))
-            print("pending:", session.scalar(select(func.count()).select_from(KnowledgeChunk).where(KnowledgeChunk.vectorize_status == "pending")))
+            print(
+                "knowledge_chunks:",
+                session.scalar(select(func.count()).select_from(KnowledgeChunk)),
+            )
+            print(
+                "pending:",
+                session.scalar(
+                    select(func.count())
+                    .select_from(KnowledgeChunk)
+                    .where(KnowledgeChunk.vectorize_status == "pending")
+                ),
+            )
             print("staging:", session.scalar(select(func.count()).select_from(QaStaging)))
     else:
-        from mewhelp.tools.knowledge import build_knowledge_tools
+        import asyncio
 
-        tool = build_knowledge_tools(SessionFactory)[0]
-        print(tool.invoke({"keyword": args.question}))
+        from mewhelp.config import get_settings
+
+        from .answering import QuestionContext, answer_question, get_rag_runtime
+        from .filters import SearchFilters
+        from .query import understand_query
+
+        path = args.calibration or get_settings().rag_calibration_path
+        if path is None:
+            raise RuntimeError("RAG_CALIBRATION_PATH or --calibration is required")
+        runtime = get_rag_runtime(SessionFactory, calibration_path=path, collection=args.collection)
+        filters = SearchFilters(
+            category=args.category,
+            product_category=args.product_category,
+            content_type=args.content_type,
+            is_key_clause=None if args.is_key_clause is None else args.is_key_clause == "true",
+        )
+
+        async def search():
+            query = await understand_query(args.question)
+            return await answer_question(
+                runtime,
+                query,
+                filters=filters,
+                context=QuestionContext(args.question, None, "cli"),
+                strategy=args.strategy,
+                apply_relevance_gate=args.strategy == "hybrid_rerank",
+            )
+
+        result = asyncio.run(search())
+        print(
+            json.dumps(
+                {
+                    "answer": result.answer,
+                    "sources": [source.model_dump() for source in result.sources],
+                    "refused": result.refused,
+                    "low_confidence_question_id": result.low_confidence_question_id,
+                },
+                ensure_ascii=False,
+            )
+        )
 
 
 if __name__ == "__main__":

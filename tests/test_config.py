@@ -6,6 +6,13 @@ from pydantic import ValidationError
 from mewhelp.config import HISTORY_TOKEN_BUDGET, Settings, get_settings
 
 
+@pytest.fixture(autouse=True)
+def isolate_llm_settings(monkeypatch):
+    """BaseSettings 优先读进程环境；测试临时 .env 前先清理宿主覆盖值。"""
+    for name in ("OPENAI_API_KEY", "OPENAI_BASE_URL", "LLM_MODEL", "LLM_TEMPERATURE"):
+        monkeypatch.delenv(name, raising=False)
+
+
 def write_env(tmp_path, body: str):
     p = tmp_path / ".env"
     p.write_text(body, encoding="utf-8")
@@ -51,3 +58,16 @@ def test_get_settings_is_process_wide_singleton():
 
 def test_history_token_budget_is_a_module_constant():
     assert HISTORY_TOKEN_BUDGET == 2048
+
+
+def test_rag_configuration_is_explicit_and_budget_positive(tmp_path):
+    env = write_env(
+        tmp_path,
+        "OPENAI_API_KEY=k\nLLM_MODEL=m\nRAG_CALIBRATION_PATH=eval/ch04/calibration.json\nRAG_CONTEXT_BUDGET=16000\n",
+    )
+    settings = Settings(_env_file=env)
+    assert settings.rag_context_budget == 16000
+    assert settings.rag_calibration_path.as_posix() == "eval/ch04/calibration.json"
+    env.write_text("OPENAI_API_KEY=k\nLLM_MODEL=m\nRAG_CONTEXT_BUDGET=0\n")
+    with pytest.raises(ValidationError):
+        Settings(_env_file=env)

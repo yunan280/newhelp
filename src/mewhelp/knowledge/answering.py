@@ -95,6 +95,32 @@ async def generate_assessment(
         return None
 
 
+def get_rag_runtime(
+    session_factory: Callable[[], Session],
+    *,
+    calibration_path: Path,
+    collection: str | None = None,
+) -> RagRuntime:
+    from mewhelp.config import get_settings
+
+    from .embedding import embed_texts
+    from .reranking import rerank_chunks, reranker_metadata
+    from .vectors import MilvusSettings
+
+    settings = get_settings()
+    if settings.rag_context_budget is None:
+        raise RuntimeError("RAG_CONTEXT_BUDGET must be explicitly configured")
+    if not calibration_path.is_file():
+        raise RuntimeError("RAG calibration artifact is unavailable")
+    threshold = load_relevance_threshold(calibration_path, reranker_metadata())
+    index = MilvusSettings().connect_hybrid(collection=collection)
+    index.ensure_collection()
+    retrieval = RetrievalRuntime(session_factory, embed_texts, index, rerank_chunks)
+    return RagRuntime(
+        retrieval, generate_assessment, session_factory, threshold, settings.rag_context_budget
+    )
+
+
 def load_relevance_threshold(path: Path, expected_model_metadata: dict) -> float:
     try:
         record = json.loads(path.read_text(encoding="utf-8"))

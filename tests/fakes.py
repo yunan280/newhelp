@@ -8,6 +8,7 @@ NotImplementedError,而 ch02 的编排核心全程都要 bind_tools。ch01 那�
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import AIMessage, AIMessageChunk
 from langchain_core.outputs import ChatGeneration, ChatGenerationChunk, ChatResult
+from pydantic import Field
 
 
 def tool_call_chunks(
@@ -45,8 +46,8 @@ class FakeToolChatModel(BaseChatModel):
     `rounds` 里每一项是"一次模型调用"要吐的块列表,按调用顺序消费。
     """
 
-    rounds: list[list[AIMessageChunk]] = []
-    bound_tools: list = []
+    rounds: list[list[AIMessageChunk]] = Field(default_factory=list)
+    bound_tools: list = Field(default_factory=list)
     bind_calls: int = 0
 
     @property
@@ -74,3 +75,21 @@ class FakeToolChatModel(BaseChatModel):
     async def _astream(self, messages, stop=None, run_manager=None, **kwargs):
         for chunk in self._next_round():
             yield ChatGenerationChunk(message=chunk)
+
+
+def patch_query_understanding(monkeypatch):
+    """Isolate the existing business/stream/locking tests from the real classifier.
+
+    Synthetic labels such as A/B exercise locking, not intent classification.
+    Classification itself has separate labeled live validation and Ch04 tests.
+    """
+    from mewhelp.ch02 import service
+    from mewhelp.knowledge.query import QueryUnderstanding
+
+    async def understand(question, **kwargs):
+        route = "business" if any(word in question for word in ("订单", "物流", "库存", "有货", "价格", "工单")) else "greeting"
+        if "退货政策" in question:
+            route = "knowledge"
+        return QueryUnderstanding(question, question, question, route, [])
+
+    monkeypatch.setattr(service, "understand_query", understand)

@@ -25,7 +25,7 @@ from sqlalchemy.orm import Session
 
 from mewhelp.ch01.service import EmptyCompletionError
 
-from .events import SessionEvent, TokenEvent, ToolEvent
+from .events import SessionEvent, SourcesEvent, TokenEvent, ToolEvent
 from .schemas import AgentRequest, ChatRequest
 from .service import run_agent_turn, stream_agent_turn
 
@@ -68,6 +68,15 @@ def _frame(event) -> ServerSentEvent:
         return ServerSentEvent(event="tool", data=data)
     if isinstance(event, TokenEvent):
         return ServerSentEvent(event="token", data={"text": event.text})
+    if isinstance(event, SourcesEvent):
+        return ServerSentEvent(
+            event="sources",
+            data={
+                "sources": [source.model_dump() for source in event.sources],
+                "refused": event.refused,
+                "low_confidence_question_id": event.low_confidence_question_id,
+            },
+        )
     return ServerSentEvent(event="done", data={"finish_reason": event.finish_reason})
 
 
@@ -87,16 +96,13 @@ async def chat_stream(
             session_id=req.session_id,
             user_id=req.resolved_user_id,
             message=req.message,
+            filters=req.filters,
         ):
             yield _frame(event)
     except EmptyCompletionError as exc:
-        yield ServerSentEvent(
-            event="error", data={"message": str(exc), "code": "empty_completion"}
-        )
+        yield ServerSentEvent(event="error", data={"message": str(exc), "code": "empty_completion"})
     except Exception as exc:  # noqa: BLE001 —— 任何上游异常都要转成 error 事件
-        yield ServerSentEvent(
-            event="error", data={"message": str(exc), "code": "upstream_error"}
-        )
+        yield ServerSentEvent(event="error", data={"message": str(exc), "code": "upstream_error"})
 
 
 @router.post("/agent")
@@ -119,6 +125,7 @@ async def agent(
             session_id=req.session_id,
             user_id=req.resolved_user_id,
             message=req.message,
+            filters=req.filters,
         )
     except EmptyCompletionError as exc:
         raise HTTPException(status_code=502, detail=f"模型没有产出任何内容:{exc}") from exc
@@ -132,6 +139,9 @@ async def agent(
         "conversation_id": result.conversation_id,
         "resumed": result.resumed,
         "answer": result.answer,
+        "sources": [source.model_dump() for source in result.sources],
+        "refused": result.refused,
+        "low_confidence_question_id": result.low_confidence_question_id,
         "tool_calls": result.tool_calls,
         "tool_results": [
             {

@@ -16,6 +16,12 @@ from mewhelp.db.seed import seed
 from tests.fakes import FakeToolChatModel, text_chunks, tool_call_chunks
 
 
+@pytest.fixture(autouse=True)
+def isolated_query_understanding(monkeypatch):
+    from tests.fakes import patch_query_understanding
+    patch_query_understanding(monkeypatch)
+
+
 @pytest.fixture
 def session_factory():
     engine = create_engine(

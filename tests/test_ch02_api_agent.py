@@ -14,6 +14,12 @@ from mewhelp.db.seed import seed
 from tests.fakes import FakeToolChatModel, text_chunks, tool_call_chunks
 
 
+@pytest.fixture(autouse=True)
+def isolated_query_understanding(monkeypatch):
+    from tests.fakes import patch_query_understanding
+    patch_query_understanding(monkeypatch)
+
+
 @pytest.fixture
 def session_factory():
     engine = create_engine(
@@ -69,7 +75,7 @@ def test_a_plain_turn_returns_empty_trace(client, monkeypatch):
 
 def test_a_failed_tool_is_reported_as_ok_false_not_a_5xx(client, monkeypatch):
     patch_model(monkeypatch, FakeToolChatModel(rounds=[
-        tool_call_chunks("query_stock", '{"sku": "1"}'),
+        tool_call_chunks("query_product", '{"sku": "1"}'),
         text_chunks("抱歉,没查到。"),
     ]))
     resp = client.post("/ch02/agent", json={"session_id": "s1", "message": "有货吗"})

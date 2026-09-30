@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 from langchain_core.tools import BaseTool
 
-from .infra import ToolResult, execute_tool
+from .infra import TOOL_TIMEOUT_SECONDS, ToolResult, execute_tool
 
 
 @dataclass(frozen=True)
@@ -18,6 +18,7 @@ class ToolSpec:
     tool: BaseTool
     # 写类工具设 False。没有幂等设施时重试会重复建单。
     retryable: bool = True
+    timeout_seconds: float = TOOL_TIMEOUT_SECONDS
 
 
 class ToolRegistry:
@@ -54,7 +55,9 @@ class ToolRegistry:
                 elapsed_ms=0,
                 attempts=0,
             )
-        return await execute_tool(spec.tool, args, retryable=spec.retryable)
+        return await execute_tool(
+            spec.tool, args, retryable=spec.retryable, timeout=spec.timeout_seconds
+        )
 
     async def run_all(self, calls: Sequence[Mapping]) -> list[ToolResult]:
         """一轮里的所有 tool_calls **全部执行**,并发跑,结果顺序与入参一致。

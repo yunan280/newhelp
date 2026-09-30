@@ -12,6 +12,12 @@ from mewhelp.db.seed import seed
 from tests.fakes import FakeToolChatModel, text_chunks, tool_call_chunks
 
 
+@pytest.fixture(autouse=True)
+def isolated_query_understanding(monkeypatch):
+    from tests.fakes import patch_query_understanding
+    patch_query_understanding(monkeypatch)
+
+
 @pytest.fixture
 def session_factory():
     engine = create_engine(
@@ -139,18 +145,10 @@ async def test_resumed_is_true_on_the_second_turn(session_factory, monkeypatch):
     assert second.resumed is True
 
 
-async def test_eval_transport_works_for_the_shipped_cases(session_factory, monkeypatch):
-    """评估集要用的形状:`result.tool_calls` 里能直接读出工具名。
-
-    这条是 Task 17 的前置 —— eval 不解析 SSE,就靠这个字段。
-    """
-    patch_model(monkeypatch, FakeToolChatModel(rounds=[
-        tool_call_chunks("query_faq", '{"keyword": "退货"}'),
-        text_chunks("签收后 7 天内可无理由退货。"),
-    ]))
-    result = await service.run_agent_turn(
-        session_factory, session_id="s1", user_id="u1", message="退货政策是什么"
-    )
-
-    assert [c["name"] for c in result.tool_calls] == ["query_faq"]
-    assert "7 天" in result.answer
+async def test_knowledge_requires_calibration_and_cannot_use_the_ordinary_model(session_factory, monkeypatch):
+    from types import SimpleNamespace
+    model = patch_model(monkeypatch, FakeToolChatModel(rounds=[text_chunks("未经验证的退货规则")]))
+    monkeypatch.setattr(service, "get_settings", lambda: SimpleNamespace(rag_calibration_path=None))
+    with pytest.raises(RuntimeError, match="RAG_CALIBRATION_PATH"):
+        await service.run_agent_turn(session_factory, session_id="s1", user_id="u1", message="退货政策是什么")
+    assert model.bind_calls == 0

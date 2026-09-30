@@ -3,8 +3,10 @@ import json
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
+from sqlalchemy.pool import StaticPool
 
 from mewhelp.db.base import Base
+from mewhelp.knowledge.refusals import LowConfidenceQuestion
 from mewhelp.knowledge.store import KnowledgeDraft, put_chunk
 
 
@@ -13,13 +15,17 @@ def cli_environment(monkeypatch):
     from mewhelp.db import engine as db
     from mewhelp.knowledge import embedding, vectors
 
-    engine = create_engine("sqlite://")
+    engine = create_engine(
+        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
+    )
     Base.metadata.create_all(engine)
     factory = lambda: Session(engine)
     monkeypatch.setattr(db, "SessionFactory", factory)
     monkeypatch.setattr(embedding, "embed_texts", lambda texts: [[0.1] * 1024 for _ in texts])
     with factory() as session:
-        row = put_chunk(session, KnowledgeDraft("cli:one", "参数", "HX-210", "蓝牙 5.3", "手册", "manual"))
+        row = put_chunk(
+            session, KnowledgeDraft("cli:one", "参数", "HX-210", "蓝牙 5.3", "手册", "manual")
+        )
         row.vectorize_status = "done"
         row_id = row.id
         session.commit()
@@ -79,3 +85,71 @@ def test_audit_clean_index_succeeds(cli_environment, capsys):
 
     main(["audit-index", "--collection", "knowledge_ch04"])
     assert json.loads(capsys.readouterr().out) == []
+
+
+def test_search_uses_shared_answering_and_cli_refusal_context(cli_environment, monkeypatch, capsys):
+    from sqlalchemy import select
+
+    from mewhelp.db import engine as db
+    from mewhelp.knowledge import answering, query
+    from mewhelp.knowledge.answering import RagRuntime
+    from mewhelp.knowledge.cli import main
+    from mewhelp.knowledge.query import QueryUnderstanding
+    from mewhelp.knowledge.retrieval import RetrievalRuntime
+
+    observed = []
+
+    class Index:
+        def search(self, strategy, **kwargs):
+            observed.append((strategy, kwargs["filters"]))
+            return []
+
+    async def forbidden(messages):
+        raise AssertionError("empty retrieval cannot generate")
+
+    runtime = RagRuntime(
+        RetrievalRuntime(db.SessionFactory, lambda t: [[0.1] * 1024], Index(), None),
+        forbidden,
+        db.SessionFactory,
+        0.5,
+        30000,
+    )
+    monkeypatch.setattr(answering, "get_rag_runtime", lambda *args, **kwargs: runtime)
+
+    async def understand(question, **kwargs):
+        return QueryUnderstanding(question, question, question, "knowledge", [])
+
+    monkeypatch.setattr(query, "understand_query", understand)
+    main(
+        [
+            "search",
+            "--question",
+            "HX-999有什么参数？",
+            "--calibration",
+            "unused-test.json",
+            "--product-category",
+            "耳机",
+            "--category",
+            "参数",
+            "--content-type",
+            "manual",
+            "--is-key-clause",
+            "false",
+        ]
+    )
+    result = json.loads(capsys.readouterr().out)
+    assert result["refused"] and result["sources"] == [] and result["low_confidence_question_id"]
+    assert observed[0][0] == "hybrid_rerank"
+    assert observed[0][1].model_dump() == {
+        "category": "参数",
+        "product_category": "耳机",
+        "content_type": "manual",
+        "is_key_clause": False,
+    }
+    with db.SessionFactory() as session:
+        row = session.scalar(select(LowConfidenceQuestion))
+        assert (
+            row.original_question == "HX-999有什么参数？"
+            and row.entry_point == "cli"
+            and row.source_conversation_id is None
+        )

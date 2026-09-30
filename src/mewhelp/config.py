@@ -4,7 +4,9 @@
 """
 
 from functools import lru_cache
+from pathlib import Path
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -20,6 +22,8 @@ class Settings(BaseSettings):
     openai_base_url: str = "https://api.openai.com/v1"
     llm_model: str
     llm_temperature: float = 0.3
+    rag_calibration_path: Path | None = None
+    rag_context_budget: int | None = Field(default=None, gt=0)
 
 
 @lru_cache

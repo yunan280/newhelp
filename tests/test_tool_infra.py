@@ -56,7 +56,7 @@ def _reset_flaky():
 
 async def no_sleep(_seconds: float) -> None:
     """重试的退避在测试里不该真的睡 —— 3 次尝试要睡 0.6 秒,套件会变慢且脆。"""
-    return None
+    return
 
 
 # ---------- 成功路径 ----------
@@ -111,8 +111,9 @@ async def test_extra_argument_keys_are_silently_dropped():
 
     断言的是"工具拿到了干净的 args",不是"报错了"。
     """
-    result = await execute_tool(echo, {"text": "hi", "unexpected": 1},
-                                retryable=True, sleep=no_sleep)
+    result = await execute_tool(
+        echo, {"text": "hi", "unexpected": 1}, retryable=True, sleep=no_sleep
+    )
     assert result.ok is True
     assert result.content == "echo:hi"
     assert result.args == {"text": "hi"}  # 多出来的键没进工具
@@ -259,3 +260,26 @@ async def test_oversized_tool_output_is_truncated():
     assert result.content.startswith("字")
     # 截断必须说出来,否则模型以为这就是全部内容
     assert "截断" in result.content
+
+
+async def test_knowledge_artifact_keeps_full_content_and_source_snapshots():
+    from langchain_core.tools import tool
+
+    from mewhelp.knowledge.retrieval import RankedChunk, RetrievalResult
+    from mewhelp.knowledge.store import ChunkSnapshot
+    from mewhelp.tools.infra import execute_tool
+
+    body = "完整证据" * 900
+    chunk = ChunkSnapshot(
+        9007199254740993, body, "问题", body, "章节", "参数", None, "manual", False, "a" * 64
+    )
+    evidence = RetrievalResult([chunk], [RankedChunk(chunk, 0.9)])
+
+    @tool(response_format="content_and_artifact")
+    async def query_faq(keyword: str):
+        """Retrieve complete knowledge evidence."""
+        return body, evidence
+
+    result = await execute_tool(query_faq, {"keyword": "问题"}, retryable=False)
+    assert result.ok and result.content == body and result.artifact is evidence
+    assert result.artifact.final[0].chunk.id == 9007199254740993

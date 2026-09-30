@@ -17,6 +17,12 @@ from tests.fakes import FakeToolChatModel, text_chunks, tool_call_chunks
 from tests.sse_utils import parse_sse
 
 
+@pytest.fixture(autouse=True)
+def isolated_query_understanding(monkeypatch):
+    from tests.fakes import patch_query_understanding
+    patch_query_understanding(monkeypatch)
+
+
 @pytest.fixture
 def session_factory():
     engine = create_engine(
@@ -95,7 +101,7 @@ def test_finish_reason_is_still_stop(client, monkeypatch):
 def test_tool_frame_on_a_failed_tool_carries_ok_false(client, monkeypatch):
     """工具失败不打断整轮 —— 模型照样作答,tool 帧的 end 带 ok=false。"""
     patch_model(monkeypatch, FakeToolChatModel(rounds=[
-        tool_call_chunks("query_stock", '{"sku": "1"}'),
+        tool_call_chunks("query_product", '{"sku": "1"}'),
         text_chunks("抱歉,我没查到这件商品的库存。"),
     ]))
     events = parse_sse(post(client, {"session_id": "s1", "message": "有货吗"}).text)

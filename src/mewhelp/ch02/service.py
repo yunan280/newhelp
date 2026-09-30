@@ -1,4 +1,4 @@
-"""第 2 章编排 —— 单轮工具调用。
+"""单轮客服编排：可信 Query 路由、业务工具与有据知识回答。
 
 两个出口共用一个核心:
 - `stream_agent_turn` 逐 token 流式(SSE 用)
@@ -9,9 +9,11 @@
 传输格式归 api 层(ch01 定下的边界)。
 """
 
+import asyncio
 import logging
+import time
 from collections.abc import AsyncIterator, Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from uuid import uuid4
 
 from langchain_core.messages import (
@@ -26,20 +28,37 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from mewhelp.ch01.service import EmptyCompletionError
-from mewhelp.config import HISTORY_TOKEN_BUDGET
+from mewhelp.config import HISTORY_TOKEN_BUDGET, get_settings
 from mewhelp.db.repository import (
     TurnMessage,
     append_messages,
     get_or_create_conversation,
     load_replay_messages,
 )
+from mewhelp.knowledge.answering import (
+    AnswerResult,
+    QuestionContext,
+    SourceDTO,
+    answer_question,
+    get_rag_runtime,
+)
+from mewhelp.knowledge.filters import SearchFilters
+from mewhelp.knowledge.query import QueryUnderstanding, understand_query
 from mewhelp.llm import get_chat_model
 from mewhelp.memory import store, trim_history
 from mewhelp.tools.infra import ToolResult
 from mewhelp.tools.registry import ToolRegistry
 from mewhelp.tools.ticket import build_registry
 
-from .events import AgentEvent, DoneEvent, SessionEvent, TokenEvent, ToolEvent, tool_event_from
+from .events import (
+    AgentEvent,
+    DoneEvent,
+    SessionEvent,
+    SourcesEvent,
+    TokenEvent,
+    ToolEvent,
+    tool_event_from,
+)
 from .prompts import AGENT_SYSTEM
 
 # 在编排层**重新声明**一次,不从 `db.engine` 引 —— 编排层不该依赖那条 MySQL 连接。
@@ -54,10 +73,13 @@ class PreparedTurn:
     session_id: str
     conversation_id: int
     resumed: bool
-    messages: list[BaseMessage]      # 送给模型的历史 + 本轮提问(含 system)
-    ai: AIMessage                    # turn1 的完整返回(可能带 tool_calls)
+    messages: list[BaseMessage]  # 送给模型的历史 + 本轮提问(含 system)
+    ai: AIMessage  # turn1 的完整返回(可能带 tool_calls)
     registry: ToolRegistry
     tool_results: list[ToolResult]
+    query: QueryUnderstanding | None = None
+    filters: SearchFilters | None = None
+    entry_point: str = "agent"
 
     @property
     def tool_messages(self) -> list[ToolMessage]:
@@ -111,29 +133,17 @@ async def _prepare_turn_events(
     user_id: str,
     message: str,
     sink: _Sink,
+    filters: SearchFilters | None = None,
+    entry_point: str = "agent",
 ) -> AsyncIterator[AgentEvent]:
-    """turn1 的**事件版**:会话身份 → 组装上下文 → 定工具 → 执行工具。
+    """先提交会话身份，再仅按当前问题路由。
 
-    事件在这一层产出、而不是等 `_prepare_turn` 整个跑完再补,是因为顺序本身就是
-    spec §11 ③④ 的要求:
-
-    - `session` 排在 turn1 之前 —— 它是身份,不是结果;
-    - turn1 的正文**边到边吐**(方案 (c))。模型既说前言又调工具时,前言与最终答案
-      同框,这是 (c) 相对 (a)(b) 的全部收益;把它们攒到最后再吐,收益就没了。
-      不调工具的轮次更直接:turn1 的正文**就是**最终答案,攒起来等于把 ch01 的
-      打字机丢掉 —— 而那才是多数轮次。
-    - `tool` 的 start 帧在**执行之前**推。徽章的意义是"它在查,不是卡住了";
-      等执行完再发,徽章挂出来时查询已经结束,这一帧只剩事后记录的价值。
-      所以 start 帧只有 name/args,结果字段留 None(等 end 帧补)。
-
-    不落库、不加锁、不生成 id —— 都归两个出口。理由见下面 `_prepare_turn` 的说明。
-
-    **写 `sink.prepared` 之后才结束**;调用方遍历完这个生成器才能拿到它。
+    知识问题交给共享 RAG 核心。问候保留逐块输出；业务前言缓冲，
+    只有取得业务工具结果后才进入收敛。工具 start 在执行前发出。
+    Session 锁与整轮落库由外层出口负责。
     """
     with session_factory() as session:
-        conv, created = _resolve_conversation(
-            session, session_id=session_id, user_id=user_id
-        )
+        conv, created = _resolve_conversation(session, session_id=session_id, user_id=user_id)
         conversation_id = conv.id
         resumed = not created
         session.commit()
@@ -149,7 +159,41 @@ async def _prepare_turn_events(
         HumanMessage(content=message),
     ]
 
-    registry = build_registry(session_factory, conversation_id)
+    query = await understand_query(message)
+    trusted_filters = filters or SearchFilters()
+    if query.route == "knowledge":
+        # No ordinary model can produce a factual preamble on this path.
+        ai = AIMessage(
+            content="",
+            tool_calls=[
+                {
+                    "name": "query_faq",
+                    "args": {"keyword": message},
+                    "id": uuid4().hex,
+                    "type": "tool_call",
+                }
+            ],
+        )
+        sink.prepared = PreparedTurn(
+            session_id,
+            conversation_id,
+            resumed,
+            messages,
+            ai,
+            ToolRegistry({}),
+            [],
+            query,
+            trusted_filters,
+            entry_point,
+        )
+        return
+    registry = build_registry(
+        session_factory,
+        conversation_id,
+        context=QuestionContext(message, conversation_id, entry_point),
+        filters=trusted_filters,
+        query=query,
+    )
 
     # turn1 走 astream 而不是 ainvoke:模型既可能只吐工具调用,也可能先说一句
     # 前言再调工具。若走 ainvoke,"不需要工具"的那些轮次就再也流不了式了 ——
@@ -157,7 +201,7 @@ async def _prepare_turn_events(
     # 分片的 tool_call_chunks 靠 AIMessageChunk 相加拼回完整 tool_calls(已实测)。
     collected: AIMessageChunk | None = None
     async for chunk in get_chat_model().bind_tools(registry.tools()).astream(messages):
-        if chunk.text:
+        if chunk.text and query.route == "greeting":
             yield TokenEvent(text=chunk.text)
         collected = chunk if collected is None else collected + chunk
 
@@ -188,6 +232,9 @@ async def _prepare_turn_events(
         ai=ai,
         registry=registry,
         tool_results=results,
+        query=query,
+        filters=trusted_filters,
+        entry_point=entry_point,
     )
 
 
@@ -197,6 +244,7 @@ async def _prepare_turn(
     session_id: str,
     user_id: str,
     message: str,
+    filters: SearchFilters | None = None,
 ) -> PreparedTurn:
     """turn1:会话身份 → 组装上下文 → 定工具 → 执行工具。
 
@@ -218,7 +266,12 @@ async def _prepare_turn(
     """
     sink = _Sink()
     async for _event in _prepare_turn_events(
-        session_factory, session_id=session_id, user_id=user_id, message=message, sink=sink
+        session_factory,
+        session_id=session_id,
+        user_id=user_id,
+        message=message,
+        sink=sink,
+        filters=filters,
     ):
         pass
     if sink.prepared is None:  # pragma: no cover —— 生成器必然在耗尽前写入
@@ -226,7 +279,9 @@ async def _prepare_turn(
     return sink.prepared
 
 
-def build_turn_rows(prepared: PreparedTurn, *, answer: str) -> list[TurnMessage]:
+def build_turn_rows(
+    prepared: PreparedTurn, *, answer: str, citations: list[dict] | None = None
+) -> list[TurnMessage]:
     """一轮成功后要写的消息行。调了工具写 4 条,没调写 2 条。"""
     from mewhelp.db.models import MsgRole
 
@@ -243,12 +298,16 @@ def build_turn_rows(prepared: PreparedTurn, *, answer: str) -> list[TurnMessage]
             rows.append(
                 TurnMessage(role=MsgRole.tool, content=result.content, tool_call_id=call["id"])
             )
-    rows.append(TurnMessage(role=MsgRole.assistant, content=answer))
+    rows.append(TurnMessage(role=MsgRole.assistant, content=answer, citations=citations))
     return rows
 
 
 def persist_turn(
-    session_factory: SessionFactory, prepared: PreparedTurn, *, answer: str
+    session_factory: SessionFactory,
+    prepared: PreparedTurn,
+    *,
+    answer: str,
+    citations: list[dict] | None = None,
 ) -> None:
     """整轮成功后一次性落库。
 
@@ -261,7 +320,7 @@ def persist_turn(
             append_messages(
                 session,
                 conversation_id=prepared.conversation_id,
-                rows=build_turn_rows(prepared, answer=answer),
+                rows=build_turn_rows(prepared, answer=answer, citations=citations),
             )
             session.commit()
     except Exception:  # 落库失败不许推翻已经答完的那一轮
@@ -270,43 +329,119 @@ def persist_turn(
         )
 
 
+def _needs_knowledge(prepared: PreparedTurn) -> bool:
+    if prepared.query is None:
+        return False
+    if prepared.query.route == "knowledge" or any(
+        call["name"] == "query_faq" for call in prepared.ai.tool_calls
+    ):
+        return True
+    business_names = {"query_order", "query_product", "query_logistics", "create_ticket"}
+    # A structured failure is trustworthy evidence that the business operation failed.
+    return prepared.query.route == "business" and not any(
+        result.name in business_names for result in prepared.tool_results
+    )
+
+
+async def _answer_knowledge(
+    session_factory: SessionFactory, prepared: PreparedTurn
+) -> AnswerResult:
+    query = prepared.query
+    if query is None:
+        raise RuntimeError("trusted current query is missing")
+    path = get_settings().rag_calibration_path
+    if path is None:
+        raise RuntimeError("RAG_CALIBRATION_PATH must be configured for knowledge queries")
+    runtime = await asyncio.to_thread(get_rag_runtime, session_factory, calibration_path=path)
+    evidence = None
+    faq_results = [result for result in prepared.tool_results if result.name == "query_faq"]
+    if faq_results:
+        if any(not item.ok or item.artifact is None for item in faq_results):
+            raise RuntimeError("knowledge retrieval failed; no verified artifact available")
+        evidence = faq_results[0].artifact
+    started = time.monotonic()
+    result = await answer_question(
+        runtime,
+        query,
+        filters=prepared.filters or SearchFilters(),
+        context=QuestionContext(query.original, prepared.conversation_id, prepared.entry_point),
+        evidence=evidence,
+    )
+    if not faq_results:
+        if len(prepared.ai.tool_calls) == len(prepared.tool_results):
+            prepared.ai.tool_calls.append(
+                {
+                    "name": "query_faq",
+                    "args": {"keyword": query.original},
+                    "id": uuid4().hex,
+                    "type": "tool_call",
+                }
+            )
+        prepared.tool_results.append(
+            ToolResult(
+                "query_faq",
+                {"keyword": query.original},
+                True,
+                f"已复核 {len(result.retrieval.candidates)} 条候选证据",
+                None,
+                int((time.monotonic() - started) * 1000),
+                1,
+                result.retrieval,
+            )
+        )
+    return result
+
+
 async def stream_agent_turn(
     session_factory: SessionFactory,
     *,
     session_id: str | None,
     user_id: str,
     message: str,
+    filters: SearchFilters | None = None,
 ) -> AsyncIterator[AgentEvent]:
-    """跑一轮,逐 token 产出事件。
+    """锁覆盖整轮；知识答案校验后以 sources → token → done 交付。
 
-    事件顺序:session → tool(start/end)* → token* → done。
-    上游挂了、或最终回答为空,异常**直接抛出去** —— api 层翻成 error 帧,
-    这一层不产出 error 事件(它只管"发生了什么",不管传输格式)。
-
-    无工具的那条路也走流式:turn1 的正文就是最终答案,逐 token 吐出去。
-    这是方案 (c) 换来的东西 —— 非流式方案会让**多数**轮次丢掉打字机。
-
-    **锁罩住整轮**(读历史 → 定工具 → 执行 → 收敛 → 落库),不只是前半段。
-    理由是"读历史"与"落库"必须成对原子:只锁前半段的话,同一 session 的两轮
-    会各自读到同一份历史、各自收敛、再各写各的,落库顺序交错 —— 而两轮都以为
-    自己接住了上下文。用户双击发送就能撞上。
-
-    生成的 id 在锁**之前**算出来:锁是按 id 取的,没有 id 就无从加锁。
-    这就是"生成 id 归出口"的全部原因。
+    问候保持模型逐块流式。业务依据工具结果收敛。服务错误抛给 HTTP 层，
+    正常知识拒答先独立提交问题池，随后写消息账本。
     """
     resolved = session_id or uuid4().hex
 
     async with store.lock(resolved):
         sink = _Sink()
-        # turn1 的事件**直接转发**,不在这一层缓冲:typing 效果就靠它。
+        # 只转发已经按当前路由允许交付的事件。
         async for event in _prepare_turn_events(
-            session_factory, session_id=resolved, user_id=user_id, message=message, sink=sink
+            session_factory,
+            session_id=resolved,
+            user_id=user_id,
+            message=message,
+            sink=sink,
+            filters=filters,
+            entry_point="chat_stream",
         ):
             yield event
 
         prepared = sink.prepared
         if prepared is None:  # pragma: no cover —— 生成器必然在耗尽前写入
             raise RuntimeError("事件流结束了却没有产出 PreparedTurn")
+
+        if _needs_knowledge(prepared):
+            direct = not any(item.name == "query_faq" for item in prepared.tool_results)
+            if direct:
+                yield ToolEvent(name="query_faq", args={"keyword": message}, phase="start")
+            result = await _answer_knowledge(session_factory, prepared)
+            if direct:
+                yield tool_event_from(prepared.tool_results[-1], phase="end")
+            yield SourcesEvent(result.sources, result.refused, result.low_confidence_question_id)
+            yield TokenEvent(text=result.answer)
+            persist_turn(
+                session_factory,
+                prepared,
+                answer=result.answer,
+                citations=[source.model_dump() for source in result.sources],
+            )
+            yield DoneEvent()
+            return
 
         if prepared.ai.tool_calls:
             # 收敛:这一次**不 bind_tools**。模型没有工具可调,收敛不是靠嘱咐,
@@ -322,6 +457,8 @@ async def stream_agent_turn(
             # 没调工具:turn1 的正文**就是**最终答案,而它已经在上面逐块吐过了。
             # 这里只取拼接结果去落库与判空 —— 再吐一遍会变成重复正文。
             answer = prepared.ai.content if isinstance(prepared.ai.content, str) else ""
+            if prepared.query is not None and prepared.query.route == "business" and answer:
+                yield TokenEvent(text=answer)
 
         if not answer.strip():
             # 复用 ch01 的异常类:空回答会作为一条真正的空 assistant 消息永久重放。
@@ -344,6 +481,9 @@ class AgentTurnResult:
     answer: str
     tool_calls: list[dict]
     tool_results: list[ToolResult]
+    sources: list[SourceDTO] = field(default_factory=list)
+    refused: bool = False
+    low_confidence_question_id: str | None = None
 
 
 async def run_agent_turn(
@@ -352,6 +492,7 @@ async def run_agent_turn(
     session_id: str | None,
     user_id: str,
     message: str,
+    filters: SearchFilters | None = None,
 ) -> AgentTurnResult:
     """跑一轮,一次性返回完整轨迹 + 答案。
 
@@ -366,9 +507,28 @@ async def run_agent_turn(
 
     async with store.lock(resolved):
         prepared = await _prepare_turn(
-            session_factory, session_id=resolved, user_id=user_id, message=message
+            session_factory, session_id=resolved, user_id=user_id, message=message, filters=filters
         )
 
+        if _needs_knowledge(prepared):
+            result = await _answer_knowledge(session_factory, prepared)
+            persist_turn(
+                session_factory,
+                prepared,
+                answer=result.answer,
+                citations=[source.model_dump() for source in result.sources],
+            )
+            return AgentTurnResult(
+                prepared.session_id,
+                prepared.conversation_id,
+                prepared.resumed,
+                result.answer,
+                list(prepared.ai.tool_calls),
+                prepared.tool_results,
+                result.sources,
+                result.refused,
+                result.low_confidence_question_id,
+            )
         if prepared.ai.tool_calls:
             # 收敛:同样**不 bind_tools**。单轮是两个出口共同的硬约束。
             convergence_messages = [*prepared.messages, prepared.ai, *prepared.tool_messages]

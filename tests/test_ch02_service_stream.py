@@ -13,6 +13,12 @@ from mewhelp.db.seed import seed
 from tests.fakes import FakeToolChatModel, text_chunks, tool_call_chunks
 
 
+@pytest.fixture(autouse=True)
+def isolated_query_understanding(monkeypatch):
+    from tests.fakes import patch_query_understanding
+    patch_query_understanding(monkeypatch)
+
+
 @pytest.fixture
 def session_factory():
     engine = create_engine(
@@ -473,15 +479,10 @@ async def test_plain_turn_tokens_come_out_in_pieces_not_one_block(session_factor
     assert tokens == ["您好", ",", "有什么可以帮您?"]
 
 
-async def test_preamble_before_a_tool_call_is_streamed_then_the_answer_follows(
+async def test_business_preamble_is_buffered_and_only_convergence_is_delivered(
     session_factory, monkeypatch
 ):
-    """模型先说一句再调工具 → 前言与最终答案**同框**(spec §11 方案 (c) 的收益)。
-
-    顺序:[前言 token] → start → end → [最终答案 token]。
-    计划里那条路把前言整段丢掉了(只有收敛的正文会吐出去),用户看到的是
-    一个没有说话前言的客服。
-    """
+    """业务前言缓冲；工具执行后只交付依据工具结果收敛的正文。"""
     patch_model(monkeypatch, FakeToolChatModel(rounds=[
         text_chunks("让我查一下。") + tool_call_chunks("query_logistics", '{"order_id": "1001"}'),
         text_chunks("已到杭州。"),
@@ -499,7 +500,6 @@ async def test_preamble_before_a_tool_call_is_streamed_then_the_answer_follows(
     ]
     assert kinds == [
         ("other", None),            # SessionEvent
-        ("token", "让我查一下。"),
         ("tool", "start"),
         ("tool", "end"),
         ("token", "已到杭州。"),
@@ -525,8 +525,8 @@ async def test_tool_start_frame_arrives_before_the_tool_finishes(session_factory
 
     real_build = service.build_registry
 
-    def slow_build(session_factory, conversation_id):
-        registry = real_build(session_factory, conversation_id)
+    def slow_build(session_factory, conversation_id, **knowledge_dependencies):
+        registry = real_build(session_factory, conversation_id, **knowledge_dependencies)
         original = registry.run_all
 
         async def slow_run_all(calls):

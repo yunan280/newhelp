@@ -11,6 +11,7 @@
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from mewhelp.ch01.api import _reject_blank
+from mewhelp.knowledge.filters import SearchFilters
 
 # 占位身份。本章没有登录,聊天页也没有身份 —— 见 spec §6.4,
 # 造假鉴权比留一个诚实的占位更糟。
@@ -26,6 +27,7 @@ class _TurnRequest(BaseModel):
     )
     user_id: str | None = Field(default=None, description="用户标识,本章是占位。")
     message: str = Field(min_length=1, description="用户这一轮说的话,不能为空。")
+    filters: SearchFilters | None = None
 
     @field_validator("session_id")
     @classmethod

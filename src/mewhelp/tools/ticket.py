@@ -54,7 +54,7 @@ def build_ticket_tools(
         for _ in range(_MAX_TICKET_NO_ATTEMPTS):
             with session_factory() as session:
                 try:
-                    ticket_no = next_ticket_no(session, day=dt.date.today())
+                    ticket_no = next_ticket_no(session, day=dt.date.today())  # noqa: DTZ011 — 工单编号沿用本地日期
                     insert_ticket(
                         session,
                         conversation_id=conversation_id,
@@ -90,7 +90,7 @@ def build_ticket_tools(
 
 
 def build_registry(
-    session_factory: Callable[[], Session], conversation_id: int
+    session_factory: Callable[[], Session], conversation_id: int, **knowledge_dependencies
 ) -> ToolRegistry:
     """汇总五个工具。
 
@@ -102,7 +102,12 @@ def build_registry(
     specs: dict[str, ToolSpec] = {
         t.name: ToolSpec(tool=t) for t in build_business_tools()
     }
-    specs.update({t.name: ToolSpec(tool=t) for t in build_knowledge_tools(session_factory)})
+    # BGE-M3 冷加载在 Docker 同时启动时曾耗时 58.6 秒。线程里的超时调用
+    # 不会被 wait_for 取消，因此 FAQ 只执行一次并留出冷启动余量。
+    specs.update({
+        t.name: ToolSpec(tool=t, retryable=False, timeout_seconds=120.0)
+        for t in build_knowledge_tools(session_factory, **knowledge_dependencies)
+    })
     for t in build_ticket_tools(session_factory, conversation_id):
         # 唯一的写操作:不重试,避免重复建单。
         specs[t.name] = ToolSpec(tool=t, retryable=False)

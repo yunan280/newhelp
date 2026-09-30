@@ -11,6 +11,7 @@
 from dataclasses import dataclass
 from typing import Literal
 
+from mewhelp.knowledge.answering import SourceDTO
 from mewhelp.tools.infra import ToolResult
 
 
@@ -46,7 +47,14 @@ class DoneEvent:
     finish_reason: str = "stop"
 
 
-AgentEvent = SessionEvent | ToolEvent | TokenEvent | DoneEvent
+@dataclass(frozen=True)
+class SourcesEvent:
+    sources: list[SourceDTO]
+    refused: bool
+    low_confidence_question_id: str | None
+
+
+AgentEvent = SessionEvent | ToolEvent | SourcesEvent | TokenEvent | DoneEvent
 
 
 def tool_event_from(result: ToolResult, *, phase: Literal["start", "end"]) -> ToolEvent:

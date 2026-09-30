@@ -12,9 +12,15 @@ import asyncio
 import json
 import time
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+from uuid import uuid4
 
+from langchain_core.messages import ToolMessage
 from langchain_core.tools import BaseTool
 from pydantic import ValidationError
+
+if TYPE_CHECKING:
+    from mewhelp.knowledge.retrieval import RetrievalResult
 
 TOOL_TIMEOUT_SECONDS = 3.0
 
@@ -45,6 +51,7 @@ class ToolResult:
     error: str | None
     elapsed_ms: int
     attempts: int
+    artifact: "RetrievalResult | None" = None
 
 
 def _truncate(text: str) -> str:
@@ -99,8 +106,8 @@ async def execute_tool(
     **超时的诚实边界**:`asyncio.wait_for` 杀不掉已经在线程里跑的那个函数。
     实测 langchain 的 @tool 对同步函数的 ainvoke 已经把它丢进线程池
     (跑在 asyncio_0 线程),所以超时只是让我们不再等它,那个线程会自己跑完。
-    本章的工具都是"一次小查询或一次小插入",可以被放弃的代价是有界的 ——
-    但这是个真实存在的缝,别当成"超时已经做对了"。
+    对小查询可以重试；BGE-M3 检索的冷加载较重，按 ToolSpec 禁止超时重试，
+    避免已超时的线程和新重试同时加载模型。
 
     `sleep` 可注入:测试里不真睡,否则 3 次尝试要睡 0.6 秒,套件又慢又脆。
     """
@@ -131,7 +138,10 @@ async def execute_tool(
     while attempts < (MAX_ATTEMPTS if retryable else 1):
         attempts += 1
         try:
-            raw = await asyncio.wait_for(tool.ainvoke(args), timeout=timeout)
+            invocation = args
+            if tool.response_format == "content_and_artifact":
+                invocation = {"name": tool.name, "args": args, "id": uuid4().hex, "type": "tool_call"}
+            raw = await asyncio.wait_for(tool.ainvoke(invocation), timeout=timeout)
         except Exception as exc:  # noqa: BLE001 —— 工具坏了的任何形态都要接住
             last_error = type(exc).__name__
             last_message = f"{type(exc).__name__}: {exc}"
@@ -139,14 +149,22 @@ async def execute_tool(
                 await sleep(BACKOFF_SECONDS[attempts - 1])
             continue
 
+        artifact = raw.artifact if isinstance(raw, ToolMessage) else None
+        content = _as_text(raw.content if isinstance(raw, ToolMessage) else raw)
+        if artifact is not None:
+            from mewhelp.knowledge.retrieval import RetrievalResult
+
+            if not isinstance(artifact, RetrievalResult):
+                raise TypeError("knowledge tool returned an invalid evidence artifact")
         return ToolResult(
             name=tool.name,
             args=args,
             ok=True,
-            content=_truncate(_as_text(raw)),
+            content=content if artifact is not None else _truncate(content),
             error=None,
             elapsed_ms=int((time.monotonic() - started) * 1000),
             attempts=attempts,
+            artifact=artifact,
         )
 
     if last_error == "TimeoutError":

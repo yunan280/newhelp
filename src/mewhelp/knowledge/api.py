@@ -37,7 +37,7 @@ def get_kb_runtime() -> KbRuntime:
         from .sync import sync_pending
         from .vectors import MilvusSettings
 
-        vectors = MilvusSettings().connect()
+        vectors = MilvusSettings().connect_hybrid()
         vectors.ensure_collection()
         sync_pending(SessionFactory, embed_texts, vectors, row_ids=[row_id])
 
