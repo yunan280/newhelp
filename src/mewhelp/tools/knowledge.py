@@ -12,6 +12,7 @@ from mewhelp.knowledge.answering import QuestionContext, RagRuntime, get_rag_run
 from mewhelp.knowledge.embedding import embed_texts
 from mewhelp.knowledge.filters import SearchFilters
 from mewhelp.knowledge.query import QueryUnderstanding, understand_query
+from mewhelp.knowledge.reranking import UnsupportedContextError
 from mewhelp.knowledge.retrieval import RetrievalResult, retrieve_evidence
 
 
@@ -55,9 +56,13 @@ def build_knowledge_tools(
                     from dataclasses import replace
 
                     retrieval = replace(retrieval, embed=embed, index=vectors)
-                cached = await asyncio.to_thread(
-                    retrieve_evidence, retrieval, current, trusted_filters
-                )
+                try:
+                    cached = await asyncio.to_thread(
+                        retrieve_evidence, retrieval, current, trusted_filters
+                    )
+                except UnsupportedContextError as exc:
+                    # Domain refusal is a cached typed artifact; infrastructure failures still raise.
+                    cached = RetrievalResult([], [], unsupported_context_reason=str(exc))
         content = json.dumps(
             [
                 {

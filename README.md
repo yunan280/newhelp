@@ -23,9 +23,8 @@ python -m venv .venv
 source .venv/Scripts/activate      # Windows Git Bash
 # .venv\Scripts\activate           # Windows CMD/PowerShell
 
-# 2. 依赖(测试依赖 pytest / pytest-asyncio / ruff / pyyaml 在 [dev] extra 里,
-#    只装 `pip install -e .` 是跑不了测试的)
-pip install -e ".[dev]"
+# 2. 当前统一应用需要 rag extra；测试依赖在 dev extra
+pip install -e ".[rag,dev]"
 
 # 3. 配置密钥(.env 不会进版本库)
 cp .env.example .env

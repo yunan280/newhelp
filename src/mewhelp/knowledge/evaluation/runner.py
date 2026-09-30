@@ -25,8 +25,8 @@ from mewhelp.knowledge.answering import (
 from mewhelp.knowledge.embedding import embed_texts
 from mewhelp.knowledge.prompts import ANSWER_SYSTEM, QUERY_SYSTEM
 from mewhelp.knowledge.query import QueryUnderstanding, understand_query
-from mewhelp.knowledge.reranking import rerank_chunks, reranker_metadata
-from mewhelp.knowledge.retrieval import RetrievalRuntime, retrieve_evidence
+from mewhelp.knowledge.reranking import UnsupportedContextError, rerank_chunks, reranker_metadata
+from mewhelp.knowledge.retrieval import RetrievalResult, RetrievalRuntime, retrieve_evidence
 from mewhelp.knowledge.store import (
     KnowledgeChunk,
     KnowledgeDraft,
@@ -379,9 +379,33 @@ async def run_comparison(
             "judge_error": None,
             "refused": None,
             "faithfulness": None,
+            "error_stage": None,
         }
         began = time.perf_counter()
         try:
+            row["error_stage"] = "retrieval"
+            try:
+                evidence = await asyncio.to_thread(
+                    retrieve_evidence,
+                    runtime.retrieval,
+                    queries[case.id],
+                    case.filters,
+                    strategy=strategy,
+                )
+            except UnsupportedContextError as exc:
+                evidence = RetrievalResult([], [], unsupported_context_reason=str(exc))
+            candidates = [item.id for item in evidence.candidates]
+            final = [item.chunk.id for item in evidence.final]
+            row.update(
+                candidate_ids=[str(item) for item in candidates],
+                final=[{"id": str(item.chunk.id), "score": item.score} for item in evidence.final],
+                candidate_recall50=recall_at_k(candidates, case.relevant_chunk_ids, 50),
+                candidate_mrr50=reciprocal_rank_at_k(candidates, case.relevant_chunk_ids, 50),
+                final_recall5=recall_at_k(final, case.relevant_chunk_ids, 5),
+                final_recall10=recall_at_k(final, case.relevant_chunk_ids, 10),
+                final_mrr10=reciprocal_rank_at_k(final, case.relevant_chunk_ids, 10),
+            )
+            row["error_stage"] = "generation"
             result = await answer_question(
                 runtime,
                 queries[case.id],
@@ -390,31 +414,22 @@ async def run_comparison(
                 strategy=strategy,
                 apply_relevance_gate=False,
                 record_pool=False,
+                evidence=evidence,
             )
-            candidates = [item.id for item in result.retrieval.candidates]
-            final = [item.chunk.id for item in result.retrieval.final]
             row.update(
                 answer=result.answer,
                 refused=result.refused,
-                candidate_ids=[str(item) for item in candidates],
-                final=[
-                    {"id": str(item.chunk.id), "score": item.score}
-                    for item in result.retrieval.final
-                ],
                 sources=[source.model_dump() for source in result.sources],
-                candidate_recall50=recall_at_k(candidates, case.relevant_chunk_ids, 50),
-                candidate_mrr50=reciprocal_rank_at_k(candidates, case.relevant_chunk_ids, 50),
-                final_recall5=recall_at_k(final, case.relevant_chunk_ids, 5),
-                final_recall10=recall_at_k(final, case.relevant_chunk_ids, 10),
-                final_mrr10=reciprocal_rank_at_k(final, case.relevant_chunk_ids, 10),
             )
             if not result.refused:
+                row["error_stage"] = "judge"
                 judgement = await judge_answer(case.question, result.answer, result.sources)
                 row.update(
                     claims=[claim.model_dump() for claim in judgement.claims],
                     faithfulness=judgement.score,
                     judge_error=judgement.error,
                 )
+            row["error_stage"] = None
         except Exception as exc:  # noqa: BLE001 — 逐题保存实际错误而非冒充拒答
             row["error"] = f"{type(exc).__name__}: {exc}"
         row["elapsed_seconds"] = time.perf_counter() - began

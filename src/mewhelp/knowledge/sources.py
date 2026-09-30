@@ -38,7 +38,7 @@ def read_published_chunk(
 
 def read_document_source(chunk: ChunkSnapshot, root: Path) -> DocumentSource | None:
     match = re.fullmatch(r"corpus:([0-9a-f]{16})/(.+?)::(.*)", chunk.section_path or "")
-    if match is None or chunk.content_type not in ("policy", "manual"):
+    if match is None or chunk.content_type not in ("policy", "manual", "document", "table"):
         return None
     try:
         resolved_root = root.resolve()

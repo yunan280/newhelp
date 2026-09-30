@@ -48,6 +48,7 @@ async def test_ablations_share_query_but_do_not_share_rerank_gate(tmp_path, monk
         return AnswerResult("依据不足", [], True, None, RetrievalResult([], []))
 
     monkeypatch.setattr(runner, "answer_question", answer)
+    monkeypatch.setattr(runner, "retrieve_evidence", lambda *a, **kw: RetrievalResult([], []))
     await runner.prepare_run(
         corpus, cases, workdir=tmp_path, collection="ch04_eval_unit", run_id="unit"
     )

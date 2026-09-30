@@ -256,6 +256,10 @@ async def answer_question(
             )
         except UnsupportedContextError as exc:
             return await refuse("retrieval", "unsupported_context_size", str(exc))
+    if result.unsupported_context_reason is not None:
+        return await refuse(
+            "retrieval", "unsupported_context_size", result.unsupported_context_reason
+        )
     if not result.final:
         return await refuse("retrieval", "no_evidence", "没有有效且已发布的来源证据")
     if apply_relevance_gate:

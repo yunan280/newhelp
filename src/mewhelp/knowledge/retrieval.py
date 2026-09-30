@@ -22,6 +22,7 @@ class RankedChunk:
 class RetrievalResult:
     candidates: list[ChunkSnapshot]
     final: list[RankedChunk]
+    unsupported_context_reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -36,7 +37,8 @@ def retrieve_evidence(
     runtime: RetrievalRuntime,
     query: QueryUnderstanding,
     filters: SearchFilters,
-    *, strategy: Strategy = "hybrid_rerank",
+    *,
+    strategy: Strategy = "hybrid_rerank",
 ) -> RetrievalResult:
     vector = None
     if strategy != "bm25":
@@ -44,14 +46,20 @@ def retrieve_evidence(
         if len(vectors) != 1 or len(vectors[0]) != 1024:
             raise ValueError("BGE-M3 query vector must have 1024 dimensions")
         vector = vectors[0]
-    hits = runtime.index.search(strategy, vector=vector, bm25_query=query.bm25_query, filters=filters)
+    hits = runtime.index.search(
+        strategy, vector=vector, bm25_query=query.bm25_query, filters=filters
+    )
     candidates, seen = [], set()
     with runtime.session_factory() as session:
         for hit in hits[:50]:
             row = session.get(KnowledgeChunk, hit.id)
-            if (row is None or row.id in seen or row.vectorize_status != "done"
-                    or row.vector_id != str(row.id)
-                    or (row.section_path or "").startswith("__deleting__::")):
+            if (
+                row is None
+                or row.id in seen
+                or row.vectorize_status != "done"
+                or row.vector_id != str(row.id)
+                or (row.section_path or "").startswith("__deleting__::")
+            ):
                 continue
             snapshot = snapshot_chunk(row)
             if snapshot.content_hash != hit.content_hash or not filters.matches(snapshot):

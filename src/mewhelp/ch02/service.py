@@ -43,7 +43,7 @@ from mewhelp.knowledge.answering import (
     get_rag_runtime,
 )
 from mewhelp.knowledge.filters import SearchFilters
-from mewhelp.knowledge.query import QueryUnderstanding, understand_query
+from mewhelp.knowledge.query import QueryUnderstanding, requires_knowledge, understand_query
 from mewhelp.llm import get_chat_model
 from mewhelp.memory import store, trim_history
 from mewhelp.tools.infra import ToolResult
@@ -332,7 +332,7 @@ def persist_turn(
 def _needs_knowledge(prepared: PreparedTurn) -> bool:
     if prepared.query is None:
         return False
-    if prepared.query.route == "knowledge" or any(
+    if (prepared.query.route == "knowledge" or requires_knowledge(prepared.query.original)) or any(
         call["name"] == "query_faq" for call in prepared.ai.tool_calls
     ):
         return True
