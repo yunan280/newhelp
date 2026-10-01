@@ -1,0 +1,478 @@
+[
+  {
+    "id": "logistics-1",
+    "question": "订单1001的物流到哪了",
+    "expected": "物流",
+    "request_model": "deepseek-chat",
+    "actual": "物流",
+    "raw": "{\"intent\":\"物流\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 216,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "logistics-2",
+    "question": "包裹现在在哪个分拨中心",
+    "expected": "物流",
+    "request_model": "deepseek-chat",
+    "actual": "物流",
+    "raw": "{\"intent\":\"物流\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 215,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "logistics-3",
+    "question": "帮我看看快递有没有签收",
+    "expected": "物流",
+    "request_model": "deepseek-chat",
+    "actual": "物流",
+    "raw": "{\"intent\":\"物流\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 214,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "logistics-4",
+    "question": "请先查询订单1001的商品和下单时间，再查询物流最新节点，比较这两个时间",
+    "expected": "物流",
+    "request_model": "deepseek-chat",
+    "actual": "物流",
+    "raw": "{\"intent\":\"物流\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 228,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "order-1",
+    "question": "订单1001是什么商品",
+    "expected": "订单",
+    "request_model": "deepseek-chat",
+    "actual": "订单",
+    "raw": "{\"intent\":\"订单\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 213,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "order-2",
+    "question": "我下的订单现在是什么状态",
+    "expected": "订单",
+    "request_model": "deepseek-chat",
+    "actual": "订单",
+    "raw": "{\"intent\":\"订单\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 214,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "order-3",
+    "question": "查一下1002的实付金额",
+    "expected": "订单",
+    "request_model": "deepseek-chat",
+    "actual": "订单",
+    "raw": "{\"intent\":\"订单\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 216,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "order-4",
+    "question": "订单1001是什么时候下单的",
+    "expected": "订单",
+    "request_model": "deepseek-chat",
+    "actual": "订单",
+    "raw": "{\"intent\":\"订单\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 215,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "product-1",
+    "question": "这款跑鞋价格是多少",
+    "expected": "商品咨询",
+    "request_model": "deepseek-chat",
+    "actual": "商品咨询",
+    "raw": "{\"intent\":\"商品咨询\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 213,
+      "output_tokens": 7,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "product-2",
+    "question": "你们的保温杯能保温多久",
+    "expected": "商品咨询",
+    "request_model": "deepseek-chat",
+    "actual": "商品咨询",
+    "raw": "{\"intent\":\"商品咨询\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 214,
+      "output_tokens": 7,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "product-3",
+    "question": "机械键盘有哪些规格",
+    "expected": "商品咨询",
+    "request_model": "deepseek-chat",
+    "actual": "商品咨询",
+    "raw": "{\"intent\":\"商品咨询\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 212,
+      "output_tokens": 7,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "product-4",
+    "question": "降噪耳机还有库存吗",
+    "expected": "商品咨询",
+    "request_model": "deepseek-chat",
+    "actual": "商品咨询",
+    "raw": "{\"intent\":\"商品咨询\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 214,
+      "output_tokens": 7,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "refund-1",
+    "question": "七天无理由退货政策是什么",
+    "expected": "退款退货",
+    "request_model": "deepseek-chat",
+    "actual": "退款退货",
+    "raw": "{\"intent\":\"退款退货\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 214,
+      "output_tokens": 7,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "refund-2",
+    "question": "你好，订单1001能退吗",
+    "expected": "退款退货",
+    "request_model": "deepseek-chat",
+    "actual": "退款退货",
+    "raw": "{\"intent\":\"退款退货\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 216,
+      "output_tokens": 7,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "refund-3",
+    "question": "退款一般多久到账",
+    "expected": "退款退货",
+    "request_model": "deepseek-chat",
+    "actual": "退款退货",
+    "raw": "{\"intent\":\"退款退货\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 213,
+      "output_tokens": 7,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "refund-4",
+    "question": "退货的运费谁来承担",
+    "expected": "退款退货",
+    "request_model": "deepseek-chat",
+    "actual": "退款退货",
+    "raw": "{\"intent\":\"退款退货\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 213,
+      "output_tokens": 7,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "after-1",
+    "question": "我的售后申请处理到哪一步了",
+    "expected": "售后",
+    "request_model": "deepseek-chat",
+    "actual": "售后",
+    "raw": "{\"intent\":\"售后\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 216,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "after-2",
+    "question": "维修进度帮我查一下",
+    "expected": "售后",
+    "request_model": "deepseek-chat",
+    "actual": "售后",
+    "raw": "{\"intent\":\"售后\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 213,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "after-3",
+    "question": "我的换货申请审核了吗",
+    "expected": "售后",
+    "request_model": "deepseek-chat",
+    "actual": "售后",
+    "raw": "{\"intent\":\"售后\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 214,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "after-4",
+    "question": "订单1001售后服务记录查一下",
+    "expected": "售后",
+    "request_model": "deepseek-chat",
+    "actual": "售后",
+    "raw": "{\"intent\":\"售后\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 215,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "complaint-1",
+    "question": "我要投诉",
+    "expected": "投诉",
+    "request_model": "deepseek-chat",
+    "actual": "投诉",
+    "raw": "{\"intent\":\"投诉\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 210,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "complaint-2",
+    "question": "你们服务太差了我要投诉",
+    "expected": "投诉",
+    "request_model": "deepseek-chat",
+    "actual": "投诉",
+    "raw": "{\"intent\":\"投诉\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 214,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "complaint-3",
+    "question": "把我的不满记录下来",
+    "expected": "投诉",
+    "request_model": "deepseek-chat",
+    "actual": "投诉",
+    "raw": "{\"intent\":\"投诉\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 211,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "complaint-4",
+    "question": "我要举报客服态度恶劣",
+    "expected": "投诉",
+    "request_model": "deepseek-chat",
+    "actual": "投诉",
+    "raw": "{\"intent\":\"投诉\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 213,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  },
+  {
+    "id": "chat-1",
+    "question": "你好",
+    "expected": "闲聊",
+    "request_model": "deepseek-chat",
+    "actual": "闲聊",
+    "raw": "",
+    "origin": "local",
+    "response_model": null,
+    "usage": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "estimated": false
+    },
+    "calls": 0,
+    "passed": true
+  },
+  {
+    "id": "chat-2",
+    "question": "谢谢！",
+    "expected": "闲聊",
+    "request_model": "deepseek-chat",
+    "actual": "闲聊",
+    "raw": "",
+    "origin": "local",
+    "response_model": null,
+    "usage": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "estimated": false
+    },
+    "calls": 0,
+    "passed": true
+  },
+  {
+    "id": "chat-3",
+    "question": "你是谁",
+    "expected": "闲聊",
+    "request_model": "deepseek-chat",
+    "actual": "闲聊",
+    "raw": "",
+    "origin": "local",
+    "response_model": null,
+    "usage": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "estimated": false
+    },
+    "calls": 0,
+    "passed": true
+  },
+  {
+    "id": "chat-4",
+    "question": "今天的天气真不错",
+    "expected": "闲聊",
+    "request_model": "deepseek-chat",
+    "actual": "闲聊",
+    "raw": "{\"intent\":\"闲聊\"}",
+    "origin": "llm",
+    "response_model": "deepseek-flash",
+    "usage": {
+      "input_tokens": 212,
+      "output_tokens": 6,
+      "estimated": false
+    },
+    "calls": 1,
+    "passed": true
+  }
+]

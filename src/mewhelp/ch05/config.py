@@ -2,6 +2,8 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from mewhelp.llm import get_chat_model
+
 from .limits import AgentLimits
 
 
@@ -20,3 +22,15 @@ class Ch05Settings(BaseSettings):
 
     def limits(self) -> AgentLimits:
         return AgentLimits(**self.model_dump(exclude={"checkpoint_path"}))
+
+
+def get_ch05_model(output_tokens: int, *, temperature: float = 0.0, streaming: bool = False):
+    kwargs = {
+        "extra_body": {"max_tokens": output_tokens, "thinking": {"type": "disabled"}},
+        "timeout": 30,
+        "max_retries": 0,
+        "use_responses_api": False,
+    }
+    if streaming:
+        kwargs["stream_usage"] = True
+    return get_chat_model(temperature=temperature, **kwargs)

@@ -1,0 +1,18 @@
+{
+  "versions": {
+    "fastapi": "0.141.1",
+    "sqlalchemy": "2.1.1",
+    "langchain-core": "1.6.5",
+    "langchain-openai": "1.6.6",
+    "langgraph": "1.2.12",
+    "langgraph-checkpoint": "4.2.0",
+    "langgraph-checkpoint-sqlite": "3.1.1",
+    "pymilvus": "2.6.17",
+    "httpx": "0.28.1"
+  },
+  "signatures": {
+    "StateGraph": "(state_schema: 'type[StateT]', context_schema: 'type[ContextT] | None' = None, *, input_schema: 'type[InputT] | None' = None, output_schema: 'type[OutputT] | None' = None, **kwargs: 'Unpack[DeprecatedKwargs]') -> 'None'",
+    "AsyncSqliteSaver.from_conn_string": "(conn_string: 'str') -> 'AsyncIterator[AsyncSqliteSaver]'",
+    "ChatOpenAI.bind_tools": "(self, tools: 'Sequence[dict[str, Any] | type | Callable | BaseTool]', *, tool_choice: 'dict | str | bool | None' = None, strict: 'bool | None' = None, parallel_tool_calls: 'bool | None' = None, response_format: '_DictOrPydanticClass | None' = None, **kwargs: 'Any') -> 'Runnable[LanguageModelInput, AIMessage]'"
+  }
+}

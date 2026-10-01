@@ -1,0 +1,12 @@
+{"id":"simple-logistics","question":"订单1001物流在哪","expected":{"tool":"query_logistics","args":{"order_id":"1001"}},"observations":[]}
+{"id":"simple-order","question":"订单1001是什么商品","expected":{"tool":"query_order","args":{"order_id":"1001"}},"observations":[]}
+{"id":"missing-id","question":"查一下我的物流","expected":{"reply_mode":"clarify","actions":[]},"observations":[]}
+{"id":"full-order","question":"订单1001是什么商品","expected":{"reply_mode":"answer","actions":[]},"observations":[{"name":"query_order","args":{"order_id":"1001"},"content":"订单1001:商品保温杯，下单时间2026-09-01，实付59元，已发货"}]}
+{"id":"full-logistics","question":"订单1001物流在哪","expected":{"reply_mode":"answer","actions":[]},"observations":[{"name":"query_logistics","args":{"order_id":"1001"},"content":"订单1001物流:京东物流，最新位置上海分拨中心2026-09-05，派送中"}]}
+{"id":"handoff-only","question":"查询失败了，请帮我转人工，不要建工单","expected":{"reply_mode":"answer","actions":["handoff"]},"observations":[{"name":"query_order","args":{"order_id":"1001"},"content":"查询失败，服务暂不可用"}]}
+{"id":"ticket-only","question":"售后查不到，请给我建工单选项，不要转人工","expected":{"reply_mode":"answer","actions":["create_ticket"]},"observations":[]}
+{"id":"both-actions","question":"售后工具不能处理，请给我转人工和建工单两种选项","expected":{"reply_mode":"answer","actions":["handoff","create_ticket"]},"observations":[]}
+{"id":"no-actions","question":"告诉我订单1001的金额，不需要人工或工单","expected":{"reply_mode":"answer","actions":[]},"observations":[{"name":"query_order","args":{"order_id":"1001"},"content":"订单1001:实付59元，已发货"}]}
+{"id":"refund-evidence","question":"退款多久能到账，不要查订单","expected":{"reply_mode":"answer","actions":[]},"observations":[],"evidence":"政策[1]:退款审核通过后按原支付渠道退回，实际到账时间以银行为准，不承诺具体日期。"}
+{"id":"delivery-no-promise","question":"订单1001明天一定送到吗","expected":{"reply_mode":"answer","actions":[]},"observations":[{"name":"query_logistics","args":{"order_id":"1001"},"content":"当前运输中，最新位置杭州转运中心，未提供预计到达时间"}]}
+{"id":"after-unavailable","question":"请查我的维修申请进度","expected":{"reply_mode":"answer","actions":["handoff","create_ticket"]},"observations":[]}
