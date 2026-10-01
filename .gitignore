@@ -20,6 +20,8 @@ dist/
 
 # 虚拟环境
 .venv/
+.venv*/
+.uv-cache/
 venv/
 env/
 ENV/
@@ -83,3 +85,4 @@ desktop.ini
 
 # Recoverable Superpowers scratch archives
 .superpowers/archives/
+.superpowers/sdd/
