@@ -1,0 +1,15 @@
+{
+  "origin": "real browser, http://127.0.0.1:8005/",
+  "complaint_two_independent_buttons": true,
+  "ignore_buttons_continue_chat": true,
+  "ticket_cancel": true,
+  "tickets_before_confirmation": 1,
+  "tickets_after_confirmation_and_reload": 2,
+  "ticket_no": "T20261001001",
+  "test_description": "ch05_20261001_01 UI验收测试工单，请忽略。",
+  "handoff_still_enabled_after_ticket": true,
+  "reload_restored_receipt": true,
+  "screenshot": "ui-ticket.jpg",
+  "manual_handoff_limit": "IAB control timed out after native window.confirm opened; tab closed via documented API. No claim of successful real-browser handoff.",
+  "automated_handoff_and_both_orders": "page-smoke.txt: executes actual HTML handlers in Node DOM harness; ALL OK"
+}

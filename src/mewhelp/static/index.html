@@ -324,6 +324,19 @@
     form { padding: 10px 14px 14px; }
     form button { padding: 11px 18px; }
   }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .actions button { cursor: pointer; border: 1px solid var(--line); border-radius: 8px;
+    padding: 7px 12px; background: var(--bg); color: inherit; font: inherit; }
+  .actions button:disabled { opacity: .6; cursor: default; }
+  .action-status { flex-basis: 100%; color: var(--muted); font-size: 13px; }
+  .ticket-confirmation { flex-basis: 100%; display: grid; gap: 8px; padding: 12px;
+    border: 1px solid var(--line); border-radius: 10px; }
+  .ticket-confirmation label { display: grid; gap: 4px; }
+  .ticket-confirmation textarea, .ticket-confirmation select { width: 100%; box-sizing: border-box;
+    border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: inherit;
+    padding: 8px; font: inherit; }
+  .ticket-confirmation textarea { min-height: 80px; resize: vertical; }
+  .ticket-confirmation .controls { display: flex; gap: 8px; }
 </style>
 </head>
 <body>
@@ -529,6 +542,96 @@ function attachFeedback(reply, record) {
   group.append(status); reply.bubble.append(group); refresh();
 }
 
+function normalizeOffer(offer) {
+  if (!offer || typeof offer.offer_id !== 'string' || !offer.offer_id
+    || typeof offer.description !== 'string' || !Array.isArray(offer.actions)) return null;
+  return {...offer, actions: [...new Set(offer.actions.filter(a => ['handoff', 'create_ticket'].includes(a)))],
+    ticket_type: ['售后', '投诉', '咨询'].includes(offer.ticket_type) ? offer.ticket_type : '咨询'};
+}
+
+function simulateHandoff(record, button) {
+  if (record?.handoff_done || !window.confirm('确认转接人工客服？')) return;
+  if (record) record.handoff_done = true;
+  if (button && record) { button.disabled = true; button.textContent = '已转接人工客服'; }
+  note('已转接人工客服');
+  const text = '您好，我是客服小猫，请问有什么可以帮您的';
+  bubble('ai', text);
+  history.push({who:'ai',text,session_id:sessionId,sources:[],complete:false,
+    error:false,local_simulation:true,answer_id:freshAnswerId()});
+  saveHistory();
+}
+
+function attachActions(reply, record) {
+  const offer = normalizeOffer(record.offer);
+  if (!record.complete || record.error || !offer || !offer.actions.length
+    || reply.bubble.querySelector('.actions')) return;
+  const group = document.createElement('div'); group.className = 'actions';
+  group.setAttribute('role','group'); group.setAttribute('aria-label','可选服务');
+  const status = document.createElement('div'); status.className = 'action-status';
+  status.setAttribute('role','status');
+  let pending = false, panel = null;
+  for (const action of offer.actions) {
+    const button = document.createElement('button'); button.type = 'button';
+    button.className = action === 'handoff' ? 'action-handoff' : 'action-ticket';
+    button.textContent = action === 'handoff' ? '转人工' : '建工单';
+    if (action === 'handoff') {
+      button.disabled = Boolean(record.handoff_done);
+      if (record.handoff_done) button.textContent = '已转接人工客服';
+      button.addEventListener('click', () => simulateHandoff(record, button));
+    } else {
+      button.disabled = Boolean(record.ticket_receipt);
+      if (record.ticket_receipt) status.textContent = '工单已创建：' + record.ticket_receipt.ticket_no;
+      button.addEventListener('click', () => {
+        if (pending || record.ticket_receipt || panel) return;
+        panel = document.createElement('form'); panel.className = 'ticket-confirmation';
+        const label = document.createElement('label'); label.textContent = '问题描述';
+        const description = document.createElement('textarea'); description.className = 'ticket-description';
+        description.required = true; description.maxLength = 2000;
+        description.value = offer.description.slice(0,2000); label.append(description);
+        const typeLabel = document.createElement('label'); typeLabel.textContent = '工单类型';
+        const type = document.createElement('select'); type.className = 'ticket-type';
+        for (const value of ['售后','投诉','咨询']) {
+          const option = document.createElement('option'); option.value = value; option.textContent = value;
+          type.append(option);
+        }
+        type.value = offer.ticket_type; typeLabel.append(type);
+        const controls = document.createElement('div'); controls.className = 'controls';
+        const cancel = document.createElement('button'); cancel.type = 'button';
+        cancel.className = 'ticket-cancel'; cancel.textContent = '取消';
+        const confirm = document.createElement('button'); confirm.type = 'submit';
+        confirm.className = 'ticket-confirm'; confirm.textContent = '确认建工单';
+        controls.append(cancel,confirm); panel.append(label,typeLabel,controls); group.append(panel);
+        cancel.addEventListener('click', () => { if (!pending) { panel.remove(); panel = null; } });
+        panel.addEventListener('submit', async e => {
+          e.preventDefault();
+          if (pending || record.ticket_receipt) return;
+          if (!description.value.trim()) { status.textContent = '请补充问题描述。'; return; }
+          pending = true; button.disabled = confirm.disabled = cancel.disabled = true;
+          status.textContent = '正在创建工单…';
+          try {
+            const response = await fetch('/ch05/tickets', {method:'POST',
+              headers:{'Content-Type':'application/json'}, body:JSON.stringify({
+                session_id:record.session_id,user_id:userId,offer_id:offer.offer_id,confirmed:true,
+                description:description.value,ticket_type:type.value})});
+            const receipt = await response.json();
+            if (!response.ok) throw new Error(typeof receipt.detail === 'string' ? receipt.detail : '创建失败');
+            if (typeof receipt.ticket_no !== 'string' || !receipt.ticket_no) throw new Error('未收到工单号');
+            record.ticket_receipt = receipt; status.textContent = '工单已创建：' + receipt.ticket_no;
+            panel.remove(); panel = null; saveHistory();
+          } catch (error) {
+            status.textContent = error.message + '。请保留原内容，稍后确认重试。';
+          } finally {
+            pending = false; button.disabled = Boolean(record.ticket_receipt);
+            confirm.disabled = cancel.disabled = false;
+          }
+        });
+      });
+    }
+    group.append(button);
+  }
+  group.append(status); reply.bubble.append(group);
+}
+
 // 返回气泡的三个把手:整体、徽章容器、正文容器。
 // AI 气泡的两者必须分开(理由见 CSS 里 `.bubble .tools` 那段);用户气泡没有徽章，
 // 两个把手都指向气泡本身，调用方因此不必分支。
@@ -618,13 +721,8 @@ async function send(text) {
   // 发出去之前本地有没有会话 id —— 用来判断 session 帧的 resumed=false 该不该提示。
   // 首次发言时本地本来就没有，服务端新建一个，那不是"丢了历史"。
   const hadLocalSession = Boolean(sessionId);
-  // 工具名 → 这个工具名下**还没收尾**的徽章队列。用队列而不是单值：一轮里同一个工具
-  // 可以被调两次（「订单 1001 和 1002 的物流到哪了」→ 两个 query_logistics）。
-  // 按名字只存一个节点的话，第二个 start 会覆盖第一个，第一个徽章就永远转圈了。
-  //
-  // 先进先出凭什么对：服务端先按调用顺序发**全部** start，再按**同一个顺序**发全部 end
-  // （ch02/service.py 的 _prepare_turn_events，run_all 保序），所以同名的那几个 start
-  // 与 end 一一对应。这条顺序由 tests/test_ch02_service_stream.py 的两个用例钉住。
+  // Ch05 按 round + call_id 配对，允许同名工具的结束帧乱序。
+  // 缺少这两个字段的旧协议帧才回退到同名徽章队列。
   const badges = new Map();
   let started = false;
   let gotAnything = false;
@@ -651,18 +749,20 @@ async function send(text) {
     name.textContent = '🔧 ' + (TOOL_LABEL[payload.name] || payload.name);
     el.append(spin, name);
     reply.tools.appendChild(el);
-    const queue = badges.get(payload.name);
+    const key = payload.call_id ? payload.round + ':' + payload.call_id : payload.name;
+    const queue = badges.get(key);
     if (queue) queue.push(el);
-    else badges.set(payload.name, [el]);
+    else badges.set(key, [el]);
     log.scrollTop = log.scrollHeight;
   };
 
   const finishBadge = (payload) => {
-    const queue = badges.get(payload.name);
+    const key = payload.call_id ? payload.round + ':' + payload.call_id : payload.name;
+    const queue = badges.get(key);
     // 先 start 的先收尾，与服务端发 end 的顺序一致
     const el = queue && queue.length ? queue.shift() : null;
     // 这个名字收完了就整个删掉（留个空数组在 Map 里没有意义）
-    if (queue && queue.length === 0) badges.delete(payload.name);
+    if (queue && queue.length === 0) badges.delete(key);
     if (!el) return;                 // 没收到 start(理论上不会):宁可不补，也不挂个孤儿徽章
     el.className = 'badge ' + (payload.ok ? 'done' : 'fail');
     const spin = el.querySelector('.spin');
@@ -713,15 +813,18 @@ async function send(text) {
       reply.bubble.classList.add('err');
       reply.text.textContent += (gotAnything ? '\n\n' : '')
         + '[' + (ERROR_LABEL[payload.code] || '出错') + '] ' + payload.message;
+    } else if (event === 'actions') {
+      record.offer = normalizeOffer(payload.offer);
     } else if (event === 'done' && !failed && gotAnything && record.text.trim()) {
       completed = true; record.complete = true;
       attachFeedback(reply, record);
+      attachActions(reply, record);
       saveHistory();
     }
   };
 
   try {
-    const resp = await fetch('/ch02/chat/stream', {
+    const resp = await fetch('/ch05/chat/stream', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       // session_id 可能是 null —— **不能**把它换成空串:服务端那条"空白一律 422"的
@@ -817,7 +920,7 @@ chipsEl.addEventListener('click', (e) => {
   if (q) submit(q);
 });
 
-humanBtn.addEventListener('click', () => submit('我要转人工'));
+humanBtn.addEventListener('click', () => simulateHandoff(null, humanBtn));
 
 // 兼容旧历史缺少 sources / answer_id / feedback 字段。
 try {
@@ -835,6 +938,7 @@ try {
         renderAnswer(reply.text, record.text, record.sources);
         if (record.error) reply.bubble.classList.add('err');
         attachFeedback(reply, record);
+        attachActions(reply, record);
       }
     }
   }

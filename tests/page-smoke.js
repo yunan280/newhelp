@@ -31,6 +31,8 @@ class El {
     this.dataset = {};
     this.value = '';
     this.disabled = false;
+    this.listeners = {};
+    this.style = {};
     this.scrollTop = 0;
     this.scrollHeight = 0;
     const self = this;
@@ -38,6 +40,8 @@ class El {
       add: (c) => { if (!self._classes().includes(c)) self.className = (self.className + ' ' + c).trim(); },
       remove: (c) => { self.className = self._classes().filter((x) => x !== c).join(' '); },
       contains: (c) => self._classes().includes(c),
+      toggle: (c, force) => { const add = force === undefined ? !self._classes().includes(c) : force;
+        if (add) self.classList.add(c); else self.classList.remove(c); },
     };
   }
   _classes() { return this.className.split(/\s+/).filter(Boolean); }
@@ -64,8 +68,30 @@ class El {
     }
     return null;
   }
-  querySelectorAll() { return []; }
-  addEventListener() {}
+  querySelectorAll(sel) {
+    const found = [];
+    for (const c of this.children) {
+      if (sel.startsWith('.') ? c._classes().includes(sel.slice(1)) : c.tagName === sel) found.push(c);
+      found.push(...c.querySelectorAll(sel));
+    }
+    return found;
+  }
+  addEventListener(type, handler) { (this.listeners[type] ||= []).push(handler); }
+  async click() {
+    if (this.disabled) return;
+    await Promise.all((this.listeners.click || []).map(h => h({target: this, preventDefault() {}})));
+    if (this.type === 'submit') {
+      let parent = this._parent;
+      while (parent && parent.tagName !== 'form') parent = parent._parent;
+      if (parent) await Promise.all((parent.listeners.submit || []).map(h =>
+        h({target: parent, preventDefault() {}})));
+    }
+  }
+  setAttribute(name, value) { this[name] = String(value); }
+  replaceChildren(...nodes) { this.children = []; this._text = ''; this.append(...nodes); }
+  focus() {}
+  showModal() { this.open = true; }
+  close() { this.open = false; }
   // 递归找所有带某 class 的节点 —— 断言要用
   find(cls, acc = []) {
     for (const c of this.children) {
@@ -80,7 +106,10 @@ const nodes = {
   log: new El('div'), q: new El('input'), send: new El('button'),
   chips: new El('div'), human: new El('button'), f: new El('form'),
 };
-const document = { createElement: (t) => new El(t), getElementById: (id) => nodes[id] || null };
+for (const id of ['source-dialog','source-close','source-title','source-path','source-meta',
+                  'source-question','source-answer','source-status','source-link']) nodes[id] = new El('div');
+const document = { createElement: (t) => new El(t), getElementById: (id) => nodes[id] || null,
+  createTextNode: t => { const n = new El('#text'); n.textContent = t; return n; } };
 
 const makeStore = () => {
   const m = new Map();
@@ -165,15 +194,56 @@ function makeFetch(scene) {
 // 转交 —— 换掉外面那个变量它看不见。
 let currentFetch = makeFetch(SCENE_WITH_PREAMBLE);
 const dispatchFetch = (...args) => currentFetch(...args);
+const browserWindow = {confirmed: true, confirm() { return this.confirmed; }};
 
 // 顶层是脚本作用域 —— 把函数声明暴露出来当返回值。
 const factory = new Function(
   'document', 'localStorage', 'sessionStorage', 'fetch', 'TextDecoder', 'TextEncoder',
-  'console', 'Math', 'JSON', 'Map', 'Set', 'Boolean', 'String',
+  'console', 'Math', 'JSON', 'Map', 'Set', 'Boolean', 'String', 'window',
   script + '\nreturn { send, submit, bubble, getUserId: () => userId };'
 );
 const api = factory(document, localStorage, sessionStorage, dispatchFetch,
-  TextDecoder, TextEncoder, console, Math, JSON, Map, Set, Boolean, String);
+  TextDecoder, TextEncoder, console, Math, JSON, Map, Set, Boolean, String, browserWindow);
+
+const OFFER = {offer_id:'offer-1',turn_id:'turn-1',actions:['handoff','create_ticket'],
+  description:'我要投诉',ticket_type:'投诉'};
+const SCENE_COMPLAINT = [[['session',{session_id:'action-session',resumed:true}],
+  ['token',{text:'很抱歉给您带来不好的体验。'}],['actions',{actions:OFFER.actions,offer:OFFER}],
+  ['done',{finish_reason:'completed'}]]];
+
+function actionPage(saved, scene = SCENE_COMPLAINT) {
+  for (const key of Object.keys(nodes)) nodes[key] = new El(key === 'f' ? 'form' : 'div');
+  const local = saved?.local || makeStore(), session = saved?.session || makeStore();
+  const calls = [];
+  const fetch = async (url, options) => {
+    calls.push({url,body:JSON.parse(options.body)});
+    if (url === '/ch05/tickets') return {ok:true,status:200,
+      json:async () => ({ticket_no:'T20261001002',ticket_type:'投诉',replayed:false})};
+    return makeFetch(scene)(url, options);
+  };
+  const api = factory(document,local,session,fetch,TextDecoder,TextEncoder,
+    console,Math,JSON,Map,Set,Boolean,String,browserWindow);
+  return {api,local,session,calls};
+}
+
+async function runActionScenario({click,confirm}) {
+  const page = actionPage();
+  await page.api.submit('我要投诉');
+  const handoff = nodes.log.find('action-handoff')[0], ticket = nodes.log.find('action-ticket')[0];
+  if (!handoff || !ticket) return {ticketRequests:0,logText:nodes.log.textContent,
+    ticketButtonDisabled:null,buttons:0,calls:page.calls};
+  browserWindow.confirmed = confirm;
+  if (click === 'handoff') await handoff.click();
+  if (click === 'ticket') {
+    await ticket.click();
+    const button = nodes.log.find(confirm ? 'ticket-confirm' : 'ticket-cancel')[0];
+    if (button) await button.click();
+  }
+  if (click === 'ignore') await page.api.submit('你好');
+  return {ticketRequests:page.calls.filter(c=>c.url==='/ch05/tickets').length,
+    logText:nodes.log.textContent,ticketButtonDisabled:ticket.disabled,buttons:2,
+    calls:page.calls,handoffDisabled:handoff.disabled,page};
+}
 
 const fails = [];
 const check = (name, cond, extra = '') => {
@@ -259,6 +329,56 @@ const check = (name, cond, extra = '') => {
         texts.length === 1 && texts[0].textContent === '两个订单都在路上。',
         texts.length ? JSON.stringify(texts[0].textContent) : '(无正文节点)');
 
+  console.log('\n场景 D · 投诉建议的两个独立动作');
+  let action = await runActionScenario({click:'ignore',confirm:true});
+  check('投诉提供两个按钮，不点也能继续聊天', action.buttons===2 && action.calls.length===2
+    && action.calls.every(c=>c.url==='/ch05/chat/stream'));
+  action = await runActionScenario({click:'handoff',confirm:false});
+  check('取消人工，无建单或转接效果', action.ticketRequests===0
+    && !action.logText.includes('已转接人工客服'));
+  action = await runActionScenario({click:'handoff',confirm:true});
+  check('人工确认只展示状态和客服小猫问候', action.ticketRequests===0
+    && action.logText.includes('已转接人工客服')
+    && action.logText.includes('您好，我是客服小猫，请问有什么可以帮您的'));
+  check('转人工之后建单按钮仍可点', action.ticketButtonDisabled===false);
+  if (action.buttons) {
+    await nodes.log.find('action-ticket')[0].click();
+    const submit = nodes.log.find('ticket-confirm')[0];
+    if (submit) await Promise.all([submit.click(),submit.click()]);
+    check('人工后确认建单、双击只一个请求', action.page.calls.filter(c=>c.url==='/ch05/tickets').length===1
+      && action.page.calls.find(c=>c.url==='/ch05/tickets').body.confirmed===true);
+  }
+  action = await runActionScenario({click:'ticket',confirm:false});
+  check('取消工单没有写请求', action.buttons===2 && action.ticketRequests===0);
+  action = await runActionScenario({click:'ticket',confirm:true});
+  check('单独确认工单只发一个写请求', action.ticketRequests===1
+    && action.calls.find(c=>c.url==='/ch05/tickets').body.offer_id==='offer-1');
+  check('建单后人工按钮仍可点', action.handoffDisabled===false);
+  if (action.buttons) {
+    await nodes.log.find('action-handoff')[0].click();
+    check('工单后人工不再建单', action.page.calls.filter(c=>c.url==='/ch05/tickets').length===1);
+    const restored = actionPage(action.page);
+    check('恢复历史仅渲染，没有网络副作用', restored.calls.length===0
+      && nodes.log.find('action-ticket').length===1);
+  }
+  const toolbar = actionPage();
+  browserWindow.confirmed = true;
+  await nodes.human.click();
+  check('工具栏人工也只模拟，不发聊天或建单请求', toolbar.calls.length===0
+    && nodes.log.textContent.includes('已转接人工客服'));
+
+  console.log('\n场景 E · call_id 和 round 配对，结束帧允许乱序');
+  nodes.log.children=[];
+  const callPage=actionPage(null,[[[ 'session',{session_id:'calls',resumed:true}],
+    ['tool',{...TOOL_START[1],call_id:'a',round:1}],
+    ['tool',{...TOOL_START[1],call_id:'b',round:2}]],
+    [['tool',{...TOOL_END[1],call_id:'b',round:2,elapsed_ms:52}],
+     ['tool',{...TOOL_END[1],call_id:'a',round:1,elapsed_ms:31}],
+     ['token',{text:'已查到'}],['done',{finish_reason:'completed'}]]]);
+  await callPage.api.send('两个物流查询');
+  badges=nodes.log.find('badge');
+  check('同名工具乱序 end 对应正确耗时',badges.length===2
+    && badges[0].textContent.includes('31 ms') && badges[1].textContent.includes('52 ms'));
   console.log(fails.length ? `\nFAILED: ${fails.join(' / ')}` : '\nALL OK');
   process.exit(fails.length ? 1 : 0);
 })();
