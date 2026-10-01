@@ -1,0 +1,45 @@
+[
+  {
+    "id": "negative_policy",
+    "question": "退款政策是否承诺具体到账时间？",
+    "filters": {},
+    "expected": "evidence-backed negative answer",
+    "basis": "冻结语料的退款条款与隔离跳转文档明确不承诺具体到账时间。"
+  },
+  {
+    "id": "missing_launch_date",
+    "question": "请确认 HX-210S 支持蓝牙5.3，并告诉我 HX-210S 的首发日期。",
+    "filters": {
+      "product_category": "耳机"
+    },
+    "expected": "refusal",
+    "basis": "冻结原文有 HX-210S 蓝牙5.3，没有该型号的首发日期；不能完整回答。"
+  },
+  {
+    "id": "missing_pps_range",
+    "question": "CX-65 的 USB-C 输出功率是多少？PPS 电压范围是什么？",
+    "filters": {
+      "product_category": "充电器"
+    },
+    "expected": "refusal",
+    "basis": "冻结原文有 USB-C 输出功率，无 PPS 输出电压范围；不能完整回答。"
+  },
+  {
+    "id": "missing_processor",
+    "question": "RX-300S 的无线标准是什么？它的处理器具体型号是什么？",
+    "filters": {
+      "product_category": "路由器"
+    },
+    "expected": "refusal",
+    "basis": "冻结原文有无线标准，无处理器型号；不能完整回答。"
+  },
+  {
+    "id": "missing_panel_supplier",
+    "question": "MX-24P 的屏幕分辨率是什么？面板供应商是哪家？",
+    "filters": {
+      "product_category": "显示器"
+    },
+    "expected": "refusal",
+    "basis": "冻结原文有分辨率，无面板供应商；不能完整回答。"
+  }
+]

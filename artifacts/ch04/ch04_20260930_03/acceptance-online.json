@@ -1,0 +1,558 @@
+{
+  "scope": "online_existing_knowledge",
+  "base_url": "http://127.0.0.1:8000",
+  "started_at_utc": "2026-09-30T14:23:10.933583Z",
+  "records": [
+    {
+      "entry_point": "agent",
+      "question": "运费怎么计算",
+      "payload": {
+        "session_id": "d8bb8b1c998e4d799b1ee71db266fd2e",
+        "conversation_id": 16,
+        "resumed": false,
+        "answer": "单笔订单实付金额满 99 元包邮[2]。不满 99 元按收货地收取 8 元起的配送费用[2]。",
+        "sources": [
+          {
+            "number": 1,
+            "chunk_id": "413379535984543497",
+            "questions": "运费怎么计算",
+            "answer": "单笔满 99 元包邮;不满 99 元按收货地收取 8 元起。",
+            "section_path": "faq / 物流 / 运费怎么计算",
+            "category": "物流",
+            "product_category": null,
+            "content_hash": "3223e6c4c8e6322603bc9b30bc86979b9753ff842dbd374c9005235109ffddf8",
+            "source_url": "/kb/source/413379535984543497"
+          },
+          {
+            "number": 2,
+            "chunk_id": "2914662982578110438",
+            "questions": "运费说明",
+            "answer": "单笔订单实付金额满 99 元包邮。不满 99 元按收货地收取 8 元起的配送费用。",
+            "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 运费说明",
+            "category": "配送政策",
+            "product_category": null,
+            "content_hash": "920ea01e4638b5a45fbf09e99db4ef69f162c92ef68313657e42e426a7f8d7ec",
+            "source_url": "/kb/source/2914662982578110438"
+          },
+          {
+            "number": 3,
+            "chunk_id": "6152855534092243207",
+            "questions": "邮费是多少",
+            "answer": "单笔满 99 元包邮，不满 99 元按收货地收 8 元起。",
+            "section_path": "faq / 客服对话 / 邮费是多少",
+            "category": "客服对话",
+            "product_category": null,
+            "content_hash": "ab0928ae18680f7e1308b9b68fa17bea92b8fca8d7ab2c87700f981b3bd20212",
+            "source_url": "/kb/source/6152855534092243207"
+          },
+          {
+            "number": 4,
+            "chunk_id": "1226219123062692033",
+            "questions": "发票怎么开",
+            "answer": "下单时勾选「开具发票」并填抬头,随货寄出或开电子票。",
+            "section_path": "faq / 发票 / 发票怎么开",
+            "category": "发票",
+            "product_category": null,
+            "content_hash": "6a4260f683e43711dbd244d9acec0a89127fbe731a5a128a59caa6eb75dbf2aa",
+            "source_url": "/kb/source/1226219123062692033"
+          },
+          {
+            "number": 5,
+            "chunk_id": "4764481037195518211",
+            "questions": "你能调用工具吗",
+            "answer": "可以查订单、查物流、查商品价格库存、查常见问题，也能帮忙建人工工单。",
+            "section_path": "faq / 客服对话 / 你能调用工具吗",
+            "category": "客服对话",
+            "product_category": null,
+            "content_hash": "e15c5b61be9771a635dc8cfabf7c030c5d5eb3e2998fe6b6e8415cc775f3a734",
+            "source_url": "/kb/source/4764481037195518211"
+          },
+          {
+            "number": 6,
+            "chunk_id": "3320582538884644199",
+            "questions": "发货时效",
+            "answer": "现货商品在付款后 48 小时内发出。预售商品以商品页标注为准。",
+            "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 发货时效",
+            "category": "配送政策",
+            "product_category": null,
+            "content_hash": "f5c766355d5119c4ab4e737a4549a7d33a8ea995bd57ce97398da70965b96c26",
+            "source_url": "/kb/source/3320582538884644199"
+          },
+          {
+            "number": 7,
+            "chunk_id": "7400708658106260597",
+            "questions": "怎么查订单",
+            "answer": "需要提供订单号，客服可据此查询订单。",
+            "section_path": "faq / 客服对话 / 怎么查订单",
+            "category": "客服对话",
+            "product_category": null,
+            "content_hash": "9c58804cd5d078ca5dd97bba999cb97abdbdf6bc9a092f3a570ae051c68619a9",
+            "source_url": "/kb/source/7400708658106260597"
+          },
+          {
+            "number": 8,
+            "chunk_id": "1709950930094883706",
+            "questions": "你能干啥",
+            "answer": "可以查订单状态、物流进度、商品价格库存，以及退换货、发票这类售后问题，也可以帮忙转人工或建工单。",
+            "section_path": "faq / 客服对话 / 你能干啥",
+            "category": "客服对话",
+            "product_category": null,
+            "content_hash": "6fb3c3693355f88864125c85b6dbfbb785561f426acab7aab2bd80d96b733662",
+            "source_url": "/kb/source/1709950930094883706"
+          },
+          {
+            "number": 9,
+            "chunk_id": "4540701506657945309",
+            "questions": "多久能发货",
+            "answer": "现货商品在付款后 48 小时内发出,预售商品以商品页标注为准。",
+            "section_path": "faq / 物流 / 多久能发货",
+            "category": "物流",
+            "product_category": null,
+            "content_hash": "8dbed27561765287441129484c9f9a51f84e770179a934ecbc2b3271ecb83e6d",
+            "source_url": "/kb/source/4540701506657945309"
+          },
+          {
+            "number": 10,
+            "chunk_id": "4704798579410992522",
+            "questions": "物流信息多久更新",
+            "answer": "承运商通常每 4 小时同步一次,偏远地区可能更慢。",
+            "section_path": "faq / 物流 / 物流信息多久更新",
+            "category": "物流",
+            "product_category": null,
+            "content_hash": "3fccea574b6a4787b4b055f2b5cb624d0946e0a6c3a0040f25dbc6babbef7322",
+            "source_url": "/kb/source/4704798579410992522"
+          }
+        ],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "tool_calls": [
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "运费怎么计算"
+            },
+            "id": "5e3bac697c2a4a3ca408680e1ebe9720",
+            "type": "tool_call"
+          }
+        ],
+        "tool_results": [
+          {
+            "name": "query_faq",
+            "ok": true,
+            "content": "已复核 20 条候选证据",
+            "error": null,
+            "elapsed_ms": 22375,
+            "attempts": 1
+          }
+        ]
+      },
+      "pool": null
+    },
+    {
+      "entry_point": "agent",
+      "question": "今天店里新增的外星球旅行险承保条款是什么？",
+      "payload": {
+        "session_id": "d8bb8b1c998e4d799b1ee71db266fd2e",
+        "conversation_id": 16,
+        "resumed": true,
+        "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。",
+        "sources": [],
+        "refused": true,
+        "low_confidence_question_id": "8",
+        "tool_calls": [
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "今天店里新增的外星球旅行险承保条款是什么？"
+            },
+            "id": "0130cd72e23048aba98000fcf4da728a",
+            "type": "tool_call"
+          }
+        ],
+        "tool_results": [
+          {
+            "name": "query_faq",
+            "ok": true,
+            "content": "已复核 20 条候选证据",
+            "error": null,
+            "elapsed_ms": 9422,
+            "attempts": 1
+          }
+        ]
+      },
+      "pool": {
+        "id": "8",
+        "original_question": "今天店里新增的外星球旅行险承保条款是什么？",
+        "conversation_id": "16",
+        "entry_point": "agent",
+        "stage": "retrieval",
+        "reason_code": "low_relevance",
+        "reason": "最高重排分数低于校准阈值",
+        "created_at_utc": "2026-09-30T14:24:26Z"
+      }
+    },
+    {
+      "entry_point": "chat_stream",
+      "question": "运费怎么计算",
+      "frames": [
+        [
+          "session",
+          {
+            "session_id": "d8bb8b1c998e4d799b1ee71db266fd2e",
+            "resumed": true
+          }
+        ],
+        [
+          "tool",
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "运费怎么计算"
+            },
+            "phase": "start"
+          }
+        ],
+        [
+          "tool",
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "运费怎么计算"
+            },
+            "phase": "end",
+            "ok": true,
+            "elapsed_ms": 5485,
+            "attempts": 1
+          }
+        ],
+        [
+          "sources",
+          {
+            "sources": [
+              {
+                "number": 1,
+                "chunk_id": "413379535984543497",
+                "questions": "运费怎么计算",
+                "answer": "单笔满 99 元包邮;不满 99 元按收货地收取 8 元起。",
+                "section_path": "faq / 物流 / 运费怎么计算",
+                "category": "物流",
+                "product_category": null,
+                "content_hash": "3223e6c4c8e6322603bc9b30bc86979b9753ff842dbd374c9005235109ffddf8",
+                "source_url": "/kb/source/413379535984543497"
+              },
+              {
+                "number": 2,
+                "chunk_id": "2914662982578110438",
+                "questions": "运费说明",
+                "answer": "单笔订单实付金额满 99 元包邮。不满 99 元按收货地收取 8 元起的配送费用。",
+                "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 运费说明",
+                "category": "配送政策",
+                "product_category": null,
+                "content_hash": "920ea01e4638b5a45fbf09e99db4ef69f162c92ef68313657e42e426a7f8d7ec",
+                "source_url": "/kb/source/2914662982578110438"
+              },
+              {
+                "number": 3,
+                "chunk_id": "6152855534092243207",
+                "questions": "邮费是多少",
+                "answer": "单笔满 99 元包邮，不满 99 元按收货地收 8 元起。",
+                "section_path": "faq / 客服对话 / 邮费是多少",
+                "category": "客服对话",
+                "product_category": null,
+                "content_hash": "ab0928ae18680f7e1308b9b68fa17bea92b8fca8d7ab2c87700f981b3bd20212",
+                "source_url": "/kb/source/6152855534092243207"
+              },
+              {
+                "number": 4,
+                "chunk_id": "1226219123062692033",
+                "questions": "发票怎么开",
+                "answer": "下单时勾选「开具发票」并填抬头,随货寄出或开电子票。",
+                "section_path": "faq / 发票 / 发票怎么开",
+                "category": "发票",
+                "product_category": null,
+                "content_hash": "6a4260f683e43711dbd244d9acec0a89127fbe731a5a128a59caa6eb75dbf2aa",
+                "source_url": "/kb/source/1226219123062692033"
+              },
+              {
+                "number": 5,
+                "chunk_id": "3320582538884644199",
+                "questions": "发货时效",
+                "answer": "现货商品在付款后 48 小时内发出。预售商品以商品页标注为准。",
+                "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 发货时效",
+                "category": "配送政策",
+                "product_category": null,
+                "content_hash": "f5c766355d5119c4ab4e737a4549a7d33a8ea995bd57ce97398da70965b96c26",
+                "source_url": "/kb/source/3320582538884644199"
+              },
+              {
+                "number": 6,
+                "chunk_id": "4764481037195518211",
+                "questions": "你能调用工具吗",
+                "answer": "可以查订单、查物流、查商品价格库存、查常见问题，也能帮忙建人工工单。",
+                "section_path": "faq / 客服对话 / 你能调用工具吗",
+                "category": "客服对话",
+                "product_category": null,
+                "content_hash": "e15c5b61be9771a635dc8cfabf7c030c5d5eb3e2998fe6b6e8415cc775f3a734",
+                "source_url": "/kb/source/4764481037195518211"
+              },
+              {
+                "number": 7,
+                "chunk_id": "1709950930094883706",
+                "questions": "你能干啥",
+                "answer": "可以查订单状态、物流进度、商品价格库存，以及退换货、发票这类售后问题，也可以帮忙转人工或建工单。",
+                "section_path": "faq / 客服对话 / 你能干啥",
+                "category": "客服对话",
+                "product_category": null,
+                "content_hash": "6fb3c3693355f88864125c85b6dbfbb785561f426acab7aab2bd80d96b733662",
+                "source_url": "/kb/source/1709950930094883706"
+              },
+              {
+                "number": 8,
+                "chunk_id": "4540701506657945309",
+                "questions": "多久能发货",
+                "answer": "现货商品在付款后 48 小时内发出,预售商品以商品页标注为准。",
+                "section_path": "faq / 物流 / 多久能发货",
+                "category": "物流",
+                "product_category": null,
+                "content_hash": "8dbed27561765287441129484c9f9a51f84e770179a934ecbc2b3271ecb83e6d",
+                "source_url": "/kb/source/4540701506657945309"
+              },
+              {
+                "number": 9,
+                "chunk_id": "7400708658106260597",
+                "questions": "怎么查订单",
+                "answer": "需要提供订单号，客服可据此查询订单。",
+                "section_path": "faq / 客服对话 / 怎么查订单",
+                "category": "客服对话",
+                "product_category": null,
+                "content_hash": "9c58804cd5d078ca5dd97bba999cb97abdbdf6bc9a092f3a570ae051c68619a9",
+                "source_url": "/kb/source/7400708658106260597"
+              },
+              {
+                "number": 10,
+                "chunk_id": "4704798579410992522",
+                "questions": "物流信息多久更新",
+                "answer": "承运商通常每 4 小时同步一次,偏远地区可能更慢。",
+                "section_path": "faq / 物流 / 物流信息多久更新",
+                "category": "物流",
+                "product_category": null,
+                "content_hash": "3fccea574b6a4787b4b055f2b5cb624d0946e0a6c3a0040f25dbc6babbef7322",
+                "source_url": "/kb/source/4704798579410992522"
+              }
+            ],
+            "refused": false,
+            "low_confidence_question_id": null
+          }
+        ],
+        [
+          "token",
+          {
+            "text": "单笔订单实付金额满 99 元包邮[2]。不满 99 元按收货地收取 8 元起的配送费用[2]。"
+          }
+        ],
+        [
+          "done",
+          {
+            "finish_reason": "stop"
+          }
+        ]
+      ],
+      "payload": {
+        "sources": [
+          {
+            "number": 1,
+            "chunk_id": "413379535984543497",
+            "questions": "运费怎么计算",
+            "answer": "单笔满 99 元包邮;不满 99 元按收货地收取 8 元起。",
+            "section_path": "faq / 物流 / 运费怎么计算",
+            "category": "物流",
+            "product_category": null,
+            "content_hash": "3223e6c4c8e6322603bc9b30bc86979b9753ff842dbd374c9005235109ffddf8",
+            "source_url": "/kb/source/413379535984543497"
+          },
+          {
+            "number": 2,
+            "chunk_id": "2914662982578110438",
+            "questions": "运费说明",
+            "answer": "单笔订单实付金额满 99 元包邮。不满 99 元按收货地收取 8 元起的配送费用。",
+            "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 运费说明",
+            "category": "配送政策",
+            "product_category": null,
+            "content_hash": "920ea01e4638b5a45fbf09e99db4ef69f162c92ef68313657e42e426a7f8d7ec",
+            "source_url": "/kb/source/2914662982578110438"
+          },
+          {
+            "number": 3,
+            "chunk_id": "6152855534092243207",
+            "questions": "邮费是多少",
+            "answer": "单笔满 99 元包邮，不满 99 元按收货地收 8 元起。",
+            "section_path": "faq / 客服对话 / 邮费是多少",
+            "category": "客服对话",
+            "product_category": null,
+            "content_hash": "ab0928ae18680f7e1308b9b68fa17bea92b8fca8d7ab2c87700f981b3bd20212",
+            "source_url": "/kb/source/6152855534092243207"
+          },
+          {
+            "number": 4,
+            "chunk_id": "1226219123062692033",
+            "questions": "发票怎么开",
+            "answer": "下单时勾选「开具发票」并填抬头,随货寄出或开电子票。",
+            "section_path": "faq / 发票 / 发票怎么开",
+            "category": "发票",
+            "product_category": null,
+            "content_hash": "6a4260f683e43711dbd244d9acec0a89127fbe731a5a128a59caa6eb75dbf2aa",
+            "source_url": "/kb/source/1226219123062692033"
+          },
+          {
+            "number": 5,
+            "chunk_id": "3320582538884644199",
+            "questions": "发货时效",
+            "answer": "现货商品在付款后 48 小时内发出。预售商品以商品页标注为准。",
+            "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 发货时效",
+            "category": "配送政策",
+            "product_category": null,
+            "content_hash": "f5c766355d5119c4ab4e737a4549a7d33a8ea995bd57ce97398da70965b96c26",
+            "source_url": "/kb/source/3320582538884644199"
+          },
+          {
+            "number": 6,
+            "chunk_id": "4764481037195518211",
+            "questions": "你能调用工具吗",
+            "answer": "可以查订单、查物流、查商品价格库存、查常见问题，也能帮忙建人工工单。",
+            "section_path": "faq / 客服对话 / 你能调用工具吗",
+            "category": "客服对话",
+            "product_category": null,
+            "content_hash": "e15c5b61be9771a635dc8cfabf7c030c5d5eb3e2998fe6b6e8415cc775f3a734",
+            "source_url": "/kb/source/4764481037195518211"
+          },
+          {
+            "number": 7,
+            "chunk_id": "1709950930094883706",
+            "questions": "你能干啥",
+            "answer": "可以查订单状态、物流进度、商品价格库存，以及退换货、发票这类售后问题，也可以帮忙转人工或建工单。",
+            "section_path": "faq / 客服对话 / 你能干啥",
+            "category": "客服对话",
+            "product_category": null,
+            "content_hash": "6fb3c3693355f88864125c85b6dbfbb785561f426acab7aab2bd80d96b733662",
+            "source_url": "/kb/source/1709950930094883706"
+          },
+          {
+            "number": 8,
+            "chunk_id": "4540701506657945309",
+            "questions": "多久能发货",
+            "answer": "现货商品在付款后 48 小时内发出,预售商品以商品页标注为准。",
+            "section_path": "faq / 物流 / 多久能发货",
+            "category": "物流",
+            "product_category": null,
+            "content_hash": "8dbed27561765287441129484c9f9a51f84e770179a934ecbc2b3271ecb83e6d",
+            "source_url": "/kb/source/4540701506657945309"
+          },
+          {
+            "number": 9,
+            "chunk_id": "7400708658106260597",
+            "questions": "怎么查订单",
+            "answer": "需要提供订单号，客服可据此查询订单。",
+            "section_path": "faq / 客服对话 / 怎么查订单",
+            "category": "客服对话",
+            "product_category": null,
+            "content_hash": "9c58804cd5d078ca5dd97bba999cb97abdbdf6bc9a092f3a570ae051c68619a9",
+            "source_url": "/kb/source/7400708658106260597"
+          },
+          {
+            "number": 10,
+            "chunk_id": "4704798579410992522",
+            "questions": "物流信息多久更新",
+            "answer": "承运商通常每 4 小时同步一次,偏远地区可能更慢。",
+            "section_path": "faq / 物流 / 物流信息多久更新",
+            "category": "物流",
+            "product_category": null,
+            "content_hash": "3fccea574b6a4787b4b055f2b5cb624d0946e0a6c3a0040f25dbc6babbef7322",
+            "source_url": "/kb/source/4704798579410992522"
+          }
+        ],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "session_id": "d8bb8b1c998e4d799b1ee71db266fd2e",
+        "conversation_id": 16,
+        "answer": "单笔订单实付金额满 99 元包邮[2]。不满 99 元按收货地收取 8 元起的配送费用[2]。"
+      },
+      "pool": null
+    },
+    {
+      "entry_point": "chat_stream",
+      "question": "今天店里新增的外星球旅行险承保条款是什么？",
+      "frames": [
+        [
+          "session",
+          {
+            "session_id": "d8bb8b1c998e4d799b1ee71db266fd2e",
+            "resumed": true
+          }
+        ],
+        [
+          "tool",
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "今天店里新增的外星球旅行险承保条款是什么？"
+            },
+            "phase": "start"
+          }
+        ],
+        [
+          "tool",
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "今天店里新增的外星球旅行险承保条款是什么？"
+            },
+            "phase": "end",
+            "ok": true,
+            "elapsed_ms": 6187,
+            "attempts": 1
+          }
+        ],
+        [
+          "sources",
+          {
+            "sources": [],
+            "refused": true,
+            "low_confidence_question_id": "9"
+          }
+        ],
+        [
+          "token",
+          {
+            "text": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。"
+          }
+        ],
+        [
+          "done",
+          {
+            "finish_reason": "stop"
+          }
+        ]
+      ],
+      "payload": {
+        "sources": [],
+        "refused": true,
+        "low_confidence_question_id": "9",
+        "session_id": "d8bb8b1c998e4d799b1ee71db266fd2e",
+        "conversation_id": 16,
+        "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。"
+      },
+      "pool": {
+        "id": "9",
+        "original_question": "今天店里新增的外星球旅行险承保条款是什么？",
+        "conversation_id": "16",
+        "entry_point": "chat_stream",
+        "stage": "retrieval",
+        "reason_code": "low_relevance",
+        "reason": "最高重排分数低于校准阈值",
+        "created_at_utc": "2026-09-30T14:24:40Z"
+      }
+    }
+  ],
+  "passed": true,
+  "completed_at_utc": "2026-09-30T14:24:40.484275+00:00"
+}

@@ -1,0 +1,88 @@
+{
+  "scope": "isolated_mixed_business_knowledge",
+  "input": {
+    "question": "订单1001的状态和HX-210的蓝牙版本？",
+    "expected": "refusal",
+    "basis": "隔离知识有商品蓝牙参数，但没有订单1001状态；必须按整轮证据不足拒答，不能用单个业务结果绕过知识门控。",
+    "entries": [
+      "agent",
+      "chat_stream"
+    ]
+  },
+  "records": [
+    {
+      "entry": "agent",
+      "payload": {
+        "session_id": "852056bf4e4147e08167f9e88f8195f7",
+        "conversation_id": 7,
+        "resumed": false,
+        "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。",
+        "sources": [],
+        "refused": true,
+        "low_confidence_question_id": "7",
+        "tool_calls": [
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "订单1001的状态和HX-210的蓝牙版本？"
+            },
+            "id": "7bb4eaefb05e423f8776c0779a57e028",
+            "type": "tool_call"
+          }
+        ],
+        "tool_results": [
+          {
+            "name": "query_faq",
+            "ok": true,
+            "content": "已复核 50 条候选证据",
+            "error": null,
+            "elapsed_ms": 11157,
+            "attempts": 1
+          }
+        ]
+      },
+      "sse_events": null,
+      "pool": {
+        "id": "7",
+        "original_question": "订单1001的状态和HX-210的蓝牙版本？",
+        "conversation_id": "7",
+        "entry_point": "agent",
+        "stage": "generation",
+        "reason_code": "insufficient_evidence",
+        "reason": "证据中仅包含HX-210的蓝牙版本（蓝牙5.2，编号1），但没有任何关于订单1001状态的证据，无法回答订单状态部分，故整体不充分。",
+        "created_at_utc": "2026-09-30T14:30:28.786233Z"
+      }
+    },
+    {
+      "entry": "chat_stream",
+      "payload": {
+        "session_id": "f30f8896c38c4b06a3db322571f40b42",
+        "resumed": false,
+        "sources": [],
+        "refused": true,
+        "low_confidence_question_id": "8",
+        "conversation_id": 8,
+        "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。"
+      },
+      "sse_events": [
+        "session",
+        "tool",
+        "tool",
+        "sources",
+        "token",
+        "done"
+      ],
+      "pool": {
+        "id": "8",
+        "original_question": "订单1001的状态和HX-210的蓝牙版本？",
+        "conversation_id": "8",
+        "entry_point": "chat_stream",
+        "stage": "generation",
+        "reason_code": "insufficient_evidence",
+        "reason": "证据中仅包含HX-210的蓝牙版本（蓝牙5.2，编号1），但没有任何关于订单1001状态的证据，无法完整回答问题的两个条件。",
+        "created_at_utc": "2026-09-30T14:30:41.418719Z"
+      }
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,12 @@
+{"id": "model", "question": "HX-210 蓝牙啥版本？", "route": "knowledge", "preserve": ["HX-210"], "needs_rewrite": true}
+{"id": "near_model", "question": "HX-210S 不支持 65W 吗？", "route": "knowledge", "preserve": ["HX-210S", "不支持", "65W"], "needs_rewrite": false}
+{"id": "colloquial", "question": "买完后悔了咋退啊？", "route": "knowledge", "preserve": [], "needs_rewrite": true}
+{"id": "synonym", "question": "东西坏了能给我换新不？", "route": "knowledge", "preserve": ["不"], "needs_rewrite": false}
+{"id": "condition", "question": "满99元且未拆封才能退吗？", "route": "knowledge", "preserve": ["满", "99元", "且", "未拆封", "才能"], "needs_rewrite": false}
+{"id": "deadline", "question": "7天以内可以退货吗？", "route": "knowledge", "preserve": ["7天", "以内"], "needs_rewrite": false}
+{"id": "greeting", "question": "你好！", "route": "greeting", "preserve": [], "needs_rewrite": false}
+{"id": "thanks", "question": "谢谢", "route": "greeting", "preserve": [], "needs_rewrite": false}
+{"id": "order", "question": "帮我查一下订单100023的状态", "route": "business", "preserve": ["100023"], "needs_rewrite": false}
+{"id": "stock", "question": "HX-210 现在库存多少？", "route": "business", "preserve": ["HX-210"], "needs_rewrite": false}
+{"id": "ambiguous", "question": "这个咋弄？", "route": "knowledge", "preserve": [], "needs_rewrite": false}
+{"id": "mixed", "question": "你好，HX-210的蓝牙版本？", "route": "knowledge", "preserve": ["HX-210"], "needs_rewrite": false}

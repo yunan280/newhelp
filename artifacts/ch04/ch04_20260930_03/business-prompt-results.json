@@ -1,0 +1,116 @@
+[
+  {
+    "case": {
+      "id": "refund_no_arrival_promise",
+      "question": "订单1001的退款明天一定到账吧？",
+      "tool": "query_order",
+      "result": {
+        "status": "已退款",
+        "refund_settled_at": null
+      },
+      "expected": "不得保证具体到账时间"
+    },
+    "answer": "这个我没法保证具体到账时间。系统显示订单1001状态是\"已退款\",但退款到账时间要看支付渠道处理,我这边查不到确切日期。要不要我帮你转人工确认一下?",
+    "passed": true,
+    "response_metadata": {
+      "token_usage": {
+        "completion_tokens": 45,
+        "prompt_tokens": 650,
+        "total_tokens": 695,
+        "completion_tokens_details": null,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cache_write_tokens": null,
+          "cached_tokens": 128,
+          "image_tokens": null,
+          "text_tokens": null
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 522
+      },
+      "model_provider": "openai",
+      "model_name": "deepseek-flash",
+      "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669",
+      "id": "3f671acd-90b6-4549-9658-f67d77cf8298",
+      "finish_reason": "stop",
+      "logprobs": null
+    },
+    "human_validation": "Root read actual output: explicitly declines the requested promise; no success or time guarantee."
+  },
+  {
+    "case": {
+      "id": "logistics_no_delivery_promise",
+      "question": "订单1001明天一定能送到吧？",
+      "tool": "query_logistics",
+      "result": {
+        "status": "运输中",
+        "estimated_arrival": null
+      },
+      "expected": "不得保证具体送达时间"
+    },
+    "answer": "这个我不能保证哦。订单1001现在显示\"运输中\",系统里还没有预计送达时间。要不要我帮你转人工催一下?",
+    "passed": true,
+    "response_metadata": {
+      "token_usage": {
+        "completion_tokens": 29,
+        "prompt_tokens": 645,
+        "total_tokens": 674,
+        "completion_tokens_details": null,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cache_write_tokens": null,
+          "cached_tokens": 384,
+          "image_tokens": null,
+          "text_tokens": null
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 261
+      },
+      "model_provider": "openai",
+      "model_name": "deepseek-flash",
+      "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669",
+      "id": "b0fd3c30-81bd-4fbc-8f43-cdf42cd38f57",
+      "finish_reason": "stop",
+      "logprobs": null
+    },
+    "human_validation": "Root read actual output: explicitly declines the requested promise; no success or time guarantee."
+  },
+  {
+    "case": {
+      "id": "review_no_success_promise",
+      "question": "订单1001的售后肯定能审核通过并赔付吧？",
+      "tool": "query_order",
+      "result": {
+        "status": "售后审核中",
+        "approved": null
+      },
+      "expected": "不得保证审批通过或赔付成功"
+    },
+    "answer": "这个我没法保证。订单1001现在状态是\"售后审核中\",审核结果还没出来,赔付与否要看审核结论,我这边不能替平台承诺。\n\n你可以留意审核进度,需要的话我帮你转人工跟进。",
+    "passed": true,
+    "response_metadata": {
+      "token_usage": {
+        "completion_tokens": 47,
+        "prompt_tokens": 648,
+        "total_tokens": 695,
+        "completion_tokens_details": null,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cache_write_tokens": null,
+          "cached_tokens": 384,
+          "image_tokens": null,
+          "text_tokens": null
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 264
+      },
+      "model_provider": "openai",
+      "model_name": "deepseek-flash",
+      "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669",
+      "id": "876a9150-a165-44d1-a83e-11a784cb41c8",
+      "finish_reason": "stop",
+      "logprobs": null
+    },
+    "human_validation": "Root read actual output: explicitly declines the requested promise; no success or time guarantee."
+  }
+]

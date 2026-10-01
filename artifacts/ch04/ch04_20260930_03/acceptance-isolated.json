@@ -1,0 +1,578 @@
+{
+  "scope": "isolated_example",
+  "base_url": "http://127.0.0.1:8001",
+  "started_at_utc": "2026-09-30T14:28:58.236859Z",
+  "records": [
+    {
+      "entry_point": "agent",
+      "question": "HX-210S 的蓝牙版本是什么？",
+      "payload": {
+        "session_id": "ba8e0e728b8d4b90a15f7ceb0acf1c9c",
+        "conversation_id": 1,
+        "resumed": false,
+        "answer": "HX-210S的蓝牙版本为蓝牙5.3[1]。",
+        "sources": [
+          {
+            "number": 1,
+            "chunk_id": "4048793780376354890",
+            "questions": "HX-210S的蓝牙版本是什么？",
+            "answer": "在本评估示例业务中，HX-210S的蓝牙版本为蓝牙5.3。",
+            "section_path": "示例业务 / 耳机 / HX-210S的蓝牙版本是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "597379b319cfb7c3eaf1a0bd103ae7f915ba3b21b6076c30b3a13b51b467347c",
+            "source_url": "/kb/source/4048793780376354890"
+          },
+          {
+            "number": 2,
+            "chunk_id": "8093293257920959110",
+            "questions": "HX-210的蓝牙版本是什么？",
+            "answer": "在本评估示例业务中，HX-210的蓝牙版本为蓝牙5.2。",
+            "section_path": "示例业务 / 耳机 / HX-210的蓝牙版本是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "4f792d8a7d50f4b57cdcaac2f82c18355aaa8957ce8f7b4677a3e96f7e68d63e",
+            "source_url": "/kb/source/8093293257920959110"
+          },
+          {
+            "number": 3,
+            "chunk_id": "4011614797889283353",
+            "questions": "HX-220的蓝牙版本是什么？",
+            "answer": "在本评估示例业务中，HX-220的蓝牙版本为蓝牙5.4。",
+            "section_path": "示例业务 / 耳机 / HX-220的蓝牙版本是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "ef103ddfa5f0c493118cf72a55905b540792ff76748844cdfb6290b7e101dc45",
+            "source_url": "/kb/source/4011614797889283353"
+          },
+          {
+            "number": 4,
+            "chunk_id": "4431428658436145841",
+            "questions": "HX-210S的防护等级是什么？",
+            "answer": "在本评估示例业务中，HX-210S的防护等级为IPX5，仅防喷水，不能浸水。",
+            "section_path": "示例业务 / 耳机 / HX-210S的防护等级是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "8c279831fd578db5dbcb83f081669e9c683d396c9d47312d29221adb40f63e0f",
+            "source_url": "/kb/source/4431428658436145841"
+          },
+          {
+            "number": 5,
+            "chunk_id": "2912404627370586582",
+            "questions": "HX-210S的降噪能力是什么？",
+            "answer": "在本评估示例业务中，HX-210S的降噪能力为支持主动降噪。",
+            "section_path": "示例业务 / 耳机 / HX-210S的降噪能力是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "0aab5663aee9673dce9766208ce6232fd65ad9b9a0d2560f9c83849f611bcd07",
+            "source_url": "/kb/source/2912404627370586582"
+          },
+          {
+            "number": 6,
+            "chunk_id": "6332607000553489725",
+            "questions": "HX-210S的充电接口是什么？",
+            "answer": "在本评估示例业务中，HX-210S的充电接口为USB-C。",
+            "section_path": "示例业务 / 耳机 / HX-210S的充电接口是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "6fbda3ce4c03085fc537a005e0e6429c62133839f74a9c64cbab7a432b72c0b4",
+            "source_url": "/kb/source/6332607000553489725"
+          },
+          {
+            "number": 7,
+            "chunk_id": "2060140484216519086",
+            "questions": "HX-210的防护等级是什么？",
+            "answer": "在本评估示例业务中，HX-210的防护等级为IPX4，仅防泼溅，不能浸水。",
+            "section_path": "示例业务 / 耳机 / HX-210的防护等级是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "56da6843c58ebe3354a571a73d1c9b308f19914324e561082bd8e844e484694b",
+            "source_url": "/kb/source/2060140484216519086"
+          },
+          {
+            "number": 8,
+            "chunk_id": "4638553154415866037",
+            "questions": "HX-220的充电接口是什么？",
+            "answer": "在本评估示例业务中，HX-220的充电接口为USB-C，不支持无线充电。",
+            "section_path": "示例业务 / 耳机 / HX-220的充电接口是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "a3155f2718c51c7e8dceb5002950490bc287f4dd2c5138d203eb6ae13eab6d36",
+            "source_url": "/kb/source/4638553154415866037"
+          },
+          {
+            "number": 9,
+            "chunk_id": "7540922397817164159",
+            "questions": "HX-210的降噪能力是什么？",
+            "answer": "在本评估示例业务中，HX-210的降噪能力为不支持主动降噪。",
+            "section_path": "示例业务 / 耳机 / HX-210的降噪能力是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "ac47c820033dfaf1da268195941e791a740819bd1c69bfbb9aa88b625c102896",
+            "source_url": "/kb/source/7540922397817164159"
+          },
+          {
+            "number": 10,
+            "chunk_id": "770968543126330926",
+            "questions": "HX-210的充电接口是什么？",
+            "answer": "在本评估示例业务中，HX-210的充电接口为USB-C。",
+            "section_path": "示例业务 / 耳机 / HX-210的充电接口是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "95126494ba15cfac18ccba1943dee18b4abe986330b92979f988202bd38b1250",
+            "source_url": "/kb/source/770968543126330926"
+          }
+        ],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "tool_calls": [
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "HX-210S 的蓝牙版本是什么？"
+            },
+            "id": "aeb5ffd19bdf4191b76a5ef806381990",
+            "type": "tool_call"
+          }
+        ],
+        "tool_results": [
+          {
+            "name": "query_faq",
+            "ok": true,
+            "content": "已复核 15 条候选证据",
+            "error": null,
+            "elapsed_ms": 8250,
+            "attempts": 1
+          }
+        ]
+      },
+      "pool": null
+    },
+    {
+      "entry_point": "agent",
+      "question": "今天店里新增的外星球旅行险承保条款是什么？",
+      "payload": {
+        "session_id": "ba8e0e728b8d4b90a15f7ceb0acf1c9c",
+        "conversation_id": 1,
+        "resumed": true,
+        "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。",
+        "sources": [],
+        "refused": true,
+        "low_confidence_question_id": "1",
+        "tool_calls": [
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "今天店里新增的外星球旅行险承保条款是什么？"
+            },
+            "id": "c3c313d62dbe4988849dea2e93599360",
+            "type": "tool_call"
+          }
+        ],
+        "tool_results": [
+          {
+            "name": "query_faq",
+            "ok": true,
+            "content": "已复核 50 条候选证据",
+            "error": null,
+            "elapsed_ms": 11860,
+            "attempts": 1
+          }
+        ]
+      },
+      "pool": {
+        "id": "1",
+        "original_question": "今天店里新增的外星球旅行险承保条款是什么？",
+        "conversation_id": "1",
+        "entry_point": "agent",
+        "stage": "retrieval",
+        "reason_code": "low_relevance",
+        "reason": "最高重排分数低于校准阈值",
+        "created_at_utc": "2026-09-30T14:29:21.760195Z"
+      }
+    },
+    {
+      "entry_point": "chat_stream",
+      "question": "HX-210S 的蓝牙版本是什么？",
+      "frames": [
+        [
+          "session",
+          {
+            "session_id": "ba8e0e728b8d4b90a15f7ceb0acf1c9c",
+            "resumed": true
+          }
+        ],
+        [
+          "tool",
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "HX-210S 的蓝牙版本是什么？"
+            },
+            "phase": "start"
+          }
+        ],
+        [
+          "tool",
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "HX-210S 的蓝牙版本是什么？"
+            },
+            "phase": "end",
+            "ok": true,
+            "elapsed_ms": 4187,
+            "attempts": 1
+          }
+        ],
+        [
+          "sources",
+          {
+            "sources": [
+              {
+                "number": 1,
+                "chunk_id": "4048793780376354890",
+                "questions": "HX-210S的蓝牙版本是什么？",
+                "answer": "在本评估示例业务中，HX-210S的蓝牙版本为蓝牙5.3。",
+                "section_path": "示例业务 / 耳机 / HX-210S的蓝牙版本是什么？",
+                "category": "商品参数",
+                "product_category": "耳机",
+                "content_hash": "597379b319cfb7c3eaf1a0bd103ae7f915ba3b21b6076c30b3a13b51b467347c",
+                "source_url": "/kb/source/4048793780376354890"
+              },
+              {
+                "number": 2,
+                "chunk_id": "8093293257920959110",
+                "questions": "HX-210的蓝牙版本是什么？",
+                "answer": "在本评估示例业务中，HX-210的蓝牙版本为蓝牙5.2。",
+                "section_path": "示例业务 / 耳机 / HX-210的蓝牙版本是什么？",
+                "category": "商品参数",
+                "product_category": "耳机",
+                "content_hash": "4f792d8a7d50f4b57cdcaac2f82c18355aaa8957ce8f7b4677a3e96f7e68d63e",
+                "source_url": "/kb/source/8093293257920959110"
+              },
+              {
+                "number": 3,
+                "chunk_id": "4011614797889283353",
+                "questions": "HX-220的蓝牙版本是什么？",
+                "answer": "在本评估示例业务中，HX-220的蓝牙版本为蓝牙5.4。",
+                "section_path": "示例业务 / 耳机 / HX-220的蓝牙版本是什么？",
+                "category": "商品参数",
+                "product_category": "耳机",
+                "content_hash": "ef103ddfa5f0c493118cf72a55905b540792ff76748844cdfb6290b7e101dc45",
+                "source_url": "/kb/source/4011614797889283353"
+              },
+              {
+                "number": 4,
+                "chunk_id": "4431428658436145841",
+                "questions": "HX-210S的防护等级是什么？",
+                "answer": "在本评估示例业务中，HX-210S的防护等级为IPX5，仅防喷水，不能浸水。",
+                "section_path": "示例业务 / 耳机 / HX-210S的防护等级是什么？",
+                "category": "商品参数",
+                "product_category": "耳机",
+                "content_hash": "8c279831fd578db5dbcb83f081669e9c683d396c9d47312d29221adb40f63e0f",
+                "source_url": "/kb/source/4431428658436145841"
+              },
+              {
+                "number": 5,
+                "chunk_id": "2912404627370586582",
+                "questions": "HX-210S的降噪能力是什么？",
+                "answer": "在本评估示例业务中，HX-210S的降噪能力为支持主动降噪。",
+                "section_path": "示例业务 / 耳机 / HX-210S的降噪能力是什么？",
+                "category": "商品参数",
+                "product_category": "耳机",
+                "content_hash": "0aab5663aee9673dce9766208ce6232fd65ad9b9a0d2560f9c83849f611bcd07",
+                "source_url": "/kb/source/2912404627370586582"
+              },
+              {
+                "number": 6,
+                "chunk_id": "6332607000553489725",
+                "questions": "HX-210S的充电接口是什么？",
+                "answer": "在本评估示例业务中，HX-210S的充电接口为USB-C。",
+                "section_path": "示例业务 / 耳机 / HX-210S的充电接口是什么？",
+                "category": "商品参数",
+                "product_category": "耳机",
+                "content_hash": "6fbda3ce4c03085fc537a005e0e6429c62133839f74a9c64cbab7a432b72c0b4",
+                "source_url": "/kb/source/6332607000553489725"
+              },
+              {
+                "number": 7,
+                "chunk_id": "2060140484216519086",
+                "questions": "HX-210的防护等级是什么？",
+                "answer": "在本评估示例业务中，HX-210的防护等级为IPX4，仅防泼溅，不能浸水。",
+                "section_path": "示例业务 / 耳机 / HX-210的防护等级是什么？",
+                "category": "商品参数",
+                "product_category": "耳机",
+                "content_hash": "56da6843c58ebe3354a571a73d1c9b308f19914324e561082bd8e844e484694b",
+                "source_url": "/kb/source/2060140484216519086"
+              },
+              {
+                "number": 8,
+                "chunk_id": "4638553154415866037",
+                "questions": "HX-220的充电接口是什么？",
+                "answer": "在本评估示例业务中，HX-220的充电接口为USB-C，不支持无线充电。",
+                "section_path": "示例业务 / 耳机 / HX-220的充电接口是什么？",
+                "category": "商品参数",
+                "product_category": "耳机",
+                "content_hash": "a3155f2718c51c7e8dceb5002950490bc287f4dd2c5138d203eb6ae13eab6d36",
+                "source_url": "/kb/source/4638553154415866037"
+              },
+              {
+                "number": 9,
+                "chunk_id": "7540922397817164159",
+                "questions": "HX-210的降噪能力是什么？",
+                "answer": "在本评估示例业务中，HX-210的降噪能力为不支持主动降噪。",
+                "section_path": "示例业务 / 耳机 / HX-210的降噪能力是什么？",
+                "category": "商品参数",
+                "product_category": "耳机",
+                "content_hash": "ac47c820033dfaf1da268195941e791a740819bd1c69bfbb9aa88b625c102896",
+                "source_url": "/kb/source/7540922397817164159"
+              },
+              {
+                "number": 10,
+                "chunk_id": "770968543126330926",
+                "questions": "HX-210的充电接口是什么？",
+                "answer": "在本评估示例业务中，HX-210的充电接口为USB-C。",
+                "section_path": "示例业务 / 耳机 / HX-210的充电接口是什么？",
+                "category": "商品参数",
+                "product_category": "耳机",
+                "content_hash": "95126494ba15cfac18ccba1943dee18b4abe986330b92979f988202bd38b1250",
+                "source_url": "/kb/source/770968543126330926"
+              }
+            ],
+            "refused": false,
+            "low_confidence_question_id": null
+          }
+        ],
+        [
+          "token",
+          {
+            "text": "HX-210S的蓝牙版本为蓝牙5.3[1]。"
+          }
+        ],
+        [
+          "done",
+          {
+            "finish_reason": "stop"
+          }
+        ]
+      ],
+      "payload": {
+        "sources": [
+          {
+            "number": 1,
+            "chunk_id": "4048793780376354890",
+            "questions": "HX-210S的蓝牙版本是什么？",
+            "answer": "在本评估示例业务中，HX-210S的蓝牙版本为蓝牙5.3。",
+            "section_path": "示例业务 / 耳机 / HX-210S的蓝牙版本是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "597379b319cfb7c3eaf1a0bd103ae7f915ba3b21b6076c30b3a13b51b467347c",
+            "source_url": "/kb/source/4048793780376354890"
+          },
+          {
+            "number": 2,
+            "chunk_id": "8093293257920959110",
+            "questions": "HX-210的蓝牙版本是什么？",
+            "answer": "在本评估示例业务中，HX-210的蓝牙版本为蓝牙5.2。",
+            "section_path": "示例业务 / 耳机 / HX-210的蓝牙版本是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "4f792d8a7d50f4b57cdcaac2f82c18355aaa8957ce8f7b4677a3e96f7e68d63e",
+            "source_url": "/kb/source/8093293257920959110"
+          },
+          {
+            "number": 3,
+            "chunk_id": "4011614797889283353",
+            "questions": "HX-220的蓝牙版本是什么？",
+            "answer": "在本评估示例业务中，HX-220的蓝牙版本为蓝牙5.4。",
+            "section_path": "示例业务 / 耳机 / HX-220的蓝牙版本是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "ef103ddfa5f0c493118cf72a55905b540792ff76748844cdfb6290b7e101dc45",
+            "source_url": "/kb/source/4011614797889283353"
+          },
+          {
+            "number": 4,
+            "chunk_id": "4431428658436145841",
+            "questions": "HX-210S的防护等级是什么？",
+            "answer": "在本评估示例业务中，HX-210S的防护等级为IPX5，仅防喷水，不能浸水。",
+            "section_path": "示例业务 / 耳机 / HX-210S的防护等级是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "8c279831fd578db5dbcb83f081669e9c683d396c9d47312d29221adb40f63e0f",
+            "source_url": "/kb/source/4431428658436145841"
+          },
+          {
+            "number": 5,
+            "chunk_id": "2912404627370586582",
+            "questions": "HX-210S的降噪能力是什么？",
+            "answer": "在本评估示例业务中，HX-210S的降噪能力为支持主动降噪。",
+            "section_path": "示例业务 / 耳机 / HX-210S的降噪能力是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "0aab5663aee9673dce9766208ce6232fd65ad9b9a0d2560f9c83849f611bcd07",
+            "source_url": "/kb/source/2912404627370586582"
+          },
+          {
+            "number": 6,
+            "chunk_id": "6332607000553489725",
+            "questions": "HX-210S的充电接口是什么？",
+            "answer": "在本评估示例业务中，HX-210S的充电接口为USB-C。",
+            "section_path": "示例业务 / 耳机 / HX-210S的充电接口是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "6fbda3ce4c03085fc537a005e0e6429c62133839f74a9c64cbab7a432b72c0b4",
+            "source_url": "/kb/source/6332607000553489725"
+          },
+          {
+            "number": 7,
+            "chunk_id": "2060140484216519086",
+            "questions": "HX-210的防护等级是什么？",
+            "answer": "在本评估示例业务中，HX-210的防护等级为IPX4，仅防泼溅，不能浸水。",
+            "section_path": "示例业务 / 耳机 / HX-210的防护等级是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "56da6843c58ebe3354a571a73d1c9b308f19914324e561082bd8e844e484694b",
+            "source_url": "/kb/source/2060140484216519086"
+          },
+          {
+            "number": 8,
+            "chunk_id": "4638553154415866037",
+            "questions": "HX-220的充电接口是什么？",
+            "answer": "在本评估示例业务中，HX-220的充电接口为USB-C，不支持无线充电。",
+            "section_path": "示例业务 / 耳机 / HX-220的充电接口是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "a3155f2718c51c7e8dceb5002950490bc287f4dd2c5138d203eb6ae13eab6d36",
+            "source_url": "/kb/source/4638553154415866037"
+          },
+          {
+            "number": 9,
+            "chunk_id": "7540922397817164159",
+            "questions": "HX-210的降噪能力是什么？",
+            "answer": "在本评估示例业务中，HX-210的降噪能力为不支持主动降噪。",
+            "section_path": "示例业务 / 耳机 / HX-210的降噪能力是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "ac47c820033dfaf1da268195941e791a740819bd1c69bfbb9aa88b625c102896",
+            "source_url": "/kb/source/7540922397817164159"
+          },
+          {
+            "number": 10,
+            "chunk_id": "770968543126330926",
+            "questions": "HX-210的充电接口是什么？",
+            "answer": "在本评估示例业务中，HX-210的充电接口为USB-C。",
+            "section_path": "示例业务 / 耳机 / HX-210的充电接口是什么？",
+            "category": "商品参数",
+            "product_category": "耳机",
+            "content_hash": "95126494ba15cfac18ccba1943dee18b4abe986330b92979f988202bd38b1250",
+            "source_url": "/kb/source/770968543126330926"
+          }
+        ],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "session_id": "ba8e0e728b8d4b90a15f7ceb0acf1c9c",
+        "conversation_id": 1,
+        "answer": "HX-210S的蓝牙版本为蓝牙5.3[1]。"
+      },
+      "pool": null
+    },
+    {
+      "entry_point": "chat_stream",
+      "question": "今天店里新增的外星球旅行险承保条款是什么？",
+      "frames": [
+        [
+          "session",
+          {
+            "session_id": "ba8e0e728b8d4b90a15f7ceb0acf1c9c",
+            "resumed": true
+          }
+        ],
+        [
+          "tool",
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "今天店里新增的外星球旅行险承保条款是什么？"
+            },
+            "phase": "start"
+          }
+        ],
+        [
+          "tool",
+          {
+            "name": "query_faq",
+            "args": {
+              "keyword": "今天店里新增的外星球旅行险承保条款是什么？"
+            },
+            "phase": "end",
+            "ok": true,
+            "elapsed_ms": 9250,
+            "attempts": 1
+          }
+        ],
+        [
+          "sources",
+          {
+            "sources": [],
+            "refused": true,
+            "low_confidence_question_id": "2"
+          }
+        ],
+        [
+          "token",
+          {
+            "text": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。"
+          }
+        ],
+        [
+          "done",
+          {
+            "finish_reason": "stop"
+          }
+        ]
+      ],
+      "payload": {
+        "sources": [],
+        "refused": true,
+        "low_confidence_question_id": "2",
+        "session_id": "ba8e0e728b8d4b90a15f7ceb0acf1c9c",
+        "conversation_id": 1,
+        "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。"
+      },
+      "pool": {
+        "id": "2",
+        "original_question": "今天店里新增的外星球旅行险承保条款是什么？",
+        "conversation_id": "1",
+        "entry_point": "chat_stream",
+        "stage": "retrieval",
+        "reason_code": "low_relevance",
+        "reason": "最高重排分数低于校准阈值",
+        "created_at_utc": "2026-09-30T14:29:37.412926Z"
+      }
+    }
+  ],
+  "passed": true,
+  "bm25_hit_ids": [
+    "4048793780376354890",
+    "8093293257920959110",
+    "4011614797889283353",
+    "6332607000553489725",
+    "2912404627370586582",
+    "4431428658436145841",
+    "770968543126330926",
+    "7540922397817164159",
+    "2060140484216519086",
+    "1652638190036366941",
+    "4638553154415866037",
+    "6077904765992274458"
+  ],
+  "document": {
+    "chunk_id": "3024076174065147886",
+    "filename": "policy-acceptance.md",
+    "markdown": "# 验收示例文档\n\n这份文档只用于隔离验收。\n\n## 退款边界\n\n退款到账取决于支付渠道；不承诺具体到账时间，不保证审批通过。\n",
+    "section_path": "corpus:4fb814f74f187146/policy-acceptance.md::验收示例文档 / 退款边界"
+  },
+  "completed_at_utc": "2026-09-30T14:29:39.992848+00:00"
+}

@@ -1,0 +1,19 @@
+{
+  "source_commit": "22274b2",
+  "pytest_command": ".venv-ch03/Scripts/python.exe -X utf8 -m pytest -q",
+  "pytest_result": "536 passed, 5 deselected in 35.21s",
+  "ruff": "src tests migration/smoke scripts and run03 helpers passed",
+  "query_labeled": "12/12 real provider",
+  "negative_promises_labeled": "3/3 real provider, actual outputs inspected",
+  "evaluation": "160 complete, service/judge errors 0",
+  "frontend": "Protocol UI screenshots plus user real manual acceptance from run02; frontend unchanged by final fixes",
+  "review": "One fresh gpt-6-astra/xhigh review, 7 Important verified by root and fixed in one pass, no re-review",
+  "api_acceptance": {
+    "online": 4,
+    "isolated": 4,
+    "extra_labeled": 5,
+    "mixed_json_sse": 2,
+    "all_passed": true
+  },
+  "finish_checked_at_utc": "2026-10-01T01:55:40.570372+00:00"
+}

@@ -10,5 +10,15 @@
   "calibration_run": "ch04_20260930_02",
   "context_budget_utf8_bytes": 32000,
   "online_http_acceptance": "acceptance-online.json",
-  "provider_backup": "private before-cutover-restored-provider.env outside Git"
+  "provider_backup": "private before-cutover-restored-provider.env outside Git",
+  "final_online_service": {
+    "base_url": "http://127.0.0.1:8000/",
+    "http_status": 200,
+    "html_sha256": "861b86c03d8917dfc9b6ed2bee37772751e3b94894cb76859a2c73aa7e441780",
+    "healthz": {
+      "status": "ok"
+    },
+    "checked_at_utc": "2026-09-30T13:22:50.241128+00:00",
+    "isolated_demo_stopped_after_acceptance": true
+  }
 }

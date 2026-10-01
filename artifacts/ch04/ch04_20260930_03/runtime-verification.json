@@ -1,0 +1,129 @@
+{
+  "recorded_at_utc": "2026-09-30T14:27:25.173783+00:00",
+  "runtime": {
+    "python": "3.12.14",
+    "os": "Windows",
+    "device": "cpu",
+    "cuda_available": false,
+    "compute_threads": 4
+  },
+  "dependencies": {
+    "pymilvus": "2.6.17",
+    "sentence-transformers": "3.4.1",
+    "torch": "2.14.0",
+    "transformers": "4.57.6",
+    "SQLAlchemy": "2.1.1",
+    "fastapi": "0.141.1",
+    "uvicorn": "0.54.0",
+    "pydantic": "2.13.5",
+    "pydantic-settings": "2.15.0",
+    "langchain-core": "1.6.5",
+    "langchain-openai": "1.6.6",
+    "httpx": "0.28.1"
+  },
+  "services": {
+    "docker": "29.2.1",
+    "compose": "5.1.0",
+    "mysql": "8.0.46",
+    "milvus": "2.6.24",
+    "etcd": "3.5.25",
+    "minio": "RELEASE.2024-12-18T13-15-44Z",
+    "health": "Four current containers healthy after fresh run03 evaluation; same-session verified versions retained."
+  },
+  "provider": {
+    "host": "api.deepseek.com",
+    "request_model": "deepseek-chat",
+    "observed_response_metadata": [
+      {
+        "sample_id": "model",
+        "response_model": "deepseek-flash",
+        "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669"
+      },
+      {
+        "sample_id": "near_model",
+        "response_model": "deepseek-flash",
+        "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669"
+      },
+      {
+        "sample_id": "colloquial",
+        "response_model": "deepseek-flash",
+        "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669"
+      },
+      {
+        "sample_id": "synonym",
+        "response_model": "deepseek-flash",
+        "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669"
+      },
+      {
+        "sample_id": "condition",
+        "response_model": "deepseek-flash",
+        "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669"
+      },
+      {
+        "sample_id": "deadline",
+        "response_model": "deepseek-flash",
+        "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669"
+      },
+      {
+        "sample_id": "greeting",
+        "response_model": "deepseek-flash",
+        "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669"
+      },
+      {
+        "sample_id": "thanks",
+        "response_model": "deepseek-flash",
+        "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669"
+      },
+      {
+        "sample_id": "order",
+        "response_model": "deepseek-flash",
+        "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669"
+      },
+      {
+        "sample_id": "stock",
+        "response_model": "deepseek-flash",
+        "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669"
+      },
+      {
+        "sample_id": "ambiguous",
+        "response_model": "deepseek-flash",
+        "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669"
+      },
+      {
+        "sample_id": "mixed",
+        "response_model": "deepseek-flash",
+        "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669"
+      }
+    ],
+    "observation_source": "run03/query-understanding-results.jsonl and business-prompt-results.json, actual post-fix same-session provider calls; exact weights remain unpinned.",
+    "identity_limit": "Official docs planned retirement of deepseek-chat on 2026-07-24, but current-session responses still return deepseek-flash. Exact alias mapping/weight version is not independently established; retain both names.",
+    "probe_after_reset": {
+      "checked_at_utc": "2026-09-30T12:12:44.329338+00:00",
+      "request_model": "deepseek-chat",
+      "response_model": "deepseek-flash",
+      "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669",
+      "reply": "OK"
+    }
+  },
+  "context_budget": {
+    "configured_utf8_bytes_upper_bound": 32000,
+    "includes": "messages, structure, reserve; no source truncation",
+    "official_current_response_name_context": "deepseek-flash: 1M tokens in current official pricing documentation; this does not prove exact weight revision for the retained request alias",
+    "documentation": "https://api-docs.deepseek.com/quick_start/pricing/"
+  },
+  "official_sources": {
+    "balance": "https://api-docs.deepseek.com/api/get-user-balance/",
+    "error_codes": "https://api-docs.deepseek.com/quick_start/error_codes/",
+    "model_updates": "https://api-docs.deepseek.com/updates/"
+  },
+  "deployment": {
+    "production_mysql_rows_reindexed": 20,
+    "target_collection": "knowledge_ch04",
+    "target_index_audit_errors": 0,
+    "schema_migration_runs": 2,
+    "application_cutover_completed": true,
+    "reason": "Actual post-review online JSON/SSE known citations and unknown committed pool passed; mining remains enabled/Ready.",
+    "calibration_run": "ch04_20260930_03",
+    "post_review_migration_runs": 2
+  }
+}

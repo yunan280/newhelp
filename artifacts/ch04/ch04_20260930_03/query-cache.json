@@ -1,0 +1,482 @@
+{
+  "model_exact-04": {
+    "original": "MX-24P 的刷新率？",
+    "canonical": "MX-24P 的刷新率是多少？",
+    "bm25_query": "MX-24P 的刷新率是多少？ MX-24P 刷新率 MX-24P 屏幕刷新率 MX-24P 参数 刷新率",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "model_exact-03": {
+    "original": "RX-300S 的有线端口速率？",
+    "canonical": "RX-300S 的有线端口速率是多少？",
+    "bm25_query": "RX-300S 的有线端口速率是多少？ RX-300S 有线端口速率 RX-300S 网口速率 RX-300S 有线接口速率 RX-300S 端口速率参数",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "model_exact-01": {
+    "original": "HX-210 的蓝牙版本是什么？",
+    "canonical": "HX-210 的蓝牙版本是什么？",
+    "bm25_query": "HX-210 的蓝牙版本是什么？ HX-210 蓝牙版本 HX-210 蓝牙规格 HX-210 支持蓝牙几 HX-210 蓝牙协议版本",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "model_exact-02": {
+    "original": "CX-65 单口最高多少W？",
+    "canonical": "CX-65 单口最高多少W？",
+    "bm25_query": "CX-65 单口最高多少W？ CX-65 单口最大功率 CX-65 单口输出多少W CX-65 单口最高瓦数 CX-65 单口功率参数",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "model_exact-08": {
+    "original": "VX-20P 的滤芯能水洗吗？",
+    "canonical": "VX-20P 的滤芯能水洗吗？",
+    "bm25_query": "VX-20P 的滤芯能水洗吗？ VX-20P 滤芯可水洗吗 VX-20P 滤芯能否水洗 VX-20P 滤芯水洗 VX-20P 滤芯清洗方式",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "model_exact-06": {
+    "original": "CX-65P 双口同时使用时，USB-C 最高输出多少？",
+    "canonical": "CX-65P 双口同时使用时，USB-C 最高输出多少？",
+    "bm25_query": "CX-65P 双口同时使用时，USB-C 最高输出多少？ CX-65P 双口 USB-C 最高输出 CX-65P 双口输出功率 CX-65P USB-C 输出参数",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed"
+    ]
+  },
+  "model_exact-05": {
+    "original": "HX-210S 支持主动降噪吗？别把 HX-210 的参数混进来。",
+    "canonical": "HX-210S 支持主动降噪吗？别把 HX-210 的参数混进来。",
+    "bm25_query": "HX-210S 支持主动降噪吗？别把 HX-210 的参数混进来。 HX-210S 主动降噪 HX-210S 是否支持ANC HX-210S 降噪功能 HX-210S 参数 主动降噪",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "model_exact-07": {
+    "original": "MS-10S 在蓝牙模式下的回报率？",
+    "canonical": "MS-10S 在蓝牙模式下的回报率是多少？",
+    "bm25_query": "MS-10S 在蓝牙模式下的回报率是多少？ MS-10S 蓝牙模式回报率 MS-10S 蓝牙回报率 MS-10S 蓝牙模式参数 MS-10S 回报率",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "model_exact-09": {
+    "original": "CX-100 单口输出上限和达到上限所需线材是什么？",
+    "canonical": "CX-100 单口输出上限和达到上限所需线材是什么？",
+    "bm25_query": "CX-100 单口输出上限和达到上限所需线材是什么？ CX-100 单口输出上限 CX-100 最大输出功率 CX-100 单口输出线材要求 CX-100 输出上限线材",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed"
+    ]
+  },
+  "model_exact-10": {
+    "original": "RX-300 与 RX-300S 的无线标准分别是什么？",
+    "canonical": "RX-300 与 RX-300S 的无线标准分别是什么？",
+    "bm25_query": "RX-300 与 RX-300S 的无线标准分别是什么？ RX-300 无线标准 RX-300S 无线标准 RX-300 支持哪些无线标准 RX-300S 支持哪些无线标准 RX-300 与 RX-300S 无线标准",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "model_exact-11": {
+    "original": "MX-24 有 USB-C 视频输入吗，支架能升降吗？",
+    "canonical": "MX-24 有 USB-C 视频输入吗，支架能升降吗？",
+    "bm25_query": "MX-24 有 USB-C 视频输入吗，支架能升降吗？ MX-24 支架升降 MX-24 是否支持USB-C视频输入 MX-24 支架能否升降 MX-24 接口与支架参数",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed"
+    ]
+  },
+  "model_exact-12": {
+    "original": "VX-20P 标准与强力模式分别能用多久？",
+    "canonical": "VX-20P 标准模式与强力模式分别能用多久？",
+    "bm25_query": "VX-20P 标准模式与强力模式分别能用多久？ VX-20P 标准模式续航 VX-20P 强力模式续航 VX-20P 两种模式使用时长 VX-20P 标准模式能用多久 VX-20P 强力模式能用多久",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "colloquial-01": {
+    "original": "耳机还没拆，刚收到，咋退呀？",
+    "canonical": "耳机还没拆，刚收到，咋退呀？",
+    "bm25_query": "耳机还没拆，刚收到，咋退呀？",
+    "route": "knowledge",
+    "diagnostics": [
+      "protected_information_changed"
+    ]
+  },
+  "colloquial-04": {
+    "original": "买完想开票，去哪整？",
+    "canonical": "购买后如何开具发票？",
+    "bm25_query": "购买后如何开具发票？ 购买后怎么开发票 开票入口在哪 订单如何申请发票 发票怎么开 开票流程",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "colloquial-02": {
+    "original": "耳机寄过来要收多少邮费？",
+    "canonical": "耳机寄过来要收多少邮费？",
+    "bm25_query": "耳机寄过来要收多少邮费？ 耳机寄回邮费多少 退换货邮费怎么收 寄回耳机运费 耳机邮寄费用 退货运费标准",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "colloquial-03": {
+    "original": "路由器想恢复最初那样，咋弄？",
+    "canonical": "路由器如何恢复出厂设置？",
+    "bm25_query": "路由器如何恢复出厂设置？ 路由器恢复出厂设置 路由器怎么恢复初始状态 路由器重置方法 路由器恢复最初设置 路由器怎么重置",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "colloquial-08": {
+    "original": "显示器太晃眼了咋调暗点呀？",
+    "canonical": "显示器太晃眼，怎么调暗？",
+    "bm25_query": "显示器太晃眼，怎么调暗？ 显示器亮度怎么调低 屏幕太亮怎么调暗 显示器调暗方法 屏幕亮度调节",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "colloquial-06": {
+    "original": "HX-210S 想少听点外面吵的声儿，能降噪不？",
+    "canonical": "HX-210S 想少听点外面吵的声儿，能降噪不？",
+    "bm25_query": "HX-210S 想少听点外面吵的声儿，能降噪不？",
+    "route": "knowledge",
+    "diagnostics": [
+      "protected_information_changed"
+    ]
+  },
+  "colloquial-05": {
+    "original": "充电器收到10天，盒子好好的，能退不？",
+    "canonical": "充电器收到10天，盒子好好的，能退不？",
+    "bm25_query": "充电器收到10天，盒子好好的，能退不？ 包装完好能否退货 充电器退货条件",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed"
+    ]
+  },
+  "colloquial-07": {
+    "original": "MS-10 还得装电池不？",
+    "canonical": "MS-10 还得装电池不？",
+    "bm25_query": "MS-10 还得装电池不？",
+    "route": "knowledge",
+    "diagnostics": [
+      "protected_information_changed"
+    ]
+  },
+  "colloquial-11": {
+    "original": "MX-24P 屏幕想上下挪还能前后仰不？",
+    "canonical": "MX-24P 屏幕想上下挪还能前后仰不？",
+    "bm25_query": "MX-24P 屏幕想上下挪还能前后仰不？",
+    "route": "knowledge",
+    "diagnostics": [
+      "protected_information_changed"
+    ]
+  },
+  "colloquial-12": {
+    "original": "鼠标还没拆但接收器找不着了，刚收3天，能随便退不？",
+    "canonical": "鼠标还没拆但接收器找不着了，刚收3天，能随便退不？",
+    "bm25_query": "鼠标还没拆但接收器找不着了，刚收3天，能随便退不？",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed"
+    ]
+  },
+  "colloquial-09": {
+    "original": "耳机拆过啦，才到2天，不想要能走无理由不？",
+    "canonical": "耳机拆过啦，才到2天，不想要能走无理由不？",
+    "bm25_query": "耳机拆过啦，才到2天，不想要能走无理由不？",
+    "route": "knowledge",
+    "diagnostics": [
+      "protected_information_changed"
+    ]
+  },
+  "colloquial-10": {
+    "original": "VX-20 想冲冲滤网，洗完湿着塞回去行不？",
+    "canonical": "VX-20 想冲冲滤网，洗完湿着塞回去行不？",
+    "bm25_query": "VX-20 想冲冲滤网，洗完湿着塞回去行不？",
+    "route": "knowledge",
+    "diagnostics": [
+      "protected_information_changed"
+    ]
+  },
+  "synonym-02": {
+    "original": "MX-27 的屏幕像素规格？",
+    "canonical": "MX-27 的屏幕像素规格是什么？",
+    "bm25_query": "MX-27 的屏幕像素规格是什么？ MX-27 屏幕像素 MX-27 屏幕分辨率 MX-27 像素规格 MX-27 显示屏参数",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "synonym-04": {
+    "original": "耳机保固期多久？",
+    "canonical": "耳机保固期多久？",
+    "bm25_query": "耳机保固期多久？ 耳机保固期限 耳机保修时长 耳机保修政策",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed"
+    ]
+  },
+  "synonym-03": {
+    "original": "VX-20 集尘杯容积是多少？",
+    "canonical": "VX-20 集尘杯容积是多少？",
+    "bm25_query": "VX-20 集尘杯容积是多少？ VX-20 集尘杯容积 VX-20 尘杯容量 VX-20 集尘盒容积 VX-20 集尘杯多大 VX-20 尘杯多少升",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "synonym-01": {
+    "original": "HX-210 的无线连接协议版本？",
+    "canonical": "HX-210 的无线连接协议版本是什么？",
+    "bm25_query": "HX-210 的无线连接协议版本是什么？ HX-210 无线连接协议版本 HX-210 无线协议版本 HX-210 蓝牙协议版本 HX-210 无线连接规格",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "synonym-05": {
+    "original": "CX-65P 支持可编程电源快充吗？",
+    "canonical": "CX-65P 支持可编程电源快充吗？",
+    "bm25_query": "CX-65P 支持可编程电源快充吗？ CX-65P 可编程电源快充 CX-65P 快充支持 CX-65P 可编程电源兼容 CX-65P 充电协议支持",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "synonym-07": {
+    "original": "MS-10S 的轮询频率在接收器模式是多少？",
+    "canonical": "MS-10S 的轮询频率在接收器模式是多少？",
+    "bm25_query": "MS-10S 的轮询频率在接收器模式是多少？ MS-10S 接收器模式轮询频率 MS-10S 接收器模式回报率 MS-10S 接收器模式轮询率 MS-10S 接收器模式刷新率",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "synonym-06": {
+    "original": "RX-300S 能做多台路由的网状组网吗？",
+    "canonical": "RX-300S 能做多台路由的网状组网吗？",
+    "bm25_query": "RX-300S 能做多台路由的网状组网吗？ RX-300S 支持Mesh组网吗 RX-300S 多台组网 RX-300S 网状组网支持 RX-300S Mesh组网",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "synonym-08": {
+    "original": "充电器保固申请要什么购买凭据？",
+    "canonical": "充电器保固申请需要什么购买凭据？",
+    "bm25_query": "充电器保固申请需要什么购买凭据？ 充电器保固申请凭据 充电器保修需要什么凭证 充电器保修购买凭证要求 保固申请所需购买凭据 充电器保修凭证",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "synonym-09": {
+    "original": "HX-220 有没有环境声透传功能？",
+    "canonical": "HX-220 有没有环境声透传功能？",
+    "bm25_query": "HX-220 有没有环境声透传功能？ HX-220 环境声透传 HX-220 透传功能 HX-220 环境音透传 HX-220 是否支持透传",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "synonym-10": {
+    "original": "VX-20P 的高效微粒过滤部件可以用水冲吗？",
+    "canonical": "VX-20P 的高效微粒过滤部件可以用水冲吗？",
+    "bm25_query": "VX-20P 的高效微粒过滤部件可以用水冲吗？ VX-20P 高效微粒过滤部件能水洗吗 VX-20P 滤芯可以水冲吗 VX-20P 过滤部件清洗方式 VX-20P 高效滤网能否用水冲洗",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "synonym-11": {
+    "original": "MX-24P 的支座可调高度和倾角吗？",
+    "canonical": "MX-24P 的支座可调高度和倾角吗？",
+    "bm25_query": "MX-24P 的支座可调高度和倾角吗？ MX-24P 支座高度可调吗 MX-24P 支座倾角可调吗 MX-24P 支架调节范围 MX-24P 支座调节功能",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "synonym-12": {
+    "original": "CX-65 和 CX-65P 哪款具备可编程电压快充？",
+    "canonical": "CX-65 和 CX-65P 哪款具备可编程电压快充？",
+    "bm25_query": "CX-65 和 CX-65P 哪款具备可编程电压快充？ CX-65 支持可编程电压快充吗 CX-65P 可编程电压快充 哪款支持可编程电压快充 可编程电压快充 型号对比",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed"
+    ]
+  },
+  "multi_constraint-01": {
+    "original": "耳机订单实付100元，邮费规则是什么？",
+    "canonical": "耳机订单实付100元，邮费规则是什么？",
+    "bm25_query": "耳机订单实付100元，邮费规则是什么？ 邮费规则 运费规则 订单邮费怎么算 耳机订单运费规则",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed"
+    ]
+  },
+  "multi_constraint-02": {
+    "original": "充电器收到10天且包装完整，退货规则是什么？",
+    "canonical": "充电器收到10天且包装完整，退货规则是什么？",
+    "bm25_query": "充电器收到10天且包装完整，退货规则是什么？ 充电器退货规则 包装完整退货条件 充电器退货期限 退货规则咨询",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed"
+    ]
+  },
+  "multi_constraint-03": {
+    "original": "耳机收到3天但已拆封，是否适用无理由退货？",
+    "canonical": "耳机收到3天但已拆封，是否适用无理由退货？",
+    "bm25_query": "耳机收到3天但已拆封，是否适用无理由退货？ 耳机无理由退货条件",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed"
+    ]
+  },
+  "multi_constraint-05": {
+    "original": "HX-210 的充电接口和防护等级是什么？",
+    "canonical": "HX-210 的充电接口和防护等级是什么？",
+    "bm25_query": "HX-210 的充电接口和防护等级是什么？ HX-210 充电接口 HX-210 防护等级 HX-210 接口类型 HX-210 防水防尘等级 HX-210 参数",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "multi_constraint-04": {
+    "original": "吸尘器收到2天且未使用，申请退货的条件？",
+    "canonical": "吸尘器收到2天且未使用，申请退货的条件？",
+    "bm25_query": "吸尘器收到2天且未使用，申请退货的条件？ 吸尘器退货条件 吸尘器退货规则 吸尘器七天无理由退货",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed"
+    ]
+  },
+  "multi_constraint-06": {
+    "original": "CX-65P 双口使用时USB-C上限和快充协议是什么？",
+    "canonical": "CX-65P 双口使用时 USB-C 上限和快充协议是什么？",
+    "bm25_query": "CX-65P 双口使用时 USB-C 上限和快充协议是什么？ CX-65P 双口 USB-C 上限 CX-65P 双口快充协议 CX-65P 双口输出功率 CX-65P 双口充电协议 CX-65P 双口 USB-C 功率",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "multi_constraint-07": {
+    "original": "RX-300 的有线端口速率和 Mesh 支持情况？",
+    "canonical": "RX-300 的有线端口速率和 Mesh 支持情况？",
+    "bm25_query": "RX-300 的有线端口速率和 Mesh 支持情况？ RX-300 有线端口速率 RX-300 网口速率 RX-300 组网支持 RX-300 端口规格",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed"
+    ]
+  },
+  "multi_constraint-08": {
+    "original": "MX-27 的分辨率和最高刷新率分别是什么？",
+    "canonical": "MX-27 的分辨率和最高刷新率分别是什么？",
+    "bm25_query": "MX-27 的分辨率和最高刷新率分别是什么？ MX-27 分辨率 MX-27 最高刷新率 MX-27 屏幕参数 MX-27 刷新率是多少 MX-27 显示规格",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "multi_constraint-09": {
+    "original": "只看耳机条款：实付98元邮费和未拆封签收5天的退货规则？",
+    "canonical": "只看耳机条款：实付98元邮费和未拆封签收5天的退货规则？",
+    "bm25_query": "只看耳机条款：实付98元邮费和未拆封签收5天的退货规则？ 耳机退货条款 邮费 耳机退货政策",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed"
+    ]
+  },
+  "multi_constraint-11": {
+    "original": "MS-10S 接收器和蓝牙两种模式的回报率以及供电方式？",
+    "canonical": "MS-10S 接收器模式和蓝牙模式的回报率以及供电方式是什么？",
+    "bm25_query": "MS-10S 接收器模式和蓝牙模式的回报率以及供电方式是什么？ MS-10S 回报率 MS-10S 供电方式 MS-10S 接收器模式参数 MS-10S 蓝牙模式参数 MS-10S 技术规格",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "multi_constraint-10": {
+    "original": "只看充电器条款：实付58元邮费、保修期限和凭证要求？",
+    "canonical": "只看充电器条款：实付58元邮费、保修期限和凭证要求？",
+    "bm25_query": "只看充电器条款：实付58元邮费、保修期限和凭证要求？ 充电器条款 邮费 保修 凭证 充电器售后条款 保修凭证 充电器条款 邮费 保修规定",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed"
+    ]
+  },
+  "multi_constraint-12": {
+    "original": "VX-20 的标准模式续航和是否能吸水？",
+    "canonical": "VX-20 的标准模式续航和是否能吸水？",
+    "bm25_query": "VX-20 的标准模式续航和是否能吸水？ VX-20 标准模式续航 VX-20 续航时间 VX-20 能否吸水 VX-20 防水吸水 VX-20 参数",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "unanswerable-01": {
+    "original": "HX-999 的蓝牙版本是什么？",
+    "canonical": "HX-999 的蓝牙版本是什么？",
+    "bm25_query": "HX-999 的蓝牙版本是什么？ HX-999 蓝牙版本 HX-999 蓝牙规格 HX-999 支持蓝牙几 HX-999 蓝牙协议版本",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "unanswerable-02": {
+    "original": "今天店里新增的外星球旅行险承保条款是什么？",
+    "canonical": "今天店里新增的外星球旅行险承保条款是什么？",
+    "bm25_query": "今天店里新增的外星球旅行险承保条款是什么？ 外星球旅行险承保条款 新增旅行险承保条款 外星球旅行险保障范围 旅行险承保条款是什么",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "unanswerable-03": {
+    "original": "VX-20 的机身重量多少kg？",
+    "canonical": "VX-20 的机身重量是多少 kg？",
+    "bm25_query": "VX-20 的机身重量是多少 kg？ VX-20 机身重量 VX-20 重量多少kg VX-20 产品重量参数 VX-20 机身重量参数",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "unanswerable-04": {
+    "original": "你们食品品类里饼干的配料表？",
+    "canonical": "你们食品品类里饼干的配料表是什么？",
+    "bm25_query": "你们食品品类里饼干的配料表是什么？ 饼干配料表 食品饼干成分表 饼干配料成分 饼干原料表",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "unanswerable-05": {
+    "original": "HX-210 的电池容量是多少mAh？",
+    "canonical": "HX-210 的电池容量是多少mAh？",
+    "bm25_query": "HX-210 的电池容量是多少mAh？ HX-210 电池容量 HX-210 电池多少mAh HX-210 电池参数 HX-210 电池规格",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "unanswerable-06": {
+    "original": "CX-65 的PPS输出电压范围是多少？",
+    "canonical": "CX-65 的 PPS 输出电压范围是多少？",
+    "bm25_query": "CX-65 的 PPS 输出电压范围是多少？ CX-65 输出电压范围",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed",
+      "unsafe_synonym_removed"
+    ]
+  },
+  "unanswerable-07": {
+    "original": "RX-300S 用的处理器具体型号？",
+    "canonical": "RX-300S 用的处理器具体型号是什么？",
+    "bm25_query": "RX-300S 用的处理器具体型号是什么？ RX-300S 处理器型号 RX-300S 处理器具体型号 RX-300S 用的什么处理器 RX-300S CPU 型号",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "unanswerable-09": {
+    "original": "退款刚提交，明确告诉我具体哪天几点到账并保证不延迟。",
+    "canonical": "退款刚提交，明确告诉我具体哪天几点到账并保证不延迟。",
+    "bm25_query": "退款刚提交，明确告诉我具体哪天几点到账并保证不延迟。 退款到账时间 退款多久到账 退款到账时效 退款到账日期 退款会延迟吗",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "unanswerable-08": {
+    "original": "MX-24P 的面板供应商和出厂色准数值？",
+    "canonical": "MX-24P 的面板供应商和出厂色准数值？",
+    "bm25_query": "MX-24P 的面板供应商和出厂色准数值？ MX-24P 面板供应商 MX-24P 出厂色准数值 MX-24P 屏幕供应商 MX-24P 色准参数 MX-24P 面板参数",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "unanswerable-10": {
+    "original": "耳机签收5天进水坏了，请保证保修审批一定通过。",
+    "canonical": "耳机签收5天进水坏了，请保证保修审批一定通过。",
+    "bm25_query": "耳机签收5天进水坏了，请保证保修审批一定通过。 耳机进水保修 进水损坏保修审批 耳机保修能否通过 进水保修政策",
+    "route": "knowledge",
+    "diagnostics": [
+      "unsafe_synonym_removed"
+    ]
+  },
+  "unanswerable-12": {
+    "original": "仅按鼠标品类回答 HX-210S 的蓝牙版本和降噪能力。",
+    "canonical": "仅按鼠标品类回答 HX-210S 的蓝牙版本和降噪能力。",
+    "bm25_query": "仅按鼠标品类回答 HX-210S 的蓝牙版本和降噪能力。 HX-210S 蓝牙版本 HX-210S 降噪能力 HX-210S 鼠标参数 HX-210S 支持蓝牙版本 HX-210S 降噪效果",
+    "route": "knowledge",
+    "diagnostics": []
+  },
+  "unanswerable-11": {
+    "original": "VX-20P 在强力模式吸水时的续航和吸水容量？",
+    "canonical": "VX-20P 在强力模式吸水时的续航和吸水容量是多少？",
+    "bm25_query": "VX-20P 在强力模式吸水时的续航和吸水容量是多少？ VX-20P 强力模式吸水续航 VX-20P 强力模式吸水容量 VX-20P 吸水续航时间 VX-20P 吸水容量参数 VX-20P 强力模式参数",
+    "route": "knowledge",
+    "diagnostics": []
+  }
+}

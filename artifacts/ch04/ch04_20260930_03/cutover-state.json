@@ -1,0 +1,22 @@
+{
+  "checked_at_utc": "2026-10-01T01:55:40.555364+00:00",
+  "post_review_complete": true,
+  "target_collection": "knowledge_ch04",
+  "calibration_run": "ch04_20260930_03",
+  "mining_task": "MewHelp-Ch03-KnowledgeMining",
+  "mining_restored_enabled": true,
+  "scheduled_state": "Ready",
+  "online_http_acceptance": "acceptance-online.json",
+  "final_online_service": {
+    "base_url": "http://127.0.0.1:8000/",
+    "http_status": 200,
+    "html_sha256": "861b86c03d8917dfc9b6ed2bee37772751e3b94894cb76859a2c73aa7e441780",
+    "healthz": {
+      "status": "ok"
+    },
+    "isolated_demo_stopped_after_acceptance": true,
+    "background_process": true
+  },
+  "previous_cutover_record": "../ch04_20260930_02/cutover-state.json",
+  "backup": "private paired source/latest-provider env/SQL outside Git"
+}
