@@ -1,0 +1,29 @@
+{
+  "answer": "订单 1001 的物流情况如下：\n\n- **承运商**：京东物流\n- **运单号**：F678104970636\n- **当前状态**：派送中\n- **最新位置**：上海分拨中心（2026-09-05）\n- **轨迹**：广州集散中心 → 杭州转运中心 → 上海分拨中心\n\n包裹已经到达上海分拨中心，正在派送中，请留意收件哦～",
+  "model_calls": 2,
+  "tool_trace": [
+    {
+      "call_id": "call_00_1g5kRvSPaQwONlGGp1Rc3330",
+      "round": 1,
+      "name": "query_logistics",
+      "args": {
+        "order_id": "1001"
+      },
+      "ok": true,
+      "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「派送中」,最新位置 上海分拨中心(2026-09-05)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+      "error": null,
+      "elapsed_ms": 47
+    }
+  ],
+  "usage": {
+    "input_tokens": 1193,
+    "output_tokens": 150,
+    "estimated": false
+  },
+  "stop_reason": "completed",
+  "request_model": "deepseek-chat",
+  "response_models": [
+    "deepseek-flash",
+    "deepseek-flash"
+  ]
+}
