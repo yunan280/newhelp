@@ -80,3 +80,6 @@ uploads/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Recoverable Superpowers scratch archives
+.superpowers/archives/
