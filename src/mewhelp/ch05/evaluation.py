@@ -197,10 +197,69 @@ async def evaluate_prompts(
     return int(summary["passed"] != summary["total"] or not results)
 
 
+def summarize_evaluations(
+    dataset_dir: Path, outdir: Path, *, intents_dir: Path, decisions_dir: Path
+) -> int:
+    """Reuse only complete, current, label-consistent real evaluation outputs."""
+    outdir.mkdir(parents=True, exist_ok=False)
+    parts, failures = [], []
+    for part, folder, filename in [
+        ("intents", intents_dir, "intents.jsonl"),
+        ("decisions", decisions_dir, "agent-decisions.jsonl"),
+    ]:
+        try:
+            dataset = dataset_dir / filename
+            labels = [json.loads(line) for line in dataset.read_text(encoding="utf-8").splitlines()]
+            summary = json.loads((folder / "summary.json").read_text(encoding="utf-8"))
+            rows = json.loads((folder / "results.json").read_text(encoding="utf-8"))
+            if summary["hash"] != evaluation_hash(dataset):
+                failures.append(part + ": stale prompt / dataset / configuration hash")
+            if len(rows) != len(labels) or not labels:
+                failures.append(part + ": incomplete results")
+            for label, row in zip(labels, rows, strict=False):
+                if any(row.get(key) != value for key, value in label.items()):
+                    failures.append(part + ": frozen input or expected label changed")
+                invalid = (
+                    row.get("actual") != label["expected"]
+                    if part == "intents"
+                    else bool(check_decision(row.get("actual", {}), label["expected"]))
+                )
+                if invalid or not row.get("passed") or row.get("error") or row.get("failures"):
+                    failures.append(part + ": failed case " + label["id"])
+            if (
+                summary["total"] != len(rows)
+                or summary["passed"] != len(rows)
+                or summary["service_errors"] != 0
+            ):
+                failures.append(part + ": summary does not prove full success")
+            parts.append({"part": part, "directory": folder.as_posix(), **summary})
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            failures.append(part + ": " + str(exc))
+    report = {"parts": parts, "failures": failures, "passed": not failures}
+    (outdir / "summary.json").write_text(
+        json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    print(json.dumps(report, ensure_ascii=False))
+    return int(bool(failures))
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", type=Path, required=True)
     parser.add_argument("--outdir", type=Path, required=True)
     parser.add_argument("--part", choices=["intents", "decisions", "all"], required=True)
+    parser.add_argument("--reuse-intents", type=Path)
+    parser.add_argument("--reuse-decisions", type=Path)
     args = parser.parse_args()
+    if args.reuse_intents or args.reuse_decisions:
+        if not (args.reuse_intents and args.reuse_decisions):
+            parser.error("both evaluation parts are required for reuse")
+        raise SystemExit(
+            summarize_evaluations(
+                args.dataset,
+                args.outdir,
+                intents_dir=args.reuse_intents,
+                decisions_dir=args.reuse_decisions,
+            )
+        )
     raise SystemExit(asyncio.run(evaluate_prompts(args.dataset, args.outdir, part=args.part)))

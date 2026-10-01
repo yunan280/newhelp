@@ -1,0 +1,14 @@
+2026-10-01 15:06:39,773 INFO mewhelp.ch05.workflow Ch05 node=begin_turn session=ch05_20261001_01c-json-complex turn=538463b9a0b242b5a9de9fa8daf914e2
+2026-10-01 15:06:39,776 INFO mewhelp.ch05.workflow Ch05 node=resolve_reference session=ch05_20261001_01c-json-complex turn=538463b9a0b242b5a9de9fa8daf914e2
+2026-10-01 15:06:39,780 INFO mewhelp.ch05.workflow Ch05 node=classify_intent session=ch05_20261001_01c-json-complex turn=538463b9a0b242b5a9de9fa8daf914e2
+2026-10-01 15:06:39,784 INFO mewhelp.ch05.workflow Ch05 node=route_intent session=ch05_20261001_01c-json-complex turn=538463b9a0b242b5a9de9fa8daf914e2
+2026-10-01 15:06:39,788 INFO mewhelp.ch05.workflow Ch05 node=chitchat_reply session=ch05_20261001_01c-json-complex turn=538463b9a0b242b5a9de9fa8daf914e2
+2026-10-01 15:06:39,791 INFO mewhelp.ch05.workflow Ch05 node=log_turn session=ch05_20261001_01c-json-complex turn=538463b9a0b242b5a9de9fa8daf914e2
+2026-10-01 15:06:39,858 INFO mewhelp.ch05.workflow Ch05 node=begin_turn session=ch05_20261001_01c-restart-policy turn=af876577b35c406abb85cb08920f808b
+2026-10-01 15:06:39,862 INFO mewhelp.ch05.workflow Ch05 node=resolve_reference session=ch05_20261001_01c-restart-policy turn=af876577b35c406abb85cb08920f808b
+2026-10-01 15:06:39,865 INFO mewhelp.ch05.workflow Ch05 node=classify_intent session=ch05_20261001_01c-restart-policy turn=af876577b35c406abb85cb08920f808b
+2026-10-01 15:06:40,431 INFO mewhelp.ch05.workflow Ch05 node=route_intent session=ch05_20261001_01c-restart-policy turn=af876577b35c406abb85cb08920f808b
+2026-10-01 15:06:40,435 INFO mewhelp.ch05.workflow Ch05 node=retrieve_knowledge session=ch05_20261001_01c-restart-policy turn=af876577b35c406abb85cb08920f808b
+2026-10-01 15:07:18,327 INFO mewhelp.ch05.workflow Ch05 node=confidence_gate session=ch05_20261001_01c-restart-policy turn=af876577b35c406abb85cb08920f808b
+2026-10-01 15:07:18,370 INFO mewhelp.ch05.workflow Ch05 node=fallback_reply session=ch05_20261001_01c-restart-policy turn=af876577b35c406abb85cb08920f808b
+2026-10-01 15:07:18,375 INFO mewhelp.ch05.workflow Ch05 node=log_turn session=ch05_20261001_01c-restart-policy turn=af876577b35c406abb85cb08920f808b

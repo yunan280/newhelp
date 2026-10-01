@@ -1,0 +1,209 @@
+{
+  "checkpoint": "data/ch05/ch05_20261001_01-ui.sqlite3",
+  "before": {
+    "ch05_20261001_01c-json-complex": {
+      "message_ids": [
+        "63aa8729d23847f19d8ac782dffb37cf-user",
+        "63aa8729d23847f19d8ac782dffb37cf-answer"
+      ],
+      "history_count": 2,
+      "response_models": [
+        "deepseek-flash"
+      ],
+      "tool_rounds": [
+        [
+          "query_order",
+          1
+        ],
+        [
+          "query_logistics",
+          2
+        ]
+      ]
+    },
+    "ch05_20261001_01c-sse-complex": {
+      "message_ids": [
+        "eb6f76577b52463cbe51ba936b875d1f-user",
+        "eb6f76577b52463cbe51ba936b875d1f-answer"
+      ],
+      "history_count": 2,
+      "response_models": [
+        "deepseek-flash"
+      ],
+      "tool_rounds": [
+        [
+          "query_order",
+          1
+        ],
+        [
+          "query_logistics",
+          2
+        ]
+      ]
+    },
+    "ch05_20261001_01c-unused": {
+      "message_ids": [],
+      "history_count": 0,
+      "response_models": [],
+      "tool_rounds": []
+    }
+  },
+  "reopened": {
+    "ch05_20261001_01c-json-complex": {
+      "message_ids": [
+        "63aa8729d23847f19d8ac782dffb37cf-user",
+        "63aa8729d23847f19d8ac782dffb37cf-answer"
+      ],
+      "history_count": 2,
+      "response_models": [
+        "deepseek-flash"
+      ],
+      "tool_rounds": [
+        [
+          "query_order",
+          1
+        ],
+        [
+          "query_logistics",
+          2
+        ]
+      ]
+    },
+    "ch05_20261001_01c-sse-complex": {
+      "message_ids": [
+        "eb6f76577b52463cbe51ba936b875d1f-user",
+        "eb6f76577b52463cbe51ba936b875d1f-answer"
+      ],
+      "history_count": 2,
+      "response_models": [
+        "deepseek-flash"
+      ],
+      "tool_rounds": [
+        [
+          "query_order",
+          1
+        ],
+        [
+          "query_logistics",
+          2
+        ]
+      ]
+    },
+    "ch05_20261001_01c-unused": {
+      "message_ids": [],
+      "history_count": 0,
+      "response_models": [],
+      "tool_rounds": []
+    }
+  },
+  "after_restart_request": {
+    "ch05_20261001_01c-json-complex": {
+      "message_ids": [
+        "63aa8729d23847f19d8ac782dffb37cf-user",
+        "63aa8729d23847f19d8ac782dffb37cf-answer",
+        "538463b9a0b242b5a9de9fa8daf914e2-user",
+        "538463b9a0b242b5a9de9fa8daf914e2-answer"
+      ],
+      "history_count": 4,
+      "response_models": [],
+      "tool_rounds": []
+    },
+    "ch05_20261001_01c-sse-complex": {
+      "message_ids": [
+        "eb6f76577b52463cbe51ba936b875d1f-user",
+        "eb6f76577b52463cbe51ba936b875d1f-answer"
+      ],
+      "history_count": 2,
+      "response_models": [
+        "deepseek-flash"
+      ],
+      "tool_rounds": [
+        [
+          "query_order",
+          1
+        ],
+        [
+          "query_logistics",
+          2
+        ]
+      ]
+    },
+    "ch05_20261001_01c-unused": {
+      "message_ids": [],
+      "history_count": 0,
+      "response_models": [],
+      "tool_rounds": []
+    }
+  },
+  "resumed": {
+    "session_id": "ch05_20261001_01c-json-complex",
+    "conversation_id": 50,
+    "resumed": true,
+    "answer": "您好，我是客服小猫，可以帮您查询商品、订单、物流或售后问题。",
+    "sources": [],
+    "refused": false,
+    "low_confidence_question_id": null,
+    "intent": "闲聊",
+    "route": "chitchat",
+    "actions": [],
+    "offer": null,
+    "tool_trace": [],
+    "node_trace": [
+      "begin_turn",
+      "resolve_reference",
+      "classify_intent",
+      "route_intent",
+      "chitchat_reply",
+      "log_turn"
+    ],
+    "usage": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "estimated": false
+    },
+    "calls": {
+      "classifier": 0,
+      "decision": 0,
+      "answer": 0
+    },
+    "stop_reason": "completed",
+    "ledger_error": null
+  },
+  "logged_policy": {
+    "session_id": "ch05_20261001_01c-restart-policy",
+    "conversation_id": 58,
+    "resumed": false,
+    "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。",
+    "sources": [],
+    "refused": true,
+    "low_confidence_question_id": "16",
+    "intent": "商品咨询",
+    "route": "knowledge",
+    "actions": [],
+    "offer": null,
+    "tool_trace": [],
+    "node_trace": [
+      "begin_turn",
+      "resolve_reference",
+      "classify_intent",
+      "route_intent",
+      "retrieve_knowledge",
+      "confidence_gate",
+      "fallback_reply",
+      "log_turn"
+    ],
+    "usage": {
+      "input_tokens": 220,
+      "output_tokens": 7,
+      "estimated": false
+    },
+    "calls": {
+      "classifier": 1,
+      "decision": 0,
+      "answer": 0
+    },
+    "stop_reason": "weak_evidence",
+    "ledger_error": null
+  },
+  "passed": true
+}

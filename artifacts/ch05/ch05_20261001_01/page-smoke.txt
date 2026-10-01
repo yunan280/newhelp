@@ -11,11 +11,11 @@
   [✓] 加载态的小圆点已摘掉
   [✓] 正文没被徽章/清理动作抹掉  "订单 1001 已发出。"
   [✓] 流结束后收掉了流式光标
-  [✓] 请求体带上了 user_id 与 message  {"session_id":"stale-1","user_id":"web-8fyiqo9j","message":"订单 1001 的物流到哪了"}
-  [✓] 请求体里的 session_id 是本地那个(不是空串)  {"session_id":"stale-1","user_id":"web-8fyiqo9j","message":"订单 1001 的物流到哪了"}
+  [✓] 请求体带上了 user_id 与 message  {"session_id":"stale-1","user_id":"web-4n5st6dg","message":"订单 1001 的物流到哪了"}
+  [✓] 请求体里的 session_id 是本地那个(不是空串)  {"session_id":"stale-1","user_id":"web-4n5st6dg","message":"订单 1001 的物流到哪了"}
   [✓] 服务端下发的新 session_id 已存回
   [✓] resumed=false 且本地有会话 → 提示这是一段新对话
-  [✓] user_id 落在 localStorage 且跨发送稳定  web-8fyiqo9j
+  [✓] user_id 落在 localStorage 且跨发送稳定  web-4n5st6dg
 
 场景 B · turn1 无前言(工具在跑时正文区必须还看得见东西)
   [✓] 工具在跑时，正文区仍挂着等待动画  dots=1

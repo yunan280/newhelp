@@ -400,6 +400,58 @@ $env:MILVUS_COLLECTION = 'knowledge'
 
 查询是单轮归一，同义词只扩展检索文本；不做指代消解/多轮改写。低置信度、空证据、生成自评不足及引用不合格共用明确拒答并独立提交问题池；基础设施错误返回错误，不伪装成完成的拒答。当前示例评估不能证明真实商品库上的泛化提升，需要以后补充真实匿名问题的人工标注。
 
+## Ch05：确定性 Workflow 与核心 Agent
+
+流程为指代透传→七类 JSON 意图→代码固定分流→检索/前置闸或业务 Agent→日志。商品咨询和退款退货必须先走原 Ch03/04 RAG，弱证据直接拒答并提交原问题，Agent=0；物流/订单/售后直接用原 Ch02 的三个只读工具。投诉固定安抚并建议两个独立按钮；普通问候固定回复且零模型调用。其他闲聊允许一次分类调用，不进入 Agent。
+
+主 Agent 是受限的决策→工具观察→再决策循环，最终正文另行流式输出。缺订单号时追问；默认最多4次决策、8次工具、每轮64000输入+输出token、180秒，最终正文1024token。模型缺用量时以UTF-8序列化字节保守计量。知识闸先于首个答案token，JSON与SSE使用同一张图。State由官方 AsyncSqliteSaver 持久化，MySQL消息是账本与首次导入来源，内存仅做会话互斥。**本章限定单进程单实例**，勿用多worker共用该文件；多实例、正式指代/分类、上下文策略、MCP、飞轮发布与正式置信度检查留后续章节。
+
+在本目录运行，沿用现有 `.env`、MySQL/Milvus与Ch04校准，不覆盖凭据或重建知识库。框架锁定为 langgraph1.2.12、langgraph-checkpoint-sqlite3.1.1；实际接口及供应商配置核对记录在 [阶段记录](dev-notes/ch05.md)。
+
+```powershell
+$pyCh05 = (Resolve-Path .venv-ch03/Scripts/python.exe).Path
+$env:PYTHONUTF8 = '1'
+$env:OMP_NUM_THREADS = '4'
+$env:MKL_NUM_THREADS = '4'
+uv pip install --python $pyCh05 -e '.[agent,rag,dev]'
+docker compose up -d mysql
+docker compose -f milvus-compose.yml up -d
+```
+
+首次升级先备份，增量迁移仅增加 nullable request_id 和唯一索引。已有工单保持NULL，不改会话状态；重跑安全，同名不兼容列/索引报错。这里备份放Git忽略目录，已有真实备份和前后行数/状态哈希见 [MySQL迁移证据](artifacts/ch05/ch05_20261001_01/mysql-migration.json)。
+
+```powershell
+New-Item -ItemType Directory -Force data/ch05/backups | Out-Null
+docker exec mewhelp-mysql sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" exec mysqldump --single-transaction --routines --triggers --default-character-set=utf8mb4 -uroot mewhelp --result-file=/tmp/mewhelp-before-ch05.sql'
+docker cp mewhelp-mysql:/tmp/mewhelp-before-ch05.sql data/ch05/backups/mewhelp-before-ch05.sql
+& $pyCh05 -X utf8 scripts/migrate_ch05_schema.py
+& $pyCh05 -X utf8 -m mewhelp.ch05.bare --question '订单 1001 的物流到哪了'
+$env:CH05_CHECKPOINT_PATH = 'data/ch05/demo.sqlite3'
+& $pyCh05 -X utf8 -m uvicorn mewhelp.main:app --host 127.0.0.1 --port 8005 --workers 1 --log-config docs/ch05-logging.json
+```
+
+浏览器打开 `http://127.0.0.1:8005/`。日志显示 `session / turn / node`，政策问题必须出现 `retrieve_knowledge → confidence_gate → agent_decide`，弱问题则转 `fallback_reply`。8000是本机已有服务，本章未终止或覆盖；8005若被占用先核对PID/命令行，选择空闲端口并同步验收 base-url。
+
+页面问「我要投诉」出现两个独立按钮。「转人工」确认只在本地显示「已转接人工客服」和客服小猫问候，取消不执行；「建工单」打开描述/类型确认表单，确认后才POST并显示真实工单号。两者互不绑定、不点仍可继续聊天、刷新历史只恢复显示。主 Agent 没有写工具或人工执行权限。工单稳定offer_id经数据库唯一键防重，原工具本章也不再改变human状态。
+
+另开同目录终端（同样设置线程与UTF-8）运行：
+
+```powershell
+$pyCh05 = (Resolve-Path .venv-ch03/Scripts/python.exe).Path
+$runCh05 = 'ch05_demo_02' # 用新的ID；报告目录不能已存在
+& $pyCh05 -X utf8 scripts/smoke_ch05_acceptance.py --base-url http://127.0.0.1:8005 --report-dir artifacts/ch05/$runCh05/acceptance --session-prefix $runCh05
+& $pyCh05 -X utf8 -m mewhelp.ch05.evaluation --dataset eval/ch05 --part all --outdir artifacts/ch05/$runCh05/prompts
+& $pyCh05 -X utf8 -m pytest -q
+& $pyCh05 -X utf8 -m ruff check src tests scripts/migrate_ch05_schema.py scripts/smoke_ch05_acceptance.py
+node tests/page-smoke.js src/mewhelp/static/index.html
+```
+
+验收脚本真实请求六场景的JSON/SSE，另验证未确认不写和确认后重发只一单，会新增**明确标测试的工单一张**。使用专属session_prefix；不修改旧知识库/Ch04评估集。复杂问题用「请先查询订单1001的商品和下单时间，再查询物流最新节点，比较这两个时间」，验收要求两工具分属前后决策轮。同轮调用两工具不能算通过。
+
+本次 [HTTP验收](artifacts/ch05/ch05_20261001_01/acceptance-verified/acceptance.json) 14/14、服务错误0；[最终Prompt校验](artifacts/ch05/ch05_20261001_01/prompts-final-verified/summary.json) 分类28/28、决策12/12、服务错误0，未变决策报告复用且hash核对。实际请求deepseek-chat、响应deepseek-flash；DeepSeek本次用extra_body的max_tokens与thinking disabled，避免SDK转换后的参数不兼容。最终正文逐例阅读，不宣称已执行退款/人工/建单。
+
+真实 [页面核验](artifacts/ch05/ch05_20261001_01/ui-verification.json) 完成投诉、不点继续、工单取消/确认/刷新，截图 [ui-ticket.jpg](artifacts/ch05/ch05_20261001_01/ui-ticket.jpg)。IAB在原生人工确认框后控制接口超时，未冒称真实人工确认成功；人工/取消/两种顺序由执行实际HTML处理器的 [Node点击测试](artifacts/ch05/ch05_20261001_01/page-smoke.txt) 覆盖。文件saver关闭重开、HTTP进程重启和同session恢复的实际证据见 [process-recovery.json](artifacts/ch05/ch05_20261001_01/process-recovery.json)。模型/检索/数据库服务错误保留错误响应，不能冒充已完成兜底。
+
 ## 目录结构
 
 ```

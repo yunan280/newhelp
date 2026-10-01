@@ -1,0 +1,22 @@
+{
+  "parts": [
+    {
+      "part": "intents",
+      "directory": "artifacts/ch05/ch05_20261001_01/intents-final",
+      "hash": "3122643d3075aff5c79431db5ff6fbb9cfc4ddd8f36a09cb7f6649d78d68889a",
+      "total": 28,
+      "passed": 28,
+      "service_errors": 0
+    },
+    {
+      "part": "decisions",
+      "directory": "artifacts/ch05/ch05_20261001_01/decisions-attempt2",
+      "hash": "4b0433060b134f481e189a302a50757d24ba34acd7ba800e0b727919d049f53a",
+      "total": 12,
+      "passed": 12,
+      "service_errors": 0
+    }
+  ],
+  "failures": [],
+  "passed": true
+}

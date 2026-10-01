@@ -1,0 +1,3818 @@
+{
+  "origin": "real HTTP + corresponding business database",
+  "base_url": "http://127.0.0.1:8005",
+  "session_prefix": "ch05_20261001_01a",
+  "total": 14,
+  "passed": 9,
+  "service_errors": 0,
+  "cases": [
+    {
+      "id": "policy",
+      "mode": "json",
+      "question": "七天无理由退货政策是什么",
+      "expected": {
+        "route": "knowledge",
+        "nodes": [
+          "retrieve_knowledge",
+          "confidence_gate",
+          "decide_agent"
+        ],
+        "refused": false,
+        "citations": true
+      },
+      "request": {
+        "message": "七天无理由退货政策是什么",
+        "session_id": "ch05_20261001_01a-json-policy",
+        "user_id": "ch05_20261001_01a"
+      },
+      "raw": "{\"session_id\":\"ch05_20261001_01a-json-policy\",\"conversation_id\":22,\"resumed\":false,\"answer\":\"七天无理由退货政策是：签收后 7 天内，商品不影响二次销售，可以无理由退货。[1][2]\",\"sources\":[{\"number\":1,\"chunk_id\":\"7122701754840041692\",\"questions\":\"退货政策是什么\",\"answer\":\"签收后 7 天内,商品不影响二次销售可无理由退货。\",\"section_path\":\"faq / 退换货 / 退货政策是什么\",\"category\":\"退换货\",\"product_category\":null,\"content_hash\":\"d707e1c16d5923f85fd08487580336b890e0cd0e7bd7a6db5ee55fc15794c33e\",\"source_url\":\"/kb/source/7122701754840041692\"},{\"number\":2,\"chunk_id\":\"9010885927313249829\",\"questions\":\"退货政策是什么\",\"answer\":\"签收后 7 天内、商品不影响二次销售，可以无理由退货。\",\"section_path\":\"faq / 客服对话 / 退货政策是什么\",\"category\":\"客服对话\",\"product_category\":null,\"content_hash\":\"2166d6adcd1e80d4321116c985e34cc633c3564484471f50fac2eda018b9150a\",\"source_url\":\"/kb/source/9010885927313249829\"},{\"number\":3,\"chunk_id\":\"420828808926164794\",\"questions\":\"商品有质量问题怎么办\",\"answer\":\"拍照留证后在订单页申请售后,审核通过可退可换。\",\"section_path\":\"faq / 商品 / 商品有质量问题怎么办\",\"category\":\"商品\",\"product_category\":null,\"content_hash\":\"fff33db2bc948f5df1aebdde7e51bed2f299c3394d3fdcfb57b751dfa0f3def8\",\"source_url\":\"/kb/source/420828808926164794\"},{\"number\":4,\"chunk_id\":\"3320582538884644199\",\"questions\":\"发货时效\",\"answer\":\"现货商品在付款后 48 小时内发出。预售商品以商品页标注为准。\",\"section_path\":\"corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 发货时效\",\"category\":\"配送政策\",\"product_category\":null,\"content_hash\":\"f5c766355d5119c4ab4e737a4549a7d33a8ea995bd57ce97398da70965b96c26\",\"source_url\":\"/kb/source/3320582538884644199\"},{\"number\":5,\"chunk_id\":\"4026044992745815028\",\"questions\":\"支付失败怎么办\",\"answer\":\"先确认余额与限额,仍失败可换一种方式,重复扣款会自动退回。\",\"section_path\":\"faq / 支付 / 支付失败怎么办\",\"category\":\"支付\",\"product_category\":null,\"content_hash\":\"3dae8660cf0ca2b5619495b5ed520cc01745337874878a18074d9b92410a60cd\",\"source_url\":\"/kb/source/4026044992745815028\"},{\"number\":6,\"chunk_id\":\"1709950930094883706\",\"questions\":\"你能干啥\",\"answer\":\"可以查订单状态、物流进度、商品价格库存，以及退换货、发票这类售后问题，也可以帮忙转人工或建工单。\",\"section_path\":\"faq / 客服对话 / 你能干啥\",\"category\":\"客服对话\",\"product_category\":null,\"content_hash\":\"6fb3c3693355f88864125c85b6dbfbb785561f426acab7aab2bd80d96b733662\",\"source_url\":\"/kb/source/1709950930094883706\"},{\"number\":7,\"chunk_id\":\"8241941662198301528\",\"questions\":\"换货怎么申请\",\"answer\":\"在订单详情页点「申请换货」,选好规格后寄回即可。\",\"section_path\":\"faq / 退换货 / 换货怎么申请\",\"category\":\"退换货\",\"product_category\":null,\"content_hash\":\"42766435c18843eefc636689c495bc79c6c1f0debe2eb99bd2bccb18feebdd69\",\"source_url\":\"/kb/source/8241941662198301528\"},{\"number\":8,\"chunk_id\":\"2914662982578110438\",\"questions\":\"运费说明\",\"answer\":\"单笔订单实付金额满 99 元包邮。不满 99 元按收货地收取 8 元起的配送费用。\",\"section_path\":\"corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 运费说明\",\"category\":\"配送政策\",\"product_category\":null,\"content_hash\":\"920ea01e4638b5a45fbf09e99db4ef69f162c92ef68313657e42e426a7f8d7ec\",\"source_url\":\"/kb/source/2914662982578110438\"},{\"number\":9,\"chunk_id\":\"9191350465487520735\",\"questions\":\"保修期是多久\",\"answer\":\"电子类商品保修 12 个月,人为损坏不在保修范围内。\",\"section_path\":\"faq / 售后 / 保修期是多久\",\"category\":\"售后\",\"product_category\":null,\"content_hash\":\"dd043653e2398d1cf7777c8a250b262a293a348b552f8021242f43919e23f715\",\"source_url\":\"/kb/source/9191350465487520735\"},{\"number\":10,\"chunk_id\":\"8969248413214546709\",\"questions\":\"支持哪些支付方式\",\"answer\":\"支持微信、支付宝、银联与货到付款。\",\"section_path\":\"faq / 支付 / 支持哪些支付方式\",\"category\":\"支付\",\"product_category\":null,\"content_hash\":\"50c5437ba4fe4a5a596bc1e76ed5d643c2b74cda956d7c356632d6340bf9450a\",\"source_url\":\"/kb/source/8969248413214546709\"}],\"refused\":false,\"low_confidence_question_id\":null,\"intent\":\"退款退货\",\"route\":\"knowledge\",\"actions\":[],\"offer\":null,\"tool_trace\":[],\"node_trace\":[\"begin_turn\",\"resolve_reference\",\"classify_intent\",\"route_intent\",\"retrieve_knowledge\",\"confidence_gate\",\"agent_decide\",\"stream_answer\",\"log_turn\"],\"usage\":{\"input_tokens\":2055,\"output_tokens\":56,\"estimated\":false},\"calls\":{\"classifier\":1,\"decision\":1,\"answer\":1},\"stop_reason\":\"completed\",\"ledger_error\":null}",
+      "actual": {
+        "session_id": "ch05_20261001_01a-json-policy",
+        "conversation_id": 22,
+        "resumed": false,
+        "answer": "七天无理由退货政策是：签收后 7 天内，商品不影响二次销售，可以无理由退货。[1][2]",
+        "sources": [
+          {
+            "number": 1,
+            "chunk_id": "7122701754840041692",
+            "questions": "退货政策是什么",
+            "answer": "签收后 7 天内,商品不影响二次销售可无理由退货。",
+            "section_path": "faq / 退换货 / 退货政策是什么",
+            "category": "退换货",
+            "product_category": null,
+            "content_hash": "d707e1c16d5923f85fd08487580336b890e0cd0e7bd7a6db5ee55fc15794c33e",
+            "source_url": "/kb/source/7122701754840041692"
+          },
+          {
+            "number": 2,
+            "chunk_id": "9010885927313249829",
+            "questions": "退货政策是什么",
+            "answer": "签收后 7 天内、商品不影响二次销售，可以无理由退货。",
+            "section_path": "faq / 客服对话 / 退货政策是什么",
+            "category": "客服对话",
+            "product_category": null,
+            "content_hash": "2166d6adcd1e80d4321116c985e34cc633c3564484471f50fac2eda018b9150a",
+            "source_url": "/kb/source/9010885927313249829"
+          },
+          {
+            "number": 3,
+            "chunk_id": "420828808926164794",
+            "questions": "商品有质量问题怎么办",
+            "answer": "拍照留证后在订单页申请售后,审核通过可退可换。",
+            "section_path": "faq / 商品 / 商品有质量问题怎么办",
+            "category": "商品",
+            "product_category": null,
+            "content_hash": "fff33db2bc948f5df1aebdde7e51bed2f299c3394d3fdcfb57b751dfa0f3def8",
+            "source_url": "/kb/source/420828808926164794"
+          },
+          {
+            "number": 4,
+            "chunk_id": "3320582538884644199",
+            "questions": "发货时效",
+            "answer": "现货商品在付款后 48 小时内发出。预售商品以商品页标注为准。",
+            "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 发货时效",
+            "category": "配送政策",
+            "product_category": null,
+            "content_hash": "f5c766355d5119c4ab4e737a4549a7d33a8ea995bd57ce97398da70965b96c26",
+            "source_url": "/kb/source/3320582538884644199"
+          },
+          {
+            "number": 5,
+            "chunk_id": "4026044992745815028",
+            "questions": "支付失败怎么办",
+            "answer": "先确认余额与限额,仍失败可换一种方式,重复扣款会自动退回。",
+            "section_path": "faq / 支付 / 支付失败怎么办",
+            "category": "支付",
+            "product_category": null,
+            "content_hash": "3dae8660cf0ca2b5619495b5ed520cc01745337874878a18074d9b92410a60cd",
+            "source_url": "/kb/source/4026044992745815028"
+          },
+          {
+            "number": 6,
+            "chunk_id": "1709950930094883706",
+            "questions": "你能干啥",
+            "answer": "可以查订单状态、物流进度、商品价格库存，以及退换货、发票这类售后问题，也可以帮忙转人工或建工单。",
+            "section_path": "faq / 客服对话 / 你能干啥",
+            "category": "客服对话",
+            "product_category": null,
+            "content_hash": "6fb3c3693355f88864125c85b6dbfbb785561f426acab7aab2bd80d96b733662",
+            "source_url": "/kb/source/1709950930094883706"
+          },
+          {
+            "number": 7,
+            "chunk_id": "8241941662198301528",
+            "questions": "换货怎么申请",
+            "answer": "在订单详情页点「申请换货」,选好规格后寄回即可。",
+            "section_path": "faq / 退换货 / 换货怎么申请",
+            "category": "退换货",
+            "product_category": null,
+            "content_hash": "42766435c18843eefc636689c495bc79c6c1f0debe2eb99bd2bccb18feebdd69",
+            "source_url": "/kb/source/8241941662198301528"
+          },
+          {
+            "number": 8,
+            "chunk_id": "2914662982578110438",
+            "questions": "运费说明",
+            "answer": "单笔订单实付金额满 99 元包邮。不满 99 元按收货地收取 8 元起的配送费用。",
+            "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 运费说明",
+            "category": "配送政策",
+            "product_category": null,
+            "content_hash": "920ea01e4638b5a45fbf09e99db4ef69f162c92ef68313657e42e426a7f8d7ec",
+            "source_url": "/kb/source/2914662982578110438"
+          },
+          {
+            "number": 9,
+            "chunk_id": "9191350465487520735",
+            "questions": "保修期是多久",
+            "answer": "电子类商品保修 12 个月,人为损坏不在保修范围内。",
+            "section_path": "faq / 售后 / 保修期是多久",
+            "category": "售后",
+            "product_category": null,
+            "content_hash": "dd043653e2398d1cf7777c8a250b262a293a348b552f8021242f43919e23f715",
+            "source_url": "/kb/source/9191350465487520735"
+          },
+          {
+            "number": 10,
+            "chunk_id": "8969248413214546709",
+            "questions": "支持哪些支付方式",
+            "answer": "支持微信、支付宝、银联与货到付款。",
+            "section_path": "faq / 支付 / 支持哪些支付方式",
+            "category": "支付",
+            "product_category": null,
+            "content_hash": "50c5437ba4fe4a5a596bc1e76ed5d643c2b74cda956d7c356632d6340bf9450a",
+            "source_url": "/kb/source/8969248413214546709"
+          }
+        ],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "退款退货",
+        "route": "knowledge",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "resolve_reference",
+          "classify_intent",
+          "route_intent",
+          "retrieve_knowledge",
+          "confidence_gate",
+          "agent_decide",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 2055,
+          "output_tokens": 56,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 1,
+          "answer": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null
+      },
+      "failures": [
+        "required ordered node missing: decide_agent"
+      ],
+      "passed": false
+    },
+    {
+      "id": "logistics",
+      "mode": "json",
+      "question": "订单 1001 的物流到哪了",
+      "expected": {
+        "route": "business",
+        "tools": [
+          "query_logistics"
+        ],
+        "forbidden_nodes": [
+          "retrieve_knowledge",
+          "confidence_gate"
+        ]
+      },
+      "request": {
+        "message": "订单 1001 的物流到哪了",
+        "session_id": "ch05_20261001_01a-json-logistics",
+        "user_id": "ch05_20261001_01a"
+      },
+      "raw": "{\"session_id\":\"ch05_20261001_01a-json-logistics\",\"conversation_id\":23,\"resumed\":false,\"answer\":\"订单 1001 的物流信息如下：\\n\\n- 承运商：京东物流\\n- 运单号：F678104970636\\n- 当前状态：派送中\\n- 最新位置：上海分拨中心（2026-09-05）\\n- 轨迹：广州集散中心 → 杭州转运中心 → 上海分拨中心\\n\\n包裹已到达上海分拨中心，正在派送途中。\",\"sources\":[],\"refused\":false,\"low_confidence_question_id\":null,\"intent\":\"物流\",\"route\":\"business\",\"actions\":[],\"offer\":null,\"tool_trace\":[{\"call_id\":\"call_00_JoQ2EDmi96Itj9cwZhsI3278\",\"round\":1,\"name\":\"query_logistics\",\"args\":{\"order_id\":\"1001\"},\"ok\":true,\"content\":\"订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「派送中」,最新位置 上海分拨中心(2026-09-05)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。\",\"error\":null,\"elapsed_ms\":62}],\"node_trace\":[\"begin_turn\",\"resolve_reference\",\"classify_intent\",\"route_intent\",\"agent_decide\",\"execute_tools\",\"agent_decide\",\"stream_answer\",\"log_turn\"],\"usage\":{\"input_tokens\":2468,\"output_tokens\":155,\"estimated\":false},\"calls\":{\"classifier\":1,\"decision\":2,\"answer\":1},\"stop_reason\":\"completed\",\"ledger_error\":null}",
+      "actual": {
+        "session_id": "ch05_20261001_01a-json-logistics",
+        "conversation_id": 23,
+        "resumed": false,
+        "answer": "订单 1001 的物流信息如下：\n\n- 承运商：京东物流\n- 运单号：F678104970636\n- 当前状态：派送中\n- 最新位置：上海分拨中心（2026-09-05）\n- 轨迹：广州集散中心 → 杭州转运中心 → 上海分拨中心\n\n包裹已到达上海分拨中心，正在派送途中。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "物流",
+        "route": "business",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "call_00_JoQ2EDmi96Itj9cwZhsI3278",
+            "round": 1,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「派送中」,最新位置 上海分拨中心(2026-09-05)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+            "error": null,
+            "elapsed_ms": 62
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "resolve_reference",
+          "classify_intent",
+          "route_intent",
+          "agent_decide",
+          "execute_tools",
+          "agent_decide",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 2468,
+          "output_tokens": 155,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 2,
+          "answer": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null
+      },
+      "failures": [],
+      "passed": true
+    },
+    {
+      "id": "complaint",
+      "mode": "json",
+      "question": "我要投诉",
+      "expected": {
+        "route": "complaint",
+        "actions": [
+          "handoff",
+          "create_ticket"
+        ],
+        "agent_calls": 0,
+        "forbidden_nodes": [
+          "decide_agent",
+          "retrieve_knowledge"
+        ]
+      },
+      "request": {
+        "message": "我要投诉",
+        "session_id": "ch05_20261001_01a-json-complaint",
+        "user_id": "ch05_20261001_01a"
+      },
+      "raw": "{\"session_id\":\"ch05_20261001_01a-json-complaint\",\"conversation_id\":24,\"resumed\":false,\"answer\":\"很抱歉给您带来不好的体验。您可以选择转人工或创建工单，我们会协助您处理。\",\"sources\":[],\"refused\":false,\"low_confidence_question_id\":null,\"intent\":\"投诉\",\"route\":\"complaint\",\"actions\":[\"handoff\",\"create_ticket\"],\"offer\":{\"offer_id\":\"7f2f589c749f448581810d94d2b6e138\",\"turn_id\":\"56a6c1b90e0c492f8827c0d20ecdfdaa\",\"actions\":[\"handoff\",\"create_ticket\"],\"description\":\"我要投诉\",\"ticket_type\":\"投诉\"},\"tool_trace\":[],\"node_trace\":[\"begin_turn\",\"resolve_reference\",\"classify_intent\",\"route_intent\",\"complaint_reply\",\"log_turn\"],\"usage\":{\"input_tokens\":210,\"output_tokens\":6,\"estimated\":false},\"calls\":{\"classifier\":1,\"decision\":0,\"answer\":0},\"stop_reason\":\"completed\",\"ledger_error\":null}",
+      "actual": {
+        "session_id": "ch05_20261001_01a-json-complaint",
+        "conversation_id": 24,
+        "resumed": false,
+        "answer": "很抱歉给您带来不好的体验。您可以选择转人工或创建工单，我们会协助您处理。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "投诉",
+        "route": "complaint",
+        "actions": [
+          "handoff",
+          "create_ticket"
+        ],
+        "offer": {
+          "offer_id": "7f2f589c749f448581810d94d2b6e138",
+          "turn_id": "56a6c1b90e0c492f8827c0d20ecdfdaa",
+          "actions": [
+            "handoff",
+            "create_ticket"
+          ],
+          "description": "我要投诉",
+          "ticket_type": "投诉"
+        },
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "resolve_reference",
+          "classify_intent",
+          "route_intent",
+          "complaint_reply",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 210,
+          "output_tokens": 6,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0
+        },
+        "stop_reason": "completed",
+        "ledger_error": null
+      },
+      "failures": [],
+      "passed": true
+    },
+    {
+      "id": "chitchat",
+      "mode": "json",
+      "question": "你好",
+      "expected": {
+        "route": "chitchat",
+        "answer": "您好，我是客服小猫，可以帮您查询商品、订单、物流或售后问题。",
+        "agent_calls": 0,
+        "classifier_calls": 0
+      },
+      "request": {
+        "message": "你好",
+        "session_id": "ch05_20261001_01a-json-chitchat",
+        "user_id": "ch05_20261001_01a"
+      },
+      "raw": "{\"session_id\":\"ch05_20261001_01a-json-chitchat\",\"conversation_id\":25,\"resumed\":false,\"answer\":\"您好，我是客服小猫，可以帮您查询商品、订单、物流或售后问题。\",\"sources\":[],\"refused\":false,\"low_confidence_question_id\":null,\"intent\":\"闲聊\",\"route\":\"chitchat\",\"actions\":[],\"offer\":null,\"tool_trace\":[],\"node_trace\":[\"begin_turn\",\"resolve_reference\",\"classify_intent\",\"route_intent\",\"chitchat_reply\",\"log_turn\"],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"estimated\":false},\"calls\":{\"classifier\":0,\"decision\":0,\"answer\":0},\"stop_reason\":\"completed\",\"ledger_error\":null}",
+      "actual": {
+        "session_id": "ch05_20261001_01a-json-chitchat",
+        "conversation_id": 25,
+        "resumed": false,
+        "answer": "您好，我是客服小猫，可以帮您查询商品、订单、物流或售后问题。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "闲聊",
+        "route": "chitchat",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "resolve_reference",
+          "classify_intent",
+          "route_intent",
+          "chitchat_reply",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 0,
+          "decision": 0,
+          "answer": 0
+        },
+        "stop_reason": "completed",
+        "ledger_error": null
+      },
+      "failures": [],
+      "passed": true
+    },
+    {
+      "id": "complex",
+      "mode": "json",
+      "question": "请先查询订单1001的商品和下单时间，再查询物流最新节点，比较这两个时间",
+      "expected": {
+        "route": "business",
+        "sequential_tools": [
+          "query_order",
+          "query_logistics"
+        ],
+        "forbidden_nodes": [
+          "retrieve_knowledge",
+          "confidence_gate"
+        ]
+      },
+      "request": {
+        "message": "请先查询订单1001的商品和下单时间，再查询物流最新节点，比较这两个时间",
+        "session_id": "ch05_20261001_01a-json-complex",
+        "user_id": "ch05_20261001_01a"
+      },
+      "raw": "{\"session_id\":\"ch05_20261001_01a-json-complex\",\"conversation_id\":26,\"resumed\":false,\"answer\":\"订单 1001 的信息如下：\\n\\n- 商品：降噪耳机\\n- 下单时间：2026-09-03\\n- 实付金额：118 元\\n- 订单状态：已下单\\n\\n物流信息：\\n\\n- 承运商：京东物流，运单号 F678104970636\\n- 当前状态：派送中\\n- 最新节点：上海分拨中心（2026-09-05）\\n- 轨迹：广州集散中心 → 杭州转运中心 → 上海分拨中心\\n\\n时间比较：下单时间为 2026-09-03，物流最新节点时间为 2026-09-05，物流节点比下单时间晚 2 天。\",\"sources\":[],\"refused\":false,\"low_confidence_question_id\":null,\"intent\":\"物流\",\"route\":\"business\",\"actions\":[],\"offer\":null,\"tool_trace\":[{\"call_id\":\"call_00_imp4U1gEMQFEyJLrIto64759\",\"round\":1,\"name\":\"query_order\",\"args\":{\"order_id\":\"1001\"},\"ok\":true,\"content\":\"订单 1001:商品「降噪耳机」,下单时间 2026-09-03,实付 118 元,当前状态「已下单」。\",\"error\":null,\"elapsed_ms\":0},{\"call_id\":\"call_00_07YXv8eOJqTT20s5NuVT6893\",\"round\":2,\"name\":\"query_logistics\",\"args\":{\"order_id\":\"1001\"},\"ok\":true,\"content\":\"订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「派送中」,最新位置 上海分拨中心(2026-09-05)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。\",\"error\":null,\"elapsed_ms\":0}],\"node_trace\":[\"begin_turn\",\"resolve_reference\",\"classify_intent\",\"route_intent\",\"agent_decide\",\"execute_tools\",\"agent_decide\",\"execute_tools\",\"agent_decide\",\"stream_answer\",\"log_turn\"],\"usage\":{\"input_tokens\":3599,\"output_tokens\":284,\"estimated\":false},\"calls\":{\"classifier\":1,\"decision\":3,\"answer\":1},\"stop_reason\":\"completed\",\"ledger_error\":null}",
+      "actual": {
+        "session_id": "ch05_20261001_01a-json-complex",
+        "conversation_id": 26,
+        "resumed": false,
+        "answer": "订单 1001 的信息如下：\n\n- 商品：降噪耳机\n- 下单时间：2026-09-03\n- 实付金额：118 元\n- 订单状态：已下单\n\n物流信息：\n\n- 承运商：京东物流，运单号 F678104970636\n- 当前状态：派送中\n- 最新节点：上海分拨中心（2026-09-05）\n- 轨迹：广州集散中心 → 杭州转运中心 → 上海分拨中心\n\n时间比较：下单时间为 2026-09-03，物流最新节点时间为 2026-09-05，物流节点比下单时间晚 2 天。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "物流",
+        "route": "business",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "call_00_imp4U1gEMQFEyJLrIto64759",
+            "round": 1,
+            "name": "query_order",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001:商品「降噪耳机」,下单时间 2026-09-03,实付 118 元,当前状态「已下单」。",
+            "error": null,
+            "elapsed_ms": 0
+          },
+          {
+            "call_id": "call_00_07YXv8eOJqTT20s5NuVT6893",
+            "round": 2,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「派送中」,最新位置 上海分拨中心(2026-09-05)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "resolve_reference",
+          "classify_intent",
+          "route_intent",
+          "agent_decide",
+          "execute_tools",
+          "agent_decide",
+          "execute_tools",
+          "agent_decide",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 3599,
+          "output_tokens": 284,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 3,
+          "answer": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null
+      },
+      "failures": [],
+      "passed": true
+    },
+    {
+      "id": "weak",
+      "mode": "json",
+      "question": "今天店里新增的外星球旅行险承保条款是什么？",
+      "expected": {
+        "route": "knowledge",
+        "nodes": [
+          "retrieve_knowledge",
+          "confidence_gate",
+          "fallback"
+        ],
+        "refused": true,
+        "agent_calls": 0,
+        "forbidden_nodes": [
+          "decide_agent",
+          "stream_answer"
+        ]
+      },
+      "request": {
+        "message": "今天店里新增的外星球旅行险承保条款是什么？",
+        "session_id": "ch05_20261001_01a-json-weak",
+        "user_id": "ch05_20261001_01a"
+      },
+      "raw": "{\"session_id\":\"ch05_20261001_01a-json-weak\",\"conversation_id\":27,\"resumed\":false,\"answer\":\"目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。\",\"sources\":[],\"refused\":true,\"low_confidence_question_id\":\"10\",\"intent\":\"商品咨询\",\"route\":\"knowledge\",\"actions\":[],\"offer\":null,\"tool_trace\":[],\"node_trace\":[\"begin_turn\",\"resolve_reference\",\"classify_intent\",\"route_intent\",\"retrieve_knowledge\",\"confidence_gate\",\"fallback_reply\",\"log_turn\"],\"usage\":{\"input_tokens\":220,\"output_tokens\":7,\"estimated\":false},\"calls\":{\"classifier\":1,\"decision\":0,\"answer\":0},\"stop_reason\":\"weak_evidence\",\"ledger_error\":null}",
+      "actual": {
+        "session_id": "ch05_20261001_01a-json-weak",
+        "conversation_id": 27,
+        "resumed": false,
+        "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。",
+        "sources": [],
+        "refused": true,
+        "low_confidence_question_id": "10",
+        "intent": "商品咨询",
+        "route": "knowledge",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "resolve_reference",
+          "classify_intent",
+          "route_intent",
+          "retrieve_knowledge",
+          "confidence_gate",
+          "fallback_reply",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 220,
+          "output_tokens": 7,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0
+        },
+        "stop_reason": "weak_evidence",
+        "ledger_error": null
+      },
+      "failures": [
+        "required ordered node missing: fallback"
+      ],
+      "pool": {
+        "id": "10",
+        "question": "今天店里新增的外星球旅行险承保条款是什么？",
+        "stage": "retrieval",
+        "entry_point": "agent",
+        "reason": "检索证据低于校准阈值"
+      },
+      "passed": false
+    },
+    {
+      "id": "policy",
+      "mode": "sse",
+      "question": "七天无理由退货政策是什么",
+      "expected": {
+        "route": "knowledge",
+        "nodes": [
+          "retrieve_knowledge",
+          "confidence_gate",
+          "decide_agent"
+        ],
+        "refused": false,
+        "citations": true
+      },
+      "request": {
+        "message": "七天无理由退货政策是什么",
+        "session_id": "ch05_20261001_01a-sse-policy",
+        "user_id": "ch05_20261001_01a"
+      },
+      "raw": "event: session\ndata: {\"session_id\": \"ch05_20261001_01a-sse-policy\", \"conversation_id\": 28, \"resumed\": false}\n\nevent: node\ndata: {\"name\": \"begin_turn\", \"turn_id\": \"a76c1e159af24cf29339a963ae558175\"}\n\nevent: node\ndata: {\"name\": \"resolve_reference\", \"turn_id\": \"a76c1e159af24cf29339a963ae558175\"}\n\nevent: node\ndata: {\"name\": \"classify_intent\", \"turn_id\": \"a76c1e159af24cf29339a963ae558175\"}\n\nevent: node\ndata: {\"name\": \"route_intent\", \"turn_id\": \"a76c1e159af24cf29339a963ae558175\"}\n\nevent: node\ndata: {\"name\": \"retrieve_knowledge\", \"turn_id\": \"a76c1e159af24cf29339a963ae558175\"}\n\nevent: node\ndata: {\"name\": \"confidence_gate\", \"turn_id\": \"a76c1e159af24cf29339a963ae558175\"}\n\nevent: sources\ndata: {\"sources\": [{\"number\": 1, \"chunk_id\": \"7122701754840041692\", \"questions\": \"\\u9000\\u8d27\\u653f\\u7b56\\u662f\\u4ec0\\u4e48\", \"answer\": \"\\u7b7e\\u6536\\u540e 7 \\u5929\\u5185,\\u5546\\u54c1\\u4e0d\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\u53ef\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u3002\", \"section_path\": \"faq / \\u9000\\u6362\\u8d27 / \\u9000\\u8d27\\u653f\\u7b56\\u662f\\u4ec0\\u4e48\", \"category\": \"\\u9000\\u6362\\u8d27\", \"product_category\": null, \"content_hash\": \"d707e1c16d5923f85fd08487580336b890e0cd0e7bd7a6db5ee55fc15794c33e\", \"source_url\": \"/kb/source/7122701754840041692\"}, {\"number\": 2, \"chunk_id\": \"9010885927313249829\", \"questions\": \"\\u9000\\u8d27\\u653f\\u7b56\\u662f\\u4ec0\\u4e48\", \"answer\": \"\\u7b7e\\u6536\\u540e 7 \\u5929\\u5185\\u3001\\u5546\\u54c1\\u4e0d\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\uff0c\\u53ef\\u4ee5\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u3002\", \"section_path\": \"faq / \\u5ba2\\u670d\\u5bf9\\u8bdd / \\u9000\\u8d27\\u653f\\u7b56\\u662f\\u4ec0\\u4e48\", \"category\": \"\\u5ba2\\u670d\\u5bf9\\u8bdd\", \"product_category\": null, \"content_hash\": \"2166d6adcd1e80d4321116c985e34cc633c3564484471f50fac2eda018b9150a\", \"source_url\": \"/kb/source/9010885927313249829\"}, {\"number\": 3, \"chunk_id\": \"420828808926164794\", \"questions\": \"\\u5546\\u54c1\\u6709\\u8d28\\u91cf\\u95ee\\u9898\\u600e\\u4e48\\u529e\", \"answer\": \"\\u62cd\\u7167\\u7559\\u8bc1\\u540e\\u5728\\u8ba2\\u5355\\u9875\\u7533\\u8bf7\\u552e\\u540e,\\u5ba1\\u6838\\u901a\\u8fc7\\u53ef\\u9000\\u53ef\\u6362\\u3002\", \"section_path\": \"faq / \\u5546\\u54c1 / \\u5546\\u54c1\\u6709\\u8d28\\u91cf\\u95ee\\u9898\\u600e\\u4e48\\u529e\", \"category\": \"\\u5546\\u54c1\", \"product_category\": null, \"content_hash\": \"fff33db2bc948f5df1aebdde7e51bed2f299c3394d3fdcfb57b751dfa0f3def8\", \"source_url\": \"/kb/source/420828808926164794\"}, {\"number\": 4, \"chunk_id\": \"3320582538884644199\", \"questions\": \"\\u53d1\\u8d27\\u65f6\\u6548\", \"answer\": \"\\u73b0\\u8d27\\u5546\\u54c1\\u5728\\u4ed8\\u6b3e\\u540e 48 \\u5c0f\\u65f6\\u5185\\u53d1\\u51fa\\u3002\\u9884\\u552e\\u5546\\u54c1\\u4ee5\\u5546\\u54c1\\u9875\\u6807\\u6ce8\\u4e3a\\u51c6\\u3002\", \"section_path\": \"corpus:9ac8a57a485dbcc7/shipping-policy.md::\\u914d\\u9001\\u653f\\u7b56 / \\u53d1\\u8d27\\u65f6\\u6548\", \"category\": \"\\u914d\\u9001\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"f5c766355d5119c4ab4e737a4549a7d33a8ea995bd57ce97398da70965b96c26\", \"source_url\": \"/kb/source/3320582538884644199\"}, {\"number\": 5, \"chunk_id\": \"4026044992745815028\", \"questions\": \"\\u652f\\u4ed8\\u5931\\u8d25\\u600e\\u4e48\\u529e\", \"answer\": \"\\u5148\\u786e\\u8ba4\\u4f59\\u989d\\u4e0e\\u9650\\u989d,\\u4ecd\\u5931\\u8d25\\u53ef\\u6362\\u4e00\\u79cd\\u65b9\\u5f0f,\\u91cd\\u590d\\u6263\\u6b3e\\u4f1a\\u81ea\\u52a8\\u9000\\u56de\\u3002\", \"section_path\": \"faq / \\u652f\\u4ed8 / \\u652f\\u4ed8\\u5931\\u8d25\\u600e\\u4e48\\u529e\", \"category\": \"\\u652f\\u4ed8\", \"product_category\": null, \"content_hash\": \"3dae8660cf0ca2b5619495b5ed520cc01745337874878a18074d9b92410a60cd\", \"source_url\": \"/kb/source/4026044992745815028\"}, {\"number\": 6, \"chunk_id\": \"1709950930094883706\", \"questions\": \"\\u4f60\\u80fd\\u5e72\\u5565\", \"answer\": \"\\u53ef\\u4ee5\\u67e5\\u8ba2\\u5355\\u72b6\\u6001\\u3001\\u7269\\u6d41\\u8fdb\\u5ea6\\u3001\\u5546\\u54c1\\u4ef7\\u683c\\u5e93\\u5b58\\uff0c\\u4ee5\\u53ca\\u9000\\u6362\\u8d27\\u3001\\u53d1\\u7968\\u8fd9\\u7c7b\\u552e\\u540e\\u95ee\\u9898\\uff0c\\u4e5f\\u53ef\\u4ee5\\u5e2e\\u5fd9\\u8f6c\\u4eba\\u5de5\\u6216\\u5efa\\u5de5\\u5355\\u3002\", \"section_path\": \"faq / \\u5ba2\\u670d\\u5bf9\\u8bdd / \\u4f60\\u80fd\\u5e72\\u5565\", \"category\": \"\\u5ba2\\u670d\\u5bf9\\u8bdd\", \"product_category\": null, \"content_hash\": \"6fb3c3693355f88864125c85b6dbfbb785561f426acab7aab2bd80d96b733662\", \"source_url\": \"/kb/source/1709950930094883706\"}, {\"number\": 7, \"chunk_id\": \"8241941662198301528\", \"questions\": \"\\u6362\\u8d27\\u600e\\u4e48\\u7533\\u8bf7\", \"answer\": \"\\u5728\\u8ba2\\u5355\\u8be6\\u60c5\\u9875\\u70b9\\u300c\\u7533\\u8bf7\\u6362\\u8d27\\u300d,\\u9009\\u597d\\u89c4\\u683c\\u540e\\u5bc4\\u56de\\u5373\\u53ef\\u3002\", \"section_path\": \"faq / \\u9000\\u6362\\u8d27 / \\u6362\\u8d27\\u600e\\u4e48\\u7533\\u8bf7\", \"category\": \"\\u9000\\u6362\\u8d27\", \"product_category\": null, \"content_hash\": \"42766435c18843eefc636689c495bc79c6c1f0debe2eb99bd2bccb18feebdd69\", \"source_url\": \"/kb/source/8241941662198301528\"}, {\"number\": 8, \"chunk_id\": \"2914662982578110438\", \"questions\": \"\\u8fd0\\u8d39\\u8bf4\\u660e\", \"answer\": \"\\u5355\\u7b14\\u8ba2\\u5355\\u5b9e\\u4ed8\\u91d1\\u989d\\u6ee1 99 \\u5143\\u5305\\u90ae\\u3002\\u4e0d\\u6ee1 99 \\u5143\\u6309\\u6536\\u8d27\\u5730\\u6536\\u53d6 8 \\u5143\\u8d77\\u7684\\u914d\\u9001\\u8d39\\u7528\\u3002\", \"section_path\": \"corpus:9ac8a57a485dbcc7/shipping-policy.md::\\u914d\\u9001\\u653f\\u7b56 / \\u8fd0\\u8d39\\u8bf4\\u660e\", \"category\": \"\\u914d\\u9001\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"920ea01e4638b5a45fbf09e99db4ef69f162c92ef68313657e42e426a7f8d7ec\", \"source_url\": \"/kb/source/2914662982578110438\"}, {\"number\": 9, \"chunk_id\": \"9191350465487520735\", \"questions\": \"\\u4fdd\\u4fee\\u671f\\u662f\\u591a\\u4e45\", \"answer\": \"\\u7535\\u5b50\\u7c7b\\u5546\\u54c1\\u4fdd\\u4fee 12 \\u4e2a\\u6708,\\u4eba\\u4e3a\\u635f\\u574f\\u4e0d\\u5728\\u4fdd\\u4fee\\u8303\\u56f4\\u5185\\u3002\", \"section_path\": \"faq / \\u552e\\u540e / \\u4fdd\\u4fee\\u671f\\u662f\\u591a\\u4e45\", \"category\": \"\\u552e\\u540e\", \"product_category\": null, \"content_hash\": \"dd043653e2398d1cf7777c8a250b262a293a348b552f8021242f43919e23f715\", \"source_url\": \"/kb/source/9191350465487520735\"}, {\"number\": 10, \"chunk_id\": \"8969248413214546709\", \"questions\": \"\\u652f\\u6301\\u54ea\\u4e9b\\u652f\\u4ed8\\u65b9\\u5f0f\", \"answer\": \"\\u652f\\u6301\\u5fae\\u4fe1\\u3001\\u652f\\u4ed8\\u5b9d\\u3001\\u94f6\\u8054\\u4e0e\\u8d27\\u5230\\u4ed8\\u6b3e\\u3002\", \"section_path\": \"faq / \\u652f\\u4ed8 / \\u652f\\u6301\\u54ea\\u4e9b\\u652f\\u4ed8\\u65b9\\u5f0f\", \"category\": \"\\u652f\\u4ed8\", \"product_category\": null, \"content_hash\": \"50c5437ba4fe4a5a596bc1e76ed5d643c2b74cda956d7c356632d6340bf9450a\", \"source_url\": \"/kb/source/8969248413214546709\"}], \"refused\": false, \"low_confidence_question_id\": null}\n\nevent: node\ndata: {\"name\": \"agent_decide\", \"turn_id\": \"a76c1e159af24cf29339a963ae558175\"}\n\nevent: node\ndata: {\"name\": \"stream_answer\", \"turn_id\": \"a76c1e159af24cf29339a963ae558175\"}\n\nevent: token\ndata: {\"text\": \"\\u4e03\\u5929\"}\n\nevent: token\ndata: {\"text\": \"\\u65e0\"}\n\nevent: token\ndata: {\"text\": \"\\u7406\\u7531\"}\n\nevent: token\ndata: {\"text\": \"\\u9000\\u8d27\"}\n\nevent: token\ndata: {\"text\": \"\\u653f\\u7b56\"}\n\nevent: token\ndata: {\"text\": \"\\u662f\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\"}\n\nevent: token\ndata: {\"text\": \"\\u7b7e\"}\n\nevent: token\ndata: {\"text\": \"\\u6536\"}\n\nevent: token\ndata: {\"text\": \"\\u540e\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"7\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u5929\\u5185\"}\n\nevent: token\ndata: {\"text\": \"\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u5546\\u54c1\"}\n\nevent: token\ndata: {\"text\": \"\\u4e0d\\u5f71\\u54cd\"}\n\nevent: token\ndata: {\"text\": \"\\u4e8c\\u6b21\"}\n\nevent: token\ndata: {\"text\": \"\\u9500\\u552e\"}\n\nevent: token\ndata: {\"text\": \"\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u53ef\\u4ee5\"}\n\nevent: token\ndata: {\"text\": \"\\u65e0\"}\n\nevent: token\ndata: {\"text\": \"\\u7406\\u7531\"}\n\nevent: token\ndata: {\"text\": \"\\u9000\\u8d27\"}\n\nevent: token\ndata: {\"text\": \"\\u3002[\"}\n\nevent: token\ndata: {\"text\": \"1\"}\n\nevent: token\ndata: {\"text\": \"][\"}\n\nevent: token\ndata: {\"text\": \"2\"}\n\nevent: token\ndata: {\"text\": \"]\"}\n\nevent: node\ndata: {\"name\": \"log_turn\", \"turn_id\": \"a76c1e159af24cf29339a963ae558175\"}\n\nevent: done\ndata: {\"session_id\": \"ch05_20261001_01a-sse-policy\", \"conversation_id\": 28, \"resumed\": false, \"answer\": \"\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u653f\\u7b56\\u662f\\uff1a\\u7b7e\\u6536\\u540e 7 \\u5929\\u5185\\uff0c\\u5546\\u54c1\\u4e0d\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\uff0c\\u53ef\\u4ee5\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u3002[1][2]\", \"sources\": [{\"number\": 1, \"chunk_id\": \"7122701754840041692\", \"questions\": \"\\u9000\\u8d27\\u653f\\u7b56\\u662f\\u4ec0\\u4e48\", \"answer\": \"\\u7b7e\\u6536\\u540e 7 \\u5929\\u5185,\\u5546\\u54c1\\u4e0d\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\u53ef\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u3002\", \"section_path\": \"faq / \\u9000\\u6362\\u8d27 / \\u9000\\u8d27\\u653f\\u7b56\\u662f\\u4ec0\\u4e48\", \"category\": \"\\u9000\\u6362\\u8d27\", \"product_category\": null, \"content_hash\": \"d707e1c16d5923f85fd08487580336b890e0cd0e7bd7a6db5ee55fc15794c33e\", \"source_url\": \"/kb/source/7122701754840041692\"}, {\"number\": 2, \"chunk_id\": \"9010885927313249829\", \"questions\": \"\\u9000\\u8d27\\u653f\\u7b56\\u662f\\u4ec0\\u4e48\", \"answer\": \"\\u7b7e\\u6536\\u540e 7 \\u5929\\u5185\\u3001\\u5546\\u54c1\\u4e0d\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\uff0c\\u53ef\\u4ee5\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u3002\", \"section_path\": \"faq / \\u5ba2\\u670d\\u5bf9\\u8bdd / \\u9000\\u8d27\\u653f\\u7b56\\u662f\\u4ec0\\u4e48\", \"category\": \"\\u5ba2\\u670d\\u5bf9\\u8bdd\", \"product_category\": null, \"content_hash\": \"2166d6adcd1e80d4321116c985e34cc633c3564484471f50fac2eda018b9150a\", \"source_url\": \"/kb/source/9010885927313249829\"}, {\"number\": 3, \"chunk_id\": \"420828808926164794\", \"questions\": \"\\u5546\\u54c1\\u6709\\u8d28\\u91cf\\u95ee\\u9898\\u600e\\u4e48\\u529e\", \"answer\": \"\\u62cd\\u7167\\u7559\\u8bc1\\u540e\\u5728\\u8ba2\\u5355\\u9875\\u7533\\u8bf7\\u552e\\u540e,\\u5ba1\\u6838\\u901a\\u8fc7\\u53ef\\u9000\\u53ef\\u6362\\u3002\", \"section_path\": \"faq / \\u5546\\u54c1 / \\u5546\\u54c1\\u6709\\u8d28\\u91cf\\u95ee\\u9898\\u600e\\u4e48\\u529e\", \"category\": \"\\u5546\\u54c1\", \"product_category\": null, \"content_hash\": \"fff33db2bc948f5df1aebdde7e51bed2f299c3394d3fdcfb57b751dfa0f3def8\", \"source_url\": \"/kb/source/420828808926164794\"}, {\"number\": 4, \"chunk_id\": \"3320582538884644199\", \"questions\": \"\\u53d1\\u8d27\\u65f6\\u6548\", \"answer\": \"\\u73b0\\u8d27\\u5546\\u54c1\\u5728\\u4ed8\\u6b3e\\u540e 48 \\u5c0f\\u65f6\\u5185\\u53d1\\u51fa\\u3002\\u9884\\u552e\\u5546\\u54c1\\u4ee5\\u5546\\u54c1\\u9875\\u6807\\u6ce8\\u4e3a\\u51c6\\u3002\", \"section_path\": \"corpus:9ac8a57a485dbcc7/shipping-policy.md::\\u914d\\u9001\\u653f\\u7b56 / \\u53d1\\u8d27\\u65f6\\u6548\", \"category\": \"\\u914d\\u9001\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"f5c766355d5119c4ab4e737a4549a7d33a8ea995bd57ce97398da70965b96c26\", \"source_url\": \"/kb/source/3320582538884644199\"}, {\"number\": 5, \"chunk_id\": \"4026044992745815028\", \"questions\": \"\\u652f\\u4ed8\\u5931\\u8d25\\u600e\\u4e48\\u529e\", \"answer\": \"\\u5148\\u786e\\u8ba4\\u4f59\\u989d\\u4e0e\\u9650\\u989d,\\u4ecd\\u5931\\u8d25\\u53ef\\u6362\\u4e00\\u79cd\\u65b9\\u5f0f,\\u91cd\\u590d\\u6263\\u6b3e\\u4f1a\\u81ea\\u52a8\\u9000\\u56de\\u3002\", \"section_path\": \"faq / \\u652f\\u4ed8 / \\u652f\\u4ed8\\u5931\\u8d25\\u600e\\u4e48\\u529e\", \"category\": \"\\u652f\\u4ed8\", \"product_category\": null, \"content_hash\": \"3dae8660cf0ca2b5619495b5ed520cc01745337874878a18074d9b92410a60cd\", \"source_url\": \"/kb/source/4026044992745815028\"}, {\"number\": 6, \"chunk_id\": \"1709950930094883706\", \"questions\": \"\\u4f60\\u80fd\\u5e72\\u5565\", \"answer\": \"\\u53ef\\u4ee5\\u67e5\\u8ba2\\u5355\\u72b6\\u6001\\u3001\\u7269\\u6d41\\u8fdb\\u5ea6\\u3001\\u5546\\u54c1\\u4ef7\\u683c\\u5e93\\u5b58\\uff0c\\u4ee5\\u53ca\\u9000\\u6362\\u8d27\\u3001\\u53d1\\u7968\\u8fd9\\u7c7b\\u552e\\u540e\\u95ee\\u9898\\uff0c\\u4e5f\\u53ef\\u4ee5\\u5e2e\\u5fd9\\u8f6c\\u4eba\\u5de5\\u6216\\u5efa\\u5de5\\u5355\\u3002\", \"section_path\": \"faq / \\u5ba2\\u670d\\u5bf9\\u8bdd / \\u4f60\\u80fd\\u5e72\\u5565\", \"category\": \"\\u5ba2\\u670d\\u5bf9\\u8bdd\", \"product_category\": null, \"content_hash\": \"6fb3c3693355f88864125c85b6dbfbb785561f426acab7aab2bd80d96b733662\", \"source_url\": \"/kb/source/1709950930094883706\"}, {\"number\": 7, \"chunk_id\": \"8241941662198301528\", \"questions\": \"\\u6362\\u8d27\\u600e\\u4e48\\u7533\\u8bf7\", \"answer\": \"\\u5728\\u8ba2\\u5355\\u8be6\\u60c5\\u9875\\u70b9\\u300c\\u7533\\u8bf7\\u6362\\u8d27\\u300d,\\u9009\\u597d\\u89c4\\u683c\\u540e\\u5bc4\\u56de\\u5373\\u53ef\\u3002\", \"section_path\": \"faq / \\u9000\\u6362\\u8d27 / \\u6362\\u8d27\\u600e\\u4e48\\u7533\\u8bf7\", \"category\": \"\\u9000\\u6362\\u8d27\", \"product_category\": null, \"content_hash\": \"42766435c18843eefc636689c495bc79c6c1f0debe2eb99bd2bccb18feebdd69\", \"source_url\": \"/kb/source/8241941662198301528\"}, {\"number\": 8, \"chunk_id\": \"2914662982578110438\", \"questions\": \"\\u8fd0\\u8d39\\u8bf4\\u660e\", \"answer\": \"\\u5355\\u7b14\\u8ba2\\u5355\\u5b9e\\u4ed8\\u91d1\\u989d\\u6ee1 99 \\u5143\\u5305\\u90ae\\u3002\\u4e0d\\u6ee1 99 \\u5143\\u6309\\u6536\\u8d27\\u5730\\u6536\\u53d6 8 \\u5143\\u8d77\\u7684\\u914d\\u9001\\u8d39\\u7528\\u3002\", \"section_path\": \"corpus:9ac8a57a485dbcc7/shipping-policy.md::\\u914d\\u9001\\u653f\\u7b56 / \\u8fd0\\u8d39\\u8bf4\\u660e\", \"category\": \"\\u914d\\u9001\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"920ea01e4638b5a45fbf09e99db4ef69f162c92ef68313657e42e426a7f8d7ec\", \"source_url\": \"/kb/source/2914662982578110438\"}, {\"number\": 9, \"chunk_id\": \"9191350465487520735\", \"questions\": \"\\u4fdd\\u4fee\\u671f\\u662f\\u591a\\u4e45\", \"answer\": \"\\u7535\\u5b50\\u7c7b\\u5546\\u54c1\\u4fdd\\u4fee 12 \\u4e2a\\u6708,\\u4eba\\u4e3a\\u635f\\u574f\\u4e0d\\u5728\\u4fdd\\u4fee\\u8303\\u56f4\\u5185\\u3002\", \"section_path\": \"faq / \\u552e\\u540e / \\u4fdd\\u4fee\\u671f\\u662f\\u591a\\u4e45\", \"category\": \"\\u552e\\u540e\", \"product_category\": null, \"content_hash\": \"dd043653e2398d1cf7777c8a250b262a293a348b552f8021242f43919e23f715\", \"source_url\": \"/kb/source/9191350465487520735\"}, {\"number\": 10, \"chunk_id\": \"8969248413214546709\", \"questions\": \"\\u652f\\u6301\\u54ea\\u4e9b\\u652f\\u4ed8\\u65b9\\u5f0f\", \"answer\": \"\\u652f\\u6301\\u5fae\\u4fe1\\u3001\\u652f\\u4ed8\\u5b9d\\u3001\\u94f6\\u8054\\u4e0e\\u8d27\\u5230\\u4ed8\\u6b3e\\u3002\", \"section_path\": \"faq / \\u652f\\u4ed8 / \\u652f\\u6301\\u54ea\\u4e9b\\u652f\\u4ed8\\u65b9\\u5f0f\", \"category\": \"\\u652f\\u4ed8\", \"product_category\": null, \"content_hash\": \"50c5437ba4fe4a5a596bc1e76ed5d643c2b74cda956d7c356632d6340bf9450a\", \"source_url\": \"/kb/source/8969248413214546709\"}], \"refused\": false, \"low_confidence_question_id\": null, \"intent\": \"\\u9000\\u6b3e\\u9000\\u8d27\", \"route\": \"knowledge\", \"actions\": [], \"offer\": null, \"tool_trace\": [], \"node_trace\": [\"begin_turn\", \"resolve_reference\", \"classify_intent\", \"route_intent\", \"retrieve_knowledge\", \"confidence_gate\", \"agent_decide\", \"stream_answer\", \"log_turn\"], \"usage\": {\"input_tokens\": 2055, \"output_tokens\": 56, \"estimated\": false}, \"calls\": {\"classifier\": 1, \"decision\": 1, \"answer\": 1}, \"stop_reason\": \"completed\", \"ledger_error\": null, \"finish_reason\": \"completed\"}\n\n",
+      "frames": [
+        {
+          "event": "session",
+          "data": {
+            "session_id": "ch05_20261001_01a-sse-policy",
+            "conversation_id": 28,
+            "resumed": false
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "begin_turn",
+            "turn_id": "a76c1e159af24cf29339a963ae558175"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "resolve_reference",
+            "turn_id": "a76c1e159af24cf29339a963ae558175"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "classify_intent",
+            "turn_id": "a76c1e159af24cf29339a963ae558175"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "route_intent",
+            "turn_id": "a76c1e159af24cf29339a963ae558175"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "retrieve_knowledge",
+            "turn_id": "a76c1e159af24cf29339a963ae558175"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "confidence_gate",
+            "turn_id": "a76c1e159af24cf29339a963ae558175"
+          }
+        },
+        {
+          "event": "sources",
+          "data": {
+            "sources": [
+              {
+                "number": 1,
+                "chunk_id": "7122701754840041692",
+                "questions": "退货政策是什么",
+                "answer": "签收后 7 天内,商品不影响二次销售可无理由退货。",
+                "section_path": "faq / 退换货 / 退货政策是什么",
+                "category": "退换货",
+                "product_category": null,
+                "content_hash": "d707e1c16d5923f85fd08487580336b890e0cd0e7bd7a6db5ee55fc15794c33e",
+                "source_url": "/kb/source/7122701754840041692"
+              },
+              {
+                "number": 2,
+                "chunk_id": "9010885927313249829",
+                "questions": "退货政策是什么",
+                "answer": "签收后 7 天内、商品不影响二次销售，可以无理由退货。",
+                "section_path": "faq / 客服对话 / 退货政策是什么",
+                "category": "客服对话",
+                "product_category": null,
+                "content_hash": "2166d6adcd1e80d4321116c985e34cc633c3564484471f50fac2eda018b9150a",
+                "source_url": "/kb/source/9010885927313249829"
+              },
+              {
+                "number": 3,
+                "chunk_id": "420828808926164794",
+                "questions": "商品有质量问题怎么办",
+                "answer": "拍照留证后在订单页申请售后,审核通过可退可换。",
+                "section_path": "faq / 商品 / 商品有质量问题怎么办",
+                "category": "商品",
+                "product_category": null,
+                "content_hash": "fff33db2bc948f5df1aebdde7e51bed2f299c3394d3fdcfb57b751dfa0f3def8",
+                "source_url": "/kb/source/420828808926164794"
+              },
+              {
+                "number": 4,
+                "chunk_id": "3320582538884644199",
+                "questions": "发货时效",
+                "answer": "现货商品在付款后 48 小时内发出。预售商品以商品页标注为准。",
+                "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 发货时效",
+                "category": "配送政策",
+                "product_category": null,
+                "content_hash": "f5c766355d5119c4ab4e737a4549a7d33a8ea995bd57ce97398da70965b96c26",
+                "source_url": "/kb/source/3320582538884644199"
+              },
+              {
+                "number": 5,
+                "chunk_id": "4026044992745815028",
+                "questions": "支付失败怎么办",
+                "answer": "先确认余额与限额,仍失败可换一种方式,重复扣款会自动退回。",
+                "section_path": "faq / 支付 / 支付失败怎么办",
+                "category": "支付",
+                "product_category": null,
+                "content_hash": "3dae8660cf0ca2b5619495b5ed520cc01745337874878a18074d9b92410a60cd",
+                "source_url": "/kb/source/4026044992745815028"
+              },
+              {
+                "number": 6,
+                "chunk_id": "1709950930094883706",
+                "questions": "你能干啥",
+                "answer": "可以查订单状态、物流进度、商品价格库存，以及退换货、发票这类售后问题，也可以帮忙转人工或建工单。",
+                "section_path": "faq / 客服对话 / 你能干啥",
+                "category": "客服对话",
+                "product_category": null,
+                "content_hash": "6fb3c3693355f88864125c85b6dbfbb785561f426acab7aab2bd80d96b733662",
+                "source_url": "/kb/source/1709950930094883706"
+              },
+              {
+                "number": 7,
+                "chunk_id": "8241941662198301528",
+                "questions": "换货怎么申请",
+                "answer": "在订单详情页点「申请换货」,选好规格后寄回即可。",
+                "section_path": "faq / 退换货 / 换货怎么申请",
+                "category": "退换货",
+                "product_category": null,
+                "content_hash": "42766435c18843eefc636689c495bc79c6c1f0debe2eb99bd2bccb18feebdd69",
+                "source_url": "/kb/source/8241941662198301528"
+              },
+              {
+                "number": 8,
+                "chunk_id": "2914662982578110438",
+                "questions": "运费说明",
+                "answer": "单笔订单实付金额满 99 元包邮。不满 99 元按收货地收取 8 元起的配送费用。",
+                "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 运费说明",
+                "category": "配送政策",
+                "product_category": null,
+                "content_hash": "920ea01e4638b5a45fbf09e99db4ef69f162c92ef68313657e42e426a7f8d7ec",
+                "source_url": "/kb/source/2914662982578110438"
+              },
+              {
+                "number": 9,
+                "chunk_id": "9191350465487520735",
+                "questions": "保修期是多久",
+                "answer": "电子类商品保修 12 个月,人为损坏不在保修范围内。",
+                "section_path": "faq / 售后 / 保修期是多久",
+                "category": "售后",
+                "product_category": null,
+                "content_hash": "dd043653e2398d1cf7777c8a250b262a293a348b552f8021242f43919e23f715",
+                "source_url": "/kb/source/9191350465487520735"
+              },
+              {
+                "number": 10,
+                "chunk_id": "8969248413214546709",
+                "questions": "支持哪些支付方式",
+                "answer": "支持微信、支付宝、银联与货到付款。",
+                "section_path": "faq / 支付 / 支持哪些支付方式",
+                "category": "支付",
+                "product_category": null,
+                "content_hash": "50c5437ba4fe4a5a596bc1e76ed5d643c2b74cda956d7c356632d6340bf9450a",
+                "source_url": "/kb/source/8969248413214546709"
+              }
+            ],
+            "refused": false,
+            "low_confidence_question_id": null
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "agent_decide",
+            "turn_id": "a76c1e159af24cf29339a963ae558175"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "stream_answer",
+            "turn_id": "a76c1e159af24cf29339a963ae558175"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "七天"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "无"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "理由"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "退货"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "政策"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "是"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "："
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "签"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "收"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "后"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "7"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "天内"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "，"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "商品"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "不影响"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "二次"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "销售"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "，"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "可以"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "无"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "理由"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "退货"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "。["
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "1"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "]["
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "2"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "]"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "log_turn",
+            "turn_id": "a76c1e159af24cf29339a963ae558175"
+          }
+        },
+        {
+          "event": "done",
+          "data": {
+            "session_id": "ch05_20261001_01a-sse-policy",
+            "conversation_id": 28,
+            "resumed": false,
+            "answer": "七天无理由退货政策是：签收后 7 天内，商品不影响二次销售，可以无理由退货。[1][2]",
+            "sources": [
+              {
+                "number": 1,
+                "chunk_id": "7122701754840041692",
+                "questions": "退货政策是什么",
+                "answer": "签收后 7 天内,商品不影响二次销售可无理由退货。",
+                "section_path": "faq / 退换货 / 退货政策是什么",
+                "category": "退换货",
+                "product_category": null,
+                "content_hash": "d707e1c16d5923f85fd08487580336b890e0cd0e7bd7a6db5ee55fc15794c33e",
+                "source_url": "/kb/source/7122701754840041692"
+              },
+              {
+                "number": 2,
+                "chunk_id": "9010885927313249829",
+                "questions": "退货政策是什么",
+                "answer": "签收后 7 天内、商品不影响二次销售，可以无理由退货。",
+                "section_path": "faq / 客服对话 / 退货政策是什么",
+                "category": "客服对话",
+                "product_category": null,
+                "content_hash": "2166d6adcd1e80d4321116c985e34cc633c3564484471f50fac2eda018b9150a",
+                "source_url": "/kb/source/9010885927313249829"
+              },
+              {
+                "number": 3,
+                "chunk_id": "420828808926164794",
+                "questions": "商品有质量问题怎么办",
+                "answer": "拍照留证后在订单页申请售后,审核通过可退可换。",
+                "section_path": "faq / 商品 / 商品有质量问题怎么办",
+                "category": "商品",
+                "product_category": null,
+                "content_hash": "fff33db2bc948f5df1aebdde7e51bed2f299c3394d3fdcfb57b751dfa0f3def8",
+                "source_url": "/kb/source/420828808926164794"
+              },
+              {
+                "number": 4,
+                "chunk_id": "3320582538884644199",
+                "questions": "发货时效",
+                "answer": "现货商品在付款后 48 小时内发出。预售商品以商品页标注为准。",
+                "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 发货时效",
+                "category": "配送政策",
+                "product_category": null,
+                "content_hash": "f5c766355d5119c4ab4e737a4549a7d33a8ea995bd57ce97398da70965b96c26",
+                "source_url": "/kb/source/3320582538884644199"
+              },
+              {
+                "number": 5,
+                "chunk_id": "4026044992745815028",
+                "questions": "支付失败怎么办",
+                "answer": "先确认余额与限额,仍失败可换一种方式,重复扣款会自动退回。",
+                "section_path": "faq / 支付 / 支付失败怎么办",
+                "category": "支付",
+                "product_category": null,
+                "content_hash": "3dae8660cf0ca2b5619495b5ed520cc01745337874878a18074d9b92410a60cd",
+                "source_url": "/kb/source/4026044992745815028"
+              },
+              {
+                "number": 6,
+                "chunk_id": "1709950930094883706",
+                "questions": "你能干啥",
+                "answer": "可以查订单状态、物流进度、商品价格库存，以及退换货、发票这类售后问题，也可以帮忙转人工或建工单。",
+                "section_path": "faq / 客服对话 / 你能干啥",
+                "category": "客服对话",
+                "product_category": null,
+                "content_hash": "6fb3c3693355f88864125c85b6dbfbb785561f426acab7aab2bd80d96b733662",
+                "source_url": "/kb/source/1709950930094883706"
+              },
+              {
+                "number": 7,
+                "chunk_id": "8241941662198301528",
+                "questions": "换货怎么申请",
+                "answer": "在订单详情页点「申请换货」,选好规格后寄回即可。",
+                "section_path": "faq / 退换货 / 换货怎么申请",
+                "category": "退换货",
+                "product_category": null,
+                "content_hash": "42766435c18843eefc636689c495bc79c6c1f0debe2eb99bd2bccb18feebdd69",
+                "source_url": "/kb/source/8241941662198301528"
+              },
+              {
+                "number": 8,
+                "chunk_id": "2914662982578110438",
+                "questions": "运费说明",
+                "answer": "单笔订单实付金额满 99 元包邮。不满 99 元按收货地收取 8 元起的配送费用。",
+                "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 运费说明",
+                "category": "配送政策",
+                "product_category": null,
+                "content_hash": "920ea01e4638b5a45fbf09e99db4ef69f162c92ef68313657e42e426a7f8d7ec",
+                "source_url": "/kb/source/2914662982578110438"
+              },
+              {
+                "number": 9,
+                "chunk_id": "9191350465487520735",
+                "questions": "保修期是多久",
+                "answer": "电子类商品保修 12 个月,人为损坏不在保修范围内。",
+                "section_path": "faq / 售后 / 保修期是多久",
+                "category": "售后",
+                "product_category": null,
+                "content_hash": "dd043653e2398d1cf7777c8a250b262a293a348b552f8021242f43919e23f715",
+                "source_url": "/kb/source/9191350465487520735"
+              },
+              {
+                "number": 10,
+                "chunk_id": "8969248413214546709",
+                "questions": "支持哪些支付方式",
+                "answer": "支持微信、支付宝、银联与货到付款。",
+                "section_path": "faq / 支付 / 支持哪些支付方式",
+                "category": "支付",
+                "product_category": null,
+                "content_hash": "50c5437ba4fe4a5a596bc1e76ed5d643c2b74cda956d7c356632d6340bf9450a",
+                "source_url": "/kb/source/8969248413214546709"
+              }
+            ],
+            "refused": false,
+            "low_confidence_question_id": null,
+            "intent": "退款退货",
+            "route": "knowledge",
+            "actions": [],
+            "offer": null,
+            "tool_trace": [],
+            "node_trace": [
+              "begin_turn",
+              "resolve_reference",
+              "classify_intent",
+              "route_intent",
+              "retrieve_knowledge",
+              "confidence_gate",
+              "agent_decide",
+              "stream_answer",
+              "log_turn"
+            ],
+            "usage": {
+              "input_tokens": 2055,
+              "output_tokens": 56,
+              "estimated": false
+            },
+            "calls": {
+              "classifier": 1,
+              "decision": 1,
+              "answer": 1
+            },
+            "stop_reason": "completed",
+            "ledger_error": null,
+            "finish_reason": "completed"
+          }
+        }
+      ],
+      "actual": {
+        "session_id": "ch05_20261001_01a-sse-policy",
+        "conversation_id": 28,
+        "resumed": false,
+        "answer": "七天无理由退货政策是：签收后 7 天内，商品不影响二次销售，可以无理由退货。[1][2]",
+        "sources": [
+          {
+            "number": 1,
+            "chunk_id": "7122701754840041692",
+            "questions": "退货政策是什么",
+            "answer": "签收后 7 天内,商品不影响二次销售可无理由退货。",
+            "section_path": "faq / 退换货 / 退货政策是什么",
+            "category": "退换货",
+            "product_category": null,
+            "content_hash": "d707e1c16d5923f85fd08487580336b890e0cd0e7bd7a6db5ee55fc15794c33e",
+            "source_url": "/kb/source/7122701754840041692"
+          },
+          {
+            "number": 2,
+            "chunk_id": "9010885927313249829",
+            "questions": "退货政策是什么",
+            "answer": "签收后 7 天内、商品不影响二次销售，可以无理由退货。",
+            "section_path": "faq / 客服对话 / 退货政策是什么",
+            "category": "客服对话",
+            "product_category": null,
+            "content_hash": "2166d6adcd1e80d4321116c985e34cc633c3564484471f50fac2eda018b9150a",
+            "source_url": "/kb/source/9010885927313249829"
+          },
+          {
+            "number": 3,
+            "chunk_id": "420828808926164794",
+            "questions": "商品有质量问题怎么办",
+            "answer": "拍照留证后在订单页申请售后,审核通过可退可换。",
+            "section_path": "faq / 商品 / 商品有质量问题怎么办",
+            "category": "商品",
+            "product_category": null,
+            "content_hash": "fff33db2bc948f5df1aebdde7e51bed2f299c3394d3fdcfb57b751dfa0f3def8",
+            "source_url": "/kb/source/420828808926164794"
+          },
+          {
+            "number": 4,
+            "chunk_id": "3320582538884644199",
+            "questions": "发货时效",
+            "answer": "现货商品在付款后 48 小时内发出。预售商品以商品页标注为准。",
+            "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 发货时效",
+            "category": "配送政策",
+            "product_category": null,
+            "content_hash": "f5c766355d5119c4ab4e737a4549a7d33a8ea995bd57ce97398da70965b96c26",
+            "source_url": "/kb/source/3320582538884644199"
+          },
+          {
+            "number": 5,
+            "chunk_id": "4026044992745815028",
+            "questions": "支付失败怎么办",
+            "answer": "先确认余额与限额,仍失败可换一种方式,重复扣款会自动退回。",
+            "section_path": "faq / 支付 / 支付失败怎么办",
+            "category": "支付",
+            "product_category": null,
+            "content_hash": "3dae8660cf0ca2b5619495b5ed520cc01745337874878a18074d9b92410a60cd",
+            "source_url": "/kb/source/4026044992745815028"
+          },
+          {
+            "number": 6,
+            "chunk_id": "1709950930094883706",
+            "questions": "你能干啥",
+            "answer": "可以查订单状态、物流进度、商品价格库存，以及退换货、发票这类售后问题，也可以帮忙转人工或建工单。",
+            "section_path": "faq / 客服对话 / 你能干啥",
+            "category": "客服对话",
+            "product_category": null,
+            "content_hash": "6fb3c3693355f88864125c85b6dbfbb785561f426acab7aab2bd80d96b733662",
+            "source_url": "/kb/source/1709950930094883706"
+          },
+          {
+            "number": 7,
+            "chunk_id": "8241941662198301528",
+            "questions": "换货怎么申请",
+            "answer": "在订单详情页点「申请换货」,选好规格后寄回即可。",
+            "section_path": "faq / 退换货 / 换货怎么申请",
+            "category": "退换货",
+            "product_category": null,
+            "content_hash": "42766435c18843eefc636689c495bc79c6c1f0debe2eb99bd2bccb18feebdd69",
+            "source_url": "/kb/source/8241941662198301528"
+          },
+          {
+            "number": 8,
+            "chunk_id": "2914662982578110438",
+            "questions": "运费说明",
+            "answer": "单笔订单实付金额满 99 元包邮。不满 99 元按收货地收取 8 元起的配送费用。",
+            "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 运费说明",
+            "category": "配送政策",
+            "product_category": null,
+            "content_hash": "920ea01e4638b5a45fbf09e99db4ef69f162c92ef68313657e42e426a7f8d7ec",
+            "source_url": "/kb/source/2914662982578110438"
+          },
+          {
+            "number": 9,
+            "chunk_id": "9191350465487520735",
+            "questions": "保修期是多久",
+            "answer": "电子类商品保修 12 个月,人为损坏不在保修范围内。",
+            "section_path": "faq / 售后 / 保修期是多久",
+            "category": "售后",
+            "product_category": null,
+            "content_hash": "dd043653e2398d1cf7777c8a250b262a293a348b552f8021242f43919e23f715",
+            "source_url": "/kb/source/9191350465487520735"
+          },
+          {
+            "number": 10,
+            "chunk_id": "8969248413214546709",
+            "questions": "支持哪些支付方式",
+            "answer": "支持微信、支付宝、银联与货到付款。",
+            "section_path": "faq / 支付 / 支持哪些支付方式",
+            "category": "支付",
+            "product_category": null,
+            "content_hash": "50c5437ba4fe4a5a596bc1e76ed5d643c2b74cda956d7c356632d6340bf9450a",
+            "source_url": "/kb/source/8969248413214546709"
+          }
+        ],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "退款退货",
+        "route": "knowledge",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "resolve_reference",
+          "classify_intent",
+          "route_intent",
+          "retrieve_knowledge",
+          "confidence_gate",
+          "agent_decide",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 2055,
+          "output_tokens": 56,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 1,
+          "answer": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "finish_reason": "completed"
+      },
+      "failures": [
+        "required ordered node missing: decide_agent"
+      ],
+      "passed": false
+    },
+    {
+      "id": "logistics",
+      "mode": "sse",
+      "question": "订单 1001 的物流到哪了",
+      "expected": {
+        "route": "business",
+        "tools": [
+          "query_logistics"
+        ],
+        "forbidden_nodes": [
+          "retrieve_knowledge",
+          "confidence_gate"
+        ]
+      },
+      "request": {
+        "message": "订单 1001 的物流到哪了",
+        "session_id": "ch05_20261001_01a-sse-logistics",
+        "user_id": "ch05_20261001_01a"
+      },
+      "raw": "event: session\ndata: {\"session_id\": \"ch05_20261001_01a-sse-logistics\", \"conversation_id\": 29, \"resumed\": false}\n\nevent: node\ndata: {\"name\": \"begin_turn\", \"turn_id\": \"daf48ec3d947422dacd26f873780b1fe\"}\n\nevent: node\ndata: {\"name\": \"resolve_reference\", \"turn_id\": \"daf48ec3d947422dacd26f873780b1fe\"}\n\nevent: node\ndata: {\"name\": \"classify_intent\", \"turn_id\": \"daf48ec3d947422dacd26f873780b1fe\"}\n\nevent: node\ndata: {\"name\": \"route_intent\", \"turn_id\": \"daf48ec3d947422dacd26f873780b1fe\"}\n\nevent: node\ndata: {\"name\": \"agent_decide\", \"turn_id\": \"daf48ec3d947422dacd26f873780b1fe\"}\n\nevent: node\ndata: {\"name\": \"execute_tools\", \"turn_id\": \"daf48ec3d947422dacd26f873780b1fe\"}\n\nevent: tool\ndata: {\"phase\": \"start\", \"call_id\": \"call_00_I1TNV6T93AWt9BCS2ooL8158\", \"round\": 1, \"name\": \"query_logistics\", \"args\": {\"order_id\": \"1001\"}}\n\nevent: tool\ndata: {\"phase\": \"end\", \"call_id\": \"call_00_I1TNV6T93AWt9BCS2ooL8158\", \"round\": 1, \"name\": \"query_logistics\", \"args\": {\"order_id\": \"1001\"}, \"ok\": true, \"content\": \"\\u8ba2\\u5355 1001 \\u7684\\u7269\\u6d41:\\u627f\\u8fd0\\u5546 \\u4eac\\u4e1c\\u7269\\u6d41,\\u8fd0\\u5355\\u53f7 F678104970636,\\u5f53\\u524d\\u72b6\\u6001\\u300c\\u6d3e\\u9001\\u4e2d\\u300d,\\u6700\\u65b0\\u4f4d\\u7f6e \\u4e0a\\u6d77\\u5206\\u62e8\\u4e2d\\u5fc3(2026-09-05)\\u3002\\u8f68\\u8ff9:\\u5e7f\\u5dde\\u96c6\\u6563\\u4e2d\\u5fc3 \\u2192 \\u676d\\u5dde\\u8f6c\\u8fd0\\u4e2d\\u5fc3 \\u2192 \\u4e0a\\u6d77\\u5206\\u62e8\\u4e2d\\u5fc3\\u3002\", \"error\": null, \"elapsed_ms\": 16}\n\nevent: node\ndata: {\"name\": \"agent_decide\", \"turn_id\": \"daf48ec3d947422dacd26f873780b1fe\"}\n\nevent: node\ndata: {\"name\": \"stream_answer\", \"turn_id\": \"daf48ec3d947422dacd26f873780b1fe\"}\n\nevent: token\ndata: {\"text\": \"\\u8ba2\\u5355\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"100\"}\n\nevent: token\ndata: {\"text\": \"1\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u7684\"}\n\nevent: token\ndata: {\"text\": \"\\u7269\\u6d41\"}\n\nevent: token\ndata: {\"text\": \"\\u4fe1\\u606f\"}\n\nevent: token\ndata: {\"text\": \"\\u5982\\u4e0b\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\\n\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u627f\\u8fd0\"}\n\nevent: token\ndata: {\"text\": \"\\u5546\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\"}\n\nevent: token\ndata: {\"text\": \"\\u4eac\\u4e1c\"}\n\nevent: token\ndata: {\"text\": \"\\u7269\\u6d41\"}\n\nevent: token\ndata: {\"text\": \"\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u8fd0\"}\n\nevent: token\ndata: {\"text\": \"\\u5355\"}\n\nevent: token\ndata: {\"text\": \"\\u53f7\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\"}\n\nevent: token\ndata: {\"text\": \"F\"}\n\nevent: token\ndata: {\"text\": \"678\"}\n\nevent: token\ndata: {\"text\": \"104\"}\n\nevent: token\ndata: {\"text\": \"970\"}\n\nevent: token\ndata: {\"text\": \"636\"}\n\nevent: token\ndata: {\"text\": \"\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u5f53\\u524d\"}\n\nevent: token\ndata: {\"text\": \"\\u72b6\\u6001\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\"}\n\nevent: token\ndata: {\"text\": \"\\u6d3e\"}\n\nevent: token\ndata: {\"text\": \"\\u9001\"}\n\nevent: token\ndata: {\"text\": \"\\u4e2d\"}\n\nevent: token\ndata: {\"text\": \"\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u6700\\u65b0\"}\n\nevent: token\ndata: {\"text\": \"\\u4f4d\\u7f6e\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\"}\n\nevent: token\ndata: {\"text\": \"\\u4e0a\\u6d77\"}\n\nevent: token\ndata: {\"text\": \"\\u5206\"}\n\nevent: token\ndata: {\"text\": \"\\u62e8\"}\n\nevent: token\ndata: {\"text\": \"\\u4e2d\\u5fc3\"}\n\nevent: token\ndata: {\"text\": \"\\uff08\"}\n\nevent: token\ndata: {\"text\": \"202\"}\n\nevent: token\ndata: {\"text\": \"6\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \"09\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \"05\"}\n\nevent: token\ndata: {\"text\": \"\\uff09\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u8f68\\u8ff9\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\"}\n\nevent: token\ndata: {\"text\": \"\\u5e7f\\u5dde\"}\n\nevent: token\ndata: {\"text\": \"\\u96c6\"}\n\nevent: token\ndata: {\"text\": \"\\u6563\"}\n\nevent: token\ndata: {\"text\": \"\\u4e2d\\u5fc3\"}\n\nevent: token\ndata: {\"text\": \" \\u2192\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u676d\\u5dde\"}\n\nevent: token\ndata: {\"text\": \"\\u8f6c\\u8fd0\"}\n\nevent: token\ndata: {\"text\": \"\\u4e2d\\u5fc3\"}\n\nevent: token\ndata: {\"text\": \" \\u2192\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u4e0a\\u6d77\"}\n\nevent: token\ndata: {\"text\": \"\\u5206\"}\n\nevent: token\ndata: {\"text\": \"\\u62e8\"}\n\nevent: token\ndata: {\"text\": \"\\u4e2d\\u5fc3\"}\n\nevent: token\ndata: {\"text\": \"\\n\\n\"}\n\nevent: token\ndata: {\"text\": \"\\u5305\\u88f9\"}\n\nevent: token\ndata: {\"text\": \"\\u5df2\\u5728\"}\n\nevent: token\ndata: {\"text\": \"\\u6d3e\"}\n\nevent: token\ndata: {\"text\": \"\\u9001\"}\n\nevent: token\ndata: {\"text\": \"\\u9014\\u4e2d\"}\n\nevent: token\ndata: {\"text\": \"\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u8bf7\"}\n\nevent: token\ndata: {\"text\": \"\\u7559\\u610f\"}\n\nevent: token\ndata: {\"text\": \"\\u6536\"}\n\nevent: token\ndata: {\"text\": \"\\u4ef6\"}\n\nevent: token\ndata: {\"text\": \"\\u3002\"}\n\nevent: node\ndata: {\"name\": \"log_turn\", \"turn_id\": \"daf48ec3d947422dacd26f873780b1fe\"}\n\nevent: done\ndata: {\"session_id\": \"ch05_20261001_01a-sse-logistics\", \"conversation_id\": 29, \"resumed\": false, \"answer\": \"\\u8ba2\\u5355 1001 \\u7684\\u7269\\u6d41\\u4fe1\\u606f\\u5982\\u4e0b\\uff1a\\n\\n- \\u627f\\u8fd0\\u5546\\uff1a\\u4eac\\u4e1c\\u7269\\u6d41\\n- \\u8fd0\\u5355\\u53f7\\uff1aF678104970636\\n- \\u5f53\\u524d\\u72b6\\u6001\\uff1a\\u6d3e\\u9001\\u4e2d\\n- \\u6700\\u65b0\\u4f4d\\u7f6e\\uff1a\\u4e0a\\u6d77\\u5206\\u62e8\\u4e2d\\u5fc3\\uff082026-09-05\\uff09\\n- \\u8f68\\u8ff9\\uff1a\\u5e7f\\u5dde\\u96c6\\u6563\\u4e2d\\u5fc3 \\u2192 \\u676d\\u5dde\\u8f6c\\u8fd0\\u4e2d\\u5fc3 \\u2192 \\u4e0a\\u6d77\\u5206\\u62e8\\u4e2d\\u5fc3\\n\\n\\u5305\\u88f9\\u5df2\\u5728\\u6d3e\\u9001\\u9014\\u4e2d\\uff0c\\u8bf7\\u7559\\u610f\\u6536\\u4ef6\\u3002\", \"sources\": [], \"refused\": false, \"low_confidence_question_id\": null, \"intent\": \"\\u7269\\u6d41\", \"route\": \"business\", \"actions\": [], \"offer\": null, \"tool_trace\": [{\"call_id\": \"call_00_I1TNV6T93AWt9BCS2ooL8158\", \"round\": 1, \"name\": \"query_logistics\", \"args\": {\"order_id\": \"1001\"}, \"ok\": true, \"content\": \"\\u8ba2\\u5355 1001 \\u7684\\u7269\\u6d41:\\u627f\\u8fd0\\u5546 \\u4eac\\u4e1c\\u7269\\u6d41,\\u8fd0\\u5355\\u53f7 F678104970636,\\u5f53\\u524d\\u72b6\\u6001\\u300c\\u6d3e\\u9001\\u4e2d\\u300d,\\u6700\\u65b0\\u4f4d\\u7f6e \\u4e0a\\u6d77\\u5206\\u62e8\\u4e2d\\u5fc3(2026-09-05)\\u3002\\u8f68\\u8ff9:\\u5e7f\\u5dde\\u96c6\\u6563\\u4e2d\\u5fc3 \\u2192 \\u676d\\u5dde\\u8f6c\\u8fd0\\u4e2d\\u5fc3 \\u2192 \\u4e0a\\u6d77\\u5206\\u62e8\\u4e2d\\u5fc3\\u3002\", \"error\": null, \"elapsed_ms\": 16}], \"node_trace\": [\"begin_turn\", \"resolve_reference\", \"classify_intent\", \"route_intent\", \"agent_decide\", \"execute_tools\", \"agent_decide\", \"stream_answer\", \"log_turn\"], \"usage\": {\"input_tokens\": 2468, \"output_tokens\": 153, \"estimated\": false}, \"calls\": {\"classifier\": 1, \"decision\": 2, \"answer\": 1}, \"stop_reason\": \"completed\", \"ledger_error\": null, \"finish_reason\": \"completed\"}\n\n",
+      "frames": [
+        {
+          "event": "session",
+          "data": {
+            "session_id": "ch05_20261001_01a-sse-logistics",
+            "conversation_id": 29,
+            "resumed": false
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "begin_turn",
+            "turn_id": "daf48ec3d947422dacd26f873780b1fe"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "resolve_reference",
+            "turn_id": "daf48ec3d947422dacd26f873780b1fe"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "classify_intent",
+            "turn_id": "daf48ec3d947422dacd26f873780b1fe"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "route_intent",
+            "turn_id": "daf48ec3d947422dacd26f873780b1fe"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "agent_decide",
+            "turn_id": "daf48ec3d947422dacd26f873780b1fe"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "execute_tools",
+            "turn_id": "daf48ec3d947422dacd26f873780b1fe"
+          }
+        },
+        {
+          "event": "tool",
+          "data": {
+            "phase": "start",
+            "call_id": "call_00_I1TNV6T93AWt9BCS2ooL8158",
+            "round": 1,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1001"
+            }
+          }
+        },
+        {
+          "event": "tool",
+          "data": {
+            "phase": "end",
+            "call_id": "call_00_I1TNV6T93AWt9BCS2ooL8158",
+            "round": 1,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「派送中」,最新位置 上海分拨中心(2026-09-05)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+            "error": null,
+            "elapsed_ms": 16
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "agent_decide",
+            "turn_id": "daf48ec3d947422dacd26f873780b1fe"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "stream_answer",
+            "turn_id": "daf48ec3d947422dacd26f873780b1fe"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "订单"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "100"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "1"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "的"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "物流"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "信息"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "如下"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "：\n\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "承运"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "商"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "："
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "京东"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "物流"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "运"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "单"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "号"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "："
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "F"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "678"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "104"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "970"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "636"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "当前"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "状态"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "："
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "派"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "送"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "中"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "最新"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "位置"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "："
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "上海"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "分"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "拨"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "中心"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "（"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "202"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "6"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "09"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "05"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "）\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "轨迹"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "："
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "广州"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "集"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "散"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "中心"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " →"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "杭州"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "转运"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "中心"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " →"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "上海"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "分"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "拨"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "中心"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "\n\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "包裹"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "已在"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "派"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "送"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "途中"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "，"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "请"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "留意"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "收"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "件"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "。"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "log_turn",
+            "turn_id": "daf48ec3d947422dacd26f873780b1fe"
+          }
+        },
+        {
+          "event": "done",
+          "data": {
+            "session_id": "ch05_20261001_01a-sse-logistics",
+            "conversation_id": 29,
+            "resumed": false,
+            "answer": "订单 1001 的物流信息如下：\n\n- 承运商：京东物流\n- 运单号：F678104970636\n- 当前状态：派送中\n- 最新位置：上海分拨中心（2026-09-05）\n- 轨迹：广州集散中心 → 杭州转运中心 → 上海分拨中心\n\n包裹已在派送途中，请留意收件。",
+            "sources": [],
+            "refused": false,
+            "low_confidence_question_id": null,
+            "intent": "物流",
+            "route": "business",
+            "actions": [],
+            "offer": null,
+            "tool_trace": [
+              {
+                "call_id": "call_00_I1TNV6T93AWt9BCS2ooL8158",
+                "round": 1,
+                "name": "query_logistics",
+                "args": {
+                  "order_id": "1001"
+                },
+                "ok": true,
+                "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「派送中」,最新位置 上海分拨中心(2026-09-05)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+                "error": null,
+                "elapsed_ms": 16
+              }
+            ],
+            "node_trace": [
+              "begin_turn",
+              "resolve_reference",
+              "classify_intent",
+              "route_intent",
+              "agent_decide",
+              "execute_tools",
+              "agent_decide",
+              "stream_answer",
+              "log_turn"
+            ],
+            "usage": {
+              "input_tokens": 2468,
+              "output_tokens": 153,
+              "estimated": false
+            },
+            "calls": {
+              "classifier": 1,
+              "decision": 2,
+              "answer": 1
+            },
+            "stop_reason": "completed",
+            "ledger_error": null,
+            "finish_reason": "completed"
+          }
+        }
+      ],
+      "actual": {
+        "session_id": "ch05_20261001_01a-sse-logistics",
+        "conversation_id": 29,
+        "resumed": false,
+        "answer": "订单 1001 的物流信息如下：\n\n- 承运商：京东物流\n- 运单号：F678104970636\n- 当前状态：派送中\n- 最新位置：上海分拨中心（2026-09-05）\n- 轨迹：广州集散中心 → 杭州转运中心 → 上海分拨中心\n\n包裹已在派送途中，请留意收件。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "物流",
+        "route": "business",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "call_00_I1TNV6T93AWt9BCS2ooL8158",
+            "round": 1,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「派送中」,最新位置 上海分拨中心(2026-09-05)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+            "error": null,
+            "elapsed_ms": 16
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "resolve_reference",
+          "classify_intent",
+          "route_intent",
+          "agent_decide",
+          "execute_tools",
+          "agent_decide",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 2468,
+          "output_tokens": 153,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 2,
+          "answer": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "finish_reason": "completed"
+      },
+      "failures": [],
+      "passed": true
+    },
+    {
+      "id": "complaint",
+      "mode": "sse",
+      "question": "我要投诉",
+      "expected": {
+        "route": "complaint",
+        "actions": [
+          "handoff",
+          "create_ticket"
+        ],
+        "agent_calls": 0,
+        "forbidden_nodes": [
+          "decide_agent",
+          "retrieve_knowledge"
+        ]
+      },
+      "request": {
+        "message": "我要投诉",
+        "session_id": "ch05_20261001_01a-sse-complaint",
+        "user_id": "ch05_20261001_01a"
+      },
+      "raw": "event: session\ndata: {\"session_id\": \"ch05_20261001_01a-sse-complaint\", \"conversation_id\": 30, \"resumed\": false}\n\nevent: node\ndata: {\"name\": \"begin_turn\", \"turn_id\": \"ba18d6bd37c8419b85f6ea7bb7f1ff04\"}\n\nevent: node\ndata: {\"name\": \"resolve_reference\", \"turn_id\": \"ba18d6bd37c8419b85f6ea7bb7f1ff04\"}\n\nevent: node\ndata: {\"name\": \"classify_intent\", \"turn_id\": \"ba18d6bd37c8419b85f6ea7bb7f1ff04\"}\n\nevent: node\ndata: {\"name\": \"route_intent\", \"turn_id\": \"ba18d6bd37c8419b85f6ea7bb7f1ff04\"}\n\nevent: node\ndata: {\"name\": \"complaint_reply\", \"turn_id\": \"ba18d6bd37c8419b85f6ea7bb7f1ff04\"}\n\nevent: token\ndata: {\"text\": \"\\u5f88\\u62b1\\u6b49\\u7ed9\\u60a8\\u5e26\\u6765\\u4e0d\\u597d\\u7684\\u4f53\\u9a8c\\u3002\\u60a8\\u53ef\\u4ee5\\u9009\\u62e9\\u8f6c\\u4eba\\u5de5\\u6216\\u521b\\u5efa\\u5de5\\u5355\\uff0c\\u6211\\u4eec\\u4f1a\\u534f\\u52a9\\u60a8\\u5904\\u7406\\u3002\"}\n\nevent: node\ndata: {\"name\": \"log_turn\", \"turn_id\": \"ba18d6bd37c8419b85f6ea7bb7f1ff04\"}\n\nevent: actions\ndata: {\"actions\": [\"handoff\", \"create_ticket\"], \"offer\": {\"offer_id\": \"2347576764ff44a5926782c7b30cec9f\", \"turn_id\": \"ba18d6bd37c8419b85f6ea7bb7f1ff04\", \"actions\": [\"handoff\", \"create_ticket\"], \"description\": \"\\u6211\\u8981\\u6295\\u8bc9\", \"ticket_type\": \"\\u6295\\u8bc9\"}}\n\nevent: done\ndata: {\"session_id\": \"ch05_20261001_01a-sse-complaint\", \"conversation_id\": 30, \"resumed\": false, \"answer\": \"\\u5f88\\u62b1\\u6b49\\u7ed9\\u60a8\\u5e26\\u6765\\u4e0d\\u597d\\u7684\\u4f53\\u9a8c\\u3002\\u60a8\\u53ef\\u4ee5\\u9009\\u62e9\\u8f6c\\u4eba\\u5de5\\u6216\\u521b\\u5efa\\u5de5\\u5355\\uff0c\\u6211\\u4eec\\u4f1a\\u534f\\u52a9\\u60a8\\u5904\\u7406\\u3002\", \"sources\": [], \"refused\": false, \"low_confidence_question_id\": null, \"intent\": \"\\u6295\\u8bc9\", \"route\": \"complaint\", \"actions\": [\"handoff\", \"create_ticket\"], \"offer\": {\"offer_id\": \"2347576764ff44a5926782c7b30cec9f\", \"turn_id\": \"ba18d6bd37c8419b85f6ea7bb7f1ff04\", \"actions\": [\"handoff\", \"create_ticket\"], \"description\": \"\\u6211\\u8981\\u6295\\u8bc9\", \"ticket_type\": \"\\u6295\\u8bc9\"}, \"tool_trace\": [], \"node_trace\": [\"begin_turn\", \"resolve_reference\", \"classify_intent\", \"route_intent\", \"complaint_reply\", \"log_turn\"], \"usage\": {\"input_tokens\": 210, \"output_tokens\": 6, \"estimated\": false}, \"calls\": {\"classifier\": 1, \"decision\": 0, \"answer\": 0}, \"stop_reason\": \"completed\", \"ledger_error\": null, \"finish_reason\": \"completed\"}\n\n",
+      "frames": [
+        {
+          "event": "session",
+          "data": {
+            "session_id": "ch05_20261001_01a-sse-complaint",
+            "conversation_id": 30,
+            "resumed": false
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "begin_turn",
+            "turn_id": "ba18d6bd37c8419b85f6ea7bb7f1ff04"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "resolve_reference",
+            "turn_id": "ba18d6bd37c8419b85f6ea7bb7f1ff04"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "classify_intent",
+            "turn_id": "ba18d6bd37c8419b85f6ea7bb7f1ff04"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "route_intent",
+            "turn_id": "ba18d6bd37c8419b85f6ea7bb7f1ff04"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "complaint_reply",
+            "turn_id": "ba18d6bd37c8419b85f6ea7bb7f1ff04"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "很抱歉给您带来不好的体验。您可以选择转人工或创建工单，我们会协助您处理。"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "log_turn",
+            "turn_id": "ba18d6bd37c8419b85f6ea7bb7f1ff04"
+          }
+        },
+        {
+          "event": "actions",
+          "data": {
+            "actions": [
+              "handoff",
+              "create_ticket"
+            ],
+            "offer": {
+              "offer_id": "2347576764ff44a5926782c7b30cec9f",
+              "turn_id": "ba18d6bd37c8419b85f6ea7bb7f1ff04",
+              "actions": [
+                "handoff",
+                "create_ticket"
+              ],
+              "description": "我要投诉",
+              "ticket_type": "投诉"
+            }
+          }
+        },
+        {
+          "event": "done",
+          "data": {
+            "session_id": "ch05_20261001_01a-sse-complaint",
+            "conversation_id": 30,
+            "resumed": false,
+            "answer": "很抱歉给您带来不好的体验。您可以选择转人工或创建工单，我们会协助您处理。",
+            "sources": [],
+            "refused": false,
+            "low_confidence_question_id": null,
+            "intent": "投诉",
+            "route": "complaint",
+            "actions": [
+              "handoff",
+              "create_ticket"
+            ],
+            "offer": {
+              "offer_id": "2347576764ff44a5926782c7b30cec9f",
+              "turn_id": "ba18d6bd37c8419b85f6ea7bb7f1ff04",
+              "actions": [
+                "handoff",
+                "create_ticket"
+              ],
+              "description": "我要投诉",
+              "ticket_type": "投诉"
+            },
+            "tool_trace": [],
+            "node_trace": [
+              "begin_turn",
+              "resolve_reference",
+              "classify_intent",
+              "route_intent",
+              "complaint_reply",
+              "log_turn"
+            ],
+            "usage": {
+              "input_tokens": 210,
+              "output_tokens": 6,
+              "estimated": false
+            },
+            "calls": {
+              "classifier": 1,
+              "decision": 0,
+              "answer": 0
+            },
+            "stop_reason": "completed",
+            "ledger_error": null,
+            "finish_reason": "completed"
+          }
+        }
+      ],
+      "actual": {
+        "session_id": "ch05_20261001_01a-sse-complaint",
+        "conversation_id": 30,
+        "resumed": false,
+        "answer": "很抱歉给您带来不好的体验。您可以选择转人工或创建工单，我们会协助您处理。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "投诉",
+        "route": "complaint",
+        "actions": [
+          "handoff",
+          "create_ticket"
+        ],
+        "offer": {
+          "offer_id": "2347576764ff44a5926782c7b30cec9f",
+          "turn_id": "ba18d6bd37c8419b85f6ea7bb7f1ff04",
+          "actions": [
+            "handoff",
+            "create_ticket"
+          ],
+          "description": "我要投诉",
+          "ticket_type": "投诉"
+        },
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "resolve_reference",
+          "classify_intent",
+          "route_intent",
+          "complaint_reply",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 210,
+          "output_tokens": 6,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "finish_reason": "completed"
+      },
+      "failures": [],
+      "passed": true
+    },
+    {
+      "id": "chitchat",
+      "mode": "sse",
+      "question": "你好",
+      "expected": {
+        "route": "chitchat",
+        "answer": "您好，我是客服小猫，可以帮您查询商品、订单、物流或售后问题。",
+        "agent_calls": 0,
+        "classifier_calls": 0
+      },
+      "request": {
+        "message": "你好",
+        "session_id": "ch05_20261001_01a-sse-chitchat",
+        "user_id": "ch05_20261001_01a"
+      },
+      "raw": "event: session\ndata: {\"session_id\": \"ch05_20261001_01a-sse-chitchat\", \"conversation_id\": 31, \"resumed\": false}\n\nevent: node\ndata: {\"name\": \"begin_turn\", \"turn_id\": \"aaa91d755101496ba44d1aa103da2e4b\"}\n\nevent: node\ndata: {\"name\": \"resolve_reference\", \"turn_id\": \"aaa91d755101496ba44d1aa103da2e4b\"}\n\nevent: node\ndata: {\"name\": \"classify_intent\", \"turn_id\": \"aaa91d755101496ba44d1aa103da2e4b\"}\n\nevent: node\ndata: {\"name\": \"route_intent\", \"turn_id\": \"aaa91d755101496ba44d1aa103da2e4b\"}\n\nevent: node\ndata: {\"name\": \"chitchat_reply\", \"turn_id\": \"aaa91d755101496ba44d1aa103da2e4b\"}\n\nevent: token\ndata: {\"text\": \"\\u60a8\\u597d\\uff0c\\u6211\\u662f\\u5ba2\\u670d\\u5c0f\\u732b\\uff0c\\u53ef\\u4ee5\\u5e2e\\u60a8\\u67e5\\u8be2\\u5546\\u54c1\\u3001\\u8ba2\\u5355\\u3001\\u7269\\u6d41\\u6216\\u552e\\u540e\\u95ee\\u9898\\u3002\"}\n\nevent: node\ndata: {\"name\": \"log_turn\", \"turn_id\": \"aaa91d755101496ba44d1aa103da2e4b\"}\n\nevent: done\ndata: {\"session_id\": \"ch05_20261001_01a-sse-chitchat\", \"conversation_id\": 31, \"resumed\": false, \"answer\": \"\\u60a8\\u597d\\uff0c\\u6211\\u662f\\u5ba2\\u670d\\u5c0f\\u732b\\uff0c\\u53ef\\u4ee5\\u5e2e\\u60a8\\u67e5\\u8be2\\u5546\\u54c1\\u3001\\u8ba2\\u5355\\u3001\\u7269\\u6d41\\u6216\\u552e\\u540e\\u95ee\\u9898\\u3002\", \"sources\": [], \"refused\": false, \"low_confidence_question_id\": null, \"intent\": \"\\u95f2\\u804a\", \"route\": \"chitchat\", \"actions\": [], \"offer\": null, \"tool_trace\": [], \"node_trace\": [\"begin_turn\", \"resolve_reference\", \"classify_intent\", \"route_intent\", \"chitchat_reply\", \"log_turn\"], \"usage\": {\"input_tokens\": 0, \"output_tokens\": 0, \"estimated\": false}, \"calls\": {\"classifier\": 0, \"decision\": 0, \"answer\": 0}, \"stop_reason\": \"completed\", \"ledger_error\": null, \"finish_reason\": \"completed\"}\n\n",
+      "frames": [
+        {
+          "event": "session",
+          "data": {
+            "session_id": "ch05_20261001_01a-sse-chitchat",
+            "conversation_id": 31,
+            "resumed": false
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "begin_turn",
+            "turn_id": "aaa91d755101496ba44d1aa103da2e4b"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "resolve_reference",
+            "turn_id": "aaa91d755101496ba44d1aa103da2e4b"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "classify_intent",
+            "turn_id": "aaa91d755101496ba44d1aa103da2e4b"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "route_intent",
+            "turn_id": "aaa91d755101496ba44d1aa103da2e4b"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "chitchat_reply",
+            "turn_id": "aaa91d755101496ba44d1aa103da2e4b"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "您好，我是客服小猫，可以帮您查询商品、订单、物流或售后问题。"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "log_turn",
+            "turn_id": "aaa91d755101496ba44d1aa103da2e4b"
+          }
+        },
+        {
+          "event": "done",
+          "data": {
+            "session_id": "ch05_20261001_01a-sse-chitchat",
+            "conversation_id": 31,
+            "resumed": false,
+            "answer": "您好，我是客服小猫，可以帮您查询商品、订单、物流或售后问题。",
+            "sources": [],
+            "refused": false,
+            "low_confidence_question_id": null,
+            "intent": "闲聊",
+            "route": "chitchat",
+            "actions": [],
+            "offer": null,
+            "tool_trace": [],
+            "node_trace": [
+              "begin_turn",
+              "resolve_reference",
+              "classify_intent",
+              "route_intent",
+              "chitchat_reply",
+              "log_turn"
+            ],
+            "usage": {
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "estimated": false
+            },
+            "calls": {
+              "classifier": 0,
+              "decision": 0,
+              "answer": 0
+            },
+            "stop_reason": "completed",
+            "ledger_error": null,
+            "finish_reason": "completed"
+          }
+        }
+      ],
+      "actual": {
+        "session_id": "ch05_20261001_01a-sse-chitchat",
+        "conversation_id": 31,
+        "resumed": false,
+        "answer": "您好，我是客服小猫，可以帮您查询商品、订单、物流或售后问题。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "闲聊",
+        "route": "chitchat",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "resolve_reference",
+          "classify_intent",
+          "route_intent",
+          "chitchat_reply",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 0,
+          "decision": 0,
+          "answer": 0
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "finish_reason": "completed"
+      },
+      "failures": [],
+      "passed": true
+    },
+    {
+      "id": "complex",
+      "mode": "sse",
+      "question": "请先查询订单1001的商品和下单时间，再查询物流最新节点，比较这两个时间",
+      "expected": {
+        "route": "business",
+        "sequential_tools": [
+          "query_order",
+          "query_logistics"
+        ],
+        "forbidden_nodes": [
+          "retrieve_knowledge",
+          "confidence_gate"
+        ]
+      },
+      "request": {
+        "message": "请先查询订单1001的商品和下单时间，再查询物流最新节点，比较这两个时间",
+        "session_id": "ch05_20261001_01a-sse-complex",
+        "user_id": "ch05_20261001_01a"
+      },
+      "raw": "event: session\ndata: {\"session_id\": \"ch05_20261001_01a-sse-complex\", \"conversation_id\": 32, \"resumed\": false}\n\nevent: node\ndata: {\"name\": \"begin_turn\", \"turn_id\": \"fbeb1d9222d1468aad6d5a2bc3aebf7b\"}\n\nevent: node\ndata: {\"name\": \"resolve_reference\", \"turn_id\": \"fbeb1d9222d1468aad6d5a2bc3aebf7b\"}\n\nevent: node\ndata: {\"name\": \"classify_intent\", \"turn_id\": \"fbeb1d9222d1468aad6d5a2bc3aebf7b\"}\n\nevent: node\ndata: {\"name\": \"route_intent\", \"turn_id\": \"fbeb1d9222d1468aad6d5a2bc3aebf7b\"}\n\nevent: node\ndata: {\"name\": \"agent_decide\", \"turn_id\": \"fbeb1d9222d1468aad6d5a2bc3aebf7b\"}\n\nevent: node\ndata: {\"name\": \"execute_tools\", \"turn_id\": \"fbeb1d9222d1468aad6d5a2bc3aebf7b\"}\n\nevent: tool\ndata: {\"phase\": \"start\", \"call_id\": \"call_00_ieNUEnopftnkbZcpVkN05641\", \"round\": 1, \"name\": \"query_order\", \"args\": {\"order_id\": \"1001\"}}\n\nevent: tool\ndata: {\"phase\": \"end\", \"call_id\": \"call_00_ieNUEnopftnkbZcpVkN05641\", \"round\": 1, \"name\": \"query_order\", \"args\": {\"order_id\": \"1001\"}, \"ok\": true, \"content\": \"\\u8ba2\\u5355 1001:\\u5546\\u54c1\\u300c\\u964d\\u566a\\u8033\\u673a\\u300d,\\u4e0b\\u5355\\u65f6\\u95f4 2026-09-03,\\u5b9e\\u4ed8 118 \\u5143,\\u5f53\\u524d\\u72b6\\u6001\\u300c\\u5df2\\u4e0b\\u5355\\u300d\\u3002\", \"error\": null, \"elapsed_ms\": 0}\n\nevent: node\ndata: {\"name\": \"agent_decide\", \"turn_id\": \"fbeb1d9222d1468aad6d5a2bc3aebf7b\"}\n\nevent: node\ndata: {\"name\": \"execute_tools\", \"turn_id\": \"fbeb1d9222d1468aad6d5a2bc3aebf7b\"}\n\nevent: tool\ndata: {\"phase\": \"start\", \"call_id\": \"call_00_WrxQZSzP51cm1r8w1FTL0676\", \"round\": 2, \"name\": \"query_logistics\", \"args\": {\"order_id\": \"1001\"}}\n\nevent: tool\ndata: {\"phase\": \"end\", \"call_id\": \"call_00_WrxQZSzP51cm1r8w1FTL0676\", \"round\": 2, \"name\": \"query_logistics\", \"args\": {\"order_id\": \"1001\"}, \"ok\": true, \"content\": \"\\u8ba2\\u5355 1001 \\u7684\\u7269\\u6d41:\\u627f\\u8fd0\\u5546 \\u4eac\\u4e1c\\u7269\\u6d41,\\u8fd0\\u5355\\u53f7 F678104970636,\\u5f53\\u524d\\u72b6\\u6001\\u300c\\u6d3e\\u9001\\u4e2d\\u300d,\\u6700\\u65b0\\u4f4d\\u7f6e \\u4e0a\\u6d77\\u5206\\u62e8\\u4e2d\\u5fc3(2026-09-05)\\u3002\\u8f68\\u8ff9:\\u5e7f\\u5dde\\u96c6\\u6563\\u4e2d\\u5fc3 \\u2192 \\u676d\\u5dde\\u8f6c\\u8fd0\\u4e2d\\u5fc3 \\u2192 \\u4e0a\\u6d77\\u5206\\u62e8\\u4e2d\\u5fc3\\u3002\", \"error\": null, \"elapsed_ms\": 0}\n\nevent: node\ndata: {\"name\": \"agent_decide\", \"turn_id\": \"fbeb1d9222d1468aad6d5a2bc3aebf7b\"}\n\nevent: node\ndata: {\"name\": \"stream_answer\", \"turn_id\": \"fbeb1d9222d1468aad6d5a2bc3aebf7b\"}\n\nevent: token\ndata: {\"text\": \"\\u8ba2\\u5355\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"100\"}\n\nevent: token\ndata: {\"text\": \"1\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u7684\\u4fe1\\u606f\"}\n\nevent: token\ndata: {\"text\": \"\\u5982\\u4e0b\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\\n\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u5546\\u54c1\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\"}\n\nevent: token\ndata: {\"text\": \"\\u964d\"}\n\nevent: token\ndata: {\"text\": \"\\u566a\"}\n\nevent: token\ndata: {\"text\": \"\\u8033\\u673a\"}\n\nevent: token\ndata: {\"text\": \"\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u4e0b\\u5355\"}\n\nevent: token\ndata: {\"text\": \"\\u65f6\\u95f4\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\"}\n\nevent: token\ndata: {\"text\": \"202\"}\n\nevent: token\ndata: {\"text\": \"6\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \"09\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \"03\"}\n\nevent: token\ndata: {\"text\": \"\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u5b9e\"}\n\nevent: token\ndata: {\"text\": \"\\u4ed8\"}\n\nevent: token\ndata: {\"text\": \"\\u91d1\\u989d\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\"}\n\nevent: token\ndata: {\"text\": \"118\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u5143\"}\n\nevent: token\ndata: {\"text\": \"\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u8ba2\\u5355\"}\n\nevent: token\ndata: {\"text\": \"\\u72b6\\u6001\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\"}\n\nevent: token\ndata: {\"text\": \"\\u5df2\"}\n\nevent: token\ndata: {\"text\": \"\\u4e0b\\u5355\"}\n\nevent: token\ndata: {\"text\": \"\\n\\n\"}\n\nevent: token\ndata: {\"text\": \"\\u7269\\u6d41\"}\n\nevent: token\ndata: {\"text\": \"\\u4fe1\\u606f\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\\n\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u627f\\u8fd0\"}\n\nevent: token\ndata: {\"text\": \"\\u5546\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\"}\n\nevent: token\ndata: {\"text\": \"\\u4eac\\u4e1c\"}\n\nevent: token\ndata: {\"text\": \"\\u7269\\u6d41\"}\n\nevent: token\ndata: {\"text\": \"\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u8fd0\"}\n\nevent: token\ndata: {\"text\": \"\\u5355\"}\n\nevent: token\ndata: {\"text\": \"\\u53f7\"}\n\nevent: token\ndata: {\"text\": \" F\"}\n\nevent: token\ndata: {\"text\": \"678\"}\n\nevent: token\ndata: {\"text\": \"104\"}\n\nevent: token\ndata: {\"text\": \"970\"}\n\nevent: token\ndata: {\"text\": \"636\"}\n\nevent: token\ndata: {\"text\": \"\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u5f53\\u524d\"}\n\nevent: token\ndata: {\"text\": \"\\u72b6\\u6001\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\"}\n\nevent: token\ndata: {\"text\": \"\\u6d3e\"}\n\nevent: token\ndata: {\"text\": \"\\u9001\"}\n\nevent: token\ndata: {\"text\": \"\\u4e2d\"}\n\nevent: token\ndata: {\"text\": \"\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u6700\\u65b0\"}\n\nevent: token\ndata: {\"text\": \"\\u8282\\u70b9\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\"}\n\nevent: token\ndata: {\"text\": \"\\u4e0a\\u6d77\"}\n\nevent: token\ndata: {\"text\": \"\\u5206\"}\n\nevent: token\ndata: {\"text\": \"\\u62e8\"}\n\nevent: token\ndata: {\"text\": \"\\u4e2d\\u5fc3\"}\n\nevent: token\ndata: {\"text\": \"\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u65f6\\u95f4\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"202\"}\n\nevent: token\ndata: {\"text\": \"6\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \"09\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \"05\"}\n\nevent: token\ndata: {\"text\": \"\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u8f68\\u8ff9\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\"}\n\nevent: token\ndata: {\"text\": \"\\u5e7f\\u5dde\"}\n\nevent: token\ndata: {\"text\": \"\\u96c6\"}\n\nevent: token\ndata: {\"text\": \"\\u6563\"}\n\nevent: token\ndata: {\"text\": \"\\u4e2d\\u5fc3\"}\n\nevent: token\ndata: {\"text\": \" \\u2192\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u676d\\u5dde\"}\n\nevent: token\ndata: {\"text\": \"\\u8f6c\\u8fd0\"}\n\nevent: token\ndata: {\"text\": \"\\u4e2d\\u5fc3\"}\n\nevent: token\ndata: {\"text\": \" \\u2192\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u4e0a\\u6d77\"}\n\nevent: token\ndata: {\"text\": \"\\u5206\"}\n\nevent: token\ndata: {\"text\": \"\\u62e8\"}\n\nevent: token\ndata: {\"text\": \"\\u4e2d\\u5fc3\"}\n\nevent: token\ndata: {\"text\": \"\\n\\n\"}\n\nevent: token\ndata: {\"text\": \"\\u65f6\\u95f4\"}\n\nevent: token\ndata: {\"text\": \"\\u6bd4\\u8f83\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\"}\n\nevent: token\ndata: {\"text\": \"\\u7269\\u6d41\"}\n\nevent: token\ndata: {\"text\": \"\\u6700\\u65b0\"}\n\nevent: token\ndata: {\"text\": \"\\u8282\\u70b9\"}\n\nevent: token\ndata: {\"text\": \"\\uff08\"}\n\nevent: token\ndata: {\"text\": \"202\"}\n\nevent: token\ndata: {\"text\": \"6\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \"09\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \"05\"}\n\nevent: token\ndata: {\"text\": \"\\uff09\"}\n\nevent: token\ndata: {\"text\": \"\\u665a\"}\n\nevent: token\ndata: {\"text\": \"\\u4e8e\"}\n\nevent: token\ndata: {\"text\": \"\\u4e0b\\u5355\"}\n\nevent: token\ndata: {\"text\": \"\\u65f6\\u95f4\"}\n\nevent: token\ndata: {\"text\": \"\\uff08\"}\n\nevent: token\ndata: {\"text\": \"202\"}\n\nevent: token\ndata: {\"text\": \"6\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \"09\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \"03\"}\n\nevent: token\ndata: {\"text\": \"\\uff09\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u5373\"}\n\nevent: token\ndata: {\"text\": \"\\u4e0b\\u5355\"}\n\nevent: token\ndata: {\"text\": \"\\u540e\"}\n\nevent: token\ndata: {\"text\": \"\\u7ea6\"}\n\nevent: token\ndata: {\"text\": \"\\u4e24\\u5929\"}\n\nevent: token\ndata: {\"text\": \"\\u5305\\u88f9\"}\n\nevent: token\ndata: {\"text\": \"\\u5230\\u8fbe\"}\n\nevent: token\ndata: {\"text\": \"\\u4e0a\\u6d77\"}\n\nevent: token\ndata: {\"text\": \"\\u5206\"}\n\nevent: token\ndata: {\"text\": \"\\u62e8\"}\n\nevent: token\ndata: {\"text\": \"\\u4e2d\\u5fc3\"}\n\nevent: token\ndata: {\"text\": \"\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u76ee\\u524d\"}\n\nevent: token\ndata: {\"text\": \"\\u5904\\u4e8e\"}\n\nevent: token\ndata: {\"text\": \"\\u6d3e\"}\n\nevent: token\ndata: {\"text\": \"\\u9001\"}\n\nevent: token\ndata: {\"text\": \"\\u4e2d\"}\n\nevent: token\ndata: {\"text\": \"\\u3002\"}\n\nevent: node\ndata: {\"name\": \"log_turn\", \"turn_id\": \"fbeb1d9222d1468aad6d5a2bc3aebf7b\"}\n\nevent: done\ndata: {\"session_id\": \"ch05_20261001_01a-sse-complex\", \"conversation_id\": 32, \"resumed\": false, \"answer\": \"\\u8ba2\\u5355 1001 \\u7684\\u4fe1\\u606f\\u5982\\u4e0b\\uff1a\\n\\n- \\u5546\\u54c1\\uff1a\\u964d\\u566a\\u8033\\u673a\\n- \\u4e0b\\u5355\\u65f6\\u95f4\\uff1a2026-09-03\\n- \\u5b9e\\u4ed8\\u91d1\\u989d\\uff1a118 \\u5143\\n- \\u8ba2\\u5355\\u72b6\\u6001\\uff1a\\u5df2\\u4e0b\\u5355\\n\\n\\u7269\\u6d41\\u4fe1\\u606f\\uff1a\\n\\n- \\u627f\\u8fd0\\u5546\\uff1a\\u4eac\\u4e1c\\u7269\\u6d41\\uff0c\\u8fd0\\u5355\\u53f7 F678104970636\\n- \\u5f53\\u524d\\u72b6\\u6001\\uff1a\\u6d3e\\u9001\\u4e2d\\n- \\u6700\\u65b0\\u8282\\u70b9\\uff1a\\u4e0a\\u6d77\\u5206\\u62e8\\u4e2d\\u5fc3\\uff0c\\u65f6\\u95f4 2026-09-05\\n- \\u8f68\\u8ff9\\uff1a\\u5e7f\\u5dde\\u96c6\\u6563\\u4e2d\\u5fc3 \\u2192 \\u676d\\u5dde\\u8f6c\\u8fd0\\u4e2d\\u5fc3 \\u2192 \\u4e0a\\u6d77\\u5206\\u62e8\\u4e2d\\u5fc3\\n\\n\\u65f6\\u95f4\\u6bd4\\u8f83\\uff1a\\u7269\\u6d41\\u6700\\u65b0\\u8282\\u70b9\\uff082026-09-05\\uff09\\u665a\\u4e8e\\u4e0b\\u5355\\u65f6\\u95f4\\uff082026-09-03\\uff09\\uff0c\\u5373\\u4e0b\\u5355\\u540e\\u7ea6\\u4e24\\u5929\\u5305\\u88f9\\u5230\\u8fbe\\u4e0a\\u6d77\\u5206\\u62e8\\u4e2d\\u5fc3\\uff0c\\u76ee\\u524d\\u5904\\u4e8e\\u6d3e\\u9001\\u4e2d\\u3002\", \"sources\": [], \"refused\": false, \"low_confidence_question_id\": null, \"intent\": \"\\u7269\\u6d41\", \"route\": \"business\", \"actions\": [], \"offer\": null, \"tool_trace\": [{\"call_id\": \"call_00_ieNUEnopftnkbZcpVkN05641\", \"round\": 1, \"name\": \"query_order\", \"args\": {\"order_id\": \"1001\"}, \"ok\": true, \"content\": \"\\u8ba2\\u5355 1001:\\u5546\\u54c1\\u300c\\u964d\\u566a\\u8033\\u673a\\u300d,\\u4e0b\\u5355\\u65f6\\u95f4 2026-09-03,\\u5b9e\\u4ed8 118 \\u5143,\\u5f53\\u524d\\u72b6\\u6001\\u300c\\u5df2\\u4e0b\\u5355\\u300d\\u3002\", \"error\": null, \"elapsed_ms\": 0}, {\"call_id\": \"call_00_WrxQZSzP51cm1r8w1FTL0676\", \"round\": 2, \"name\": \"query_logistics\", \"args\": {\"order_id\": \"1001\"}, \"ok\": true, \"content\": \"\\u8ba2\\u5355 1001 \\u7684\\u7269\\u6d41:\\u627f\\u8fd0\\u5546 \\u4eac\\u4e1c\\u7269\\u6d41,\\u8fd0\\u5355\\u53f7 F678104970636,\\u5f53\\u524d\\u72b6\\u6001\\u300c\\u6d3e\\u9001\\u4e2d\\u300d,\\u6700\\u65b0\\u4f4d\\u7f6e \\u4e0a\\u6d77\\u5206\\u62e8\\u4e2d\\u5fc3(2026-09-05)\\u3002\\u8f68\\u8ff9:\\u5e7f\\u5dde\\u96c6\\u6563\\u4e2d\\u5fc3 \\u2192 \\u676d\\u5dde\\u8f6c\\u8fd0\\u4e2d\\u5fc3 \\u2192 \\u4e0a\\u6d77\\u5206\\u62e8\\u4e2d\\u5fc3\\u3002\", \"error\": null, \"elapsed_ms\": 0}], \"node_trace\": [\"begin_turn\", \"resolve_reference\", \"classify_intent\", \"route_intent\", \"agent_decide\", \"execute_tools\", \"agent_decide\", \"execute_tools\", \"agent_decide\", \"stream_answer\", \"log_turn\"], \"usage\": {\"input_tokens\": 3595, \"output_tokens\": 292, \"estimated\": false}, \"calls\": {\"classifier\": 1, \"decision\": 3, \"answer\": 1}, \"stop_reason\": \"completed\", \"ledger_error\": null, \"finish_reason\": \"completed\"}\n\n",
+      "frames": [
+        {
+          "event": "session",
+          "data": {
+            "session_id": "ch05_20261001_01a-sse-complex",
+            "conversation_id": 32,
+            "resumed": false
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "begin_turn",
+            "turn_id": "fbeb1d9222d1468aad6d5a2bc3aebf7b"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "resolve_reference",
+            "turn_id": "fbeb1d9222d1468aad6d5a2bc3aebf7b"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "classify_intent",
+            "turn_id": "fbeb1d9222d1468aad6d5a2bc3aebf7b"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "route_intent",
+            "turn_id": "fbeb1d9222d1468aad6d5a2bc3aebf7b"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "agent_decide",
+            "turn_id": "fbeb1d9222d1468aad6d5a2bc3aebf7b"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "execute_tools",
+            "turn_id": "fbeb1d9222d1468aad6d5a2bc3aebf7b"
+          }
+        },
+        {
+          "event": "tool",
+          "data": {
+            "phase": "start",
+            "call_id": "call_00_ieNUEnopftnkbZcpVkN05641",
+            "round": 1,
+            "name": "query_order",
+            "args": {
+              "order_id": "1001"
+            }
+          }
+        },
+        {
+          "event": "tool",
+          "data": {
+            "phase": "end",
+            "call_id": "call_00_ieNUEnopftnkbZcpVkN05641",
+            "round": 1,
+            "name": "query_order",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001:商品「降噪耳机」,下单时间 2026-09-03,实付 118 元,当前状态「已下单」。",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "agent_decide",
+            "turn_id": "fbeb1d9222d1468aad6d5a2bc3aebf7b"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "execute_tools",
+            "turn_id": "fbeb1d9222d1468aad6d5a2bc3aebf7b"
+          }
+        },
+        {
+          "event": "tool",
+          "data": {
+            "phase": "start",
+            "call_id": "call_00_WrxQZSzP51cm1r8w1FTL0676",
+            "round": 2,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1001"
+            }
+          }
+        },
+        {
+          "event": "tool",
+          "data": {
+            "phase": "end",
+            "call_id": "call_00_WrxQZSzP51cm1r8w1FTL0676",
+            "round": 2,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「派送中」,最新位置 上海分拨中心(2026-09-05)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "agent_decide",
+            "turn_id": "fbeb1d9222d1468aad6d5a2bc3aebf7b"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "stream_answer",
+            "turn_id": "fbeb1d9222d1468aad6d5a2bc3aebf7b"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "订单"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "100"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "1"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "的信息"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "如下"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "：\n\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "商品"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "："
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "降"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "噪"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "耳机"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "下单"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "时间"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "："
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "202"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "6"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "09"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "03"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "实"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "付"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "金额"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "："
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "118"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "元"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "订单"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "状态"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "："
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "已"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "下单"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "\n\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "物流"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "信息"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "：\n\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "承运"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "商"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "："
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "京东"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "物流"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "，"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "运"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "单"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "号"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " F"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "678"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "104"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "970"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "636"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "当前"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "状态"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "："
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "派"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "送"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "中"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "最新"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "节点"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "："
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "上海"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "分"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "拨"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "中心"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "，"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "时间"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "202"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "6"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "09"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "05"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "轨迹"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "："
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "广州"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "集"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "散"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "中心"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " →"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "杭州"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "转运"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "中心"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " →"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": " "
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "上海"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "分"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "拨"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "中心"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "\n\n"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "时间"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "比较"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "："
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "物流"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "最新"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "节点"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "（"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "202"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "6"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "09"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "05"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "）"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "晚"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "于"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "下单"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "时间"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "（"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "202"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "6"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "09"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "-"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "03"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "），"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "即"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "下单"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "后"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "约"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "两天"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "包裹"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "到达"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "上海"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "分"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "拨"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "中心"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "，"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "目前"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "处于"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "派"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "送"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "中"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "。"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "log_turn",
+            "turn_id": "fbeb1d9222d1468aad6d5a2bc3aebf7b"
+          }
+        },
+        {
+          "event": "done",
+          "data": {
+            "session_id": "ch05_20261001_01a-sse-complex",
+            "conversation_id": 32,
+            "resumed": false,
+            "answer": "订单 1001 的信息如下：\n\n- 商品：降噪耳机\n- 下单时间：2026-09-03\n- 实付金额：118 元\n- 订单状态：已下单\n\n物流信息：\n\n- 承运商：京东物流，运单号 F678104970636\n- 当前状态：派送中\n- 最新节点：上海分拨中心，时间 2026-09-05\n- 轨迹：广州集散中心 → 杭州转运中心 → 上海分拨中心\n\n时间比较：物流最新节点（2026-09-05）晚于下单时间（2026-09-03），即下单后约两天包裹到达上海分拨中心，目前处于派送中。",
+            "sources": [],
+            "refused": false,
+            "low_confidence_question_id": null,
+            "intent": "物流",
+            "route": "business",
+            "actions": [],
+            "offer": null,
+            "tool_trace": [
+              {
+                "call_id": "call_00_ieNUEnopftnkbZcpVkN05641",
+                "round": 1,
+                "name": "query_order",
+                "args": {
+                  "order_id": "1001"
+                },
+                "ok": true,
+                "content": "订单 1001:商品「降噪耳机」,下单时间 2026-09-03,实付 118 元,当前状态「已下单」。",
+                "error": null,
+                "elapsed_ms": 0
+              },
+              {
+                "call_id": "call_00_WrxQZSzP51cm1r8w1FTL0676",
+                "round": 2,
+                "name": "query_logistics",
+                "args": {
+                  "order_id": "1001"
+                },
+                "ok": true,
+                "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「派送中」,最新位置 上海分拨中心(2026-09-05)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+                "error": null,
+                "elapsed_ms": 0
+              }
+            ],
+            "node_trace": [
+              "begin_turn",
+              "resolve_reference",
+              "classify_intent",
+              "route_intent",
+              "agent_decide",
+              "execute_tools",
+              "agent_decide",
+              "execute_tools",
+              "agent_decide",
+              "stream_answer",
+              "log_turn"
+            ],
+            "usage": {
+              "input_tokens": 3595,
+              "output_tokens": 292,
+              "estimated": false
+            },
+            "calls": {
+              "classifier": 1,
+              "decision": 3,
+              "answer": 1
+            },
+            "stop_reason": "completed",
+            "ledger_error": null,
+            "finish_reason": "completed"
+          }
+        }
+      ],
+      "actual": {
+        "session_id": "ch05_20261001_01a-sse-complex",
+        "conversation_id": 32,
+        "resumed": false,
+        "answer": "订单 1001 的信息如下：\n\n- 商品：降噪耳机\n- 下单时间：2026-09-03\n- 实付金额：118 元\n- 订单状态：已下单\n\n物流信息：\n\n- 承运商：京东物流，运单号 F678104970636\n- 当前状态：派送中\n- 最新节点：上海分拨中心，时间 2026-09-05\n- 轨迹：广州集散中心 → 杭州转运中心 → 上海分拨中心\n\n时间比较：物流最新节点（2026-09-05）晚于下单时间（2026-09-03），即下单后约两天包裹到达上海分拨中心，目前处于派送中。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "物流",
+        "route": "business",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "call_00_ieNUEnopftnkbZcpVkN05641",
+            "round": 1,
+            "name": "query_order",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001:商品「降噪耳机」,下单时间 2026-09-03,实付 118 元,当前状态「已下单」。",
+            "error": null,
+            "elapsed_ms": 0
+          },
+          {
+            "call_id": "call_00_WrxQZSzP51cm1r8w1FTL0676",
+            "round": 2,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「派送中」,最新位置 上海分拨中心(2026-09-05)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "resolve_reference",
+          "classify_intent",
+          "route_intent",
+          "agent_decide",
+          "execute_tools",
+          "agent_decide",
+          "execute_tools",
+          "agent_decide",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 3595,
+          "output_tokens": 292,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 3,
+          "answer": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "finish_reason": "completed"
+      },
+      "failures": [],
+      "passed": true
+    },
+    {
+      "id": "weak",
+      "mode": "sse",
+      "question": "今天店里新增的外星球旅行险承保条款是什么？",
+      "expected": {
+        "route": "knowledge",
+        "nodes": [
+          "retrieve_knowledge",
+          "confidence_gate",
+          "fallback"
+        ],
+        "refused": true,
+        "agent_calls": 0,
+        "forbidden_nodes": [
+          "decide_agent",
+          "stream_answer"
+        ]
+      },
+      "request": {
+        "message": "今天店里新增的外星球旅行险承保条款是什么？",
+        "session_id": "ch05_20261001_01a-sse-weak",
+        "user_id": "ch05_20261001_01a"
+      },
+      "raw": "event: session\ndata: {\"session_id\": \"ch05_20261001_01a-sse-weak\", \"conversation_id\": 33, \"resumed\": false}\n\nevent: node\ndata: {\"name\": \"begin_turn\", \"turn_id\": \"54b6efd820b4452e98f21f7671281a45\"}\n\nevent: node\ndata: {\"name\": \"resolve_reference\", \"turn_id\": \"54b6efd820b4452e98f21f7671281a45\"}\n\nevent: node\ndata: {\"name\": \"classify_intent\", \"turn_id\": \"54b6efd820b4452e98f21f7671281a45\"}\n\nevent: node\ndata: {\"name\": \"route_intent\", \"turn_id\": \"54b6efd820b4452e98f21f7671281a45\"}\n\nevent: node\ndata: {\"name\": \"retrieve_knowledge\", \"turn_id\": \"54b6efd820b4452e98f21f7671281a45\"}\n\nevent: node\ndata: {\"name\": \"confidence_gate\", \"turn_id\": \"54b6efd820b4452e98f21f7671281a45\"}\n\nevent: node\ndata: {\"name\": \"fallback_reply\", \"turn_id\": \"54b6efd820b4452e98f21f7671281a45\"}\n\nevent: sources\ndata: {\"sources\": [], \"refused\": true, \"low_confidence_question_id\": \"11\"}\n\nevent: token\ndata: {\"text\": \"\\u76ee\\u524d\\u77e5\\u8bc6\\u5e93\\u6ca1\\u6709\\u8db3\\u591f\\u53ef\\u9760\\u7684\\u4f9d\\u636e\\u56de\\u7b54\\u8fd9\\u4e2a\\u95ee\\u9898\\uff0c\\u6211\\u65e0\\u6cd5\\u786e\\u8ba4\\u3002\\u8bf7\\u8865\\u5145\\u5177\\u4f53\\u4fe1\\u606f\\u6216\\u8054\\u7cfb\\u4eba\\u5de5\\u5ba2\\u670d\\u6838\\u5b9e\\u3002\"}\n\nevent: node\ndata: {\"name\": \"log_turn\", \"turn_id\": \"54b6efd820b4452e98f21f7671281a45\"}\n\nevent: done\ndata: {\"session_id\": \"ch05_20261001_01a-sse-weak\", \"conversation_id\": 33, \"resumed\": false, \"answer\": \"\\u76ee\\u524d\\u77e5\\u8bc6\\u5e93\\u6ca1\\u6709\\u8db3\\u591f\\u53ef\\u9760\\u7684\\u4f9d\\u636e\\u56de\\u7b54\\u8fd9\\u4e2a\\u95ee\\u9898\\uff0c\\u6211\\u65e0\\u6cd5\\u786e\\u8ba4\\u3002\\u8bf7\\u8865\\u5145\\u5177\\u4f53\\u4fe1\\u606f\\u6216\\u8054\\u7cfb\\u4eba\\u5de5\\u5ba2\\u670d\\u6838\\u5b9e\\u3002\", \"sources\": [], \"refused\": true, \"low_confidence_question_id\": \"11\", \"intent\": \"\\u5546\\u54c1\\u54a8\\u8be2\", \"route\": \"knowledge\", \"actions\": [], \"offer\": null, \"tool_trace\": [], \"node_trace\": [\"begin_turn\", \"resolve_reference\", \"classify_intent\", \"route_intent\", \"retrieve_knowledge\", \"confidence_gate\", \"fallback_reply\", \"log_turn\"], \"usage\": {\"input_tokens\": 220, \"output_tokens\": 7, \"estimated\": false}, \"calls\": {\"classifier\": 1, \"decision\": 0, \"answer\": 0}, \"stop_reason\": \"weak_evidence\", \"ledger_error\": null, \"finish_reason\": \"weak_evidence\"}\n\n",
+      "frames": [
+        {
+          "event": "session",
+          "data": {
+            "session_id": "ch05_20261001_01a-sse-weak",
+            "conversation_id": 33,
+            "resumed": false
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "begin_turn",
+            "turn_id": "54b6efd820b4452e98f21f7671281a45"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "resolve_reference",
+            "turn_id": "54b6efd820b4452e98f21f7671281a45"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "classify_intent",
+            "turn_id": "54b6efd820b4452e98f21f7671281a45"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "route_intent",
+            "turn_id": "54b6efd820b4452e98f21f7671281a45"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "retrieve_knowledge",
+            "turn_id": "54b6efd820b4452e98f21f7671281a45"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "confidence_gate",
+            "turn_id": "54b6efd820b4452e98f21f7671281a45"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "fallback_reply",
+            "turn_id": "54b6efd820b4452e98f21f7671281a45"
+          }
+        },
+        {
+          "event": "sources",
+          "data": {
+            "sources": [],
+            "refused": true,
+            "low_confidence_question_id": "11"
+          }
+        },
+        {
+          "event": "token",
+          "data": {
+            "text": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。"
+          }
+        },
+        {
+          "event": "node",
+          "data": {
+            "name": "log_turn",
+            "turn_id": "54b6efd820b4452e98f21f7671281a45"
+          }
+        },
+        {
+          "event": "done",
+          "data": {
+            "session_id": "ch05_20261001_01a-sse-weak",
+            "conversation_id": 33,
+            "resumed": false,
+            "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。",
+            "sources": [],
+            "refused": true,
+            "low_confidence_question_id": "11",
+            "intent": "商品咨询",
+            "route": "knowledge",
+            "actions": [],
+            "offer": null,
+            "tool_trace": [],
+            "node_trace": [
+              "begin_turn",
+              "resolve_reference",
+              "classify_intent",
+              "route_intent",
+              "retrieve_knowledge",
+              "confidence_gate",
+              "fallback_reply",
+              "log_turn"
+            ],
+            "usage": {
+              "input_tokens": 220,
+              "output_tokens": 7,
+              "estimated": false
+            },
+            "calls": {
+              "classifier": 1,
+              "decision": 0,
+              "answer": 0
+            },
+            "stop_reason": "weak_evidence",
+            "ledger_error": null,
+            "finish_reason": "weak_evidence"
+          }
+        }
+      ],
+      "actual": {
+        "session_id": "ch05_20261001_01a-sse-weak",
+        "conversation_id": 33,
+        "resumed": false,
+        "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。",
+        "sources": [],
+        "refused": true,
+        "low_confidence_question_id": "11",
+        "intent": "商品咨询",
+        "route": "knowledge",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "resolve_reference",
+          "classify_intent",
+          "route_intent",
+          "retrieve_knowledge",
+          "confidence_gate",
+          "fallback_reply",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 220,
+          "output_tokens": 7,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0
+        },
+        "stop_reason": "weak_evidence",
+        "ledger_error": null,
+        "finish_reason": "weak_evidence"
+      },
+      "failures": [
+        "required ordered node missing: fallback"
+      ],
+      "pool": {
+        "id": "11",
+        "question": "今天店里新增的外星球旅行险承保条款是什么？",
+        "stage": "retrieval",
+        "entry_point": "chat_stream",
+        "reason": "检索证据低于校准阈值"
+      },
+      "passed": false
+    },
+    {
+      "id": "no-automatic-ticket",
+      "actual": {
+        "tickets_before": 2,
+        "tickets_after": 2
+      },
+      "expected": {
+        "ticket_delta": 0
+      },
+      "failures": [
+        "incomplete dialogue cases cannot prove safe suggestion rendering"
+      ],
+      "passed": false
+    },
+    {
+      "id": "explicit-ticket",
+      "expected": {
+        "ticket_delta": 1
+      },
+      "request": {
+        "session_id": "ch05_20261001_01a-json-complaint",
+        "user_id": "ch05_20261001_01a",
+        "offer_id": "7f2f589c749f448581810d94d2b6e138",
+        "confirmed": true,
+        "description": "ch05_20261001_01a HTTP验收测试工单，请忽略。",
+        "ticket_type": "投诉"
+      },
+      "cancel_status": 422,
+      "receipt": {
+        "ticket_no": "T20261001002",
+        "ticket_type": "投诉",
+        "replayed": false
+      },
+      "replay": {
+        "ticket_no": "T20261001002",
+        "ticket_type": "投诉",
+        "replayed": true
+      },
+      "actual": {
+        "tickets_before": 2,
+        "tickets_after": 3
+      },
+      "failures": [],
+      "passed": true
+    }
+  ]
+}
