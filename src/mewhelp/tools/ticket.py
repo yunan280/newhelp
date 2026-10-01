@@ -1,4 +1,4 @@
-"""create_ticket —— 真写 tickets 表,并把会话置「已转人工」。
+"""create_ticket —— 真写 tickets 表，建单与转人工相互独立。
 
 这是五个工具里唯一的**写**操作,所以它是全章唯一一个 retryable=False 的工具。
 """
@@ -11,8 +11,8 @@ from langchain_core.tools import BaseTool, tool
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from mewhelp.db.models import ConvStatus, TicketType
-from mewhelp.db.repository import insert_ticket, next_ticket_no, set_conversation_status
+from mewhelp.db.models import TicketType
+from mewhelp.db.repository import find_ticket_by_request_id, insert_ticket, next_ticket_no
 
 from .business import build_business_tools
 from .knowledge import build_knowledge_tools
@@ -26,13 +26,12 @@ from .registry import ToolRegistry, ToolSpec
 _MAX_TICKET_NO_ATTEMPTS = 5
 
 _TICKET_TEMPLATE = (
-    "已为用户创建工单,工单号 {ticket_no},类型「{ticket_type}」。"
-    "已同步转交人工客服,请告知用户凭此工单号跟进。"
+    "已为用户创建工单,工单号 {ticket_no},类型「{ticket_type}」。请告知用户凭此工单号跟进。"
 )
 
 
 def build_ticket_tools(
-    session_factory: Callable[[], Session], conversation_id: int
+    session_factory: Callable[[], Session], conversation_id: int, *, request_id: str | None = None
 ) -> list[BaseTool]:
     """返回建单工具。
 
@@ -48,11 +47,29 @@ def build_ticket_tools(
     ) -> str:
         """为用户创建人工工单。description 是问题描述,ticket_type 只能是售后/投诉/咨询。
 
-        用户明确要求转人工、或描述的是需要人工处理的投诉与售后问题时使用。
+        仅用于用户明确确认创建工单；不会转人工或修改会话状态。
         """
         last_error: Exception | None = None
+
+        def existing_receipt(session):
+            existing = (
+                find_ticket_by_request_id(session, request_id=request_id) if request_id else None
+            )
+            if existing is None:
+                return None
+            if (
+                existing.conversation_id != conversation_id
+                or existing.description != description
+                or existing.ticket_type.value != ticket_type
+            ):
+                raise ValueError("ticket request_id conflicts with existing parameters")
+            return _TICKET_TEMPLATE.format(ticket_no=existing.ticket_no, ticket_type=ticket_type)
+
         for _ in range(_MAX_TICKET_NO_ATTEMPTS):
             with session_factory() as session:
+                receipt = existing_receipt(session)
+                if receipt:
+                    return receipt
                 try:
                     ticket_no = next_ticket_no(session, day=dt.date.today())  # noqa: DTZ011 — 工单编号沿用本地日期
                     insert_ticket(
@@ -61,9 +78,7 @@ def build_ticket_tools(
                         description=description,
                         ticket_type=TicketType(ticket_type),
                         ticket_no=ticket_no,
-                    )
-                    set_conversation_status(
-                        session, conversation_id=conversation_id, status=ConvStatus.human
+                        request_id=request_id,
                     )
                     session.commit()
                 except IntegrityError as exc:
@@ -75,6 +90,9 @@ def build_ticket_tools(
                     # 代码不该依赖 close() 的隐式行为,哪天有人把 Session 提到循环外
                     # 复用,少这一句就会撞上那个已经失败的事务。
                     session.rollback()
+                    receipt = existing_receipt(session)
+                    if receipt:
+                        return receipt
                     last_error = exc
                     continue
             return _TICKET_TEMPLATE.format(ticket_no=ticket_no, ticket_type=ticket_type)
@@ -99,15 +117,15 @@ def build_registry(
     多个 tool_calls 经 asyncio.gather 并发时,共用一个 Session 会踩线程安全问题 ——
     每个工具调用自己开一个,正是 spec §11「每调用独立 session」的意思。
     """
-    specs: dict[str, ToolSpec] = {
-        t.name: ToolSpec(tool=t) for t in build_business_tools()
-    }
+    specs: dict[str, ToolSpec] = {t.name: ToolSpec(tool=t) for t in build_business_tools()}
     # BGE-M3 冷加载在 Docker 同时启动时曾耗时 58.6 秒。线程里的超时调用
     # 不会被 wait_for 取消，因此 FAQ 只执行一次并留出冷启动余量。
-    specs.update({
-        t.name: ToolSpec(tool=t, retryable=False, timeout_seconds=120.0)
-        for t in build_knowledge_tools(session_factory, **knowledge_dependencies)
-    })
+    specs.update(
+        {
+            t.name: ToolSpec(tool=t, retryable=False, timeout_seconds=120.0)
+            for t in build_knowledge_tools(session_factory, **knowledge_dependencies)
+        }
+    )
     for t in build_ticket_tools(session_factory, conversation_id):
         # 唯一的写操作:不重试,避免重复建单。
         specs[t.name] = ToolSpec(tool=t, retryable=False)

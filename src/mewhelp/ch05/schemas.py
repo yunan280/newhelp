@@ -1,7 +1,8 @@
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from mewhelp.ch01.api import _reject_blank
 from mewhelp.ch02.schemas import AgentRequest
 from mewhelp.knowledge.answering import SourceDTO
 
@@ -61,3 +62,34 @@ class TurnResult(StrictDTO):
     calls: dict[str, int]
     stop_reason: str
     ledger_error: str | None = None
+
+
+class TicketRequest(StrictDTO):
+    session_id: str = Field(min_length=1, max_length=64)
+    user_id: str | None = Field(default=None, min_length=1, max_length=64)
+    offer_id: str = Field(min_length=1, max_length=64)
+    confirmed: Literal[True]
+    description: str = Field(min_length=1, max_length=2000)
+    ticket_type: TicketKind
+
+    @field_validator("confirmed", mode="before")
+    @classmethod
+    def explicit_true(cls, value):
+        if value is not True:
+            raise ValueError("explicit boolean confirmation required")
+        return value
+
+    @field_validator("session_id", "user_id", "offer_id", "description")
+    @classmethod
+    def nonblank(cls, value):
+        return _reject_blank(value, "ticket field")
+
+    @property
+    def resolved_user_id(self):
+        return self.user_id or "demo-user"
+
+
+class TicketReceipt(StrictDTO):
+    ticket_no: str
+    ticket_type: TicketKind
+    replayed: bool

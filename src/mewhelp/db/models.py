@@ -166,11 +166,13 @@ class Ticket(Base):
         # (测试不依赖任何索引),而 MySQL 方言下编译出的语句与 DDL 逐字一致。
         # Index 对象本身仍留在 table.indexes 里,所以漂移测试照样能断言这个名字。
         Index("idx_conversation_id", "conversation_id").ddl_if(dialect="mysql"),
+        Index("uk_tickets_request_id", "request_id", unique=True),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
     )
 
     # 工单号即主键,不是自增代理键 —— 业务上一个工单就该有一个人给的号。
     ticket_no: Mapped[str] = mapped_column(String(32), primary_key=True)
+    request_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     conversation_id: Mapped[int] = mapped_column(
         BIGINT_PK,
         ForeignKey("conversations.id", name="fk_tickets_conversation"),

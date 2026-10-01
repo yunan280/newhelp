@@ -1,0 +1,22 @@
+{
+  "backup_path": "C:\\Users\\27497\\projects\\mewhelp-wt\\ch02-tools\\data\\ch05\\backups\\before-ch05-20261001T063028Z.sql",
+  "backup_bytes": 96459,
+  "backup_sha256": "5872693daa2a641787350bcb7a1669660bd2adc899777b32e5e2d45c84fbbd84",
+  "before": {
+    "tickets": 1,
+    "conversations": 18,
+    "statuses_sha256": "d1e81ff31ade9d8c244a58ed5dfbdc632b97843d260cab042db41bc496a7ca24"
+  },
+  "after_first": {
+    "tickets": 1,
+    "conversations": 18,
+    "statuses_sha256": "d1e81ff31ade9d8c244a58ed5dfbdc632b97843d260cab042db41bc496a7ca24"
+  },
+  "after_second": {
+    "tickets": 1,
+    "conversations": 18,
+    "statuses_sha256": "d1e81ff31ade9d8c244a58ed5dfbdc632b97843d260cab042db41bc496a7ca24"
+  },
+  "request_id": "VARCHAR(64)",
+  "passed": true
+}

@@ -84,9 +84,7 @@ def get_or_create_conversation(
     return conv, True
 
 
-def set_conversation_status(
-    session: Session, *, conversation_id: int, status: ConvStatus
-) -> None:
+def set_conversation_status(session: Session, *, conversation_id: int, status: ConvStatus) -> None:
     """转人工 / 结束会话。整行 UPDATE,不经过 ORM 的对象状态。"""
     (
         session.query(Conversation)
@@ -98,9 +96,7 @@ def set_conversation_status(
 # ---------- 消息 ----------
 
 
-def append_messages(
-    session: Session, *, conversation_id: int, rows: list[TurnMessage]
-) -> None:
+def append_messages(session: Session, *, conversation_id: int, rows: list[TurnMessage]) -> None:
     """把一回合的消息按给定顺序追加进去。空列表是合法的(纯工具调用失败的兜底)。"""
     for row in rows:
         session.add(
@@ -138,9 +134,7 @@ def load_replay_messages(session: Session, *, conversation_id: int) -> list[Mess
     keep: list[Message] = []
     for row in rows:
         if row.role is MsgRole.user or (
-            row.role is MsgRole.assistant
-            and row.tool_calls is None
-            and (row.content or "").strip()
+            row.role is MsgRole.assistant and row.tool_calls is None and (row.content or "").strip()
         ):
             keep.append(row)
     return keep
@@ -199,6 +193,7 @@ def insert_ticket(
     description: str,
     ticket_type: TicketType,
     ticket_no: str,
+    request_id: str | None = None,
 ) -> None:
     """建工单。`status` 不显式给 —— 走 DDL 的 `DEFAULT '待处理'`。
 
@@ -208,8 +203,13 @@ def insert_ticket(
     session.add(
         Ticket(
             ticket_no=ticket_no,
+            request_id=request_id,
             conversation_id=conversation_id,
             description=description,
             ticket_type=ticket_type,
         )
     )
+
+
+def find_ticket_by_request_id(session: Session, *, request_id: str) -> Ticket | None:
+    return session.query(Ticket).filter(Ticket.request_id == request_id).one_or_none()

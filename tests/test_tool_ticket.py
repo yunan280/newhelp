@@ -54,13 +54,15 @@ async def test_ticket_no_follows_the_documented_format(create_ticket, session_fa
     assert len(ticket_no) == len("T20260928001")
 
 
-async def test_moves_the_conversation_to_human(create_ticket, session_factory):
-    """一个工单被建出来,却没有任何地方记得"这个会话交给人工了",那个字段就是装饰。"""
-    await create_ticket.ainvoke({"description": "要投诉", "ticket_type": "投诉"})
+async def test_ticket_creation_preserves_conversation_status(create_ticket, session_factory):
+    """建单和转人工是独立动作；工具不能暗中修改会话状态。"""
+    out = await create_ticket.ainvoke({"description": "要投诉", "ticket_type": "投诉"})
 
     with session_factory() as s:
         conv = s.scalars(select(Conversation)).one()
-    assert conv.status is ConvStatus.human
+        assert len(s.scalars(select(Ticket)).all()) == 1
+    assert conv.status is ConvStatus.ongoing
+    assert "已同步转交人工" not in out
 
 
 @pytest.mark.parametrize("ticket_type", ["售后", "投诉", "咨询"])
@@ -127,10 +129,22 @@ async def test_gives_up_gracefully_and_rolls_back_when_the_number_keeps_collidin
     today = dt.date.today()  # noqa: DTZ011 — 与工单编号的本地日期一致
     stamp = f"T{today:%Y%m%d}"
     with session_factory() as s:
-        s.add(Ticket(ticket_no=f"{stamp}001", conversation_id=1,
-                     description="占位", ticket_type=TicketType.consult))
-        s.add(Ticket(ticket_no=f"{stamp}003", conversation_id=1,
-                     description="占位", ticket_type=TicketType.consult))
+        s.add(
+            Ticket(
+                ticket_no=f"{stamp}001",
+                conversation_id=1,
+                description="占位",
+                ticket_type=TicketType.consult,
+            )
+        )
+        s.add(
+            Ticket(
+                ticket_no=f"{stamp}003",
+                conversation_id=1,
+                description="占位",
+                ticket_type=TicketType.consult,
+            )
+        )
         s.commit()
 
     tool = build_ticket_tools(session_factory, conversation_id=1)[0]

@@ -43,6 +43,7 @@ CREATE TABLE faq (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='常见问答';
 
 CREATE TABLE tickets (
+  request_id      VARCHAR(64)     NULL                    COMMENT 'Ch05 confirmed offer idempotency key',
   ticket_no       VARCHAR(32)     NOT NULL                COMMENT '工单号,如 T20260701008',
   conversation_id BIGINT UNSIGNED NOT NULL                COMMENT '关联会话,可倒查当时聊了什么',
   description     TEXT            NOT NULL                COMMENT '问题描述',
@@ -50,6 +51,7 @@ CREATE TABLE tickets (
   status          ENUM('待处理','已处理') NOT NULL DEFAULT '待处理' COMMENT '处理状态',
   created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (ticket_no),
+  UNIQUE KEY uk_tickets_request_id (request_id),
   KEY idx_conversation_id (conversation_id),
   CONSTRAINT fk_tickets_conversation FOREIGN KEY (conversation_id) REFERENCES conversations (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='人工工单';

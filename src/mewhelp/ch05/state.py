@@ -31,6 +31,7 @@ class WorkflowState(TypedDict, total=False):
     answer: str
     actions: list[str]
     offers: dict[str, dict]
+    ticket_receipts: dict[str, dict]
     node_trace: list[str]
     stop_reason: str
     ledger_error: str | None

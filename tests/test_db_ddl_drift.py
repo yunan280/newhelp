@@ -85,7 +85,7 @@ def test_foreign_keys_are_named(ddl_text, compiled):
     [
         pytest.param("conversations", {"idx_user_id"}, id="conversations"),
         pytest.param("messages", {"idx_conversation_id"}, id="messages"),
-        pytest.param("tickets", {"idx_conversation_id"}, id="tickets"),
+        pytest.param("tickets", {"idx_conversation_id", "uk_tickets_request_id"}, id="tickets"),
         pytest.param("faq", {"idx_category"}, id="faq"),
     ],
 )
