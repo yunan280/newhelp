@@ -1,5 +1,6 @@
 """FastAPI 应用入口。"""
 
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -8,15 +9,32 @@ from fastapi.staticfiles import StaticFiles
 
 from mewhelp.ch01.api import router as ch01_router
 from mewhelp.ch02.api import router as ch02_router
+from mewhelp.ch05.api import router as ch05_router
+from mewhelp.ch05.config import Ch05Settings
+from mewhelp.ch05.runtime import open_runtime
 from mewhelp.knowledge.api import RuntimeDep
 from mewhelp.knowledge.api import router as kb_router
 from mewhelp.knowledge.sources import read_published_chunk
 
 STATIC_DIR = Path(__file__).parent / "static"
 
-app = FastAPI(title="MewHelp", version="0.1.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    from mewhelp.db.engine import SessionLocal
+
+    async with open_runtime(SessionLocal, settings=Ch05Settings()) as runtime:
+        app.state.ch05_runtime = runtime
+        try:
+            yield
+        finally:
+            del app.state.ch05_runtime
+
+
+app = FastAPI(title="MewHelp", version="0.1.0", lifespan=lifespan)
 app.include_router(ch01_router)
 app.include_router(ch02_router)
+app.include_router(ch05_router)
 app.include_router(kb_router)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 

@@ -1,0 +1,76 @@
+{
+  "checkpointer": "AsyncSqliteSaver",
+  "checkpoint_path": "C:\\Users\\27497\\projects\\mewhelp-wt\\ch02-tools\\data\\ch05\\task5-cbd1200bcc5145f686abab7322566057-checkpoint.sqlite3",
+  "first": {
+    "session_id": "task5-cbd1200bcc5145f686abab7322566057",
+    "conversation_id": 1,
+    "resumed": false,
+    "answer": "您好，我是客服小猫，可以帮您查询商品、订单、物流或售后问题。",
+    "sources": [],
+    "refused": false,
+    "low_confidence_question_id": null,
+    "intent": "闲聊",
+    "route": "chitchat",
+    "actions": [],
+    "offer": null,
+    "tool_trace": [],
+    "node_trace": [
+      "begin_turn",
+      "resolve_reference",
+      "classify_intent",
+      "route_intent",
+      "chitchat_reply",
+      "log_turn"
+    ],
+    "usage": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "estimated": false
+    },
+    "calls": {
+      "classifier": 0,
+      "decision": 0,
+      "answer": 0
+    },
+    "stop_reason": "completed",
+    "ledger_error": null
+  },
+  "after_close_reopen": {
+    "session_id": "task5-cbd1200bcc5145f686abab7322566057",
+    "conversation_id": 1,
+    "resumed": true,
+    "answer": "您好，我是客服小猫，可以帮您查询商品、订单、物流或售后问题。",
+    "sources": [],
+    "refused": false,
+    "low_confidence_question_id": null,
+    "intent": "闲聊",
+    "route": "chitchat",
+    "actions": [],
+    "offer": null,
+    "tool_trace": [],
+    "node_trace": [
+      "begin_turn",
+      "resolve_reference",
+      "classify_intent",
+      "route_intent",
+      "chitchat_reply",
+      "log_turn"
+    ],
+    "usage": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "estimated": false
+    },
+    "calls": {
+      "classifier": 0,
+      "decision": 0,
+      "answer": 0
+    },
+    "stop_reason": "completed",
+    "ledger_error": null
+  },
+  "completed_history_count": 4,
+  "other_session_state": {},
+  "passed": true,
+  "provider_calls": 0
+}
