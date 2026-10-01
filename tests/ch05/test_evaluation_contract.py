@@ -35,3 +35,16 @@ async def test_evaluator_fails_on_bad_label_or_provider_error(tmp_path, raise_er
     assert (
         await evaluate_prompts(data, tmp_path / "results", part="intents", classifier=classify) == 1
     )
+
+
+def test_decision_evaluator_rejects_wrong_actions_and_missing_clarification():
+    from mewhelp.ch05 import evaluation
+
+    assert hasattr(evaluation, "check_decision"), "decision validator missing"
+    assert evaluation.check_decision(
+        {"reply_mode": "answer", "actions": ["handoff"]}, {"reply_mode": "clarify", "actions": []}
+    )
+    assert evaluation.check_decision(
+        {"reply_mode": "answer", "actions": ["create_ticket"]},
+        {"reply_mode": "answer", "actions": ["handoff"]},
+    )
