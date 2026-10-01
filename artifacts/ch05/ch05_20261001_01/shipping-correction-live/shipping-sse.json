@@ -1,0 +1,155 @@
+{
+  "case": "shipping-sse",
+  "question": "邮费是多少",
+  "result": {
+    "session_id": "shipping-fix-957018d4-shipping-sse",
+    "conversation_id": 75,
+    "resumed": false,
+    "answer": "单笔订单实付金额满 99 元包邮；不满 99 元按收货地收取 8 元起的配送费用。[1][2][3]",
+    "sources": [
+      {
+        "number": 1,
+        "chunk_id": "6152855534092243207",
+        "questions": "邮费是多少",
+        "answer": "单笔满 99 元包邮，不满 99 元按收货地收 8 元起。",
+        "section_path": "faq / 客服对话 / 邮费是多少",
+        "category": "客服对话",
+        "product_category": null,
+        "content_hash": "ab0928ae18680f7e1308b9b68fa17bea92b8fca8d7ab2c87700f981b3bd20212",
+        "source_url": "/kb/source/6152855534092243207"
+      },
+      {
+        "number": 2,
+        "chunk_id": "413379535984543497",
+        "questions": "运费怎么计算",
+        "answer": "单笔满 99 元包邮;不满 99 元按收货地收取 8 元起。",
+        "section_path": "faq / 物流 / 运费怎么计算",
+        "category": "物流",
+        "product_category": null,
+        "content_hash": "3223e6c4c8e6322603bc9b30bc86979b9753ff842dbd374c9005235109ffddf8",
+        "source_url": "/kb/source/413379535984543497"
+      },
+      {
+        "number": 3,
+        "chunk_id": "2914662982578110438",
+        "questions": "运费说明",
+        "answer": "单笔订单实付金额满 99 元包邮。不满 99 元按收货地收取 8 元起的配送费用。",
+        "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 运费说明",
+        "category": "配送政策",
+        "product_category": null,
+        "content_hash": "920ea01e4638b5a45fbf09e99db4ef69f162c92ef68313657e42e426a7f8d7ec",
+        "source_url": "/kb/source/2914662982578110438"
+      },
+      {
+        "number": 4,
+        "chunk_id": "1226219123062692033",
+        "questions": "发票怎么开",
+        "answer": "下单时勾选「开具发票」并填抬头,随货寄出或开电子票。",
+        "section_path": "faq / 发票 / 发票怎么开",
+        "category": "发票",
+        "product_category": null,
+        "content_hash": "6a4260f683e43711dbd244d9acec0a89127fbe731a5a128a59caa6eb75dbf2aa",
+        "source_url": "/kb/source/1226219123062692033"
+      },
+      {
+        "number": 5,
+        "chunk_id": "4540701506657945309",
+        "questions": "多久能发货",
+        "answer": "现货商品在付款后 48 小时内发出,预售商品以商品页标注为准。",
+        "section_path": "faq / 物流 / 多久能发货",
+        "category": "物流",
+        "product_category": null,
+        "content_hash": "8dbed27561765287441129484c9f9a51f84e770179a934ecbc2b3271ecb83e6d",
+        "source_url": "/kb/source/4540701506657945309"
+      },
+      {
+        "number": 6,
+        "chunk_id": "3320582538884644199",
+        "questions": "发货时效",
+        "answer": "现货商品在付款后 48 小时内发出。预售商品以商品页标注为准。",
+        "section_path": "corpus:9ac8a57a485dbcc7/shipping-policy.md::配送政策 / 发货时效",
+        "category": "配送政策",
+        "product_category": null,
+        "content_hash": "f5c766355d5119c4ab4e737a4549a7d33a8ea995bd57ce97398da70965b96c26",
+        "source_url": "/kb/source/3320582538884644199"
+      },
+      {
+        "number": 7,
+        "chunk_id": "7122701754840041692",
+        "questions": "退货政策是什么",
+        "answer": "签收后 7 天内,商品不影响二次销售可无理由退货。",
+        "section_path": "faq / 退换货 / 退货政策是什么",
+        "category": "退换货",
+        "product_category": null,
+        "content_hash": "d707e1c16d5923f85fd08487580336b890e0cd0e7bd7a6db5ee55fc15794c33e",
+        "source_url": "/kb/source/7122701754840041692"
+      },
+      {
+        "number": 8,
+        "chunk_id": "1709950930094883706",
+        "questions": "你能干啥",
+        "answer": "可以查订单状态、物流进度、商品价格库存，以及退换货、发票这类售后问题，也可以帮忙转人工或建工单。",
+        "section_path": "faq / 客服对话 / 你能干啥",
+        "category": "客服对话",
+        "product_category": null,
+        "content_hash": "6fb3c3693355f88864125c85b6dbfbb785561f426acab7aab2bd80d96b733662",
+        "source_url": "/kb/source/1709950930094883706"
+      },
+      {
+        "number": 9,
+        "chunk_id": "9010885927313249829",
+        "questions": "退货政策是什么",
+        "answer": "签收后 7 天内、商品不影响二次销售，可以无理由退货。",
+        "section_path": "faq / 客服对话 / 退货政策是什么",
+        "category": "客服对话",
+        "product_category": null,
+        "content_hash": "2166d6adcd1e80d4321116c985e34cc633c3564484471f50fac2eda018b9150a",
+        "source_url": "/kb/source/9010885927313249829"
+      },
+      {
+        "number": 10,
+        "chunk_id": "8241941662198301528",
+        "questions": "换货怎么申请",
+        "answer": "在订单详情页点「申请换货」,选好规格后寄回即可。",
+        "section_path": "faq / 退换货 / 换货怎么申请",
+        "category": "退换货",
+        "product_category": null,
+        "content_hash": "42766435c18843eefc636689c495bc79c6c1f0debe2eb99bd2bccb18feebdd69",
+        "source_url": "/kb/source/8241941662198301528"
+      }
+    ],
+    "refused": false,
+    "low_confidence_question_id": null,
+    "intent": "商品咨询",
+    "route": "knowledge",
+    "actions": [],
+    "offer": null,
+    "tool_trace": [],
+    "node_trace": [
+      "begin_turn",
+      "resolve_reference",
+      "classify_intent",
+      "route_intent",
+      "retrieve_knowledge",
+      "confidence_gate",
+      "agent_decide",
+      "stream_answer",
+      "log_turn"
+    ],
+    "usage": {
+      "input_tokens": 2096,
+      "output_tokens": 64,
+      "estimated": false
+    },
+    "calls": {
+      "classifier": 1,
+      "decision": 1,
+      "answer": 1
+    },
+    "stop_reason": "completed",
+    "ledger_error": null,
+    "finish_reason": "completed"
+  },
+  "failures": [],
+  "passed": true
+}

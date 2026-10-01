@@ -1,0 +1,26 @@
+{
+  "total": 4,
+  "passed": 4,
+  "cases": [
+    {
+      "case": "shipping-json",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "case": "shipping-sse",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "case": "logistics",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "case": "dependent-tools",
+      "passed": true,
+      "failures": []
+    }
+  ]
+}

@@ -29,6 +29,13 @@ query_logistics，不能把有先后依赖的步骤同轮发出。独立查询�
 suggested_actions 只允许 handoff、create_ticket；ticket_type 为 售后/投诉/咨询或null。
 JSON 是最终回复控制信息，本节点不要输出用户正文或思考过程。"""
 
+CONTROL_REPAIR_SYSTEM = """上一轮控制输出未通过格式校验。本次只纠正回复控制信息，不调用工具。
+只输出完整 JSON 对象，例如：{"reply_mode":"answer","suggested_actions":[],"ticket_type":null}。
+reply_mode 只能是 answer 或 clarify；缺用户信息时选择 clarify，不能假称已查询到新数据。
+suggested_actions 只能包含 handoff、create_ticket，仍需尊重用户对可选项的意愿；
+ticket_type 只能是 售后、投诉、咨询或 null。根据本轮问题和已取得的证据/工具结果判断。
+禁止输出回答正文、代码围栏、思考过程或其他字段。"""
+
 FINAL_SYSTEM = """现在只向用户输出自然中文正文，不输出控制 JSON、工具调用或思考过程。
 按照给定 reply_mode 回答或追问。仅依据已有证据/工具结果，缺数据就说明，不能编造。
 政策引用[编号]；工具事实直接表述。严禁保证具体退款到账/送达日期/审核结果。

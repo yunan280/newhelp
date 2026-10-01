@@ -15,6 +15,33 @@ def service():
     return service
 
 
+async def test_plaintext_decision_completes_safely_and_next_turn_can_continue(
+    workflow_runtime, model_factory, session_factory
+):
+    model_factory.decisions = [AIMessage(content="邮费规则如下：满99元包邮。") for _ in range(2)]
+    request = TurnRequest(message="邮费是多少", session_id="invalid-control")
+    events = [
+        e async for e in service().stream_turn(workflow_runtime, request, entry_point="chat_stream")
+    ]
+    done = events[-1]["data"]
+    assert events[-1]["event"] == "done" and done["stop_reason"] == "invalid_decision"
+    assert done["calls"] == {"classifier": 1, "decision": 2, "answer": 0}
+    assert "stream_answer" not in done["node_trace"] and done["node_trace"][-1] == "log_turn"
+    assert "".join(e["data"]["text"] for e in events if e["event"] == "token") == done["answer"]
+    saved = await workflow_runtime.graph.aget_state(
+        {"configurable": {"thread_id": "invalid-control"}}
+    )
+    assert saved.values["messages"][-1].content == done["answer"]
+    with session_factory() as db:
+        assert db.scalars(select(Ticket)).all() == []
+        answers = db.scalars(select(Message).where(Message.role == MsgRole.assistant)).all()
+        assert answers[-1].content == done["answer"]
+    next_turn = await service().run_turn(
+        workflow_runtime, TurnRequest(message="你好", session_id="invalid-control")
+    )
+    assert next_turn.stop_reason == "completed" and next_turn.actions == []
+
+
 async def test_truncated_answer_stream_checkpoint_and_ledger_agree(
     workflow_runtime, model_factory, session_factory
 ):

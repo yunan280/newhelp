@@ -24,7 +24,13 @@ class Ch05Settings(BaseSettings):
         return AgentLimits(**self.model_dump(exclude={"checkpoint_path"}))
 
 
-def get_ch05_model(output_tokens: int, *, temperature: float = 0.0, streaming: bool = False):
+def get_ch05_model(
+    output_tokens: int,
+    *,
+    temperature: float = 0.0,
+    streaming: bool = False,
+    json_mode: bool = False,
+):
     kwargs = {
         "extra_body": {"max_tokens": output_tokens, "thinking": {"type": "disabled"}},
         "timeout": 30,
@@ -33,4 +39,8 @@ def get_ch05_model(output_tokens: int, *, temperature: float = 0.0, streaming: b
     }
     if streaming:
         kwargs["stream_usage"] = True
+    if json_mode:
+        # Top-level response_format selects SDK auto-parsing, which requires strict tools.
+        # Our OpenAI-compatible provider uses JSON mode with the existing non-strict tools.
+        kwargs["extra_body"]["response_format"] = {"type": "json_object"}
     return get_chat_model(temperature=temperature, **kwargs)

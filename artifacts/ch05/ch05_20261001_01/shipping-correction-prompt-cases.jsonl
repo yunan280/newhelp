@@ -1,0 +1,5 @@
+{"id": "shipping-policy", "question": "邮费是多少", "evidence": "单笔订单实付满99元包邮，不满99元配送费8元起。", "observations": [], "expected": {"reply_mode": "answer", "actions": []}}
+{"id": "missing-id", "question": "查一下我的物流", "expected": {"reply_mode": "clarify", "actions": []}, "observations": []}
+{"id": "handoff-only", "question": "查询失败了，请帮我转人工，不要建工单", "expected": {"reply_mode": "answer", "actions": ["handoff"]}, "observations": [{"name": "query_order", "args": {"order_id": "1001"}, "content": "查询失败，服务暂不可用"}]}
+{"id": "ticket-only", "question": "售后查不到，请给我建工单选项，不要转人工", "expected": {"reply_mode": "answer", "actions": ["create_ticket"]}, "observations": []}
+{"id": "both-actions", "question": "售后工具不能处理，请给我转人工和建工单两种选项", "expected": {"reply_mode": "answer", "actions": ["handoff", "create_ticket"]}, "observations": []}

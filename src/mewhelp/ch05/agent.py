@@ -2,9 +2,11 @@
 
 import asyncio
 import json
+import logging
 import time
 
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
+from pydantic import ValidationError
 
 from mewhelp.config import HISTORY_TOKEN_BUDGET
 from mewhelp.memory import trim_history
@@ -20,8 +22,10 @@ from .limits import (
     observed_usage,
     reserve_call,
 )
-from .prompts import AGENT_SYSTEM, FINAL_SYSTEM
+from .prompts import AGENT_SYSTEM, CONTROL_REPAIR_SYSTEM, FINAL_SYSTEM
 from .schemas import AgentDecision
+
+logger = logging.getLogger(__name__)
 
 
 def build_read_registry() -> ToolRegistry:
@@ -65,6 +69,17 @@ def stopped(reason: str) -> dict:
         "answer": BOUNDED_REPLY,
         "actions": ["handoff"],
         "pending_tool_calls": [],
+    }
+
+
+def invalid_control(update: dict, messages: list) -> dict:
+    logger.warning("Ch05 invalid Agent correction; using fixed reply")
+    return {
+        **update,
+        **stopped("invalid_decision"),
+        "agent_messages": messages,
+        "decision": None,
+        "answer": "抱歉，这次未能完成处理，请重试或选择转人工。",
     }
 
 
@@ -117,7 +132,49 @@ async def decide_agent(state, context) -> dict:
         if len(set(keys)) != len(keys) or any(k in previous for k in keys):
             return {**update, **stopped("no_progress")}
         return {**update, "agent_messages": [*messages, response], "pending_tool_calls": tool_calls}
-    decision = AgentDecision.model_validate_json(response.content)
+    try:
+        decision = AgentDecision.model_validate_json(response.content)
+    except (ValidationError, TypeError):
+        logger.warning("Ch05 invalid Agent decision; attempting one control correction")
+        if remaining(state, context) <= 0:
+            return {**update, **stopped("deadline")}
+        if count >= limits.max_decisions:
+            return {**update, **stopped("decision_limit")}
+        repair_messages = [*messages, SystemMessage(content=CONTROL_REPAIR_SYSTEM)]
+        repair_bound = input_bound(repair_messages)
+        try:
+            reserve_call(
+                usage.total,
+                repair_bound,
+                limits.decision_max_tokens,
+                input_bound(final_messages(state)) + limits.final_max_tokens,
+                limits,
+            )
+        except BudgetExceeded:
+            return {**update, **stopped("token_budget")}
+        repair_model = context.model_factory(limits.decision_max_tokens, json_mode=True)
+        repaired = await asyncio.wait_for(
+            repair_model.ainvoke(repair_messages),
+            min(limits.request_seconds, remaining(state, context)),
+        )
+        usage = usage.plus(
+            observed_usage(
+                repaired.usage_metadata,
+                input_bound=repair_bound,
+                output=json.dumps(repaired.model_dump(), ensure_ascii=False, default=str),
+            )
+        )
+        update = {
+            "decision_count": count + 1,
+            "calls": {**calls, "decision": calls["decision"] + 1},
+            "usage": usage.model_dump(),
+        }
+        if repaired.tool_calls:
+            return invalid_control(update, messages)
+        try:
+            decision = AgentDecision.model_validate_json(repaired.content)
+        except (ValidationError, TypeError):
+            return invalid_control(update, messages)
     return {
         **update,
         "agent_messages": messages,

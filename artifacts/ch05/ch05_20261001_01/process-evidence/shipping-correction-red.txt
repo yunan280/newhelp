@@ -1,0 +1,114 @@
+FFFFFFFFF.F                                                              [100%]
+================================== FAILURES ===================================
+___ test_invalid_control_wire_repairs_once_without_tools_then_streams_text ____
+tests\ch05\test_decision_format.py:105: in test_invalid_control_wire_repairs_once_without_tools_then_streams_text
+    assert len(requests) == 3
+E   AssertionError: assert 2 == 3
+E    +  where 2 = len([{'messages': [{'content': '你是客服小猫，负责根据知识证据和只读工具处理本轮问题。\n需要订单/物流事实时主动调用工具，缺订单号且没有历史依据时不要猜测，选择 clarify 追问。\n用户明确要求先查订单再... null}', 'role': 'system'}], 'model': 'deepseek-chat', 'stream': True, 'stream_options': {'include_usage': True}, ...}])
+------------------------------ Captured log call ------------------------------
+WARNING  langchain_openai.chat_models._client_utils:_client_utils.py:328 langchain-openai injected a custom httpx transport to apply `http_socket_options`, which disables httpx's proxy auto-detection (system proxy configuration detected). Set `LANGCHAIN_OPENAI_TCP_KEEPALIVE=0` or pass `http_socket_options=()` to restore default proxy behavior, or supply `openai_proxy` / your own `http_client` / `http_async_client` to take full control.
+_ test_invalid_control_stops_after_one_correction_without_leaking_text_or_actions[\u90ae\u8d39\u89c4\u5219\u5982\u4e0b\uff1a\u6ee199\u5143\u5305\u90ae\u3002] _
+tests\ch05\test_decision_format.py:148: in test_invalid_control_stops_after_one_correction_without_leaking_text_or_actions
+    assert state["calls"] == {"classifier": 0, "decision": 2, "answer": 0}
+E   AssertionError: assert {'classifier'..., 'answer': 0} == {'classifier'..., 'answer': 0}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'decision': 1} != {'decision': 2}
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+WARNING  mewhelp.ch05.agent:agent.py:129 Ch05 invalid Agent decision; using fixed reply
+_ test_invalid_control_stops_after_one_correction_without_leaking_text_or_actions[] _
+tests\ch05\test_decision_format.py:148: in test_invalid_control_stops_after_one_correction_without_leaking_text_or_actions
+    assert state["calls"] == {"classifier": 0, "decision": 2, "answer": 0}
+E   AssertionError: assert {'classifier'..., 'answer': 0} == {'classifier'..., 'answer': 0}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'decision': 1} != {'decision': 2}
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+WARNING  mewhelp.ch05.agent:agent.py:129 Ch05 invalid Agent decision; using fixed reply
+_ test_invalid_control_stops_after_one_correction_without_leaking_text_or_actions[{"reply_mode":] _
+tests\ch05\test_decision_format.py:148: in test_invalid_control_stops_after_one_correction_without_leaking_text_or_actions
+    assert state["calls"] == {"classifier": 0, "decision": 2, "answer": 0}
+E   AssertionError: assert {'classifier'..., 'answer': 0} == {'classifier'..., 'answer': 0}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'decision': 1} != {'decision': 2}
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+WARNING  mewhelp.ch05.agent:agent.py:129 Ch05 invalid Agent decision; using fixed reply
+_ test_invalid_control_stops_after_one_correction_without_leaking_text_or_actions[{"reply_mode":"approve_refund","suggested_actions":["create_ticket"]}] _
+tests\ch05\test_decision_format.py:148: in test_invalid_control_stops_after_one_correction_without_leaking_text_or_actions
+    assert state["calls"] == {"classifier": 0, "decision": 2, "answer": 0}
+E   AssertionError: assert {'classifier'..., 'answer': 0} == {'classifier'..., 'answer': 0}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'decision': 1} != {'decision': 2}
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+WARNING  mewhelp.ch05.agent:agent.py:129 Ch05 invalid Agent decision; using fixed reply
+_ test_invalid_control_stops_after_one_correction_without_leaking_text_or_actions[{"reply_mode":"answer","suggested_actions":["execute_ticket"]}] _
+tests\ch05\test_decision_format.py:148: in test_invalid_control_stops_after_one_correction_without_leaking_text_or_actions
+    assert state["calls"] == {"classifier": 0, "decision": 2, "answer": 0}
+E   AssertionError: assert {'classifier'..., 'answer': 0} == {'classifier'..., 'answer': 0}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'decision': 1} != {'decision': 2}
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+WARNING  mewhelp.ch05.agent:agent.py:129 Ch05 invalid Agent decision; using fixed reply
+______ test_control_correction_cannot_bypass_turn_limits[decision_limit] ______
+tests\ch05\test_decision_format.py:184: in test_control_correction_cannot_bypass_turn_limits
+    assert state["stop_reason"] == limit
+E   AssertionError: assert 'invalid_decision' == 'decision_limit'
+E     
+E     - decision_limit
+E     + invalid_decision
+------------------------------ Captured log call ------------------------------
+WARNING  mewhelp.ch05.agent:agent.py:129 Ch05 invalid Agent decision; using fixed reply
+_______ test_control_correction_cannot_bypass_turn_limits[token_budget] _______
+tests\ch05\test_decision_format.py:184: in test_control_correction_cannot_bypass_turn_limits
+    assert state["stop_reason"] == limit
+E   AssertionError: assert 'invalid_decision' == 'token_budget'
+E     
+E     - token_budget
+E     + invalid_decision
+------------------------------ Captured log call ------------------------------
+WARNING  mewhelp.ch05.agent:agent.py:129 Ch05 invalid Agent decision; using fixed reply
+_________ test_control_correction_cannot_bypass_turn_limits[deadline] _________
+tests\ch05\test_decision_format.py:184: in test_control_correction_cannot_bypass_turn_limits
+    assert state["stop_reason"] == limit
+E   AssertionError: assert 'invalid_decision' == 'deadline'
+E     
+E     - deadline
+E     + invalid_decision
+------------------------------ Captured log call ------------------------------
+WARNING  mewhelp.ch05.agent:agent.py:129 Ch05 invalid Agent decision; using fixed reply
+_____ test_plaintext_decision_completes_safely_and_next_turn_can_continue _____
+tests\ch05\test_workflow.py:28: in test_plaintext_decision_completes_safely_and_next_turn_can_continue
+    assert done["calls"] == {"classifier": 1, "decision": 2, "answer": 0}
+E   AssertionError: assert {'classifier'..., 'answer': 0} == {'classifier'..., 'answer': 0}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'decision': 1} != {'decision': 2}
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+WARNING  mewhelp.ch05.agent:agent.py:129 Ch05 invalid Agent decision; using fixed reply
+=========================== short test summary info ===========================
+FAILED tests/ch05/test_decision_format.py::test_invalid_control_wire_repairs_once_without_tools_then_streams_text
+FAILED tests/ch05/test_decision_format.py::test_invalid_control_stops_after_one_correction_without_leaking_text_or_actions[\u90ae\u8d39\u89c4\u5219\u5982\u4e0b\uff1a\u6ee199\u5143\u5305\u90ae\u3002]
+FAILED tests/ch05/test_decision_format.py::test_invalid_control_stops_after_one_correction_without_leaking_text_or_actions[]
+FAILED tests/ch05/test_decision_format.py::test_invalid_control_stops_after_one_correction_without_leaking_text_or_actions[{"reply_mode":]
+FAILED tests/ch05/test_decision_format.py::test_invalid_control_stops_after_one_correction_without_leaking_text_or_actions[{"reply_mode":"approve_refund","suggested_actions":["create_ticket"]}]
+FAILED tests/ch05/test_decision_format.py::test_invalid_control_stops_after_one_correction_without_leaking_text_or_actions[{"reply_mode":"answer","suggested_actions":["execute_ticket"]}]
+FAILED tests/ch05/test_decision_format.py::test_control_correction_cannot_bypass_turn_limits[decision_limit]
+FAILED tests/ch05/test_decision_format.py::test_control_correction_cannot_bypass_turn_limits[token_budget]
+FAILED tests/ch05/test_decision_format.py::test_control_correction_cannot_bypass_turn_limits[deadline]
+FAILED tests/ch05/test_workflow.py::test_plaintext_decision_completes_safely_and_next_turn_can_continue
+10 failed, 1 passed in 1.72s
