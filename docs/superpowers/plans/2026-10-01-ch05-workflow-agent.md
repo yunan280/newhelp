@@ -293,7 +293,7 @@ docker compose -f milvus-compose.yml up -d
 - [x] **Step 1: 发起与执行方式一致的评审。** Native：全部任务由主代理实施，完成后按 requesting-code-review 派一个新鲜上下文 reviewer 做整分支审查。Subagent-driven：每任务按对应技能完成 implementer/spec/code gates，最后整体审查。实施前读所选执行技能，不能依据旧 dev-notes 的 Native/Vibe 记录擅自豁免本章流程。
 - [x] **Step 2: 记录 code review 结论。** 保存文件/行号/触发条件及 severity；立即追加四项过程。有效问题先复现，再最小修正，纯 Prompt 用冻结样例、代码用相应回归；无根据的建议说明理由，不盲改固定选型。记录修正与新检查，不为节约步骤把重要问题留到交付后。
 - [x] **Step 3: 最终验证。** 按 verification-before-completion 跑与最终修改相称的检查，确认实际退出状态及真实证据；更新最终报告/README，提交已验证的修正和记录。全量套件已通过且评审未修改代码时，不机械重复一套无新增信息的测试。
-- [ ] **Step 4: Finish。** 按 finishing-a-development-branch 检查分支/worktree状态，保留用户原文件及私密运行数据；即时记录 finish 四项。交付功能演示命令、离线测试/真实 Prompt/五场景结果、完整 dev-notes 路径及明确单实例限制。推送/合并/删除分支等集成动作按用户已有授权和 finish 技能执行，不能因功能完成自行改变主仓库。
+- [x] **Step 4: Finish。** 按 finishing-a-development-branch 检查分支/worktree状态，保留用户原文件及私密运行数据；即时记录 finish 四项。交付功能演示命令、离线测试/真实 Prompt/五场景结果、完整 dev-notes 路径及明确单实例限制。推送/合并/删除分支等集成动作按用户已有授权和 finish 技能执行，不能因功能完成自行改变主仓库。
 
 ## Context7 与本机接口核验
 
@@ -305,4 +305,4 @@ docker compose -f milvus-compose.yml up -d
 
 计划新增的 `tickets.request_id` 属于 spec 已允许在计划评审明确的防重迁移：仅 nullable 唯一字段及原工具闭包注入，不新建业务工具或新存储。SQLite/checkpointer 仍是用户批准的单实例范围；没有多实例能力声明。
 
-**推荐执行方式：Native。** 九项任务共享 State/事件/建议/预算契约，按依赖顺序由当前代理实现可减少交接成本；最后再独立评审整个分支。当前只完成计划与自审，待用户评审计划并选择 Native 或 Subagent-driven 后才能安装依赖/写产品代码。
+**推荐执行方式：Native。** 九项任务共享 State/事件/建议/预算契约，按依赖顺序由当前代理实现可减少交接成本；最后再独立评审整个分支。用户已选择Native；九项任务、独立整分支审查及唯一修复pass完成，见dev-notes/ch05.md和artifacts/ch05/ch05_20261001_01/native-process.md，集成待用户选择。

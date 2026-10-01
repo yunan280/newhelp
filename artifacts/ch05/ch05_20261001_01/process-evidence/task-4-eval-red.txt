@@ -1,0 +1,15 @@
+..F                                                                      [100%]
+================================== FAILURES ===================================
+___ test_decision_evaluator_rejects_wrong_actions_and_missing_clarification ___
+
+    def test_decision_evaluator_rejects_wrong_actions_and_missing_clarification():
+        from mewhelp.ch05 import evaluation
+>       assert hasattr(evaluation, "check_decision"), "decision validator missing"
+E       AssertionError: decision validator missing
+E       assert False
+E        +  where False = hasattr(<module 'mewhelp.ch05.evaluation' from 'C:\\Users\\27497\\projects\\mewhelp-wt\\ch02-tools\\src\\mewhelp\\ch05\\evaluation.py'>, 'check_decision')
+
+tests\ch05\test_evaluation_contract.py:42: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/ch05/test_evaluation_contract.py::test_decision_evaluator_rejects_wrong_actions_and_missing_clarification
+1 failed, 2 passed in 2.83s

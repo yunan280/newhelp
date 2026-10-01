@@ -1,6 +1,7 @@
 {
   "stage": "functional implementation and review fixes verified; integration pending",
   "reviewed_implementation_head": "0bfe640",
+  "final_implementation_head": "2cbef74",
   "pytest": {"command": ".venv-ch03/Scripts/python.exe -X utf8 -m pytest -q", "passed": 627, "deselected": 5, "seconds": 21.52, "exit_code": 0},
   "ruff": {"command": ".venv-ch03/Scripts/python.exe -X utf8 -m ruff check src tests scripts/migrate_ch05_schema.py scripts/smoke_ch05_acceptance.py", "exit_code": 0},
   "format": {"checked_files": 32, "exit_code": 0},

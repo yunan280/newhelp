@@ -1,0 +1,304 @@
+FFFFFFFFFF                                                               [100%]
+================================== FAILURES ===================================
+________________ test_gate_uses_calibrated_boundary[0.5-True] _________________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import evidence
+E           ImportError: cannot import name 'evidence' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_evidence.py:17: ImportError
+
+During handling of the above exception, another exception occurred:
+
+score = 0.5, passed = True
+
+    @pytest.mark.parametrize("score,passed", [(0.5, True), (0.49, False)])
+    def test_gate_uses_calibrated_boundary(score, passed):
+>       result = module().evaluate_gate(envelope(scores=[score]), prompt_bytes=300)
+                 ^^^^^^^^
+
+tests\ch05\test_evidence.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import evidence
+        except ImportError:
+>           pytest.fail("pre-Agent evidence gate missing")
+E           Failed: pre-Agent evidence gate missing
+
+tests\ch05\test_evidence.py:19: Failed
+_______________ test_gate_uses_calibrated_boundary[0.49-False] ________________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import evidence
+E           ImportError: cannot import name 'evidence' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_evidence.py:17: ImportError
+
+During handling of the above exception, another exception occurred:
+
+score = 0.49, passed = False
+
+    @pytest.mark.parametrize("score,passed", [(0.5, True), (0.49, False)])
+    def test_gate_uses_calibrated_boundary(score, passed):
+>       result = module().evaluate_gate(envelope(scores=[score]), prompt_bytes=300)
+                 ^^^^^^^^
+
+tests\ch05\test_evidence.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import evidence
+        except ImportError:
+>           pytest.fail("pre-Agent evidence gate missing")
+E           Failed: pre-Agent evidence gate missing
+
+tests\ch05\test_evidence.py:19: Failed
+_______________ test_empty_and_oversized_evidence_are_refusals ________________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import evidence
+E           ImportError: cannot import name 'evidence' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_evidence.py:17: ImportError
+
+During handling of the above exception, another exception occurred:
+
+    def test_empty_and_oversized_evidence_are_refusals():
+>       m = module()
+            ^^^^^^^^
+
+tests\ch05\test_evidence.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import evidence
+        except ImportError:
+>           pytest.fail("pre-Agent evidence gate missing")
+E           Failed: pre-Agent evidence gate missing
+
+tests\ch05\test_evidence.py:19: Failed
+_____________ test_bad_scores_are_configuration_errors[updates0] ______________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import evidence
+E           ImportError: cannot import name 'evidence' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_evidence.py:17: ImportError
+
+During handling of the above exception, another exception occurred:
+
+updates = {'scores': [None]}
+
+    @pytest.mark.parametrize("updates", [{"scores": [None]}, {"scores": [float("nan")]},
+        {"threshold": float("nan")}, {"scores": []}])
+    def test_bad_scores_are_configuration_errors(updates):
+        with pytest.raises(ValueError):
+>           module().evaluate_gate(envelope(**updates), prompt_bytes=300)
+            ^^^^^^^^
+
+tests\ch05\test_evidence.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import evidence
+        except ImportError:
+>           pytest.fail("pre-Agent evidence gate missing")
+E           Failed: pre-Agent evidence gate missing
+
+tests\ch05\test_evidence.py:19: Failed
+_____________ test_bad_scores_are_configuration_errors[updates1] ______________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import evidence
+E           ImportError: cannot import name 'evidence' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_evidence.py:17: ImportError
+
+During handling of the above exception, another exception occurred:
+
+updates = {'scores': [nan]}
+
+    @pytest.mark.parametrize("updates", [{"scores": [None]}, {"scores": [float("nan")]},
+        {"threshold": float("nan")}, {"scores": []}])
+    def test_bad_scores_are_configuration_errors(updates):
+        with pytest.raises(ValueError):
+>           module().evaluate_gate(envelope(**updates), prompt_bytes=300)
+            ^^^^^^^^
+
+tests\ch05\test_evidence.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import evidence
+        except ImportError:
+>           pytest.fail("pre-Agent evidence gate missing")
+E           Failed: pre-Agent evidence gate missing
+
+tests\ch05\test_evidence.py:19: Failed
+_____________ test_bad_scores_are_configuration_errors[updates2] ______________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import evidence
+E           ImportError: cannot import name 'evidence' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_evidence.py:17: ImportError
+
+During handling of the above exception, another exception occurred:
+
+updates = {'threshold': nan}
+
+    @pytest.mark.parametrize("updates", [{"scores": [None]}, {"scores": [float("nan")]},
+        {"threshold": float("nan")}, {"scores": []}])
+    def test_bad_scores_are_configuration_errors(updates):
+        with pytest.raises(ValueError):
+>           module().evaluate_gate(envelope(**updates), prompt_bytes=300)
+            ^^^^^^^^
+
+tests\ch05\test_evidence.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import evidence
+        except ImportError:
+>           pytest.fail("pre-Agent evidence gate missing")
+E           Failed: pre-Agent evidence gate missing
+
+tests\ch05\test_evidence.py:19: Failed
+_____________ test_bad_scores_are_configuration_errors[updates3] ______________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import evidence
+E           ImportError: cannot import name 'evidence' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_evidence.py:17: ImportError
+
+During handling of the above exception, another exception occurred:
+
+updates = {'scores': []}
+
+    @pytest.mark.parametrize("updates", [{"scores": [None]}, {"scores": [float("nan")]},
+        {"threshold": float("nan")}, {"scores": []}])
+    def test_bad_scores_are_configuration_errors(updates):
+        with pytest.raises(ValueError):
+>           module().evaluate_gate(envelope(**updates), prompt_bytes=300)
+            ^^^^^^^^
+
+tests\ch05\test_evidence.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import evidence
+        except ImportError:
+>           pytest.fail("pre-Agent evidence gate missing")
+E           Failed: pre-Agent evidence gate missing
+
+tests\ch05\test_evidence.py:19: Failed
+______________ test_refusal_commits_original_question_separately ______________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import evidence
+E           ImportError: cannot import name 'evidence' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_evidence.py:17: ImportError
+
+During handling of the above exception, another exception occurred:
+
+    async def test_refusal_commits_original_question_separately():
+>       m = module()
+            ^^^^^^^^
+
+tests\ch05\test_evidence.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import evidence
+        except ImportError:
+>           pytest.fail("pre-Agent evidence gate missing")
+E           Failed: pre-Agent evidence gate missing
+
+tests\ch05\test_evidence.py:19: Failed
+__________________ test_pool_failure_is_not_claimed_as_saved __________________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import evidence
+E           ImportError: cannot import name 'evidence' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_evidence.py:17: ImportError
+
+During handling of the above exception, another exception occurred:
+
+    async def test_pool_failure_is_not_claimed_as_saved():
+        def broken():
+            raise RuntimeError("db unavailable")
+>       m = module()
+            ^^^^^^^^
+
+tests\ch05\test_evidence.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import evidence
+        except ImportError:
+>           pytest.fail("pre-Agent evidence gate missing")
+E           Failed: pre-Agent evidence gate missing
+
+tests\ch05\test_evidence.py:19: Failed
+____________ test_retrieval_service_failure_is_not_low_confidence _____________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import evidence
+E           ImportError: cannot import name 'evidence' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_evidence.py:17: ImportError
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000023440721610>
+
+    async def test_retrieval_service_failure_is_not_low_confidence(monkeypatch):
+>       m = module()
+            ^^^^^^^^
+
+tests\ch05\test_evidence.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import evidence
+        except ImportError:
+>           pytest.fail("pre-Agent evidence gate missing")
+E           Failed: pre-Agent evidence gate missing
+
+tests\ch05\test_evidence.py:19: Failed
+=========================== short test summary info ===========================
+FAILED tests/ch05/test_evidence.py::test_gate_uses_calibrated_boundary[0.5-True]
+FAILED tests/ch05/test_evidence.py::test_gate_uses_calibrated_boundary[0.49-False]
+FAILED tests/ch05/test_evidence.py::test_empty_and_oversized_evidence_are_refusals
+FAILED tests/ch05/test_evidence.py::test_bad_scores_are_configuration_errors[updates0]
+FAILED tests/ch05/test_evidence.py::test_bad_scores_are_configuration_errors[updates1]
+FAILED tests/ch05/test_evidence.py::test_bad_scores_are_configuration_errors[updates2]
+FAILED tests/ch05/test_evidence.py::test_bad_scores_are_configuration_errors[updates3]
+FAILED tests/ch05/test_evidence.py::test_refusal_commits_original_question_separately
+FAILED tests/ch05/test_evidence.py::test_pool_failure_is_not_claimed_as_saved
+FAILED tests/ch05/test_evidence.py::test_retrieval_service_failure_is_not_low_confidence
+10 failed in 1.43s

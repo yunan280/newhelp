@@ -1,0 +1,147 @@
+...FFFFFF                                                                [100%]
+================================== FAILURES ===================================
+_______________ test_reuse_rejects_stale_hash_and_false_success _______________
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-310/test_reuse_rejects_stale_hash_0')
+
+    def test_reuse_rejects_stale_hash_and_false_success(tmp_path):
+        from mewhelp.ch05 import evaluation
+    
+>       assert hasattr(evaluation, "summarize_evaluations"), "validated summary missing"
+E       AssertionError: validated summary missing
+E       assert False
+E        +  where False = hasattr(<module 'mewhelp.ch05.evaluation' from 'C:\\Users\\27497\\projects\\mewhelp-wt\\ch02-tools\\src\\mewhelp\\ch05\\evaluation.py'>, 'summarize_evaluations')
+
+tests\ch05\test_evaluation_contract.py:56: AssertionError
+___________ test_same_round_tools_cannot_pass_sequential_acceptance ___________
+
+    def checker():
+        try:
+>           from scripts.smoke_ch05_acceptance import check_case
+E           ModuleNotFoundError: No module named 'scripts.smoke_ch05_acceptance'
+
+tests\ch05\test_acceptance_contract.py:7: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    def test_same_round_tools_cannot_pass_sequential_acceptance():
+>       check = checker()
+                ^^^^^^^^^
+
+tests\ch05\test_acceptance_contract.py:14: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def checker():
+        try:
+            from scripts.smoke_ch05_acceptance import check_case
+        except ImportError:
+>           pytest.fail("acceptance validator missing")
+E           Failed: acceptance validator missing
+
+tests\ch05\test_acceptance_contract.py:9: Failed
+_________ test_missing_trace_bad_route_and_agent_after_weak_gate_fail _________
+
+    def checker():
+        try:
+>           from scripts.smoke_ch05_acceptance import check_case
+E           ModuleNotFoundError: No module named 'scripts.smoke_ch05_acceptance'
+
+tests\ch05\test_acceptance_contract.py:7: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    def test_missing_trace_bad_route_and_agent_after_weak_gate_fail():
+>       check = checker()
+                ^^^^^^^^^
+
+tests\ch05\test_acceptance_contract.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def checker():
+        try:
+            from scripts.smoke_ch05_acceptance import check_case
+        except ImportError:
+>           pytest.fail("acceptance validator missing")
+E           Failed: acceptance validator missing
+
+tests\ch05\test_acceptance_contract.py:9: Failed
+_____________ test_handoff_cannot_pass_if_ticket_count_increases ______________
+
+    def checker():
+        try:
+>           from scripts.smoke_ch05_acceptance import check_case
+E           ModuleNotFoundError: No module named 'scripts.smoke_ch05_acceptance'
+
+tests\ch05\test_acceptance_contract.py:7: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    def test_handoff_cannot_pass_if_ticket_count_increases():
+>       check = checker()
+                ^^^^^^^^^
+
+tests\ch05\test_acceptance_contract.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def checker():
+        try:
+            from scripts.smoke_ch05_acceptance import check_case
+        except ImportError:
+>           pytest.fail("acceptance validator missing")
+E           Failed: acceptance validator missing
+
+tests\ch05\test_acceptance_contract.py:9: Failed
+______________ test_service_errors_are_saved_and_return_nonzero _______________
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-310/test_service_errors_are_saved_0')
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-310%5Ctest_service_errors_are_saved_0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000022A08EBEBA0>
+
+    def test_service_errors_are_saved_and_return_nonzero(tmp_path, session_factory, monkeypatch):
+        try:
+>           from scripts import smoke_ch05_acceptance as acceptance
+E           ImportError: cannot import name 'smoke_ch05_acceptance' from 'scripts' (unknown location)
+
+tests\ch05\test_acceptance_contract.py:38: ImportError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-310/test_service_errors_are_saved_0')
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-310%5Ctest_service_errors_are_saved_0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000022A08EBEBA0>
+
+    def test_service_errors_are_saved_and_return_nonzero(tmp_path, session_factory, monkeypatch):
+        try:
+            from scripts import smoke_ch05_acceptance as acceptance
+        except ImportError:
+>           pytest.fail("HTTP acceptance runner missing")
+E           Failed: HTTP acceptance runner missing
+
+tests\ch05\test_acceptance_contract.py:40: Failed
+____________ test_sse_error_or_missing_done_never_becomes_success _____________
+
+    def test_sse_error_or_missing_done_never_becomes_success():
+        try:
+>           from scripts.smoke_ch05_acceptance import completed_sse
+E           ModuleNotFoundError: No module named 'scripts.smoke_ch05_acceptance'
+
+tests\ch05\test_acceptance_contract.py:53: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    def test_sse_error_or_missing_done_never_becomes_success():
+        try:
+            from scripts.smoke_ch05_acceptance import completed_sse
+        except ImportError:
+>           pytest.fail("SSE completion validator missing")
+E           Failed: SSE completion validator missing
+
+tests\ch05\test_acceptance_contract.py:55: Failed
+=========================== short test summary info ===========================
+FAILED tests/ch05/test_evaluation_contract.py::test_reuse_rejects_stale_hash_and_false_success
+FAILED tests/ch05/test_acceptance_contract.py::test_same_round_tools_cannot_pass_sequential_acceptance
+FAILED tests/ch05/test_acceptance_contract.py::test_missing_trace_bad_route_and_agent_after_weak_gate_fail
+FAILED tests/ch05/test_acceptance_contract.py::test_handoff_cannot_pass_if_ticket_count_increases
+FAILED tests/ch05/test_acceptance_contract.py::test_service_errors_are_saved_and_return_nonzero
+FAILED tests/ch05/test_acceptance_contract.py::test_sse_error_or_missing_done_never_becomes_success
+6 failed, 3 passed in 1.49s

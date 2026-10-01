@@ -1,0 +1,439 @@
+FFFFFFFFFFFFFFF                                                          [100%]
+================================== FAILURES ===================================
+__________________ test_fixed_routes[\u7269\u6d41-business] ___________________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import intent
+E           ImportError: cannot import name 'intent' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_intent_contract.py:10: ImportError
+
+During handling of the above exception, another exception occurred:
+
+value = '物流', want = 'business'
+
+    @pytest.mark.parametrize("value,want", [("物流", "business"), ("订单", "business"),
+        ("售后", "business"), ("商品咨询", "knowledge"), ("退款退货", "knowledge"),
+        ("投诉", "complaint"), ("闲聊", "chitchat")])
+    def test_fixed_routes(value, want):
+>       assert module().route_intent(value) == want
+               ^^^^^^^^
+
+tests\ch05\test_intent_contract.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import intent
+        except ImportError:
+>           pytest.fail("intent contract is not implemented")
+E           Failed: intent contract is not implemented
+
+tests\ch05\test_intent_contract.py:12: Failed
+__________________ test_fixed_routes[\u8ba2\u5355-business] ___________________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import intent
+E           ImportError: cannot import name 'intent' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_intent_contract.py:10: ImportError
+
+During handling of the above exception, another exception occurred:
+
+value = '订单', want = 'business'
+
+    @pytest.mark.parametrize("value,want", [("物流", "business"), ("订单", "business"),
+        ("售后", "business"), ("商品咨询", "knowledge"), ("退款退货", "knowledge"),
+        ("投诉", "complaint"), ("闲聊", "chitchat")])
+    def test_fixed_routes(value, want):
+>       assert module().route_intent(value) == want
+               ^^^^^^^^
+
+tests\ch05\test_intent_contract.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import intent
+        except ImportError:
+>           pytest.fail("intent contract is not implemented")
+E           Failed: intent contract is not implemented
+
+tests\ch05\test_intent_contract.py:12: Failed
+__________________ test_fixed_routes[\u552e\u540e-business] ___________________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import intent
+E           ImportError: cannot import name 'intent' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_intent_contract.py:10: ImportError
+
+During handling of the above exception, another exception occurred:
+
+value = '售后', want = 'business'
+
+    @pytest.mark.parametrize("value,want", [("物流", "business"), ("订单", "business"),
+        ("售后", "business"), ("商品咨询", "knowledge"), ("退款退货", "knowledge"),
+        ("投诉", "complaint"), ("闲聊", "chitchat")])
+    def test_fixed_routes(value, want):
+>       assert module().route_intent(value) == want
+               ^^^^^^^^
+
+tests\ch05\test_intent_contract.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import intent
+        except ImportError:
+>           pytest.fail("intent contract is not implemented")
+E           Failed: intent contract is not implemented
+
+tests\ch05\test_intent_contract.py:12: Failed
+____________ test_fixed_routes[\u5546\u54c1\u54a8\u8be2-knowledge] ____________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import intent
+E           ImportError: cannot import name 'intent' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_intent_contract.py:10: ImportError
+
+During handling of the above exception, another exception occurred:
+
+value = '商品咨询', want = 'knowledge'
+
+    @pytest.mark.parametrize("value,want", [("物流", "business"), ("订单", "business"),
+        ("售后", "business"), ("商品咨询", "knowledge"), ("退款退货", "knowledge"),
+        ("投诉", "complaint"), ("闲聊", "chitchat")])
+    def test_fixed_routes(value, want):
+>       assert module().route_intent(value) == want
+               ^^^^^^^^
+
+tests\ch05\test_intent_contract.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import intent
+        except ImportError:
+>           pytest.fail("intent contract is not implemented")
+E           Failed: intent contract is not implemented
+
+tests\ch05\test_intent_contract.py:12: Failed
+____________ test_fixed_routes[\u9000\u6b3e\u9000\u8d27-knowledge] ____________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import intent
+E           ImportError: cannot import name 'intent' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_intent_contract.py:10: ImportError
+
+During handling of the above exception, another exception occurred:
+
+value = '退款退货', want = 'knowledge'
+
+    @pytest.mark.parametrize("value,want", [("物流", "business"), ("订单", "business"),
+        ("售后", "business"), ("商品咨询", "knowledge"), ("退款退货", "knowledge"),
+        ("投诉", "complaint"), ("闲聊", "chitchat")])
+    def test_fixed_routes(value, want):
+>       assert module().route_intent(value) == want
+               ^^^^^^^^
+
+tests\ch05\test_intent_contract.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import intent
+        except ImportError:
+>           pytest.fail("intent contract is not implemented")
+E           Failed: intent contract is not implemented
+
+tests\ch05\test_intent_contract.py:12: Failed
+__________________ test_fixed_routes[\u6295\u8bc9-complaint] __________________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import intent
+E           ImportError: cannot import name 'intent' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_intent_contract.py:10: ImportError
+
+During handling of the above exception, another exception occurred:
+
+value = '投诉', want = 'complaint'
+
+    @pytest.mark.parametrize("value,want", [("物流", "business"), ("订单", "business"),
+        ("售后", "business"), ("商品咨询", "knowledge"), ("退款退货", "knowledge"),
+        ("投诉", "complaint"), ("闲聊", "chitchat")])
+    def test_fixed_routes(value, want):
+>       assert module().route_intent(value) == want
+               ^^^^^^^^
+
+tests\ch05\test_intent_contract.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import intent
+        except ImportError:
+>           pytest.fail("intent contract is not implemented")
+E           Failed: intent contract is not implemented
+
+tests\ch05\test_intent_contract.py:12: Failed
+__________________ test_fixed_routes[\u95f2\u804a-chitchat] ___________________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import intent
+E           ImportError: cannot import name 'intent' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_intent_contract.py:10: ImportError
+
+During handling of the above exception, another exception occurred:
+
+value = '闲聊', want = 'chitchat'
+
+    @pytest.mark.parametrize("value,want", [("物流", "business"), ("订单", "business"),
+        ("售后", "business"), ("商品咨询", "knowledge"), ("退款退货", "knowledge"),
+        ("投诉", "complaint"), ("闲聊", "chitchat")])
+    def test_fixed_routes(value, want):
+>       assert module().route_intent(value) == want
+               ^^^^^^^^
+
+tests\ch05\test_intent_contract.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import intent
+        except ImportError:
+>           pytest.fail("intent contract is not implemented")
+E           Failed: intent contract is not implemented
+
+tests\ch05\test_intent_contract.py:12: Failed
+__________________ test_mixed_refund_is_not_a_local_greeting __________________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import intent
+E           ImportError: cannot import name 'intent' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_intent_contract.py:10: ImportError
+
+During handling of the above exception, another exception occurred:
+
+    def test_mixed_refund_is_not_a_local_greeting():
+>       m = module()
+            ^^^^^^^^
+
+tests\ch05\test_intent_contract.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import intent
+        except ImportError:
+>           pytest.fail("intent contract is not implemented")
+E           Failed: intent contract is not implemented
+
+tests\ch05\test_intent_contract.py:12: Failed
+_ test_invalid_classifier_output_cannot_control_graph[{"intent":"execute_tools"}] _
+
+    def module():
+        try:
+>           from mewhelp.ch05 import intent
+E           ImportError: cannot import name 'intent' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_intent_contract.py:10: ImportError
+
+During handling of the above exception, another exception occurred:
+
+raw = '{"intent":"execute_tools"}'
+
+    @pytest.mark.parametrize("raw", ['{"intent":"execute_tools"}', 'not JSON',
+                                    '{"intent":"闲聊","route":"agent_decide"}'])
+    async def test_invalid_classifier_output_cannot_control_graph(raw):
+>       m = module()
+            ^^^^^^^^
+
+tests\ch05\test_intent_contract.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import intent
+        except ImportError:
+>           pytest.fail("intent contract is not implemented")
+E           Failed: intent contract is not implemented
+
+tests\ch05\test_intent_contract.py:12: Failed
+________ test_invalid_classifier_output_cannot_control_graph[not JSON] ________
+
+    def module():
+        try:
+>           from mewhelp.ch05 import intent
+E           ImportError: cannot import name 'intent' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_intent_contract.py:10: ImportError
+
+During handling of the above exception, another exception occurred:
+
+raw = 'not JSON'
+
+    @pytest.mark.parametrize("raw", ['{"intent":"execute_tools"}', 'not JSON',
+                                    '{"intent":"闲聊","route":"agent_decide"}'])
+    async def test_invalid_classifier_output_cannot_control_graph(raw):
+>       m = module()
+            ^^^^^^^^
+
+tests\ch05\test_intent_contract.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import intent
+        except ImportError:
+>           pytest.fail("intent contract is not implemented")
+E           Failed: intent contract is not implemented
+
+tests\ch05\test_intent_contract.py:12: Failed
+_ test_invalid_classifier_output_cannot_control_graph[{"intent":"\u95f2\u804a","route":"agent_decide"}] _
+
+    def module():
+        try:
+>           from mewhelp.ch05 import intent
+E           ImportError: cannot import name 'intent' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\test_intent_contract.py:10: ImportError
+
+During handling of the above exception, another exception occurred:
+
+raw = '{"intent":"闲聊","route":"agent_decide"}'
+
+    @pytest.mark.parametrize("raw", ['{"intent":"execute_tools"}', 'not JSON',
+                                    '{"intent":"闲聊","route":"agent_decide"}'])
+    async def test_invalid_classifier_output_cannot_control_graph(raw):
+>       m = module()
+            ^^^^^^^^
+
+tests\ch05\test_intent_contract.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            from mewhelp.ch05 import intent
+        except ImportError:
+>           pytest.fail("intent contract is not implemented")
+E           Failed: intent contract is not implemented
+
+tests\ch05\test_intent_contract.py:12: Failed
+_____________________ test_sdk_sends_provider_token_limit _____________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000026D5B18F590>
+
+    async def test_sdk_sends_provider_token_limit(monkeypatch):
+        from mewhelp.ch05 import config
+>       assert hasattr(config, "get_ch05_model"), "chapter model factory missing"
+E       AssertionError: chapter model factory missing
+E       assert False
+E        +  where False = hasattr(<module 'mewhelp.ch05.config' from 'C:\\Users\\27497\\projects\\mewhelp-wt\\ch02-tools\\src\\mewhelp\\ch05\\config.py'>, 'get_ch05_model')
+
+tests\ch05\test_intent_contract.py:43: AssertionError
+________________ test_unknown_action_is_rejected_before_offer _________________
+
+    def test_unknown_action_is_rejected_before_offer():
+        try:
+>           from mewhelp.ch05.schemas import AgentDecision
+E           ModuleNotFoundError: No module named 'mewhelp.ch05.schemas'
+
+tests\ch05\test_state.py:7: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    def test_unknown_action_is_rejected_before_offer():
+        try:
+            from mewhelp.ch05.schemas import AgentDecision
+        except ImportError:
+>           pytest.fail("action contract missing")
+E           Failed: action contract missing
+
+tests\ch05\test_state.py:9: Failed
+_________ test_evaluator_fails_on_bad_label_or_provider_error[False] __________
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-285/test_evaluator_fails_on_bad_la0')
+raise_error = False
+
+    @pytest.mark.parametrize("raise_error", [False, True])
+    async def test_evaluator_fails_on_bad_label_or_provider_error(tmp_path, raise_error):
+        try:
+>           from mewhelp.ch05.evaluation import evaluate_prompts
+E           ModuleNotFoundError: No module named 'mewhelp.ch05.evaluation'
+
+tests\ch05\test_evaluation_contract.py:9: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-285/test_evaluator_fails_on_bad_la0')
+raise_error = False
+
+    @pytest.mark.parametrize("raise_error", [False, True])
+    async def test_evaluator_fails_on_bad_label_or_provider_error(tmp_path, raise_error):
+        try:
+            from mewhelp.ch05.evaluation import evaluate_prompts
+            from mewhelp.ch05.intent import ClassificationResult
+        except ImportError:
+>           pytest.fail("prompt evaluator missing")
+E           Failed: prompt evaluator missing
+
+tests\ch05\test_evaluation_contract.py:12: Failed
+__________ test_evaluator_fails_on_bad_label_or_provider_error[True] __________
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-285/test_evaluator_fails_on_bad_la1')
+raise_error = True
+
+    @pytest.mark.parametrize("raise_error", [False, True])
+    async def test_evaluator_fails_on_bad_label_or_provider_error(tmp_path, raise_error):
+        try:
+>           from mewhelp.ch05.evaluation import evaluate_prompts
+E           ModuleNotFoundError: No module named 'mewhelp.ch05.evaluation'
+
+tests\ch05\test_evaluation_contract.py:9: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-285/test_evaluator_fails_on_bad_la1')
+raise_error = True
+
+    @pytest.mark.parametrize("raise_error", [False, True])
+    async def test_evaluator_fails_on_bad_label_or_provider_error(tmp_path, raise_error):
+        try:
+            from mewhelp.ch05.evaluation import evaluate_prompts
+            from mewhelp.ch05.intent import ClassificationResult
+        except ImportError:
+>           pytest.fail("prompt evaluator missing")
+E           Failed: prompt evaluator missing
+
+tests\ch05\test_evaluation_contract.py:12: Failed
+=========================== short test summary info ===========================
+FAILED tests/ch05/test_intent_contract.py::test_fixed_routes[\u7269\u6d41-business]
+FAILED tests/ch05/test_intent_contract.py::test_fixed_routes[\u8ba2\u5355-business]
+FAILED tests/ch05/test_intent_contract.py::test_fixed_routes[\u552e\u540e-business]
+FAILED tests/ch05/test_intent_contract.py::test_fixed_routes[\u5546\u54c1\u54a8\u8be2-knowledge]
+FAILED tests/ch05/test_intent_contract.py::test_fixed_routes[\u9000\u6b3e\u9000\u8d27-knowledge]
+FAILED tests/ch05/test_intent_contract.py::test_fixed_routes[\u6295\u8bc9-complaint]
+FAILED tests/ch05/test_intent_contract.py::test_fixed_routes[\u95f2\u804a-chitchat]
+FAILED tests/ch05/test_intent_contract.py::test_mixed_refund_is_not_a_local_greeting
+FAILED tests/ch05/test_intent_contract.py::test_invalid_classifier_output_cannot_control_graph[{"intent":"execute_tools"}]
+FAILED tests/ch05/test_intent_contract.py::test_invalid_classifier_output_cannot_control_graph[not JSON]
+FAILED tests/ch05/test_intent_contract.py::test_invalid_classifier_output_cannot_control_graph[{"intent":"\u95f2\u804a","route":"agent_decide"}]
+FAILED tests/ch05/test_intent_contract.py::test_sdk_sends_provider_token_limit
+FAILED tests/ch05/test_state.py::test_unknown_action_is_rejected_before_offer
+FAILED tests/ch05/test_evaluation_contract.py::test_evaluator_fails_on_bad_label_or_provider_error[False]
+FAILED tests/ch05/test_evaluation_contract.py::test_evaluator_fails_on_bad_label_or_provider_error[True]
+15 failed in 0.57s

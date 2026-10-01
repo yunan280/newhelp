@@ -1,0 +1,142 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+__________ test_truncated_answer_stream_checkpoint_and_ledger_agree ___________
+
+workflow_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000001F9CDD3E660>, context=WorkflowContext...seconds=180.0, request_seconds=30.0, max_retries=0)), locks=<mewhelp.memory.SessionStore object at 0x000001F9CDD3F620>)
+model_factory = <conftest.ModelFactory object at 0x000001F9CB5F75C0>
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-317%5Ctest_truncated_answer_stream_c0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+
+    async def test_truncated_answer_stream_checkpoint_and_ledger_agree(
+        workflow_runtime, model_factory, session_factory
+    ):
+        model_factory.intents = ["订单"]
+        original = workflow_runtime.context.model_factory
+    
+        class TruncatedModel:
+            async def astream(self, messages):
+                yield AIMessageChunk(content="退款条件包括以下三项：第一，")
+                yield AIMessageChunk(content="", response_metadata={"finish_reason": "length"},
+                                     usage_metadata={"input_tokens": 100, "output_tokens": 1024,
+                                                     "total_tokens": 1124})
+    
+        workflow_runtime.context.model_factory = lambda *a, **kw: (
+            TruncatedModel() if kw.get("streaming") else original(*a, **kw))
+        request = TurnRequest(message="说明订单信息", session_id="truncated")
+        events = [e async for e in service().stream_turn(workflow_runtime, request, entry_point="chat_stream")]
+        done = events[-1]["data"]
+>       assert done["stop_reason"] == "output_limit"
+E       AssertionError: assert 'completed' == 'output_limit'
+E         
+E         - output_limit
+E         + completed
+
+tests\ch05\test_workflow.py:36: AssertionError
+______ test_reranker_oversize_goes_through_gate_and_commits_before_token ______
+
+workflow_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000001F9CDEEAF90>, context=WorkflowContext...seconds=180.0, request_seconds=30.0, max_retries=0)), locks=<mewhelp.memory.SessionStore object at 0x000001F9CDEE02C0>)
+knowledge_request = AgentRequest(session_id='knowledge-test', user_id=None, message='七天无理由退货政策是什么', filters=None)
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-317%5Ctest_reranker_oversize_goes_th0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001F9CDD3FB90>
+
+    async def test_reranker_oversize_goes_through_gate_and_commits_before_token(
+        workflow_runtime, knowledge_request, session_factory, monkeypatch
+    ):
+        from types import SimpleNamespace
+        from mewhelp.ch05 import evidence, workflow
+        from mewhelp.knowledge.reranking import UnsupportedContextError
+    
+        def oversized(*args):
+            raise UnsupportedContextError("reranker pair exceeds 8192 tokens")
+    
+        monkeypatch.setattr(evidence, "retrieve_evidence", oversized)
+        monkeypatch.setattr(workflow, "retrieve_knowledge", evidence.retrieve_knowledge)
+        workflow_runtime.context.rag_factory = lambda: SimpleNamespace(
+            retrieval=object(), relevance_threshold=0.5, context_budget=32000)
+        events = []
+>       async for item in service().stream_turn(workflow_runtime, knowledge_request, entry_point="chat_stream"):
+
+tests\ch05\test_workflow.py:62: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\mewhelp\ch05\service.py:78: in stream_turn
+    async for item in stream:
+.venv-ch03\Lib\site-packages\langgraph\pregel\main.py:3440: in astream
+    async for _ in runner.atick(
+.venv-ch03\Lib\site-packages\langgraph\pregel\_runner.py:557: in atick
+    _panic_or_proceed(
+.venv-ch03\Lib\site-packages\langgraph\pregel\_runner.py:687: in _panic_or_proceed
+    raise exc
+.venv-ch03\Lib\site-packages\langgraph\pregel\_retry.py:744: in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\langgraph\_internal\_runnable.py:756: in ainvoke
+    input = await asyncio.create_task(
+.venv-ch03\Lib\site-packages\langgraph\_internal\_runnable.py:522: in ainvoke
+    ret = await self.afunc(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\mewhelp\ch05\workflow.py:254: in node
+    update = await operation(state, runtime.context, writer)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\mewhelp\ch05\workflow.py:100: in retrieve_node
+    evidence = await retrieve_knowledge(
+src\mewhelp\ch05\evidence.py:32: in retrieve_knowledge
+    result = await asyncio.to_thread(retrieve_evidence, rag.retrieval, query, filters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\threads.py:25: in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\concurrent\futures\thread.py:59: in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<object object at 0x000001F9AD29A570>, QueryUnderstanding(original='七天无理由退货政策是什么', canonical='七天无理由退货政策是什么', bm25_que...tics=['ch05_passthrough']), SearchFilters(category=None, product_category=None, content_type=None, is_key_clause=None))
+
+    def oversized(*args):
+>       raise UnsupportedContextError("reranker pair exceeds 8192 tokens")
+E       mewhelp.knowledge.reranking.UnsupportedContextError: reranker pair exceeds 8192 tokens
+E       During task with name 'retrieve_knowledge' and id '0f7c383d-5027-7a39-e030-4766708a6585'
+
+tests\ch05\test_workflow.py:55: UnsupportedContextError
+------------------------------ Captured log call ------------------------------
+ERROR    mewhelp.ch05.service:service.py:86 Ch05 turn failed session=knowledge-test
+Traceback (most recent call last):
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\service.py", line 78, in stream_turn
+    async for item in stream:
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\.venv-ch03\Lib\site-packages\langgraph\pregel\main.py", line 3440, in astream
+    async for _ in runner.atick(
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\.venv-ch03\Lib\site-packages\langgraph\pregel\_runner.py", line 557, in atick
+    _panic_or_proceed(
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\.venv-ch03\Lib\site-packages\langgraph\pregel\_runner.py", line 687, in _panic_or_proceed
+    raise exc
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\.venv-ch03\Lib\site-packages\langgraph\pregel\_retry.py", line 744, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\.venv-ch03\Lib\site-packages\langgraph\_internal\_runnable.py", line 756, in ainvoke
+    input = await asyncio.create_task(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\.venv-ch03\Lib\site-packages\langgraph\_internal\_runnable.py", line 522, in ainvoke
+    ret = await self.afunc(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\workflow.py", line 254, in node
+    update = await operation(state, runtime.context, writer)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\workflow.py", line 100, in retrieve_node
+    evidence = await retrieve_knowledge(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\evidence.py", line 32, in retrieve_knowledge
+    result = await asyncio.to_thread(retrieve_evidence, rag.retrieval, query, filters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\27497\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\27497\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\tests\ch05\test_workflow.py", line 55, in oversized
+    raise UnsupportedContextError("reranker pair exceeds 8192 tokens")
+mewhelp.knowledge.reranking.UnsupportedContextError: reranker pair exceeds 8192 tokens
+During task with name 'retrieve_knowledge' and id '0f7c383d-5027-7a39-e030-4766708a6585'
+=========================== short test summary info ===========================
+FAILED tests/ch05/test_workflow.py::test_truncated_answer_stream_checkpoint_and_ledger_agree
+FAILED tests/ch05/test_workflow.py::test_reranker_oversize_goes_through_gate_and_commits_before_token
+2 failed, 13 deselected in 1.49s

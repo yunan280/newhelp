@@ -1,0 +1,1172 @@
+EEEEEEEEEEEFEEEEE                                                        [100%]
+=================================== ERRORS ====================================
+________ ERROR at setup of test_workflow_gates_knowledge_before_agent _________
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_workflow_gates_knowledge_0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_workflow_g...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC74BA10>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFA5B5A90>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_workflow_gates_knowledge_before_agent>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_workflow_gates_knowledge_0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_workflow_g...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC74BA10>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFA5B5A90>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+_ ERROR at setup of test_weak_knowledge_records_before_fallback_without_agent _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_weak_knowledge_records_be0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_weak_knowl...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC776510>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8E9040>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_weak_knowledge_records_before_fallback_without_agent>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_weak_knowledge_records_be0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_weak_knowl...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC776510>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8E9040>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+___ ERROR at setup of test_business_skips_retrieval_and_gate[\u7269\u6d41] ____
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_business_skips_retrieval_0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_business_s...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8E9CA0>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8E9AF0>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_business_skips_retrieval_and_gate[\u7269\u6d41]>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_business_skips_retrieval_0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_business_s...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8E9CA0>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8E9AF0>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+___ ERROR at setup of test_business_skips_retrieval_and_gate[\u8ba2\u5355] ____
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_business_skips_retrieval_1%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_business_s...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8EBF50>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8EB6B0>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_business_skips_retrieval_and_gate[\u8ba2\u5355]>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_business_skips_retrieval_1%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_business_s...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8EBF50>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8EB6B0>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+___ ERROR at setup of test_business_skips_retrieval_and_gate[\u552e\u540e] ____
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_business_skips_retrieval_2%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_business_s...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8CE180>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8CDD90>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_business_skips_retrieval_and_gate[\u552e\u540e]>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_business_skips_retrieval_2%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_business_s...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8CE180>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8CDD90>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+______ ERROR at setup of test_complaint_and_greeting_cannot_write_ticket ______
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_complaint_and_greeting_ca0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_complaint_...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8E9E50>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8E81D0>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_complaint_and_greeting_cannot_write_ticket>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_complaint_and_greeting_ca0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_complaint_...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8E9E50>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8E81D0>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+_______ ERROR at setup of test_classified_chitchat_uses_only_classifier _______
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_classified_chitchat_uses_0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_classified...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8EA4B0>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8CF7D0>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_classified_chitchat_uses_only_classifier>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_classified_chitchat_uses_0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_classified...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8EA4B0>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8CF7D0>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+_ ERROR at setup of test_sources_precede_first_token_and_next_turn_resets_evidence _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_sources_precede_first_tok0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_sources_pr...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8CDC10>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8DD550>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_sources_precede_first_token_and_next_turn_resets_evidence>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_sources_precede_first_tok0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_sources_pr...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8CDC10>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8DD550>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+_________ ERROR at setup of test_tool_ledger_pairs_calls_and_results __________
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_tool_ledger_pairs_calls_a0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_tool_ledge...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8CE9C0>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8CD1C0>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_tool_ledger_pairs_calls_and_results>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_tool_ledger_pairs_calls_a0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_tool_ledge...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8CE9C0>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8CD1C0>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+__ ERROR at setup of test_concurrent_same_session_keeps_both_completed_turns __
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_concurrent_same_session_k0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_concurrent...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8EA4B0>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8DEAE0>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_concurrent_same_session_keeps_both_completed_turns>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_concurrent_same_session_k0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_concurrent...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8EA4B0>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8DEAE0>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+_ ERROR at setup of test_ledger_failure_is_visible_and_checkpoint_still_completes _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_ledger_failure_is_visible0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_ledger_fai...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8DD040>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8BCD40>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_ledger_failure_is_visible_and_checkpoint_still_completes>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_ledger_failure_is_visible0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_ledger_fai...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8DD040>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8BCD40>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+________ ERROR at setup of test_existing_mysql_history_bootstraps_once ________
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_existing_mysql_history_bo0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_existing_m...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8E9DF0>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8BDE50>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_existing_mysql_history_bootstraps_once>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_existing_mysql_history_bo0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_existing_m...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8E9DF0>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8BDE50>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+______ ERROR at setup of test_failed_turn_never_enters_completed_history ______
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_failed_turn_never_enters_0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_failed_tur...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8BFBC0>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8BE930>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_failed_turn_never_enters_completed_history>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_failed_turn_never_enters_0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_failed_tur...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8BFBC0>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8BE930>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+__________ ERROR at setup of test_json_and_sse_share_final_contract ___________
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_json_and_sse_share_final_0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_json_and_s...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFCA46300>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFCA44A40>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_json_and_sse_share_final_contract>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_json_and_sse_share_final_0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_json_and_s...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFCA46300>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFCA44A40>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+______ ERROR at setup of test_classifier_failure_has_error_without_done _______
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_classifier_failure_has_er0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_classifier...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8E9E20>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8BE480>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_classifier_failure_has_error_without_done>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_classifier_failure_has_er0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_classifier...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8E9E20>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFC8BE480>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+_______ ERROR at setup of test_blank_message_keeps_existing_validation ________
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_blank_message_keeps_exist0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_blank_mess...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8BCE90>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFCA470E0>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+>           from mewhelp.ch05 import workflow
+E           ImportError: cannot import name 'workflow' from 'mewhelp.ch05' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\__init__.py)
+
+tests\ch05\conftest.py:88: ImportError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_blank_message_keeps_existing_validation>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_blank_message_keeps_exist0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_blank_mess...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8BCE90>
+strong_evidence = EvidenceEnvelope(sources=[SourceDTO(number=1, chunk_id='1', questions='退货', answer='七天无理由', section_path='退货政策', categ...aaaaaaaaaaaa', source_url='/kb/source/1')], scores=[0.9], threshold=0.5, context_budget=32000, unsupported_reason=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFFCA470E0>
+
+    @pytest.fixture
+    async def workflow_runtime(session_factory, checkpoint_settings, model_factory,
+                               strong_evidence, monkeypatch):
+        try:
+            from mewhelp.ch05 import workflow
+            from mewhelp.ch05.runtime import open_runtime
+        except ImportError:
+>           pytest.fail("persistent graph runtime missing")
+E           Failed: persistent graph runtime missing
+
+tests\ch05\conftest.py:91: Failed
+================================== FAILURES ===================================
+__________ test_file_reopen_preserves_history_and_isolates_sessions ___________
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_file_reopen_preserves_his0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_file_reope...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8DCE30>
+
+    async def test_file_reopen_preserves_history_and_isolates_sessions(session_factory,
+            checkpoint_settings, model_factory):
+        try:
+>           from mewhelp.ch05.runtime import open_runtime
+E           ModuleNotFoundError: No module named 'mewhelp.ch05.runtime'
+
+tests\ch05\test_persistence.py:10: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-297%5Ctest_file_reopen_preserves_his0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+checkpoint_settings = Ch05Settings(checkpoint_path=WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-297/test_file_reope...kens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+model_factory = <conftest.ModelFactory object at 0x000001CFFC8DCE30>
+
+    async def test_file_reopen_preserves_history_and_isolates_sessions(session_factory,
+            checkpoint_settings, model_factory):
+        try:
+            from mewhelp.ch05.runtime import open_runtime
+            from mewhelp.ch05.service import run_turn
+        except ImportError:
+>           pytest.fail("file checkpointer runtime missing")
+E           Failed: file checkpointer runtime missing
+
+tests\ch05\test_persistence.py:13: Failed
+=========================== short test summary info ===========================
+FAILED tests/ch05/test_persistence.py::test_file_reopen_preserves_history_and_isolates_sessions
+ERROR tests/ch05/test_workflow.py::test_workflow_gates_knowledge_before_agent
+ERROR tests/ch05/test_workflow.py::test_weak_knowledge_records_before_fallback_without_agent
+ERROR tests/ch05/test_workflow.py::test_business_skips_retrieval_and_gate[\u7269\u6d41]
+ERROR tests/ch05/test_workflow.py::test_business_skips_retrieval_and_gate[\u8ba2\u5355]
+ERROR tests/ch05/test_workflow.py::test_business_skips_retrieval_and_gate[\u552e\u540e]
+ERROR tests/ch05/test_workflow.py::test_complaint_and_greeting_cannot_write_ticket
+ERROR tests/ch05/test_workflow.py::test_classified_chitchat_uses_only_classifier
+ERROR tests/ch05/test_workflow.py::test_sources_precede_first_token_and_next_turn_resets_evidence
+ERROR tests/ch05/test_workflow.py::test_tool_ledger_pairs_calls_and_results
+ERROR tests/ch05/test_workflow.py::test_concurrent_same_session_keeps_both_completed_turns
+ERROR tests/ch05/test_workflow.py::test_ledger_failure_is_visible_and_checkpoint_still_completes
+ERROR tests/ch05/test_persistence.py::test_existing_mysql_history_bootstraps_once
+ERROR tests/ch05/test_persistence.py::test_failed_turn_never_enters_completed_history
+ERROR tests/ch05/test_api.py::test_json_and_sse_share_final_contract - Failed...
+ERROR tests/ch05/test_api.py::test_classifier_failure_has_error_without_done
+ERROR tests/ch05/test_api.py::test_blank_message_keeps_existing_validation - ...
+1 failed, 16 errors in 2.50s

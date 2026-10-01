@@ -1,0 +1,309 @@
+FFFFFFFFFF                                                               [100%]
+================================== FAILURES ===================================
+______________ test_bare_feeds_order_observation_into_next_call _______________
+
+    def api():
+        try:
+>           from mewhelp.ch05.bare import bare_loop
+E           ModuleNotFoundError: No module named 'mewhelp.ch05'
+
+tests\ch05\test_bare.py:28: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+read_registry = <mewhelp.tools.registry.ToolRegistry object at 0x000001743465FFB0>
+
+    async def test_bare_feeds_order_observation_into_next_call(read_registry):
+>       bare_loop, limits = api()
+                            ^^^^^
+
+tests\ch05\test_bare.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def api():
+        try:
+            from mewhelp.ch05.bare import bare_loop
+            from mewhelp.ch05.limits import AgentLimits
+        except ImportError:
+>           pytest.fail("bounded bare loop is not implemented")
+E           Failed: bounded bare loop is not implemented
+
+tests\ch05\test_bare.py:31: Failed
+___________________ test_plain_answer_finishes_in_one_call ____________________
+
+    def api():
+        try:
+>           from mewhelp.ch05.bare import bare_loop
+E           ModuleNotFoundError: No module named 'mewhelp.ch05'
+
+tests\ch05\test_bare.py:28: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+read_registry = <mewhelp.tools.registry.ToolRegistry object at 0x000001743454AEA0>
+
+    async def test_plain_answer_finishes_in_one_call(read_registry):
+>       bare_loop, limits = api()
+                            ^^^^^
+
+tests\ch05\test_bare.py:56: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def api():
+        try:
+            from mewhelp.ch05.bare import bare_loop
+            from mewhelp.ch05.limits import AgentLimits
+        except ImportError:
+>           pytest.fail("bounded bare loop is not implemented")
+E           Failed: bounded bare loop is not implemented
+
+tests\ch05\test_bare.py:31: Failed
+_ test_bad_tools_are_observations_not_writes[create_ticket-args0-unknown_tool] _
+
+    def api():
+        try:
+>           from mewhelp.ch05.bare import bare_loop
+E           ModuleNotFoundError: No module named 'mewhelp.ch05'
+
+tests\ch05\test_bare.py:28: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+read_registry = <mewhelp.tools.registry.ToolRegistry object at 0x0000017434895C10>
+tool_name = 'create_ticket', args = {'description': '投诉'}
+error = 'unknown_tool'
+
+    @pytest.mark.parametrize("tool_name,args,error", [
+        ("create_ticket", {"description": "投诉"}, "unknown_tool"),
+        ("query_order", {"wrong": "1001"}, "invalid_args"),
+    ])
+    async def test_bad_tools_are_observations_not_writes(read_registry, tool_name, args, error):
+>       bare_loop, limits = api()
+                            ^^^^^
+
+tests\ch05\test_bare.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def api():
+        try:
+            from mewhelp.ch05.bare import bare_loop
+            from mewhelp.ch05.limits import AgentLimits
+        except ImportError:
+>           pytest.fail("bounded bare loop is not implemented")
+E           Failed: bounded bare loop is not implemented
+
+tests\ch05\test_bare.py:31: Failed
+_ test_bad_tools_are_observations_not_writes[query_order-args1-invalid_args] __
+
+    def api():
+        try:
+>           from mewhelp.ch05.bare import bare_loop
+E           ModuleNotFoundError: No module named 'mewhelp.ch05'
+
+tests\ch05\test_bare.py:28: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+read_registry = <mewhelp.tools.registry.ToolRegistry object at 0x000001743439FB60>
+tool_name = 'query_order', args = {'wrong': '1001'}, error = 'invalid_args'
+
+    @pytest.mark.parametrize("tool_name,args,error", [
+        ("create_ticket", {"description": "投诉"}, "unknown_tool"),
+        ("query_order", {"wrong": "1001"}, "invalid_args"),
+    ])
+    async def test_bad_tools_are_observations_not_writes(read_registry, tool_name, args, error):
+>       bare_loop, limits = api()
+                            ^^^^^
+
+tests\ch05\test_bare.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def api():
+        try:
+            from mewhelp.ch05.bare import bare_loop
+            from mewhelp.ch05.limits import AgentLimits
+        except ImportError:
+>           pytest.fail("bounded bare loop is not implemented")
+E           Failed: bounded bare loop is not implemented
+
+tests\ch05\test_bare.py:31: Failed
+_________________ test_budget_rejects_before_provider_request _________________
+
+    def api():
+        try:
+>           from mewhelp.ch05.bare import bare_loop
+E           ModuleNotFoundError: No module named 'mewhelp.ch05'
+
+tests\ch05\test_bare.py:28: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+read_registry = <mewhelp.tools.registry.ToolRegistry object at 0x0000017430C503B0>
+
+    async def test_budget_rejects_before_provider_request(read_registry):
+>       bare_loop, limits = api()
+                            ^^^^^
+
+tests\ch05\test_bare.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def api():
+        try:
+            from mewhelp.ch05.bare import bare_loop
+            from mewhelp.ch05.limits import AgentLimits
+        except ImportError:
+>           pytest.fail("bounded bare loop is not implemented")
+E           Failed: bounded bare loop is not implemented
+
+tests\ch05\test_bare.py:31: Failed
+_________ test_repeated_identical_call_stops_without_running_it_twice _________
+
+    def api():
+        try:
+>           from mewhelp.ch05.bare import bare_loop
+E           ModuleNotFoundError: No module named 'mewhelp.ch05'
+
+tests\ch05\test_bare.py:28: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+read_registry = <mewhelp.tools.registry.ToolRegistry object at 0x000001743454AEA0>
+
+    async def test_repeated_identical_call_stops_without_running_it_twice(read_registry):
+>       bare_loop, limits = api()
+                            ^^^^^
+
+tests\ch05\test_bare.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def api():
+        try:
+            from mewhelp.ch05.bare import bare_loop
+            from mewhelp.ch05.limits import AgentLimits
+        except ImportError:
+>           pytest.fail("bounded bare loop is not implemented")
+E           Failed: bounded bare loop is not implemented
+
+tests\ch05\test_bare.py:31: Failed
+___________________________ test_no_fifth_decision ____________________________
+
+    def api():
+        try:
+>           from mewhelp.ch05.bare import bare_loop
+E           ModuleNotFoundError: No module named 'mewhelp.ch05'
+
+tests\ch05\test_bare.py:28: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+read_registry = <mewhelp.tools.registry.ToolRegistry object at 0x000001743491A9C0>
+
+    async def test_no_fifth_decision(read_registry):
+>       bare_loop, limits = api()
+                            ^^^^^
+
+tests\ch05\test_bare.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def api():
+        try:
+            from mewhelp.ch05.bare import bare_loop
+            from mewhelp.ch05.limits import AgentLimits
+        except ImportError:
+>           pytest.fail("bounded bare loop is not implemented")
+E           Failed: bounded bare loop is not implemented
+
+tests\ch05\test_bare.py:31: Failed
+__________________ test_tool_limit_prevents_ninth_execution ___________________
+
+    def api():
+        try:
+>           from mewhelp.ch05.bare import bare_loop
+E           ModuleNotFoundError: No module named 'mewhelp.ch05'
+
+tests\ch05\test_bare.py:28: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+read_registry = <mewhelp.tools.registry.ToolRegistry object at 0x0000017434262180>
+
+    async def test_tool_limit_prevents_ninth_execution(read_registry):
+>       bare_loop, limits = api()
+                            ^^^^^
+
+tests\ch05\test_bare.py:99: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def api():
+        try:
+            from mewhelp.ch05.bare import bare_loop
+            from mewhelp.ch05.limits import AgentLimits
+        except ImportError:
+>           pytest.fail("bounded bare loop is not implemented")
+E           Failed: bounded bare loop is not implemented
+
+tests\ch05\test_bare.py:31: Failed
+____________________ test_reserve_includes_final_response _____________________
+
+    def api():
+        try:
+>           from mewhelp.ch05 import limits
+E           ModuleNotFoundError: No module named 'mewhelp.ch05'
+
+tests\ch05\test_limits.py:6: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    def test_reserve_includes_final_response():
+>       limits = api()
+                 ^^^^^
+
+tests\ch05\test_limits.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def api():
+        try:
+            from mewhelp.ch05 import limits
+        except ImportError:
+>           pytest.fail("shared token budget is not implemented")
+E           Failed: shared token budget is not implemented
+
+tests\ch05\test_limits.py:8: Failed
+__________________ test_estimate_counts_utf8_and_tool_schema __________________
+
+    def api():
+        try:
+>           from mewhelp.ch05 import limits
+E           ModuleNotFoundError: No module named 'mewhelp.ch05'
+
+tests\ch05\test_limits.py:6: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    def test_estimate_counts_utf8_and_tool_schema():
+>       limits = api()
+                 ^^^^^
+
+tests\ch05\test_limits.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def api():
+        try:
+            from mewhelp.ch05 import limits
+        except ImportError:
+>           pytest.fail("shared token budget is not implemented")
+E           Failed: shared token budget is not implemented
+
+tests\ch05\test_limits.py:8: Failed
+=========================== short test summary info ===========================
+FAILED tests/ch05/test_bare.py::test_bare_feeds_order_observation_into_next_call
+FAILED tests/ch05/test_bare.py::test_plain_answer_finishes_in_one_call - Fail...
+FAILED tests/ch05/test_bare.py::test_bad_tools_are_observations_not_writes[create_ticket-args0-unknown_tool]
+FAILED tests/ch05/test_bare.py::test_bad_tools_are_observations_not_writes[query_order-args1-invalid_args]
+FAILED tests/ch05/test_bare.py::test_budget_rejects_before_provider_request
+FAILED tests/ch05/test_bare.py::test_repeated_identical_call_stops_without_running_it_twice
+FAILED tests/ch05/test_bare.py::test_no_fifth_decision - Failed: bounded bare...
+FAILED tests/ch05/test_bare.py::test_tool_limit_prevents_ninth_execution - Fa...
+FAILED tests/ch05/test_limits.py::test_reserve_includes_final_response - Fail...
+FAILED tests/ch05/test_limits.py::test_estimate_counts_utf8_and_tool_schema
+10 failed in 0.50s
