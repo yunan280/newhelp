@@ -9,6 +9,7 @@ from mewhelp.knowledge.answering import SourceDTO, source_dtos
 from mewhelp.knowledge.filters import SearchFilters
 from mewhelp.knowledge.query import QueryUnderstanding
 from mewhelp.knowledge.refusals import RefusalInput, record_refusal
+from mewhelp.knowledge.reranking import UnsupportedContextError
 from mewhelp.knowledge.retrieval import retrieve_evidence
 
 
@@ -29,7 +30,16 @@ class GateDecision(BaseModel):
 
 async def retrieve_knowledge(question: str, *, rag, filters: SearchFilters) -> EvidenceEnvelope:
     query = QueryUnderstanding(question, question, question, "knowledge", ["ch05_passthrough"])
-    result = await asyncio.to_thread(retrieve_evidence, rag.retrieval, query, filters)
+    try:
+        result = await asyncio.to_thread(retrieve_evidence, rag.retrieval, query, filters)
+    except UnsupportedContextError as exc:
+        return EvidenceEnvelope(
+            sources=[],
+            scores=[],
+            threshold=rag.relevance_threshold,
+            context_budget=rag.context_budget,
+            unsupported_reason=str(exc),
+        )
     sources = source_dtos(result)
     scores = {str(r.chunk.id): r.score for r in result.final}
     return EvidenceEnvelope(

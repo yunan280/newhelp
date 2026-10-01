@@ -211,12 +211,13 @@ const SCENE_COMPLAINT = [[['session',{session_id:'action-session',resumed:true}]
   ['token',{text:'很抱歉给您带来不好的体验。'}],['actions',{actions:OFFER.actions,offer:OFFER}],
   ['done',{finish_reason:'completed'}]]];
 
-function actionPage(saved, scene = SCENE_COMPLAINT) {
+function actionPage(saved, scene = SCENE_COMPLAINT, ticketResponder = null) {
   for (const key of Object.keys(nodes)) nodes[key] = new El(key === 'f' ? 'form' : 'div');
   const local = saved?.local || makeStore(), session = saved?.session || makeStore();
   const calls = [];
   const fetch = async (url, options) => {
     calls.push({url,body:JSON.parse(options.body)});
+    if (url === '/ch05/tickets' && ticketResponder) return ticketResponder(JSON.parse(options.body));
     if (url === '/ch05/tickets') return {ok:true,status:200,
       json:async () => ({ticket_no:'T20261001002',ticket_type:'投诉',replayed:false})};
     return makeFetch(scene)(url, options);
@@ -379,6 +380,47 @@ const check = (name, cond, extra = '') => {
   badges=nodes.log.find('badge');
   check('同名工具乱序 end 对应正确耗时',badges.length===2
     && badges[0].textContent.includes('31 ms') && badges[1].textContent.includes('52 ms'));
+
+  console.log('\n场景 F · 编辑工单确认、回执丢失与刷新重试');
+  let committedRequest = null, ticketWrites = 0, retryRequests = [];
+  const loseReceipt = async body => {
+    retryRequests.push(body);
+    if (!committedRequest) {
+      committedRequest = body; ticketWrites++;
+      throw new Error('响应丢失');
+    }
+    const same = JSON.stringify(body) === JSON.stringify(committedRequest);
+    return {ok:same,status:same ? 200 : 409,json:async()=> same
+      ? {ticket_no:'T-recovered',ticket_type:'售后',replayed:true}
+      : {detail:'同一建议的工单参数不能改变'}};
+  };
+  const lostPage = actionPage(null,SCENE_COMPLAINT,loseReceipt);
+  await lostPage.api.submit('我要投诉');
+  await nodes.log.find('action-ticket')[0].click();
+  nodes.log.find('ticket-description')[0].value = '具体问题：订单1001损坏';
+  nodes.log.find('ticket-type')[0].value = '售后';
+  await nodes.log.find('ticket-confirm')[0].click();
+  const recoveredPage = actionPage(lostPage,SCENE_COMPLAINT,loseReceipt);
+  check('刷新不自动重发确认请求', recoveredPage.calls.length===0);
+  await nodes.log.find('action-ticket')[0].click();
+  check('刷新恢复已确认的编辑参数', nodes.log.find('ticket-description')[0].value==='具体问题：订单1001损坏'
+    && nodes.log.find('ticket-type')[0].value==='售后');
+  await nodes.log.find('ticket-confirm')[0].click();
+  check('主动重试同参数取回原工单号，只写一单', ticketWrites===1 && retryRequests.length===2
+    && JSON.stringify(retryRequests[0])===JSON.stringify(retryRequests[1])
+    && nodes.log.textContent.includes('T-recovered'));
+
+  console.log('\n场景 G · 输出截断不开放普通满意度反馈');
+  const limitedPage = actionPage(null,[[['session',{session_id:'limited',resumed:false}],
+    ['token',{text:'残缺正文\n\n回答已达到输出限额，内容可能不完整。'}],
+    ['actions',{offer:{...OFFER,actions:['handoff']}}],
+    ['done',{finish_reason:'output_limit'}]]]);
+  await limitedPage.api.submit('长回答');
+  check('截断答案只保留限额提示和人工建议', nodes.log.find('feedback').length===0
+    && nodes.log.find('action-handoff').length===1 && nodes.log.textContent.includes('不完整'));
+  const limitedReload = actionPage(limitedPage);
+  check('刷新仍不把截断答案当普通完成回答', limitedReload.calls.length===0
+    && nodes.log.find('feedback').length===0);
   console.log(fails.length ? `\nFAILED: ${fails.join(' / ')}` : '\nALL OK');
   process.exit(fails.length ? 1 : 0);
 })();

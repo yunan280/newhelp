@@ -1,6 +1,6 @@
 # Ch05 Workflow + ReAct Agent Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 先演示裸工具循环，再交付七意图四出口、前置知识闸门、可持久化的 LangGraph ReAct 客服及用户自选的人工/工单按钮。
 
@@ -77,7 +77,7 @@ $runCh05 = 'ch05_20261001_01'
 - Produces: `Ch05Settings`（`config.py`）：`env_prefix='CH05_'`，`checkpoint_path: Path = Path('data/ch05/checkpoints.sqlite3')`，limits 各字段取上述默认值；不读取/复制 API 密钥到本章新配置。`BareResult(answer: str, model_calls: int, tool_trace: list[dict], usage: TokenUsage, stop_reason: str)`。
 - Produces: `async bare_loop(question: str, *, complete: Callable[[list[dict], list[dict], int], Awaitable[dict]], registry: ToolRegistry, limits: AgentLimits) -> BareResult`；`async complete_http(client: httpx.AsyncClient, messages: list[dict], tools: list[dict], max_tokens: int) -> dict` 返回原 Chat Completions JSON（`choices[0].message`、`usage`、`model`），不混用 Responses API 的工具形状。
 
-- [ ] **Step 1: 冻结循环断言，写 RED 测试。** 脚本响应依次为 query_order 调用、根据上次结果的 query_logistics 调用、正文。断言三次模型请求、第二次请求有与第一 call_id 对应的 tool 消息、工具顺序严格为订单→物流；无工具正文一轮结束；未知工具/错误作为 tool 观察回灌。限制测试断言第五次决策/第九次工具不能执行，预算不足连请求都不发，缺 usage 的估算不为零，重复同参结果无进展有停止原因。
+- [x] **Step 1: 冻结循环断言，写 RED 测试。** 脚本响应依次为 query_order 调用、根据上次结果的 query_logistics 调用、正文。断言三次模型请求、第二次请求有与第一 call_id 对应的 tool 消息、工具顺序严格为订单→物流；无工具正文一轮结束；未知工具/错误作为 tool 观察回灌。限制测试断言第五次决策/第九次工具不能执行，预算不足连请求都不发，缺 usage 的估算不为零，重复同参结果无进展有停止原因。
 
   本任务测试文件自带 `scripted_completion`（async callable，`requests` 保存参数快照）和 `read_registry` fixtures；首个调用 id 固定 `order-1`。承重用例：
 
@@ -89,10 +89,10 @@ $runCh05 = 'ch05_20261001_01'
       assert result.model_calls == 3
       assert scripted_completion.requests[1][0][-1]['tool_call_id'] == 'order-1'
   ```
-- [ ] **Step 2: Run RED。** `& $pyCh05 -X utf8 -m pytest tests/ch05/test_bare.py tests/ch05/test_limits.py -q`；预期因循环/预算能力尚不存在失败，保留实际输出。
-- [ ] **Step 3: 最小实现。** 先通过 Context7 核对 HTTPX POST/timeout/JSON 与工具协议。HTTPX 直接调用既有 OpenAI 兼容 endpoint，使用原工具的 name/description/args_schema 组装 tools，不用 LangGraph、`create_agent` 或 `create_react_agent`。保持现有 `deepseek-chat` 请求别名，按当前官方 DeepSeek 接口显式传 `max_tokens` 和 `thinking={'type':'disabled'}`，不依赖默认 thinking 吃完小输出额度；请求/响应模型名都记录。只绑定三个原有业务读工具；裸循环控制流只使用普通 Python。正常无 tool_calls 就返回正文，超限给固定有界回复，不额外调用模型。
-- [ ] **Step 4: Run GREEN 与一次裸循环演示。** 同一局部 pytest 全绿；执行 `& $pyCh05 -X utf8 -m mewhelp.ch05.bare --question '订单 1001 的物流到哪了'` 保存实际工具/用量输出到 `artifacts/ch05/<run>/bare.json`，不写业务库。
-- [ ] **Step 5: 记录并提交。** 追加 Task 1 四项过程及真实演示结果；显式 add 本任务文件和 `dev-notes/ch05.md`，提交 `feat(ch05): demonstrate bounded bare tool loop`。尚不安装图依赖，以保留“先手写、再用图”的顺序。
+- [x] **Step 2: Run RED。** `& $pyCh05 -X utf8 -m pytest tests/ch05/test_bare.py tests/ch05/test_limits.py -q`；预期因循环/预算能力尚不存在失败，保留实际输出。
+- [x] **Step 3: 最小实现。** 先通过 Context7 核对 HTTPX POST/timeout/JSON 与工具协议。HTTPX 直接调用既有 OpenAI 兼容 endpoint，使用原工具的 name/description/args_schema 组装 tools，不用 LangGraph、`create_agent` 或 `create_react_agent`。保持现有 `deepseek-chat` 请求别名，按当前官方 DeepSeek 接口显式传 `max_tokens` 和 `thinking={'type':'disabled'}`，不依赖默认 thinking 吃完小输出额度；请求/响应模型名都记录。只绑定三个原有业务读工具；裸循环控制流只使用普通 Python。正常无 tool_calls 就返回正文，超限给固定有界回复，不额外调用模型。
+- [x] **Step 4: Run GREEN 与一次裸循环演示。** 同一局部 pytest 全绿；执行 `& $pyCh05 -X utf8 -m mewhelp.ch05.bare --question '订单 1001 的物流到哪了'` 保存实际工具/用量输出到 `artifacts/ch05/<run>/bare.json`，不写业务库。
+- [x] **Step 5: 记录并提交。** 追加 Task 1 四项过程及真实演示结果；显式 add 本任务文件和 `dev-notes/ch05.md`，提交 `feat(ch05): demonstrate bounded bare tool loop`。尚不安装图依赖，以保留“先手写、再用图”的顺序。
 
 ### Task 2: 七意图、State 契约及 Prompt 标注
 
@@ -106,7 +106,7 @@ $runCh05 = 'ch05_20261001_01'
 - Produces: `async evaluate_prompts(dataset_dir: Path, outdir: Path, *, part: Literal['intents','decisions','all']) -> int`。本任务实现 intents 分支及 CLI；后续 Task 4 实现 decisions，Task 8 汇总两个分支。逐例保存 expected/actual/raw/origin、模型请求及响应名、usage、passed；错误结果非零退出，规则快路径明确标零调用。
 - Produces: `get_ch05_model(output_tokens: int, *, temperature: float = 0.0, streaming: bool = False) -> BaseChatModel` 放 `config.py`，仍调用原 `get_chat_model`，不替换模型适配器或提供商。当前 DeepSeek 通过 `extra_body={'max_tokens': output_tokens, 'thinking': {'type':'disabled'}}` 传供应商字段，不同时传会被 SDK 改名的顶层 max_tokens；`timeout=30,max_retries=0,use_responses_api=False`，仅流式调用启用 stream_usage。
 
-- [ ] **Step 1: 写确定性契约 RED。** 参数化断言七值对应 spec 四出口；透传包括原始空格和代词不改变；`你好`/`谢谢！`/`你是谁` 快速命中，`你好，订单1001能退吗` 不命中；非法 JSON/越界意图必须报分类错误；伪造节点名不得控制边。State 序列化不含 Session/模型/闭包，DTO 不接受未知动作。HTTPX MockTransport 捕获模型实际请求，断言供应商收到 max_tokens=128、thinking disabled、非流式不带 stream_options，证明限额不是只写在 Python 参数里。
+- [x] **Step 1: 写确定性契约 RED。** 参数化断言七值对应 spec 四出口；透传包括原始空格和代词不改变；`你好`/`谢谢！`/`你是谁` 快速命中，`你好，订单1001能退吗` 不命中；非法 JSON/越界意图必须报分类错误；伪造节点名不得控制边。State 序列化不含 Session/模型/闭包，DTO 不接受未知动作。HTTPX MockTransport 捕获模型实际请求，断言供应商收到 max_tokens=128、thinking disabled、非流式不带 stream_options，证明限额不是只写在 Python 参数里。
 
   ```python
   def test_mixed_refund_is_not_a_local_greeting():
@@ -115,10 +115,10 @@ $runCh05 = 'ch05_20261001_01'
       assert route_intent('物流') == 'business'
       assert resolve_reference(' 那它呢？ ') == ' 那它呢？ '
   ```
-- [ ] **Step 2: Run RED。** `& $pyCh05 -X utf8 -m pytest tests/ch05/test_intent_contract.py tests/ch05/test_state.py -q`；预期失败于新契约缺失。
-- [ ] **Step 3: 安装并核对 API，再实现代码契约。** `agent` extra 改为精确 `langgraph==1.2.12`、`langgraph-checkpoint-sqlite==3.1.1`，移除未使用的完整 langchain 依赖；安装 `uv pip install --python .venv-ch03/Scripts/python.exe -e '.[agent,rag,dev]'`。记录实际版本及依赖变化（dry-run 显示 websockets 17.1→16.1.1）。Context7 核对 StateGraph/context_schema/Runtime/add_messages 与 ChatOpenAI 签名，实际导入验证后实现，失败则停下说明，不换版本/API蒙混。
-- [ ] **Step 4: 为 Prompt 冻结标注，再写 Prompt并验证。** 意图集 28 条、七类各 4 条，含商品价格先知识、退款订单混合、投诉和缺订单号；决策集 12 条，覆盖完整证据、缺必要参数、人工/工单单选/双选/不选、无承诺到账/送达/审批。先写期望，不根据输出改标签。分类用简单 Prompt 输出 `{"intent":"..."}` JSON，经 schema 校验；规则表固定。给评估器注入错误分类及服务异常证明非零退出，再运行 `& $pyCh05 -X utf8 -m mewhelp.ch05.evaluation --dataset eval/ch05 --part intents --outdir artifacts/ch05/$runCh05/intents`，要求 28/28；本地匹配的样例另记零调用，其余真实调用。失败保留 attempts、改 Prompt 后按冻结标签复跑，不写 Prompt 字符串单测。
-- [ ] **Step 5: Run GREEN、留痕与提交。** 上述契约测试和分类评估通过，API 版本核验保存 `artifacts/ch05/<run>/runtime-versions.json`；配置项 `CH05_CHECKPOINT_PATH=data/ch05/checkpoints.sqlite3` 及 limits 默认值写 `.env.example`，不覆盖私人 `.env`。提交 `feat(ch05): define intent routing and workflow state`。
+- [x] **Step 2: Run RED。** `& $pyCh05 -X utf8 -m pytest tests/ch05/test_intent_contract.py tests/ch05/test_state.py -q`；预期失败于新契约缺失。
+- [x] **Step 3: 安装并核对 API，再实现代码契约。** `agent` extra 改为精确 `langgraph==1.2.12`、`langgraph-checkpoint-sqlite==3.1.1`，移除未使用的完整 langchain 依赖；安装 `uv pip install --python .venv-ch03/Scripts/python.exe -e '.[agent,rag,dev]'`。记录实际版本及依赖变化（dry-run 显示 websockets 17.1→16.1.1）。Context7 核对 StateGraph/context_schema/Runtime/add_messages 与 ChatOpenAI 签名，实际导入验证后实现，失败则停下说明，不换版本/API蒙混。
+- [x] **Step 4: 为 Prompt 冻结标注，再写 Prompt并验证。** 意图集 28 条、七类各 4 条，含商品价格先知识、退款订单混合、投诉和缺订单号；决策集 12 条，覆盖完整证据、缺必要参数、人工/工单单选/双选/不选、无承诺到账/送达/审批。先写期望，不根据输出改标签。分类用简单 Prompt 输出 `{"intent":"..."}` JSON，经 schema 校验；规则表固定。给评估器注入错误分类及服务异常证明非零退出，再运行 `& $pyCh05 -X utf8 -m mewhelp.ch05.evaluation --dataset eval/ch05 --part intents --outdir artifacts/ch05/$runCh05/intents`，要求 28/28；本地匹配的样例另记零调用，其余真实调用。失败保留 attempts、改 Prompt 后按冻结标签复跑，不写 Prompt 字符串单测。
+- [x] **Step 5: Run GREEN、留痕与提交。** 上述契约测试和分类评估通过，API 版本核验保存 `artifacts/ch05/<run>/runtime-versions.json`；配置项 `CH05_CHECKPOINT_PATH=data/ch05/checkpoints.sqlite3` 及 limits 默认值写 `.env.example`，不覆盖私人 `.env`。提交 `feat(ch05): define intent routing and workflow state`。
 
 ### Task 3: 强制检索与前置知识闸门
 
@@ -129,7 +129,7 @@ $runCh05 = 'ch05_20261001_01'
 - Produces: `EvidenceEnvelope(sources: list[SourceDTO], scores: list[float | None], threshold: float, context_budget: int, unsupported_reason: str | None)`，`GateDecision(passed: bool, reason_code: str | None, reason: str, top_score: float | None)`。
 - Produces: `async retrieve_knowledge(question: str, *, rag: RagRuntime, filters: SearchFilters) -> EvidenceEnvelope`；`evaluate_gate(evidence: EvidenceEnvelope, *, prompt_bytes: int) -> GateDecision`；`async persist_refusal(context: WorkflowContext, state: WorkflowState, gate: GateDecision) -> str`。
 
-- [ ] **Step 1: 写 RED。** 有效分数达到 0.5 放行，0.49 拒绝，空证据拒绝；NaN/缺分数/非法校准是配置错误；超上下文拒绝。断言拒绝前独立提交原问题及 `trigger_stage='retrieval'`，入池失败不伪称完成。模拟 Milvus 故障断言是服务错误，不是低置信度兜底。
+- [x] **Step 1: 写 RED。** 有效分数达到 0.5 放行，0.49 拒绝，空证据拒绝；NaN/缺分数/非法校准是配置错误；超上下文拒绝。断言拒绝前独立提交原问题及 `trigger_stage='retrieval'`，入池失败不伪称完成。模拟 Milvus 故障断言是服务错误，不是低置信度兜底。
 
   `weak_evidence` 是本测试文件 fixture：一个有效 SourceDTO，scores=[0.49]、threshold=0.5、context_budget=32000。
 
@@ -139,10 +139,10 @@ $runCh05 = 'ch05_20261001_01'
       assert decision.passed is False
       assert decision.reason_code == 'low_relevance'
   ```
-- [ ] **Step 2: Run RED。** `& $pyCh05 -X utf8 -m pytest tests/ch05/test_evidence.py -q`，预期新 gate 不存在/行为未实现。
-- [ ] **Step 3: 实现接口。** Context7 核对 PyMilvus 检索与 SQLAlchemy 独立事务，继续复用现有检索器。构造透传 `QueryUnderstanding(question, question, question, 'knowledge', ['ch05_passthrough'])`，不增加第二套意图分类或正式问题改写。gate 比较 reranker 分数与现有校准阈值，不能调用 `answer_question`/`runtime.generate` 或使用 RRF 分数代替。证据保存为 DTO 字典，不 checkpoint 检索客户端。
-- [ ] **Step 4: Run GREEN 与来源回归。** 上述局部测试全绿；`& $pyCh05 -X utf8 -m pytest tests/test_ch04_retrieval.py tests/test_ch04_sources.py tests/test_ch04_calibration.py -q` 通过，证明复用边界未破坏。
-- [ ] **Step 5: 记录与提交。** 记录实际 RED/GREEN 及无额外生成调用，提交 `feat(ch05): gate knowledge before agent execution`。
+- [x] **Step 2: Run RED。** `& $pyCh05 -X utf8 -m pytest tests/ch05/test_evidence.py -q`，预期新 gate 不存在/行为未实现。
+- [x] **Step 3: 实现接口。** Context7 核对 PyMilvus 检索与 SQLAlchemy 独立事务，继续复用现有检索器。构造透传 `QueryUnderstanding(question, question, question, 'knowledge', ['ch05_passthrough'])`，不增加第二套意图分类或正式问题改写。gate 比较 reranker 分数与现有校准阈值，不能调用 `answer_question`/`runtime.generate` 或使用 RRF 分数代替。证据保存为 DTO 字典，不 checkpoint 检索客户端。
+- [x] **Step 4: Run GREEN 与来源回归。** 上述局部测试全绿；`& $pyCh05 -X utf8 -m pytest tests/test_ch04_retrieval.py tests/test_ch04_sources.py tests/test_ch04_calibration.py -q` 通过，证明复用边界未破坏。
+- [x] **Step 5: 记录与提交。** 记录实际 RED/GREEN 及无额外生成调用，提交 `feat(ch05): gate knowledge before agent execution`。
 
 ### Task 4: 核心 ReAct 节点与真实流式答复
 
@@ -152,7 +152,7 @@ $runCh05 = 'ch05_20261001_01'
 - Consumes: Tasks 1–3 的 limits、State/Decision/ToolTrace、EvidenceEnvelope；原 `build_business_tools()`、`ToolRegistry`。
 - Produces: `build_read_registry() -> ToolRegistry`（仅 query_order/query_product/query_logistics）；`async decide_agent(state: WorkflowState, context: WorkflowContext) -> dict`；`async execute_agent_tools(state: WorkflowState, context: WorkflowContext, emit: Callable[[dict], None]) -> dict`；`async stream_answer(state: WorkflowState, context: WorkflowContext, emit: Callable[[dict], None]) -> dict`；`next_agent_step(state: WorkflowState) -> Literal['execute_tools','stream_answer','bounded_reply']`。
 
-- [ ] **Step 1: 写 RED。** ScriptedModel 的三次决策依次为 query_order、读取其返回后 query_logistics、answer 控制 JSON；FinalModel 分三块产出正文。断言至少两轮工具、call_id/round 配对、决策文本不进入 token、最终正文逐块产生。简单物流只调用一次工具；缺订单号直接 clarify；一/两/零建议只作为 metadata，任何分支工单数为零。未知/伪造 create_ticket 只能作为失败观察，不执行写工具。分别断言步数、工具数、重复同参无进展、额度不足/取消不再调用模型。
+- [x] **Step 1: 写 RED。** ScriptedModel 的三次决策依次为 query_order、读取其返回后 query_logistics、answer 控制 JSON；FinalModel 分三块产出正文。断言至少两轮工具、call_id/round 配对、决策文本不进入 token、最终正文逐块产生。简单物流只调用一次工具；缺订单号直接 clarify；一/两/零建议只作为 metadata，任何分支工单数为零。未知/伪造 create_ticket 只能作为失败观察，不执行写工具。分别断言步数、工具数、重复同参无进展、额度不足/取消不再调用模型。
 
   ```python
   def test_agent_cannot_execute_ticket_writes():
@@ -160,10 +160,10 @@ $runCh05 = 'ch05_20261001_01'
       assert set(registry.names()) == {'query_order', 'query_product', 'query_logistics'}
       assert registry.get('create_ticket') is None
   ```
-- [ ] **Step 2: Run RED。** `& $pyCh05 -X utf8 -m pytest tests/ch05/test_agent.py -q`；保存缺失循环、工具白名单或流式边界的失败证据。
-- [ ] **Step 3: 实现节点。** 使用已核对的 `.bind_tools(...).ainvoke(...)` 决策，正常 tool_calls 经旧执行器回灌 ToolMessage；无工具时解析 AgentDecision。最终节点使用不绑定工具的 `.astream()`，仅发送正文，累积 chunk 的真实 usage，不泄漏控制 JSON/隐藏推理。预算预留最终输入/输出额度；达到限制直接固定回复和可选建议。每工具 start/end 带 call_id 与 round；相关调用跨决策轮，独立读可同轮并行。
-- [ ] **Step 4: Run GREEN 与实际 Prompt 评估。** agent + bare + limits 三组局部测试通过，未为了过测试把业务工具新增或塞进 if/else 写死模拟 Agent。`evaluation.py` 增加 decisions 分支，注入错动作/缺必要追问证明验证器会失败，再运行 `& $pyCh05 -X utf8 -m mewhelp.ch05.evaluation --dataset eval/ch05 --part decisions --outdir artifacts/ch05/$runCh05/decisions`，要求 12/12，保存真实决策/最终答复。失败按冻结标签改 Prompt并留痕，不等到系统收尾才验证本任务 Prompt。
-- [ ] **Step 5: 记录与提交。** 保存两轮真实测试轨迹与预算停止原因，提交 `feat(ch05): implement bounded react nodes and answer streaming`。
+- [x] **Step 2: Run RED。** `& $pyCh05 -X utf8 -m pytest tests/ch05/test_agent.py -q`；保存缺失循环、工具白名单或流式边界的失败证据。
+- [x] **Step 3: 实现节点。** 使用已核对的 `.bind_tools(...).ainvoke(...)` 决策，正常 tool_calls 经旧执行器回灌 ToolMessage；无工具时解析 AgentDecision。最终节点使用不绑定工具的 `.astream()`，仅发送正文，累积 chunk 的真实 usage，不泄漏控制 JSON/隐藏推理。预算预留最终输入/输出额度；达到限制直接固定回复和可选建议。每工具 start/end 带 call_id 与 round；相关调用跨决策轮，独立读可同轮并行。
+- [x] **Step 4: Run GREEN 与实际 Prompt 评估。** agent + bare + limits 三组局部测试通过，未为了过测试把业务工具新增或塞进 if/else 写死模拟 Agent。`evaluation.py` 增加 decisions 分支，注入错动作/缺必要追问证明验证器会失败，再运行 `& $pyCh05 -X utf8 -m mewhelp.ch05.evaluation --dataset eval/ch05 --part decisions --outdir artifacts/ch05/$runCh05/decisions`，要求 12/12，保存真实决策/最终答复。失败按冻结标签改 Prompt并留痕，不等到系统收尾才验证本任务 Prompt。
+- [x] **Step 5: 记录与提交。** 保存两轮真实测试轨迹与预算停止原因，提交 `feat(ch05): implement bounded react nodes and answer streaming`。
 
 ### Task 5: 单图编排、官方 checkpointer、日志和 HTTP
 
@@ -175,7 +175,7 @@ $runCh05 = 'ch05_20261001_01'
 - Produces: `async stream_turn(runtime: WorkflowRuntime, request: TurnRequest, *, entry_point: Literal['chat_stream','agent']) -> AsyncIterator[dict]`；`async run_turn(runtime: WorkflowRuntime, request: TurnRequest) -> TurnResult`；`get_workflow_runtime(request: Request) -> WorkflowRuntime`。
 - Produces: POST `/ch05/chat/stream`、POST `/ch05/agent`；事件 `session`, `node`, `tool`, `sources`, `token`, `actions`, `done`, `error`。JSON 收集同一执行流，不重复跑一次图。
 
-- [ ] **Step 1: 写 RED。** 对七意图注入分类/模型替身，断言节点顺序与 spec 图一致。弱知识没有 Agent 及答案调用；业务没有 retrieve/gate；投诉只固定安抚+两个建议；常见闲聊总调用 0、分类所得闲聊仅分类 1。强知识 sources 早于首 token。上轮知识→下轮物流、投诉→闲聊不残留 evidence/current actions；旧 offers 只用于按钮验证，不自动重新展示。消息账本每轮保持 tool_calls 与结果配对。
+- [x] **Step 1: 写 RED。** 对七意图注入分类/模型替身，断言节点顺序与 spec 图一致。弱知识没有 Agent 及答案调用；业务没有 retrieve/gate；投诉只固定安抚+两个建议；常见闲聊总调用 0、分类所得闲聊仅分类 1。强知识 sources 早于首 token。上轮知识→下轮物流、投诉→闲聊不残留 evidence/current actions；旧 offers 只用于按钮验证，不自动重新展示。消息账本每轮保持 tool_calls 与结果配对。
 
   `workflow_runtime` 与 `knowledge_request` 在新 `tests/ch05/conftest.py` 定义，使用强证据和脚本模型，无外部服务。
 
@@ -187,10 +187,10 @@ $runCh05 = 'ch05_20261001_01'
       assert order.index('confidence_gate') < order.index('agent_decide')
       assert result.refused is False
   ```
-- [ ] **Step 2: 写恢复/边界 RED 并运行。** 文件 AsyncSqliteSaver 关闭重开后同 thread_id 保留完成历史，不同 thread_id 隔离；同 session 并发必须串行；失败轮不进入下一轮历史。初次 checkpoint 为空时允许一次性从现有 MySQL `load_replay_messages` 引导旧会话，之后不重复导入。JSON/SSE 最终数据一致、分类/检索异常无 done、取消无完成标记、账本失败有明确日志。Run `& $pyCh05 -X utf8 -m pytest tests/ch05/test_workflow.py tests/ch05/test_persistence.py tests/ch05/test_api.py -q`，保存 RED。
-- [ ] **Step 3: 实现完整图与 runtime。** 官方 `AsyncSqliteSaver.from_conn_string(str(path))` 用在 lifespan async context；路径创建后编译一次，RAG 按知识路径惰性加载。每轮 START→begin→透传→分类→固定路由；Agent/tool 回边与所有正常出口的 log_turn 均有显式边。按 `session_id` 提供 `configurable.thread_id`，新输入重置本轮字段；完成后才向 messages reducer 追加 user/final assistant。异常由外层记录，基础设施错误不改成低置信度。`offers` 按 offer_id 保存已完成回复中的建议，不持有待执行图 interrupt。
-- [ ] **Step 4: 完成传输并 Run GREEN。** FastAPI 延用 `fastapi.sse.EventSourceResponse/ServerSentEvent`，包含源 DTO、call_id/round、动作建议/实际 stop_reason；首次事件 session，actions 在成功最终答复完成后发，done 在 log_turn 和最终 checkpoint 完成后发。新 lifespan 不在启动时连接 Milvus/加载权重或查询 MySQL，旧接口回归不依赖未运行的外部服务。局部测试全绿，再跑 `& $pyCh05 -X utf8 -m pytest tests/test_ch02_api_agent.py tests/test_ch02_api_chat.py tests/test_ch04_chat.py -q`。
-- [ ] **Step 5: 记录与提交。** 保存文件重开/实际 State 恢复证据和 HTTP 契约结果，提交 `feat(ch05): persist deterministic workflow and expose chat api`。
+- [x] **Step 2: 写恢复/边界 RED 并运行。** 文件 AsyncSqliteSaver 关闭重开后同 thread_id 保留完成历史，不同 thread_id 隔离；同 session 并发必须串行；失败轮不进入下一轮历史。初次 checkpoint 为空时允许一次性从现有 MySQL `load_replay_messages` 引导旧会话，之后不重复导入。JSON/SSE 最终数据一致、分类/检索异常无 done、取消无完成标记、账本失败有明确日志。Run `& $pyCh05 -X utf8 -m pytest tests/ch05/test_workflow.py tests/ch05/test_persistence.py tests/ch05/test_api.py -q`，保存 RED。
+- [x] **Step 3: 实现完整图与 runtime。** 官方 `AsyncSqliteSaver.from_conn_string(str(path))` 用在 lifespan async context；路径创建后编译一次，RAG 按知识路径惰性加载。每轮 START→begin→透传→分类→固定路由；Agent/tool 回边与所有正常出口的 log_turn 均有显式边。按 `session_id` 提供 `configurable.thread_id`，新输入重置本轮字段；完成后才向 messages reducer 追加 user/final assistant。异常由外层记录，基础设施错误不改成低置信度。`offers` 按 offer_id 保存已完成回复中的建议，不持有待执行图 interrupt。
+- [x] **Step 4: 完成传输并 Run GREEN。** FastAPI 延用 `fastapi.sse.EventSourceResponse/ServerSentEvent`，包含源 DTO、call_id/round、动作建议/实际 stop_reason；首次事件 session，actions 在成功最终答复完成后发，done 在 log_turn 和最终 checkpoint 完成后发。新 lifespan 不在启动时连接 Milvus/加载权重或查询 MySQL，旧接口回归不依赖未运行的外部服务。局部测试全绿，再跑 `& $pyCh05 -X utf8 -m pytest tests/test_ch02_api_agent.py tests/test_ch02_api_chat.py tests/test_ch04_chat.py -q`。
+- [x] **Step 5: 记录与提交。** 保存文件重开/实际 State 恢复证据和 HTTP 契约结果，提交 `feat(ch05): persist deterministic workflow and expose chat api`。
 
 ### Task 6: 独立确认建单、解除旧副作用和持久防重
 
@@ -203,7 +203,7 @@ $runCh05 = 'ch05_20261001_01'
 - Produces: `find_ticket_by_request_id(session: Session, *, request_id: str) -> Ticket | None` 放在现有 `db/repository.py`，原工具与确认入口共用；比较实际行的 conversation_id/description/ticket_type，不能只按请求键给另一会话回执。
 - Produces: `migrate_ch05(engine: Engine) -> None`；tickets 增加可空 `request_id VARCHAR(64)` 与唯一索引 `uk_tickets_request_id`。原章调用留 NULL；Ch05 使用服务端建议 UUID 作为稳定键，同一个 offer 的重发取得同一工单。
 
-- [ ] **Step 1: 写业务 RED。** 原 `create_ticket` 写一行但 conversations.status 保持 ongoing，回执不声称已转人工；替换旧断言 human 的测试，仍保留合法类型/闭包注入/回滚。未确认、未知 offer、错会话不调用工具；合法确认才新增一行；同 offer 同参数重发返回同 ticket_no，修改参数则 409，不能把重复 key 当新建成功。
+- [x] **Step 1: 写业务 RED。** 原 `create_ticket` 写一行但 conversations.status 保持 ongoing，回执不声称已转人工；替换旧断言 human 的测试，仍保留合法类型/闭包注入/回滚。未确认、未知 offer、错会话不调用工具；合法确认才新增一行；同 offer 同参数重发返回同 ticket_no，修改参数则 409，不能把重复 key 当新建成功。
 
   替换现有 `tests/test_tool_ticket.py` 的状态用例，沿用其已存在的 create_ticket/session_factory fixtures：
 
@@ -214,10 +214,10 @@ $runCh05 = 'ch05_20261001_01'
           assert session.get(Conversation, 1).status is ConvStatus.ongoing
           assert len(session.scalars(select(Ticket)).all()) == 1
   ```
-- [ ] **Step 2: 写迁移/故障 RED 并运行。** SQLite 测试原表升级两次不丢行，request_id 类型/nullable/唯一约束不匹配就拒绝。模拟工具已提交、checkpoint 回执写入失败，再发同请求仍只有一行；模拟并发同 key，唯一约束兜底且查回同一会话工单。Run `& $pyCh05 -X utf8 -m pytest tests/ch05/test_actions.py tests/ch05/test_ticket_migration.py tests/test_tool_ticket.py -q`，保存 RED。
-- [ ] **Step 3: 修正原工具并实现确认入口。** 删 `set_conversation_status(...human)` 及转交人工回执。加入 request_id 的查询/唯一约束处理仍在旧工具中，不能在新接口另写一套建单逻辑；成功回执由数据库中对应 key 的实际行确认，不能只把旧工具返回的「失败」字符串误认成功。写工具仍 `retryable=False`。DB 提交与 checkpoint 不原子，但 DB 唯一键保证重复建单被阻止；不承诺通用 exactly-once。
-- [ ] **Step 4: 增量迁移与 GREEN。** Context7 查 SQLAlchemy inspect/事务/唯一冲突接口后实现可重入迁移；更新新库初始 DDL 和 ORM，旧库先按既有约定备份再增量 ALTER，不重建/seed 业务库。运行动作/迁移测试及 `tests/test_db_ddl_drift.py`；实际 MySQL 迁移连续两次成功，已有 tickets 行数/会话状态不改变。
-- [ ] **Step 5: 记录与提交。** 明确该 nullable 字段是本章防重的新增表结构，工具业务功能仍复用 Ch02。记录前后实际行数与两次迁移输出，提交 `feat(ch05): separate confirmed tickets from simulated handoff`。
+- [x] **Step 2: 写迁移/故障 RED 并运行。** SQLite 测试原表升级两次不丢行，request_id 类型/nullable/唯一约束不匹配就拒绝。模拟工具已提交、checkpoint 回执写入失败，再发同请求仍只有一行；模拟并发同 key，唯一约束兜底且查回同一会话工单。Run `& $pyCh05 -X utf8 -m pytest tests/ch05/test_actions.py tests/ch05/test_ticket_migration.py tests/test_tool_ticket.py -q`，保存 RED。
+- [x] **Step 3: 修正原工具并实现确认入口。** 删 `set_conversation_status(...human)` 及转交人工回执。加入 request_id 的查询/唯一约束处理仍在旧工具中，不能在新接口另写一套建单逻辑；成功回执由数据库中对应 key 的实际行确认，不能只把旧工具返回的「失败」字符串误认成功。写工具仍 `retryable=False`。DB 提交与 checkpoint 不原子，但 DB 唯一键保证重复建单被阻止；不承诺通用 exactly-once。
+- [x] **Step 4: 增量迁移与 GREEN。** Context7 查 SQLAlchemy inspect/事务/唯一冲突接口后实现可重入迁移；更新新库初始 DDL 和 ORM，旧库先按既有约定备份再增量 ALTER，不重建/seed 业务库。运行动作/迁移测试及 `tests/test_db_ddl_drift.py`；实际 MySQL 迁移连续两次成功，已有 tickets 行数/会话状态不改变。
+- [x] **Step 5: 记录与提交。** 明确该 nullable 字段是本章防重的新增表结构，工具业务功能仍复用 Ch02。记录前后实际行数与两次迁移输出，提交 `feat(ch05): separate confirmed tickets from simulated handoff`。
 
 ### Task 7: 原生聊天页的两个独立按钮和确认交互
 
@@ -225,7 +225,7 @@ $runCh05 = 'ch05_20261001_01'
 
 **Interfaces:** Consumes Task 5 的 SSE、Task 6 的 TicketRequest/TicketReceipt；页面 send 改接 `/ch05/chat/stream`，按钮由 actions/offer 元数据渲染，不分析正文关键词执行动作。
 
-- [ ] **Step 1: 扩页面冒烟为 RED。** 注入投诉 SSE，断言只出现两个独立按钮，渲染/历史恢复不 fetch tickets；都不点继续 send 发普通 chat。人工确认仅增加指定状态和客服小猫问候、HTTP 建单次数 0；取消人工无变化。工单取消无请求，确认只一次 POST 且 confirmed=true；人工完成后工单仍可点，工单完成后人工仍可点。双击只一个在途请求，页面恢复不自动执行。同工具跨轮按 call_id 对应徽章，不再按名字误配。
+- [x] **Step 1: 扩页面冒烟为 RED。** 注入投诉 SSE，断言只出现两个独立按钮，渲染/历史恢复不 fetch tickets；都不点继续 send 发普通 chat。人工确认仅增加指定状态和客服小猫问候、HTTP 建单次数 0；取消人工无变化。工单取消无请求，确认只一次 POST 且 confirmed=true；人工完成后工单仍可点，工单完成后人工仍可点。双击只一个在途请求，页面恢复不自动执行。同工具跨轮按 call_id 对应徽章，不再按名字误配。
 
   页面测试内扩展现有 VM/DOM 替身为 `runActionScenario({click: string, confirm: boolean}) -> Promise<{ticketRequests: number, logText: string, ticketButtonDisabled: boolean}>`，实际执行 HTML 脚本和点击处理器，不能直接伪造结果。
 
@@ -236,10 +236,10 @@ $runCh05 = 'ch05_20261001_01'
   assert.ok(observed.logText.includes('您好，我是客服小猫，请问有什么可以帮您的'));
   assert.equal(observed.ticketButtonDisabled, false);
   ```
-- [ ] **Step 2: Run RED。** `node tests/page-smoke.js src/mewhelp/static/index.html`；保存动作未独立/原 human 按钮仍发送消息导致的实际失败。
-- [ ] **Step 3: 实现页面。** 沿用样式、气泡、来源、反馈和 storage，增加建议区及两个处理器。人工按钮不再 `submit('我要转人工')`；仅本地确认和显示。工单用独立确认表单（描述、类型、取消/确认），确认后请求，成功显示实际工单号；网络失败不自动重发，稳定 offer_id 保留给用户主动重试。各按钮只锁自己的状态，不用动作阻塞普通对话；流式过程中仍遵守发送互斥。历史只恢复显示及建议，禁止副作用。
-- [ ] **Step 4: Run GREEN 与浏览器核验。** Node 冒烟全绿；真实页面分别验证不点、取消、人工、工单、两种点击顺序和继续聊天。用可用浏览器工具时先读取 computer-use 技能；如浏览器策略阻断，诚实保留自动冒烟与后端证据并说明，不把协议替身截图称为真实页面。
-- [ ] **Step 5: 记录与提交。** 记录实际 UI 验证方法/结果，提交 `feat(ch05): add independent handoff and ticket confirmations`。
+- [x] **Step 2: Run RED。** `node tests/page-smoke.js src/mewhelp/static/index.html`；保存动作未独立/原 human 按钮仍发送消息导致的实际失败。
+- [x] **Step 3: 实现页面。** 沿用样式、气泡、来源、反馈和 storage，增加建议区及两个处理器。人工按钮不再 `submit('我要转人工')`；仅本地确认和显示。工单用独立确认表单（描述、类型、取消/确认），确认后请求，成功显示实际工单号；网络失败不自动重发，稳定 offer_id 保留给用户主动重试。各按钮只锁自己的状态，不用动作阻塞普通对话；流式过程中仍遵守发送互斥。历史只恢复显示及建议，禁止副作用。
+- [x] **Step 4: Run GREEN 与浏览器核验。** Node 冒烟全绿；真实页面分别验证不点、取消、人工、工单、两种点击顺序和继续聊天。用可用浏览器工具时先读取 computer-use 技能；如浏览器策略阻断，诚实保留自动冒烟与后端证据并说明，不把协议替身截图称为真实页面。
+- [x] **Step 5: 记录与提交。** 记录实际 UI 验证方法/结果，提交 `feat(ch05): add independent handoff and ticket confirmations`。
 
 ### Task 8: 冻结 Prompt 评估、真实验收和演示命令
 
@@ -249,7 +249,7 @@ $runCh05 = 'ch05_20261001_01'
 
 验证脚本的纯校验接口 `check_case(payload: dict, expected: dict) -> list[str]` 返回违反验收条件的具体原因，供 HTTP 验收与其测试共用；顺序工具期望字段为 `sequential_tools`。
 
-- [ ] **Step 1: 对验证器写 RED。** 伪造错误分类/缺轨迹/服务错误必须导致非零退出；两同轮工具不能通过复杂场景；点击人工不得以工单行数上升为通过。Run `& $pyCh05 -X utf8 -m pytest tests/ch05/test_evaluation_contract.py tests/ch05/test_acceptance_contract.py -q`，证明确实识别失败，不能先生成结果再放宽标签。
+- [x] **Step 1: 对验证器写 RED。** 伪造错误分类/缺轨迹/服务错误必须导致非零退出；两同轮工具不能通过复杂场景；点击人工不得以工单行数上升为通过。Run `& $pyCh05 -X utf8 -m pytest tests/ch05/test_evaluation_contract.py tests/ch05/test_acceptance_contract.py -q`，证明确实识别失败，不能先生成结果再放宽标签。
 
   ```python
   def test_same_round_tools_cannot_pass_sequential_acceptance():
@@ -257,10 +257,10 @@ $runCh05 = 'ch05_20261001_01'
                                {'name': 'query_logistics', 'round': 1}]}
       assert check_case(payload, {'sequential_tools': ['query_order', 'query_logistics']})
   ```
-- [ ] **Step 2: 实现验证器，Run GREEN。** Prompt 评估读 Task 2 冻结的 28+12 样例，校验枚举、动作选择、必要追问、工具选择和禁止业务承诺，不以措辞逐字一致判定语义。真实验收使用专属 session_prefix；新增的演示 ticket 是明确确认后的测试工单，报告记录创建前后计数，不改原知识库/旧章节评估集合。JSON/SSE 同一场景分别保存节点顺序及工具 call_id/round。
-- [ ] **Step 3: 汇总/补跑实际 Prompt 评估。** Task 2/4 已完成的分类 28/28、决策 12/12 结果须与最终 Prompt、样例和模型配置 hash 对应，服务错误 0；没有变化则直接汇总，不机械重烧模型调用。若后续改了 Prompt/输入构造/配置或留下未解失败，运行 `& $pyCh05 -X utf8 -m mewhelp.ch05.evaluation --dataset eval/ch05 --part all --outdir artifacts/ch05/$runCh05/prompts`。失败保留 attempts，按同一冻结标签返工，不修改期望迎合输出。
-- [ ] **Step 4: 跑五场景和边界真实验收。** 问政策/未知政策、订单1001物流、投诉并分别确认/取消两个动作、常见闲聊、复杂「请先查询订单1001的商品和下单时间，再查询物流最新节点，比较这两个时间」。复杂场景须 query_order 在前、query_logistics 在下一决策轮且实际读取前次结果；弱政策池记录已提交且 Agent=0。验证多轮状态隔离和关闭重开 SQLite 后同 session 恢复；不得拿旧 Ch04 报告替代本次结果。
-- [ ] **Step 5: 全量验证、文档与提交。** `& $pyCh05 -X utf8 -m pytest -q`；`& $pyCh05 -X utf8 -m ruff check src tests scripts/migrate_ch05_schema.py scripts/smoke_ch05_acceptance.py`；Node 冒烟一次。只有新增修改、失败或未解问题才重复扩大测试。README 给出以下命令、实际结果和单实例边界；及时留痕，提交 `test(ch05): verify workflow prompts and acceptance paths`。
+- [x] **Step 2: 实现验证器，Run GREEN。** Prompt 评估读 Task 2 冻结的 28+12 样例，校验枚举、动作选择、必要追问、工具选择和禁止业务承诺，不以措辞逐字一致判定语义。真实验收使用专属 session_prefix；新增的演示 ticket 是明确确认后的测试工单，报告记录创建前后计数，不改原知识库/旧章节评估集合。JSON/SSE 同一场景分别保存节点顺序及工具 call_id/round。
+- [x] **Step 3: 汇总/补跑实际 Prompt 评估。** Task 2/4 已完成的分类 28/28、决策 12/12 结果须与最终 Prompt、样例和模型配置 hash 对应，服务错误 0；没有变化则直接汇总，不机械重烧模型调用。若后续改了 Prompt/输入构造/配置或留下未解失败，运行 `& $pyCh05 -X utf8 -m mewhelp.ch05.evaluation --dataset eval/ch05 --part all --outdir artifacts/ch05/$runCh05/prompts`。失败保留 attempts，按同一冻结标签返工，不修改期望迎合输出。
+- [x] **Step 4: 跑五场景和边界真实验收。** 问政策/未知政策、订单1001物流、投诉并分别确认/取消两个动作、常见闲聊、复杂「请先查询订单1001的商品和下单时间，再查询物流最新节点，比较这两个时间」。复杂场景须 query_order 在前、query_logistics 在下一决策轮且实际读取前次结果；弱政策池记录已提交且 Agent=0。验证多轮状态隔离和关闭重开 SQLite 后同 session 恢复；不得拿旧 Ch04 报告替代本次结果。
+- [x] **Step 5: 全量验证、文档与提交。** `& $pyCh05 -X utf8 -m pytest -q`；`& $pyCh05 -X utf8 -m ruff check src tests scripts/migrate_ch05_schema.py scripts/smoke_ch05_acceptance.py`；Node 冒烟一次。只有新增修改、失败或未解问题才重复扩大测试。README 给出以下命令、实际结果和单实例边界；及时留痕，提交 `test(ch05): verify workflow prompts and acceptance paths`。
 
 拟交付 PowerShell 演示（执行时以真实跑通结果修订）：
 
@@ -290,9 +290,9 @@ docker compose -f milvus-compose.yml up -d
 
 **Interfaces:** Review 范围为 `a2a98a8..HEAD` 中本章实际改动，包括前端、迁移、真实证据；不将旧章报告或设计文字当实现事实。
 
-- [ ] **Step 1: 发起与执行方式一致的评审。** Native：全部任务由主代理实施，完成后按 requesting-code-review 派一个新鲜上下文 reviewer 做整分支审查。Subagent-driven：每任务按对应技能完成 implementer/spec/code gates，最后整体审查。实施前读所选执行技能，不能依据旧 dev-notes 的 Native/Vibe 记录擅自豁免本章流程。
-- [ ] **Step 2: 记录 code review 结论。** 保存文件/行号/触发条件及 severity；立即追加四项过程。有效问题先复现，再最小修正，纯 Prompt 用冻结样例、代码用相应回归；无根据的建议说明理由，不盲改固定选型。记录修正与新检查，不为节约步骤把重要问题留到交付后。
-- [ ] **Step 3: 最终验证。** 按 verification-before-completion 跑与最终修改相称的检查，确认实际退出状态及真实证据；更新最终报告/README，提交已验证的修正和记录。全量套件已通过且评审未修改代码时，不机械重复一套无新增信息的测试。
+- [x] **Step 1: 发起与执行方式一致的评审。** Native：全部任务由主代理实施，完成后按 requesting-code-review 派一个新鲜上下文 reviewer 做整分支审查。Subagent-driven：每任务按对应技能完成 implementer/spec/code gates，最后整体审查。实施前读所选执行技能，不能依据旧 dev-notes 的 Native/Vibe 记录擅自豁免本章流程。
+- [x] **Step 2: 记录 code review 结论。** 保存文件/行号/触发条件及 severity；立即追加四项过程。有效问题先复现，再最小修正，纯 Prompt 用冻结样例、代码用相应回归；无根据的建议说明理由，不盲改固定选型。记录修正与新检查，不为节约步骤把重要问题留到交付后。
+- [x] **Step 3: 最终验证。** 按 verification-before-completion 跑与最终修改相称的检查，确认实际退出状态及真实证据；更新最终报告/README，提交已验证的修正和记录。全量套件已通过且评审未修改代码时，不机械重复一套无新增信息的测试。
 - [ ] **Step 4: Finish。** 按 finishing-a-development-branch 检查分支/worktree状态，保留用户原文件及私密运行数据；即时记录 finish 四项。交付功能演示命令、离线测试/真实 Prompt/五场景结果、完整 dev-notes 路径及明确单实例限制。推送/合并/删除分支等集成动作按用户已有授权和 finish 技能执行，不能因功能完成自行改变主仓库。
 
 ## Context7 与本机接口核验

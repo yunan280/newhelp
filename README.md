@@ -448,9 +448,11 @@ node tests/page-smoke.js src/mewhelp/static/index.html
 
 验收脚本真实请求六场景的JSON/SSE，另验证未确认不写和确认后重发只一单，会新增**明确标测试的工单一张**。使用专属session_prefix；不修改旧知识库/Ch04评估集。复杂问题用「请先查询订单1001的商品和下单时间，再查询物流最新节点，比较这两个时间」，验收要求两工具分属前后决策轮。同轮调用两工具不能算通过。
 
-本次 [HTTP验收](artifacts/ch05/ch05_20261001_01/acceptance-verified/acceptance.json) 14/14、服务错误0；[最终Prompt校验](artifacts/ch05/ch05_20261001_01/prompts-final-verified/summary.json) 分类28/28、决策12/12、服务错误0，未变决策报告复用且hash核对。实际请求deepseek-chat、响应deepseek-flash；DeepSeek本次用extra_body的max_tokens与thinking disabled，避免SDK转换后的参数不兼容。最终正文逐例阅读，不宣称已执行退款/人工/建单。
+本次 [最终HTTP验收](artifacts/ch05/ch05_20261001_01/acceptance-post-review/acceptance.json) 14/14、服务错误0；[最终Prompt校验](artifacts/ch05/ch05_20261001_01/prompts-post-review/summary.json) 分类28/28、决策12/12、服务错误0。审查后agent.py有变化，决策同标签补跑12/12，意图未变复用28/28并校验hash。实际请求deepseek-chat、响应deepseek-flash；DeepSeek本次用extra_body的max_tokens与thinking disabled，避免SDK转换后的参数不兼容。最终正文逐例阅读，不宣称已执行退款/人工/建单。
 
 真实 [页面核验](artifacts/ch05/ch05_20261001_01/ui-verification.json) 完成投诉、不点继续、工单取消/确认/刷新，截图 [ui-ticket.jpg](artifacts/ch05/ch05_20261001_01/ui-ticket.jpg)。IAB在原生人工确认框后控制接口超时，未冒称真实人工确认成功；人工/取消/两种顺序由执行实际HTML处理器的 [Node点击测试](artifacts/ch05/ch05_20261001_01/page-smoke.txt) 覆盖。文件saver关闭重开、HTTP进程重启和同session恢复的实际证据见 [process-recovery.json](artifacts/ch05/ch05_20261001_01/process-recovery.json)。模型/检索/数据库服务错误保留错误响应，不能冒充已完成兜底。
+
+独立整分支审查3项Important已在唯一TDD修复pass关闭：[审查与修复](artifacts/ch05/ch05_20261001_01/review-resolution.md)。最终全量627 passed、5 deselected，Ruff全绿，[七组页面测试](artifacts/ch05/ch05_20261001_01/page-smoke-post-review.txt) ALL OK，[最终页面](artifacts/ch05/ch05_20261001_01/ui-final.jpg)。模型length截断会追加明确限额提示、保存output_limit并仅建议人工，不开放普通反馈；重排能力超限在首字前拒答入池；工单编辑参数在首次确认前保存，响应不确定时刷新后仍主动同参数重试取回原号。低影响的分类前预算泛化错误仍延期，极长输入可能返回502/BudgetExceeded而非友好限额提示。五张显式确认的测试单保留，原有一张未改。
 
 ## 目录结构
 

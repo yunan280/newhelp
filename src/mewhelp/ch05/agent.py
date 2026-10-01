@@ -193,11 +193,19 @@ async def stream_answer(state, context, emit) -> dict:
     if not answer.strip():
         raise ValueError("answer model returned no text")
     usage = usage.plus(observed_usage(aggregate.usage_metadata, input_bound=bound, output=answer))
+    truncated = aggregate.response_metadata.get("finish_reason") == "length"
+    if truncated:
+        notice = "\n\n回答已达到输出限额，内容可能不完整。请缩小问题范围后重试，或选择转人工。"
+        answer += notice
+        emit({"event": "token", "data": {"text": notice}})
     return {
         "answer": answer,
         "usage": usage.model_dump(),
         "calls": {**state["calls"], "answer": state["calls"]["answer"] + 1},
-        "stop_reason": "clarification"
+        **({"actions": ["handoff"]} if truncated else {}),
+        "stop_reason": "output_limit"
+        if truncated
+        else "clarification"
         if state["decision"]["reply_mode"] == "clarify"
         else "completed",
     }

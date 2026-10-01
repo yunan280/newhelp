@@ -506,7 +506,8 @@ function renderAnswer(body, text, sources) {
 }
 
 function attachFeedback(reply, record) {
-  if (!record.complete || record.error || reply.bubble.querySelector('.feedback')) return;
+  if (!record.complete || record.error || record.finish_reason === 'output_limit'
+    || reply.bubble.querySelector('.feedback')) return;
   const group = document.createElement('div');
   group.className = 'feedback'; group.setAttribute('role', 'group'); group.setAttribute('aria-label', '回答满意度');
   const status = document.createElement('span'); status.className = 'status'; status.setAttribute('role', 'status');
@@ -587,14 +588,18 @@ function attachActions(reply, record) {
         const label = document.createElement('label'); label.textContent = '问题描述';
         const description = document.createElement('textarea'); description.className = 'ticket-description';
         description.required = true; description.maxLength = 2000;
-        description.value = offer.description.slice(0,2000); label.append(description);
+        // 已确认的请求必须保持原参数，回执丢失后才能取回同一张单。
+        const confirmed = record.ticket_request;
+        description.value = (confirmed?.description || offer.description).slice(0,2000);
+        description.disabled = Boolean(confirmed); label.append(description);
         const typeLabel = document.createElement('label'); typeLabel.textContent = '工单类型';
         const type = document.createElement('select'); type.className = 'ticket-type';
         for (const value of ['售后','投诉','咨询']) {
           const option = document.createElement('option'); option.value = value; option.textContent = value;
           type.append(option);
         }
-        type.value = offer.ticket_type; typeLabel.append(type);
+        type.value = confirmed?.ticket_type || offer.ticket_type;
+        type.disabled = Boolean(confirmed); typeLabel.append(type);
         const controls = document.createElement('div'); controls.className = 'controls';
         const cancel = document.createElement('button'); cancel.type = 'button';
         cancel.className = 'ticket-cancel'; cancel.textContent = '取消';
@@ -606,20 +611,25 @@ function attachActions(reply, record) {
           e.preventDefault();
           if (pending || record.ticket_receipt) return;
           if (!description.value.trim()) { status.textContent = '请补充问题描述。'; return; }
+          if (!record.ticket_request) {
+            record.ticket_request = {session_id:record.session_id,user_id:userId,
+              offer_id:offer.offer_id,confirmed:true,
+              description:description.value,ticket_type:type.value};
+            saveHistory(); // 请求前保存；刷新仅恢复，仍需用户主动确认重试。
+          }
+          description.disabled = type.disabled = true;
           pending = true; button.disabled = confirm.disabled = cancel.disabled = true;
           status.textContent = '正在创建工单…';
           try {
             const response = await fetch('/ch05/tickets', {method:'POST',
-              headers:{'Content-Type':'application/json'}, body:JSON.stringify({
-                session_id:record.session_id,user_id:userId,offer_id:offer.offer_id,confirmed:true,
-                description:description.value,ticket_type:type.value})});
+              headers:{'Content-Type':'application/json'}, body:JSON.stringify(record.ticket_request)});
             const receipt = await response.json();
             if (!response.ok) throw new Error(typeof receipt.detail === 'string' ? receipt.detail : '创建失败');
             if (typeof receipt.ticket_no !== 'string' || !receipt.ticket_no) throw new Error('未收到工单号');
             record.ticket_receipt = receipt; status.textContent = '工单已创建：' + receipt.ticket_no;
             panel.remove(); panel = null; saveHistory();
           } catch (error) {
-            status.textContent = error.message + '。请保留原内容，稍后确认重试。';
+            status.textContent = error.message + '。回执尚未确认，稍后确认重试会沿用已提交内容。';
           } finally {
             pending = false; button.disabled = Boolean(record.ticket_receipt);
             confirm.disabled = cancel.disabled = false;
@@ -817,6 +827,7 @@ async function send(text) {
       record.offer = normalizeOffer(payload.offer);
     } else if (event === 'done' && !failed && gotAnything && record.text.trim()) {
       completed = true; record.complete = true;
+      record.finish_reason = payload.finish_reason || payload.stop_reason || 'completed';
       attachFeedback(reply, record);
       attachActions(reply, record);
       saveHistory();

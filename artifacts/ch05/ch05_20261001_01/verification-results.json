@@ -1,0 +1,16 @@
+{
+  "stage": "functional implementation and review fixes verified; integration pending",
+  "reviewed_implementation_head": "0bfe640",
+  "pytest": {"command": ".venv-ch03/Scripts/python.exe -X utf8 -m pytest -q", "passed": 627, "deselected": 5, "seconds": 21.52, "exit_code": 0},
+  "ruff": {"command": ".venv-ch03/Scripts/python.exe -X utf8 -m ruff check src tests scripts/migrate_ch05_schema.py scripts/smoke_ch05_acceptance.py", "exit_code": 0},
+  "format": {"checked_files": 32, "exit_code": 0},
+  "page_smoke": {"result": "ALL OK", "evidence": "page-smoke-post-review.txt"},
+  "prompts": {"intents": "28/28", "decisions": "12/12", "service_errors": 0, "evidence": "prompts-post-review/summary.json"},
+  "http": {"passed": 14, "total": 14, "service_errors": 0, "evidence": "acceptance-post-review/acceptance.json"},
+  "review": {"important_fixed": 3, "critical": 0, "minor_deferred": 1, "evidence": "review-resolution.md", "second_review": false},
+  "recovery": {"passed": true, "evidence": "process-recovery.json"},
+  "runtime": {"fastapi": "0.141.1", "sqlalchemy": "2.1.1", "langchain-core": "1.6.5", "langchain-openai": "1.6.6", "langgraph": "1.2.12", "langgraph-checkpoint": "4.2.0", "langgraph-checkpoint-sqlite": "3.1.1", "pymilvus": "2.6.17", "httpx": "0.28.1", "uvicorn": "0.54.0"},
+  "manual_ui_limit": "IAB native handoff confirmation control blocked. Node actual HTML click handlers cover handoff/cancel/both orders; real browser covers remaining scenarios.",
+  "test_tickets": {"original_rows": 1, "explicit_test_rows_added": 5, "total_after": 6},
+  "server_cleanup": "Owned 8005 stopped after recovery verification; original 8000 preserved."
+}

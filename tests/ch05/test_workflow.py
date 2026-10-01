@@ -1,7 +1,7 @@
 import asyncio
 
 import pytest
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, AIMessageChunk
 from sqlalchemy import select
 
 from mewhelp.ch05.schemas import TurnRequest
@@ -13,6 +13,73 @@ def service():
     from mewhelp.ch05 import service
 
     return service
+
+
+async def test_truncated_answer_stream_checkpoint_and_ledger_agree(
+    workflow_runtime, model_factory, session_factory
+):
+    model_factory.intents = ["订单"]
+    original = workflow_runtime.context.model_factory
+
+    class TruncatedModel:
+        async def astream(self, messages):
+            yield AIMessageChunk(content="退款条件包括以下三项：第一，")
+            yield AIMessageChunk(
+                content="",
+                response_metadata={"finish_reason": "length"},
+                usage_metadata={"input_tokens": 100, "output_tokens": 1024, "total_tokens": 1124},
+            )
+
+    workflow_runtime.context.model_factory = lambda *a, **kw: (
+        TruncatedModel() if kw.get("streaming") else original(*a, **kw)
+    )
+    request = TurnRequest(message="说明订单信息", session_id="truncated")
+    events = [
+        e async for e in service().stream_turn(workflow_runtime, request, entry_point="chat_stream")
+    ]
+    done = events[-1]["data"]
+    assert done["stop_reason"] == "output_limit"
+    assert "不完整" in done["answer"] and "限额" in done["answer"]
+    assert done["actions"] == ["handoff"]
+    assert "".join(e["data"]["text"] for e in events if e["event"] == "token") == done["answer"]
+    saved = await workflow_runtime.graph.aget_state({"configurable": {"thread_id": "truncated"}})
+    assert saved.values["messages"][-1].content == done["answer"]
+    with session_factory() as db:
+        answers = db.scalars(select(Message).where(Message.role == MsgRole.assistant)).all()
+        assert answers[-1].content == done["answer"]
+
+
+async def test_reranker_oversize_goes_through_gate_and_commits_before_token(
+    workflow_runtime, knowledge_request, session_factory, monkeypatch
+):
+    from types import SimpleNamespace
+
+    from mewhelp.ch05 import evidence, workflow
+    from mewhelp.knowledge.reranking import UnsupportedContextError
+
+    def oversized(*args):
+        raise UnsupportedContextError("reranker pair exceeds 8192 tokens")
+
+    monkeypatch.setattr(evidence, "retrieve_evidence", oversized)
+    monkeypatch.setattr(workflow, "retrieve_knowledge", evidence.retrieve_knowledge)
+    workflow_runtime.context.rag_factory = lambda: SimpleNamespace(
+        retrieval=object(), relevance_threshold=0.5, context_budget=32000
+    )
+    events = []
+    async for item in service().stream_turn(
+        workflow_runtime, knowledge_request, entry_point="chat_stream"
+    ):
+        events.append(item)
+        if item["event"] == "token":
+            with session_factory() as db:
+                row = db.scalar(select(LowConfidenceQuestion))
+                assert row.reason_code == "unsupported_context_size"
+                assert row.original_question == knowledge_request.message
+                assert row.trigger_stage == "retrieval"
+    done = events[-1]["data"]
+    assert done["refused"] and done["calls"]["decision"] == done["calls"]["answer"] == 0
+    assert done["node_trace"].index("confidence_gate") < done["node_trace"].index("fallback_reply")
+    assert "agent_decide" not in done["node_trace"]
 
 
 @pytest.mark.parametrize("intent", ["商品咨询", "退款退货"])
