@@ -12,7 +12,13 @@
 $pyCh06 = (Resolve-Path .venv-ch03/Scripts/python.exe).Path
 & $pyCh06 -X utf8 -m mewhelp.ch06.evaluation freeze --dataset eval/ch06
 & $pyCh06 -X utf8 -m mewhelp.ch06.evaluation calibrate --dataset eval/ch06 --outdir artifacts/ch06/<新的run-id>/calibration
-& $pyCh06 -X utf8 -m mewhelp.ch06.evaluation run --dataset eval/ch06 --outdir artifacts/ch06/<新的run-id>/primary --mode primary --calibration <已验证校准文件>
+& $pyCh06 -X utf8 -m mewhelp.ch06.evaluation run --dataset eval/ch06 --parts all --outdir artifacts/ch06/<新的run-id>/primary --mode primary --calibration <已验证校准文件>
 ```
 
-这些是待实现模块齐备后执行的命令；标签冻结与评估器单测通过不表示业务 Prompt 已通过真实模型评估。浏览器和真实数据库验收另外记录，不能用本文件夹的夹具结果冒充。
+实现与实际模型评估均已接入。模式配置、政策校准和真实 HTTP 命令见仓库 README 的 Ch06 节。默认 primary；cascade 须在同一既有上游显式设置 CH06_CASCADE_ENABLED=true、CH06_SMALL_MODEL=deepseek-flash，并另跑 calibration-cascade，不能复用 primary 的模型 hash。
+
+历史失败完整保留：run-03 的余额402；run-03重试的省略指代；run-04虽标注集通过，真实物流回答后“这个能退吗”未承接；run-05修正Prompt后主模型156/156，cascade有1条旧历史污染引用。run-06中途再次402，primary93/156（63服务错误）、cascade121/156（34服务错误+1隐含退货防护误拒，后已控制回归修复），不能计为通过。标签文件和freeze.json未为通过结果改写。
+
+最新用户明确要求不重复跑。run-07已启动的两次校准立即终止，没有作为通过报告；calibration-*-reused是对run-06已完成32条分类校准的离线复算，检查实际分类Prompt/请求及校准实现/模型hash/冻结输入未变，没有新模型调用，不改任何历史正式结果的hash。当前理解防护总体模型表现没有再次全量评估，不能以离线校准复用代替这一项验证。
+
+标注集来自演示场景，不能代表真实客服总体准确率。尤其独立历史夹具并不等于真实前一轮模型回答；真实HTTP多轮和逐例语义人工审核必须另外保留。降级集若没有触发升级，不能把0次升级解释成低置信度升级已被真实模型覆盖；该分支由控制回归验证一次升级上限。

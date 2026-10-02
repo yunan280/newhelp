@@ -402,6 +402,8 @@ $env:MILVUS_COLLECTION = 'knowledge'
 
 ## Ch05：确定性 Workflow 与核心 Agent
 
+本节记录 Ch05 阶段行为；当前聊天已升级为下方 Ch06 流程，包含正式指代、八类意图、订单卡片和退款表单。
+
 流程为指代透传→七类 JSON 意图→代码固定分流→检索/前置闸或业务 Agent→日志。商品咨询和退款退货必须先走原 Ch03/04 RAG，弱证据直接拒答并提交原问题，Agent=0；物流/订单/售后直接用原 Ch02 的三个只读工具。投诉固定安抚并建议两个独立按钮；普通问候固定回复且零模型调用。其他闲聊允许一次分类调用，不进入 Agent。
 
 主 Agent 是受限的决策→工具观察→再决策循环，最终正文另行流式输出。缺订单号时追问；默认最多4次决策、8次工具、每轮64000输入+输出token、180秒，最终正文1024token。模型缺用量时以UTF-8序列化字节保守计量。知识闸先于首个答案token，JSON与SSE使用同一张图。State由官方 AsyncSqliteSaver 持久化，MySQL消息是账本与首次导入来源，内存仅做会话互斥。**本章限定单进程单实例**，勿用多worker共用该文件；多实例、正式指代/分类、上下文策略、MCP、飞轮发布与正式置信度检查留后续章节。
@@ -453,6 +455,74 @@ node tests/page-smoke.js src/mewhelp/static/index.html
 真实 [页面核验](artifacts/ch05/ch05_20261001_01/ui-verification.json) 完成投诉、不点继续、工单取消/确认/刷新，截图 [ui-ticket.jpg](artifacts/ch05/ch05_20261001_01/ui-ticket.jpg)。IAB在原生人工确认框后控制接口超时，未冒称真实人工确认成功；人工/取消/两种顺序由执行实际HTML处理器的 [Node点击测试](artifacts/ch05/ch05_20261001_01/page-smoke.txt) 覆盖。文件saver关闭重开、HTTP进程重启和同session恢复的实际证据见 [process-recovery.json](artifacts/ch05/ch05_20261001_01/process-recovery.json)。模型/检索/数据库服务错误保留错误响应，不能冒充已完成兜底。
 
 独立整分支审查3项Important已在唯一TDD修复pass关闭：[审查与修复](artifacts/ch05/ch05_20261001_01/review-resolution.md)。最终全量627 passed、5 deselected，Ruff全绿，[七组页面测试](artifacts/ch05/ch05_20261001_01/page-smoke-post-review.txt) ALL OK，[最终页面](artifacts/ch05/ch05_20261001_01/ui-final.jpg)。模型length截断会追加明确限额提示、保存output_limit并仅建议人工，不开放普通反馈；重排能力超限在首字前拒答入池；工单编辑参数在首次确认前保存，响应不确定时刷新后仍主动同参数重试取回原号。低影响的分类前预算泛化错误仍延期，极长输入可能返回502/BudgetExceeded而非友好限额提示。五张显式确认的测试单保留，原有一张未改。
+
+## Ch06：正式分流器、订单点选恢复与退款单
+
+同会话用 LLM 一次完成指代消解和必要口语归一，完整清晰的问题原样透传。意图只输出 `intent/confidence`，七类业务/社交加“其他”。普通 FAQ 单次检索；具体订单退款/售后固定经过拿订单 → JSON 扩写 → 去重合并政策检索 → 相关性闸 → 主力 Agent 判断。扩写只在检索侧执行，政策原文只保存一份。跨会话记忆与分类模型训练不在本章。
+
+缺订单号时，聊天流出现本用户演示订单卡片。LangGraph `interrupt` 将原问题和累计用量存入官方 SQLite checkpoint，等待 HTTP 正常结束；点击卡片以同一个 `thread_id` 和 `Command(resume=...)` 继续。刷新/服务重启可恢复卡片，发新问题使旧卡失效。订单事实固定到 2026-10-02；实际业务账本和退款申请存 MySQL，申请为待审核演示记录，不执行支付。退款原因在确认表单中从六类选择，模型不追问或代填。
+
+以下命令在本项目根目录执行，沿用 `.env` 的已充值上游、MySQL localhost:3307 和 Milvus:19530。默认路由主模型 `deepseek-v4-pro`；最终普通决策/正文仍用共享 `LLM_MODEL`（实测请求 deepseek-chat、响应 deepseek-flash）。本章仍限定一个 worker、一个实例。9007 是本次自建演示端口，已有其他服务未停止；端口占用时先核对所属进程。
+
+```powershell
+$pyCh06 = (Resolve-Path .venv-ch03/Scripts/python.exe).Path
+$env:PYTHONUTF8 = '1'
+$env:OMP_NUM_THREADS = '4'
+$env:MKL_NUM_THREADS = '4'
+$env:CH06_PRIMARY_MODEL = 'deepseek-v4-pro'
+$env:CH06_CASCADE_ENABLED = 'false'
+Remove-Item Env:CH06_SMALL_MODEL -ErrorAction SilentlyContinue
+$env:CH06_CALIBRATION_PATH = 'artifacts/ch06/ch06_20261002_07/calibration-primary-reused/router.json'
+$env:CH06_POLICY_CALIBRATION_PATH = 'artifacts/ch06/ch06_20261002_01/policy-calibration-02/policy.json'
+$env:RAG_CALIBRATION_PATH = 'artifacts/ch04/ch04_20260930_03/calibration.json'
+$env:MILVUS_COLLECTION = 'ch06_eval_mysql_20261002_01'
+$env:CH05_CHECKPOINT_PATH = '.cache/ch06/mysql-demo/checkpoints.sqlite3'
+& $pyCh06 -X utf8 -m uvicorn mewhelp.main:app --host 127.0.0.1 --port 9007 --workers 1
+```
+
+浏览器打开 `http://127.0.0.1:9007/`，新会话问“这个能退吗”，刷新后点选1001，查看政策引用与退款表单；选择原因并确认得到待审核申请号。再查1001物流、问“这个能退吗”、说“不退了，查它的物流”，可查看切换。已有会话有唯一可信订单时会直接承接该订单；观察过两个订单后的“这个”仍弹选择器。
+
+本机升级前已做 REPEATABLE READ 一致性全表备份，保存于 Git 忽略的 `.cache/ch06/mysql-backup-20261002/backup.json`，元数据见 [迁移前备份](artifacts/ch06/ch06_20261002_03/mysql/before-migration.json)。迁移两次均成功；旧十张表原有记录逐列未改。新环境先备份业务库，再执行以下准备。只将批准的 `aftersales-policy.md` 八个自然章节新增到 MySQL，旧20条知识保持原值，另建明确的演示 Milvus 集合映射既有知识。新增配送重复块的首次失误和两条精确回退证据保留在 [发布纠正](artifacts/ch06/ch06_20261002_03/mysql/publish-correction.json)。
+
+```powershell
+& $pyCh06 -X utf8 scripts/migrate_ch06_schema.py
+& $pyCh06 -X utf8 scripts/migrate_ch06_schema.py
+# 专用演示集合，不使用原线上集合；报告使用新路径
+& $pyCh06 -X utf8 -m mewhelp.ch06.demo_publish --collection ch06_eval_mysql_20261002_01 --docs knowledge-docs --report artifacts/ch06/my-new-run/mysql-policy.json --confirm-demo-policy
+```
+
+另开终端跑实际 HTTP 验收（每次使用新的目录和 `ch06-` 前缀）。明确确认只创建带测试用户标识的演示退款申请；覆盖 FAQ、政策不足、订单点选、物流→退款→物流、双候选、过期卡、表单不确认/确认/重发/改原因。HTTP 结果需结合服务配置和 SQL 证据判断数据库来源。
+
+```powershell
+$pyCh06 = (Resolve-Path .venv-ch03/Scripts/python.exe).Path
+& $pyCh06 -X utf8 scripts/smoke_ch06_acceptance.py --base-url http://127.0.0.1:9007 --report-dir artifacts/ch06/my-new-http --session-prefix ch06-my-new-http --confirm-demo-refunds
+& $pyCh06 -X utf8 -m pytest -q
+& $pyCh06 -X utf8 -m ruff check src tests scripts/migrate_ch06_schema.py scripts/smoke_ch06_acceptance.py
+node tests/page-smoke.js src/mewhelp/static/index.html
+```
+
+Prompt/数据以 [冻结156条正式集和独立48条校准集](eval/ch06/README.md) 验证，不用单测假冒模型准确率。主模型和可选降级分别校准；正式集不用于阈值调参，报告目录存在会拒绝覆盖。启用降级只给意图分类使用小模型，低于校准阈值才升主模型重判一次；理解、扩写、资格判断继续主模型。修改模型、Prompt、实现或知识后要按依赖重新评估/校准，过期 hash 会显式失败。
+
+```powershell
+# 主模型模式；延续上方 false/无 small_model 配置
+& $pyCh06 -X utf8 -m mewhelp.ch06.evaluation calibrate --dataset eval/ch06 --outdir artifacts/ch06/my-new-eval/calibration-primary
+& $pyCh06 -X utf8 -m mewhelp.ch06.evaluation run --dataset eval/ch06 --parts all --mode primary --calibration artifacts/ch06/my-new-eval/calibration-primary/router.json --outdir artifacts/ch06/my-new-eval/primary
+# 可选成本降级，必须用独立校准，默认不启用
+$env:CH06_CASCADE_ENABLED = 'true'
+$env:CH06_SMALL_MODEL = 'deepseek-flash'
+& $pyCh06 -X utf8 -m mewhelp.ch06.evaluation calibrate --dataset eval/ch06 --outdir artifacts/ch06/my-new-eval/calibration-cascade
+& $pyCh06 -X utf8 -m mewhelp.ch06.evaluation run --dataset eval/ch06 --parts all --mode cascade --calibration artifacts/ch06/my-new-eval/calibration-cascade/router.json --outdir artifacts/ch06/my-new-eval/cascade
+# 政策阈值也绑定当前模型配置；专用隔离库/集合，不写业务库
+& $pyCh06 -X utf8 -m mewhelp.ch06.policy_evaluation --dataset eval/ch06 --workdir .cache/ch06/acceptance-01 --collection ch06_eval_acceptance_20261002_01 --outdir artifacts/ch06/my-new-eval/policy-cascade
+```
+
+独立服务模式 `scripts/smoke_ch06_acceptance.py --serve --workdir .cache/ch06/acceptance-01 --collection ch06_eval_acceptance_20261002_01 --calibration artifacts/ch06/ch06_20261002_07/calibration-primary-reused/router.json --policy-calibration artifacts/ch06/ch06_20261002_01/policy-calibration-02/policy.json --port 9006` 使用同一 `main.app`，SQLite 隔离业务账本、真实模型/Milvus。启动该模式前恢复 `CH06_CASCADE_ENABLED=false` 并移除 `CH06_SMALL_MODEL`。它只有原文政策库，没有真实 MySQL 的12条既有FAQ，因此不能用它冒充真实库完整 FAQ 验收。最终交付以9007的 MySQL 证据为准。
+
+本次沿用已完成验证：当前后端776 passed、5 deselected，Ruff与page-smoke通过；[最近真实MySQL HTTP](artifacts/ch06/ch06_20261002_05/http-mysql/http.json)20/20，[提交后checkpoint故障恢复](artifacts/ch06/ch06_20261002_05/mysql-refund-recovery.json)只一行，[真实MySQL浏览器](artifacts/ch06/ch06_20261002_05/ui-mysql/browser-report.json)卡片/刷新/点选/表单/原回执全部确认。最近完整模型结果为run-05 [primary156/156](artifacts/ch06/ch06_20261002_05/primary/summary.json)和[cascade155/156](artifacts/ch06/ch06_20261002_05/cascade/summary.json)，首次/最终JSON均148/148；cascade的一条历史串扰和后续隐含退货误拒已由失败回归修复。run-06中途402，不能计为通过。
+
+用户明确要求“接着你上次的，别再重新跑，浪费token”，因此不再重跑模型评估/HTTP，历史结果不改hash、不冒称当前全量模型通过。上方启动配置来自[离线复用审计](artifacts/ch06/ch06_20261002_07/calibration-primary-reused/reuse-audit.json)：核对分类Prompt、请求/校准代码、模型hash及冻结32条输入未变，以保存的真实响应重新计算原阈值0.5/0.7；只更新当前代码兼容绑定，新增模型调用0。它不验证新理解防护的总体模型准确率。这部分由既有控制回归覆盖；最新完整真实模型评估留为明确未重跑项。
+
+完整开发和返工记录见 [dev-notes/ch06.md](dev-notes/ch06.md)，设计/计划见 [spec](docs/superpowers/specs/2026-10-02-ch06-router-design.md) / [plan](docs/superpowers/plans/2026-10-02-ch06-router.md)。
 
 ## 目录结构
 

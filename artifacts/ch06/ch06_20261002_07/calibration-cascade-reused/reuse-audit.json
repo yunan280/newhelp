@@ -1,0 +1,35 @@
+{
+  "method": "offline_replay_of_unchanged_classifier_calibration",
+  "new_model_calls": 0,
+  "source_results": "artifacts\\ch06\\ch06_20261002_06\\calibration-cascade\\results.jsonl",
+  "source_sha256": "ae61f5024fd3adede832259a8e88f39f19eb7aa05ac4cb7db535d649d84fe51a",
+  "baseline_measured_dependencies": "6567d76",
+  "unchanged_measured_dependencies": [
+    "src/mewhelp/ch06/config.py",
+    "src/mewhelp/ch06/structured.py",
+    "src/mewhelp/ch05/schemas.py",
+    "src/mewhelp/ch05/limits.py",
+    "src/mewhelp/ch05/config.py",
+    "src/mewhelp/ch05/state.py",
+    "src/mewhelp/ch05/intent.py",
+    "src/mewhelp/llm.py"
+  ],
+  "intent_prompt_unchanged": true,
+  "calibration_algorithm_unchanged": true,
+  "model_hash": "d72be4a815d0962d65b74c3e1b829c5272782e56ad4e238f2ab9352d6291ff83",
+  "dataset_hash": "b3a4c10157b144dc9482ac99c569ad6249db672ca4fb02c055a191318978976c",
+  "sample_count": 32,
+  "selected": [
+    0,
+    0,
+    0,
+    0.5,
+    0.7
+  ],
+  "thresholds_unchanged": true,
+  "binding_only": [
+    "intent_hash",
+    "understanding_hash"
+  ],
+  "limitation": "Understanding guards changed. This does NOT certify current end-to-end model accuracy. User explicitly requested no repeated model runs."
+}

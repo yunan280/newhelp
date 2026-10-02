@@ -1,0 +1,15 @@
+{
+  "available": true,
+  "request_model": "deepseek-v4-pro",
+  "response_model": "deepseek-v4-pro",
+  "content": "{\"intent\":\"闲聊\",\"confidence\":0.99}",
+  "usage": {
+    "input_tokens": 664,
+    "output_tokens": 12,
+    "total_tokens": 676,
+    "input_token_details": {
+      "cache_read": 640
+    },
+    "output_token_details": {}
+  }
+}
