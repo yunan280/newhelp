@@ -1,0 +1,13 @@
+{
+  "policy_rerank_threshold": 0.07062195986509323,
+  "reranker_metadata": {
+    "model_id": "BAAI/bge-reranker-v2-m3",
+    "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "max_length": 8192,
+    "score_transform": "sigmoid"
+  },
+  "corpus_hash": "a81580982f6ad62eb394d3f8c1be639615d5ade47668f877d6bd71995e4dbfb9",
+  "retrieval_input_hash": "2c60952600d4ca23092a2cd7f9dd146fe20ca131b4b9f9c42c3620bcdd099046",
+  "dataset_hash": "b3a4c10157b144dc9482ac99c569ad6249db672ca4fb02c055a191318978976c",
+  "sample_count": 16
+}

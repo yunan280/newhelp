@@ -33,6 +33,22 @@ class RetrievalRuntime:
     rerank: Callable[[str, list[ChunkSnapshot]], list[RankedChunk]]
 
 
+def _authoritative_chunks(session, hits, filters):
+    """One authority check shared by single-query and multi-query retrieval."""
+    seen = set()
+    for hit in hits:
+        row = session.get(KnowledgeChunk, hit.id)
+        if (row is None or row.id in seen or row.vectorize_status != "done"
+            or row.vector_id != str(row.id)
+            or (row.section_path or "").startswith("__deleting__::")):
+            continue
+        snapshot = snapshot_chunk(row)
+        if snapshot.content_hash != hit.content_hash or not filters.matches(snapshot):
+            continue
+        seen.add(row.id)
+        yield snapshot
+
+
 def retrieve_evidence(
     runtime: RetrievalRuntime,
     query: QueryUnderstanding,
@@ -49,28 +65,42 @@ def retrieve_evidence(
     hits = runtime.index.search(
         strategy, vector=vector, bm25_query=query.bm25_query, filters=filters
     )
-    candidates, seen = [], set()
     with runtime.session_factory() as session:
-        for hit in hits[:50]:
-            row = session.get(KnowledgeChunk, hit.id)
-            if (
-                row is None
-                or row.id in seen
-                or row.vectorize_status != "done"
-                or row.vector_id != str(row.id)
-                or (row.section_path or "").startswith("__deleting__::")
-            ):
-                continue
-            snapshot = snapshot_chunk(row)
-            if snapshot.content_hash != hit.content_hash or not filters.matches(snapshot):
-                continue
-            seen.add(row.id)
-            candidates.append(snapshot)
+        candidates = list(_authoritative_chunks(session, hits[:50], filters))
     if strategy == "hybrid_rerank" and candidates:
         final = runtime.rerank(query.canonical, candidates)[:10]
     else:
         final = [RankedChunk(item, None) for item in candidates[:10]]
     return RetrievalResult(candidates, final)
+
+
+def retrieve_multi_evidence(runtime, queries, filters, *, rerank_question, candidate_limit=50):
+    if not 1 <= candidate_limit <= 50 or not queries or len(queries) > 5:
+        raise ValueError("multi-query retrieval requires 1..5 queries and 1..50 candidates")
+    vectors = runtime.embed([q.canonical for q in queries])
+    if len(vectors) != len(queries) or any(len(v) != 1024 for v in vectors):
+        raise ValueError("BGE-M3 query vectors must have 1024 dimensions")
+    scores, snapshots = {}, {}
+    with runtime.session_factory() as session:
+        for query, vector in zip(queries, vectors, strict=True):
+            hits = runtime.index.search("hybrid", vector=vector,
+                                        bm25_query=query.bm25_query, filters=filters)
+            ranks = {}
+            for rank, hit in enumerate(hits[:50], 1):
+                ranks.setdefault(hit.id, rank)
+            for chunk in _authoritative_chunks(session, hits[:50], filters):
+                snapshots[chunk.id] = chunk
+                scores[chunk.id] = scores.get(chunk.id, 0.) + 1. / (60 + ranks[chunk.id])
+    ids = sorted(snapshots, key=lambda i: (-scores[i], not snapshots[i].is_key_clause, i))
+    candidates = [snapshots[i] for i in ids[:candidate_limit]]
+    ranked = runtime.rerank(rerank_question, candidates) if candidates else []
+    final, seen = [], set()
+    authoritative = {c.id: c for c in candidates}
+    for item in ranked:
+        if item.chunk.id in authoritative and item.chunk.id not in seen:
+            seen.add(item.chunk.id)
+            final.append(RankedChunk(authoritative[item.chunk.id], item.score))
+    return RetrievalResult(candidates, final[:10])
 
 
 class VectorSearcher(Protocol):

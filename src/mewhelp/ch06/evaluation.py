@@ -430,7 +430,11 @@ def default_evaluator(part):
                 scope=case["scope"],
                 order=case["order"],
             )
-            return (await expand_queries(state, context)).evaluation_result()
+            from mewhelp.ch05.schemas import OrderDTO
+
+            order = OrderDTO.model_validate(case["order"]) if case.get("order") else None
+            return (await expand_queries(case["question"], order, context=context,
+                                         state=state)).evaluation_result()
         from .assessment import assess_order
 
         state.update(

@@ -39,7 +39,7 @@ class RouterCalibration(BaseModel):
 
 class PolicyCalibration(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    policy_rerank_threshold: float = Field(ge=0, le=1, allow_inf_nan=False)
+    policy_rerank_threshold: float = Field(ge=0, allow_inf_nan=False)
     reranker_metadata: dict
     corpus_hash: str
     retrieval_input_hash: str
