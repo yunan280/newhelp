@@ -12,6 +12,7 @@ from mewhelp.ch02.api import router as ch02_router
 from mewhelp.ch05.api import router as ch05_router
 from mewhelp.ch05.config import Ch05Settings
 from mewhelp.ch05.runtime import open_runtime
+from mewhelp.ch06.api import router as ch06_router
 from mewhelp.knowledge.api import RuntimeDep
 from mewhelp.knowledge.api import router as kb_router
 from mewhelp.knowledge.sources import read_published_chunk
@@ -35,6 +36,7 @@ app = FastAPI(title="MewHelp", version="0.1.0", lifespan=lifespan)
 app.include_router(ch01_router)
 app.include_router(ch02_router)
 app.include_router(ch05_router)
+app.include_router(ch06_router)
 app.include_router(kb_router)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 

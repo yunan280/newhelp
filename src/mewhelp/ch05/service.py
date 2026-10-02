@@ -42,6 +42,7 @@ def result_from_state(state: dict) -> TurnResult:
 
 
 async def stream_turn(runtime, request, *, entry_point):
+    from mewhelp.ch06.selection import active_selection, cancel_pending_locked
     session_id = request.session_id or uuid4().hex
     config = {"configurable": {"thread_id": session_id}, "recursion_limit": 40}
     async with runtime.locks.lock(session_id):
@@ -49,6 +50,8 @@ async def stream_turn(runtime, request, *, entry_point):
         cid, history = await asyncio.to_thread(
             _identity, runtime.context, request, session_id, bootstrap=not previous.values
         )
+        await cancel_pending_locked(runtime, config)
+        previous = await runtime.graph.aget_state(config)
         resumed = bool(previous.values.get("messages") or history)
         incoming = {
             "question": request.message,
@@ -79,6 +82,13 @@ async def stream_turn(runtime, request, *, entry_point):
                         yield item
             snapshot = await runtime.graph.aget_state(config)
             result = result_from_state(snapshot.values)
+            selection = active_selection(snapshot)
+            if selection:
+                yield event("order_selection", **selection)
+                yield event("waiting_for_order", **result.model_dump(mode="json"))
+                return
+            if snapshot.next:
+                raise RuntimeError("workflow did not complete or enter a valid order interrupt")
             if result.offer:
                 yield event("actions", actions=result.actions, offer=result.offer.model_dump())
             yield event("done", **result.model_dump(), finish_reason=result.stop_reason)
@@ -90,8 +100,8 @@ async def stream_turn(runtime, request, *, entry_point):
 async def run_turn(runtime, request) -> TurnResult:
     async with aclosing(stream_turn(runtime, request, entry_point="agent")) as stream:
         async for item in stream:
-            if item["event"] == "done":
+            if item["event"] in {"done", "waiting_for_order"}:
                 fields = dict(item["data"])
-                fields.pop("finish_reason")
+                fields.pop("finish_reason", None)
                 return TurnResult.model_validate(fields)
     raise RuntimeError("workflow ended without a completed result")

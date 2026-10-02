@@ -54,6 +54,11 @@ async def begin_turn(state, context, emit):
         "low_confidence_question_id": None,
         "stop_reason": "",
         "ledger_error": None,
+        "status": "completed",
+        "order": None,
+        "order_selection": None,
+        "selection_status": None,
+        "selected_order_id": None,
     }
 
 
