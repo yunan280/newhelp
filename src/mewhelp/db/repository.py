@@ -12,7 +12,9 @@ import datetime as dt
 from dataclasses import dataclass
 from typing import Any
 
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, select
+from sqlalchemy.dialects.mysql import insert as mysql_insert
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Session
 
 from .models import Conversation, ConvStatus, Faq, Message, MsgRole, Ticket, TicketType
@@ -52,6 +54,36 @@ class TurnMessage:
     tool_calls: list[dict[str, Any]] | None = None
     tool_call_id: str | None = None
     citations: list[dict] | None = None
+    ch06_event_key: str | None = None
+
+
+def append_messages_once(session: Session, *, conversation_id: int, rows: list[TurnMessage]) -> None:
+    """Flush within the caller's transaction; only exact committed replays are accepted."""
+    for row in rows:
+        if row.ch06_event_key is None:
+            append_messages(session, conversation_id=conversation_id, rows=[row])
+            continue
+        values = {"conversation_id": conversation_id, "role": row.role, "content": row.content,
+                  "tool_calls": row.tool_calls, "tool_call_id": row.tool_call_id,
+                  "citations": row.citations, "ch06_event_key": row.ch06_event_key}
+        dialect = session.get_bind().dialect.name
+        if dialect == "sqlite":
+            statement = sqlite_insert(Message).values(**values).on_conflict_do_nothing(
+                index_elements=["ch06_event_key"])
+        elif dialect == "mysql":
+            statement = mysql_insert(Message).values(**values).on_duplicate_key_update(
+                ch06_event_key=row.ch06_event_key)
+        else:
+            raise RuntimeError(f"unsupported message ledger dialect: {dialect}")
+        session.execute(statement)
+        saved = session.scalar(select(Message).where(Message.ch06_event_key == row.ch06_event_key)
+                               .with_for_update().execution_options(populate_existing=True))
+        if saved is not None and any([
+            saved.conversation_id != conversation_id, saved.role != row.role,
+            saved.content != row.content, saved.tool_calls != row.tool_calls,
+            saved.tool_call_id != row.tool_call_id, saved.citations != row.citations,
+        ]):
+            raise ValueError("message idempotency key reused with different content")
 
 
 # ---------- 会话身份 ----------

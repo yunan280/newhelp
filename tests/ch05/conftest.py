@@ -21,6 +21,9 @@ class ModelFactory:
         self.fail_classifier = False
         self.fail_answer = False
         self.block_answer = None
+        self.understanding_scope = "general"
+        self.understanding_outputs = []
+        self.assessment_verdict = "eligible"
 
     def __call__(self, output_tokens, **kwargs):
         return FakeModel(
@@ -45,6 +48,19 @@ class FakeModel:
 
     async def ainvoke(self, messages):
         self.owner.requests.append((self.kind, list(messages)))
+        if self.kind == "understanding":
+            payload = json.loads(messages[-1].content)
+            parsed = self.owner.understanding_outputs.pop(0) if self.owner.understanding_outputs else {
+                "question": payload["question"], "scope": self.owner.understanding_scope,
+                "reference_order_id": None, "reference_message_id": None,
+            }
+            return AIMessage(content=json.dumps(parsed, ensure_ascii=False))
+        if self.kind == "expansion":
+            return AIMessage(content='{"queries":["退货资格限制","退货期限和例外"]}')
+        if self.kind == "assessment":
+            return AIMessage(content=json.dumps({"verdict": self.owner.assessment_verdict,
+                "explanation": "依据政策，可以申请并等待审核[1]。" if self.owner.assessment_verdict == "eligible" else "请确认商品状态[1]。",
+                "missing_facts": [] if self.owner.assessment_verdict != "needs_clarification" else ["拆封状态"]}, ensure_ascii=False))
         if self.kind == "classifier":
             if self.owner.fail_classifier:
                 raise RuntimeError("classifier unavailable")

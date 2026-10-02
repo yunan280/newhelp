@@ -60,6 +60,8 @@ class WorkflowState(TypedDict, total=False):
     selected_order_id: str | None
     selection_receipts: dict[str, dict]
     assessment: dict | None
+    assessment_control: dict
+    user_facts: dict
     refund_offer: dict | None
     refund_offers: dict[str, dict]
     refund_receipts: dict[str, dict]

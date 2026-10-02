@@ -18,6 +18,7 @@ _REFERENCE = re.compile(
     r"它|这(?:个|件|单|笔|款|东西|玩意)|那(?:个|件|单|款)|该(?:商品|订单)|此单|我说的是|那个订单"
 )
 _COLLOQUIAL = re.compile(r"啥|咋|俺|晓得|退不|修不|能.{0,8}不[？?]?$")
+_ELLIPTICAL = re.compile(r"(?:未|没|没有|已|已经)(?:拆封|开封)|(?:非|不是|是)人为损坏")
 _BARE_ID = re.compile(
     r"(?<![A-Za-z0-9])\d{4,}(?![A-Za-z0-9]|[-/.]\d)(?!\s*(?:元|天|年|月|日|小时|分钟|个))"
 )
@@ -183,7 +184,8 @@ async def understand_query(
             diagnostics.append("untrusted_or_ambiguous_reference")
     if selected is None and len(current) == 1:
         selected = next(iter(current))
-    needs_rewrite = bool(_REFERENCE.search(question) or _COLLOQUIAL.search(question))
+    elliptical = bool(selected and _ELLIPTICAL.fullmatch(question.strip()))
+    needs_rewrite = bool(_REFERENCE.search(question) or _COLLOQUIAL.search(question) or elliptical)
     canonical = parsed.question if needs_rewrite else question
     scope = parsed.scope
     if selected:
@@ -220,6 +222,7 @@ async def understand_query(
             or bool(
                 _ASSERTED_QUALIFIER.search(question)
                 and not re.search(r"(?:退|修)不[？?]?$", question)
+                and not (elliptical and question.strip() in canonical)
             )
         )
         if unsafe or selected not in canonical:

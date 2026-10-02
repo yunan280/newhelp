@@ -443,11 +443,16 @@ def default_evaluator(part):
             intent=case["intent"],
             order=case["order"],
             user_facts=case.get("user_facts", {}),
+            gate={"passed": True},
             evidence={
                 "sources": [{"number": 1, "questions": "演示政策", "answer": case["policy"]}]
             },
         )
-        return (await assess_order(state, context)).evaluation_result()
+        result = await assess_order(state, context)
+        return {"actual": result.get("assessment", {}),
+                "raw_responses": result.get("assessment_control", {}).get("raw_responses", []),
+                "usage": result.get("usage", {}), "calls": result.get("calls", {}),
+                "failures": [result["stop_reason"]] if result.get("stop_reason") else []}
 
     return run
 

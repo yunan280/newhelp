@@ -53,6 +53,11 @@ def input_bound(messages: list, tools: list[dict] | None = None) -> int:
 
 
 def final_messages(state: dict) -> list:
+    if state.get("route") == "aftersales":
+        from mewhelp.ch06.assessment import assessment_messages
+        return [*assessment_messages(state), SystemMessage(content=FINAL_SYSTEM +
+            "\n根据下列既定资格判断生成自然语言正文，不改变verdict；引用实际政策编号，不追问退款原因，不宣称批准或到账。\n" +
+            json.dumps(state.get("assessment"), ensure_ascii=False))]
     return [
         *(state.get("agent_messages") or prompt_messages(state)),
         SystemMessage(

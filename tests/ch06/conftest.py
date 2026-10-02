@@ -74,3 +74,42 @@ async def open_selection_runtime(factory, path):
 async def selection_runtime(session_factory, tmp_path):
     async with open_selection_runtime(session_factory, tmp_path / "checkpoint.sqlite") as runtime:
         yield runtime
+
+
+@pytest.fixture
+def core_factory():
+    from tests.ch05.conftest import ModelFactory
+    return ModelFactory()
+
+
+@pytest.fixture
+async def core_runtime(session_factory, core_factory, tmp_path, monkeypatch):
+    import json
+    from pathlib import Path
+
+    from mewhelp.ch05 import workflow
+    from mewhelp.ch05.config import Ch05Settings
+    from mewhelp.ch05.evidence import EvidenceEnvelope
+    from mewhelp.ch05.runtime import open_runtime
+    from mewhelp.ch06.config import Ch06Settings
+    from mewhelp.ch06.evaluation import model_hash, runtime_hash, verify_dataset
+    from mewhelp.knowledge.answering import SourceDTO
+    path = tmp_path / "router.json"
+    path.write_text(json.dumps({"model_hash": model_hash(), "understanding_hash": runtime_hash("understanding"),
+        "intent_hash": runtime_hash("intents"), "dataset_hash": verify_dataset(Path("eval/ch06"))["dataset_hash"],
+        "intent_min_confidence": .5, "cascade_upgrade_threshold": .7, "sample_count": 32}), encoding="utf-8")
+    source = SourceDTO(number=1, chunk_id="1", questions="退款售后政策", answer="未拆封且期限内支持申请。",
+        section_path="退款售后政策/期限", category="退款售后政策", product_category=None,
+        content_hash="a" * 64, source_url="/kb/source/1")
+    evidence = EvidenceEnvelope(sources=[source], scores=[.9], threshold=.5, context_budget=32000)
+    async def retrieve(*a, **kw):
+        return evidence
+    monkeypatch.setattr(workflow, "retrieve_knowledge", retrieve)
+    if hasattr(workflow, "retrieve_policy"):
+        monkeypatch.setattr(workflow, "retrieve_policy", retrieve)
+        monkeypatch.setattr(workflow, "load_policy_calibration", lambda c: object())
+    async with open_runtime(session_factory, settings=Ch05Settings(checkpoint_path=tmp_path/"workflow.sqlite"),
+        model_factory=core_factory, router_model_factory=core_factory.router,
+        router_settings=Ch06Settings(calibration_path=path), rag_factory=lambda: object()) as runtime:
+        runtime.test_evidence = evidence
+        yield runtime

@@ -22,7 +22,8 @@ DDL_PATH = Path(__file__).resolve().parents[1] / "sql" / "ch02-ddl.sql"
 @pytest.fixture(scope="module")
 def ddl_text() -> str:
     assert DDL_PATH.exists(), f"权威 DDL 不存在:{DDL_PATH}"
-    return DDL_PATH.read_text(encoding="utf-8")
+    return "\n".join(p.read_text(encoding="utf-8") for p in [DDL_PATH,
+        DDL_PATH.parent / "ch05-ddl.sql", DDL_PATH.parent / "ch06-ddl.sql"])
 
 
 @pytest.fixture(scope="module")
@@ -84,7 +85,7 @@ def test_foreign_keys_are_named(ddl_text, compiled):
     ("table_name", "expected_indexes"),
     [
         pytest.param("conversations", {"idx_user_id"}, id="conversations"),
-        pytest.param("messages", {"idx_conversation_id"}, id="messages"),
+        pytest.param("messages", {"idx_conversation_id", "uk_messages_ch06_event_key"}, id="messages"),
         pytest.param("tickets", {"idx_conversation_id", "uk_tickets_request_id"}, id="tickets"),
         pytest.param("faq", {"idx_category"}, id="faq"),
     ],

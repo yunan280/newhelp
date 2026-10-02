@@ -114,6 +114,7 @@ class Message(Base):
     __tablename__ = "messages"
     __table_args__ = (
         Index("idx_conversation_id", "conversation_id"),
+        Index("uk_messages_ch06_event_key", "ch06_event_key", unique=True),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
     )
 
@@ -129,6 +130,7 @@ class Message(Base):
     tool_calls: Mapped[list | None] = mapped_column(JSON_COLUMN, nullable=True)
     tool_call_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     citations: Mapped[list[dict] | None] = mapped_column(JSON_COLUMN, nullable=True)
+    ch06_event_key: Mapped[str | None] = mapped_column(String(64), nullable=True)
     created_at: Mapped[dt.datetime] = mapped_column(
         DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP")
     )

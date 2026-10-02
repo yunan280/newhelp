@@ -1,0 +1,35 @@
+{
+  "mode": "primary",
+  "total": 12,
+  "passed": 12,
+  "failed": 0,
+  "service_errors": 0,
+  "integrity_errors": [],
+  "json_cases": 12,
+  "original_json_parsed": 12,
+  "final_json_parsed": 12,
+  "manual_semantic_review_required": [],
+  "usage": {
+    "input_tokens": 10338,
+    "output_tokens": 1118,
+    "estimated": false
+  },
+  "calls": {
+    "assessment": 12
+  },
+  "classification_cases": 0,
+  "escalations": 0,
+  "intent_metrics": {},
+  "parts": {
+    "assessment": {
+      "hash": "7d99af33d9cc5283a49d0c048e0b7fdcff581a2b3bcd69b3bd7742c2cccb5cc5",
+      "total": 12,
+      "passed": 12,
+      "failed": 0
+    }
+  },
+  "dataset_hash": "b3a4c10157b144dc9482ac99c569ad6249db672ca4fb02c055a191318978976c",
+  "original_json_parse_rate": 1.0,
+  "final_json_parse_rate": 1.0,
+  "complete": true
+}

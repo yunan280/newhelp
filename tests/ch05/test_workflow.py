@@ -25,7 +25,7 @@ async def test_plaintext_decision_completes_safely_and_next_turn_can_continue(
     ]
     done = events[-1]["data"]
     assert events[-1]["event"] == "done" and done["stop_reason"] == "invalid_decision"
-    assert done["calls"] == {"classifier": 1, "decision": 2, "answer": 0}
+    assert done["calls"] == {"classifier": 1, "decision": 2, "answer": 0, "understanding": 1}
     assert "stream_answer" not in done["node_trace"] and done["node_trace"][-1] == "log_turn"
     assert "".join(e["data"]["text"] for e in events if e["event"] == "token") == done["answer"]
     saved = await workflow_runtime.graph.aget_state(
@@ -165,9 +165,9 @@ async def test_complaint_and_greeting_cannot_write_ticket(
         workflow_runtime, TurnRequest(message="我要投诉", session_id="x")
     )
     assert first.actions == ["handoff", "create_ticket"] and first.offer
-    assert first.calls == {"classifier": 1, "decision": 0, "answer": 0}
+    assert first.calls == {"classifier": 1, "decision": 0, "answer": 0, "understanding": 1}
     second = await service().run_turn(workflow_runtime, TurnRequest(message="你好", session_id="x"))
-    assert second.calls == {"classifier": 1, "decision": 0, "answer": 0}
+    assert second.calls == {"classifier": 1, "decision": 0, "answer": 0, "understanding": 1}
     assert second.actions == [] and second.offer is None and second.sources == []
     state = await workflow_runtime.graph.aget_state({"configurable": {"thread_id": "x"}})
     assert first.offer.offer_id in state.values["offers"]
@@ -178,7 +178,7 @@ async def test_complaint_and_greeting_cannot_write_ticket(
 async def test_classified_chitchat_uses_only_classifier(workflow_runtime, model_factory):
     model_factory.intents = ["闲聊"]
     result = await service().run_turn(workflow_runtime, TurnRequest(message="天气真好"))
-    assert result.calls == {"classifier": 1, "decision": 0, "answer": 0}
+    assert result.calls == {"classifier": 1, "decision": 0, "answer": 0, "understanding": 1}
 
 
 async def test_sources_precede_first_token_and_next_turn_resets_evidence(
@@ -259,7 +259,7 @@ async def test_ledger_failure_is_visible_and_checkpoint_still_completes(
     def broken(*args, **kwargs):
         raise RuntimeError("ledger failed")
 
-    monkeypatch.setattr(workflow, "append_messages", broken)
+    monkeypatch.setattr(workflow, "append_messages_once", broken)
     result = await service().run_turn(workflow_runtime, TurnRequest(message="你好"))
     assert result.ledger_error
     snapshot = await workflow_runtime.graph.aget_state(

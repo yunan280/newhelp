@@ -131,3 +131,12 @@ async def test_reference_preserves_negation_attachment():
 async def test_general_colloquial_faq_can_normalize_without_choosing_order():
     result = await resolve("这个产品售后咋办", output("如何申请产品售后服务？", scope="general"))
     assert result.question == "如何申请产品售后服务？" and result.trusted_order_id is None
+
+
+async def test_reply_to_agent_clarification_can_complete_elliptical_fact():
+    result = await resolve(
+        "未拆封", output("订单1001的机械键盘未拆封，可以退货吗？", "1001", "a1"),
+        [{"id":"a1", "role":"assistant", "content":"订单1001的机械键盘是否已经拆封？"}],
+        [{"order_id":"1001", "product_name":"机械键盘", "message_id":"a1"}],
+    )
+    assert "退货" in result.question and "未拆封" in result.question
