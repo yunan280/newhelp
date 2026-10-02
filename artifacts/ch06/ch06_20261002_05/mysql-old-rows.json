@@ -1,0 +1,58 @@
+{
+  "database": "actual MySQL localhost:3307/mewhelp",
+  "old_rows_unchanged": true,
+  "tables": {
+    "conversations": {
+      "before": 79,
+      "current": 97,
+      "old_missing_or_changed": 0
+    },
+    "faq": {
+      "before": 12,
+      "current": 12,
+      "old_missing_or_changed": 0
+    },
+    "knowledge_chunks": {
+      "before": 20,
+      "current": 28,
+      "old_missing_or_changed": 0
+    },
+    "knowledge_chunks_draft_backup": {
+      "before": 14,
+      "current": 14,
+      "old_missing_or_changed": 0
+    },
+    "knowledge_jobs_draft_backup": {
+      "before": 0,
+      "current": 0,
+      "old_missing_or_changed": 0
+    },
+    "knowledge_qa_staging_draft_backup": {
+      "before": 0,
+      "current": 0,
+      "old_missing_or_changed": 0
+    },
+    "low_confidence_questions": {
+      "before": 18,
+      "current": 20,
+      "old_missing_or_changed": 0
+    },
+    "messages": {
+      "before": 390,
+      "current": 466,
+      "old_missing_or_changed": 0
+    },
+    "qa_extraction_staging": {
+      "before": 8,
+      "current": 8,
+      "old_missing_or_changed": 0
+    },
+    "tickets": {
+      "before": 7,
+      "current": 7,
+      "old_missing_or_changed": 0
+    }
+  },
+  "added_aftersales_policy_chunks": 8,
+  "explicit_test_refunds": 3
+}

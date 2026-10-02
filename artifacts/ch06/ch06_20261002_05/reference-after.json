@@ -1,0 +1,68 @@
+[
+  {
+    "question": "这个能退吗",
+    "actual": {
+      "question": "订单1001的机械键盘能退货吗？",
+      "scope": "order_specific",
+      "trusted_order_id": "1001"
+    },
+    "raw_responses": [
+      {
+        "content": "{\n  \"question\": \"订单1001的机械键盘能退货吗？\",\n  \"scope\": \"order_specific\",\n  \"reference_order_id\": \"1001\",\n  \"reference_message_id\": \"456bf6c064a341a2b43b4adec5914167-answer\"\n}",
+        "request_model": "deepseek-v4-pro",
+        "response_model": "deepseek-v4-pro",
+        "usage": {
+          "input_tokens": 1175,
+          "output_tokens": 65,
+          "estimated": false
+        },
+        "elapsed_ms": 1937,
+        "parsed": true,
+        "repair": false
+      }
+    ],
+    "usage": {
+      "input_tokens": 1175,
+      "output_tokens": 65,
+      "estimated": false
+    },
+    "calls": {
+      "understanding": 1
+    },
+    "diagnostics": [],
+    "control_error": null
+  },
+  {
+    "question": "我问另一单，这个能退吗",
+    "actual": {
+      "question": "我问另一单，这个能退吗",
+      "scope": "order_specific",
+      "trusted_order_id": null
+    },
+    "raw_responses": [
+      {
+        "content": "{\n  \"question\": \"我问另一单，这个能退吗\",\n  \"scope\": \"order_specific\",\n  \"reference_order_id\": null,\n  \"reference_message_id\": null\n}",
+        "request_model": "deepseek-v4-pro",
+        "response_model": "deepseek-v4-pro",
+        "usage": {
+          "input_tokens": 1179,
+          "output_tokens": 41,
+          "estimated": false
+        },
+        "elapsed_ms": 1334,
+        "parsed": true,
+        "repair": false
+      }
+    ],
+    "usage": {
+      "input_tokens": 1179,
+      "output_tokens": 41,
+      "estimated": false
+    },
+    "calls": {
+      "understanding": 1
+    },
+    "diagnostics": [],
+    "control_error": null
+  }
+]

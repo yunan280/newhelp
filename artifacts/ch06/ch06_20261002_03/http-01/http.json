@@ -1,0 +1,3149 @@
+{
+  "base_url": "http://127.0.0.1:9006",
+  "session_prefix": "ch06-http-20261002-01",
+  "database_scope": "report service configuration separately; HTTP alone cannot prove MySQL",
+  "confirmed_demo_refunds": true,
+  "cases": [
+    {
+      "name": "faq",
+      "method": "POST",
+      "path": "/ch05/agent",
+      "request": {
+        "user_id": "ch06-http-20261002-01-user",
+        "session_id": "ch06-http-20261002-01-faq",
+        "message": "退货政策是什么"
+      },
+      "passed": false,
+      "status": 200,
+      "response": {
+        "session_id": "ch06-http-20261002-01-faq",
+        "conversation_id": 2,
+        "resumed": false,
+        "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。",
+        "sources": [],
+        "refused": true,
+        "low_confidence_question_id": "1",
+        "intent": "退款退货",
+        "route": "knowledge",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "retrieve_knowledge",
+          "confidence_gate",
+          "fallback_reply",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 1324,
+          "output_tokens": 41,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0,
+          "understanding": 1
+        },
+        "stop_reason": "weak_evidence",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "退货政策是什么",
+        "intent_confidence": 0.96,
+        "order_selection": null,
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      },
+      "error": "ValueError: bounded stop: weak_evidence",
+      "service_error": false
+    },
+    {
+      "name": "explicit",
+      "method": "POST",
+      "path": "/ch05/agent",
+      "request": {
+        "user_id": "ch06-http-20261002-01-user",
+        "session_id": "ch06-http-20261002-01-explicit",
+        "message": "订单1001未拆封，能退吗"
+      },
+      "passed": true,
+      "status": 200,
+      "response": {
+        "session_id": "ch06-http-20261002-01-explicit",
+        "conversation_id": 3,
+        "resumed": false,
+        "answer": "订单1001于2026-09-29签收，按判断基准日2026-10-02计算，签收次日起第3天，仍在七天无理由退货期限内[2]。订单快照显示商品未拆封，您也明确表示未拆封，符合七天无理由退货对未拆封的要求[2]。\n\n因此，您可以提出七天无理由退货申请，但申请提交后仍需人工审核，且需满足不影响二次销售等前提条件[2][4]。您可在下方选择“申请七天无理由退货”按钮，在退款表单中自行选择原因并提交。提交申请不代表审核通过或退款已到账。",
+        "sources": [
+          {
+            "number": 1,
+            "chunk_id": "8002212589846549456",
+            "questions": "无理由退货例外与未知事实",
+            "answer": "超过上述 7 天期限，不支持七天无理由退货。本演示中拆封或使用的商品视为影响二次销售，不适用无理由退货。商品是否拆封、是否影响二次销售未知时，需先澄清相关事实，不能默认未拆封。质量问题按下一节单独处理。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 无理由退货例外与未知事实",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "61e6a3cb9ea7761401b2c557c92b67fc29dac4bc918dc10d49752c2822a5883a",
+            "source_url": "/kb/source/8002212589846549456"
+          },
+          {
+            "number": 2,
+            "chunk_id": "7240605041584562577",
+            "questions": "七天无理由退货期限与条件",
+            "answer": "签收次日起 7 天内（含第 7 天），商品未拆封且不影响二次销售，可申请七天无理由退货。期限使用订单签收日期和判断基准日期计算，不能用下单日期替代签收日期。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 七天无理由退货期限与条件",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "58cbd09d3d7486fc6922cca24c70e1b1c6abfe6f25933cf65fdb8381f00d0b3d",
+            "source_url": "/kb/source/7240605041584562577"
+          },
+          {
+            "number": 3,
+            "chunk_id": "5473415109386655321",
+            "questions": "未发货订单取消退款",
+            "answer": "订单尚未发货时，可申请取消订单并退款，无需寄回商品。已发货或已签收的订单需按照对应退货条件判断，不能假称尚未发货。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 未发货订单取消退款",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "2b5c888e6966c507c746827891a5a145b2b7cb3ba5b6605f328ed3f68a1846b5",
+            "source_url": "/kb/source/5473415109386655321"
+          },
+          {
+            "number": 4,
+            "chunk_id": "3734656836206291595",
+            "questions": "退款申请与审核",
+            "answer": "符合申请条件后，用户在退款表单里从固定类目自选原因并明确提交。固定类目为七天无理由、商品质量问题、与描述不符、破损或缺件、发错货、其他；不默认选值，也不由模型代选。资格澄清针对商品事实，不追问表单退款原因。申请提交后状态为“待审核”，提供申请号供查询。同一次申请重试复用原申请号。本系统提交申请不表示审核通过、已执行退款或款项已到账；不得承诺具体退款到账日。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退款申请与审核",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "894e9e4c958dea8a251cf1a82a8d0c728b3fe1077e9b26d3cb674260aaee53ce",
+            "source_url": "/kb/source/3734656836206291595"
+          },
+          {
+            "number": 5,
+            "chunk_id": "2361511256633032761",
+            "questions": "商品质量问题与退换货",
+            "answer": "已确认的商品质量问题不受七天无理由退货期限限制，可申请质量问题退货或换货。破损、缺件、发错货等需核对商品事实和相关凭证；故障表现或质量责任尚不明确时先澄清，不直接承诺符合条件。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 商品质量问题与退换货",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "72ac4e85e60816ca41024b8bac0a9e7ec33623c20d24d6cd7eb0bf03ea6dee94",
+            "source_url": "/kb/source/2361511256633032761"
+          },
+          {
+            "number": 6,
+            "chunk_id": "6534928182256570358",
+            "questions": "退货运费",
+            "answer": "七天无理由退货的寄回运费由用户承担；经核实的商品质量问题、破损缺件或发错货，由商家承担合理寄回运费。无需寄回的未发货取消退款不产生寄回运费。具体费用和责任以审核核实结果为准，不编造运费金额。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退货运费",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "81beb7981ebbe5514a4d852d0fd4a686685a2b34711a7126203dae876d5aa64c",
+            "source_url": "/kb/source/6534928182256570358"
+          },
+          {
+            "number": 7,
+            "chunk_id": "3437647713525028649",
+            "questions": "电子类商品保修与维修",
+            "answer": "电子类商品自签收之日起保修 12 个月，非人为损坏的故障可申请免费保修维修。超过保修期或人为损坏不在免费保修范围内。损坏原因未知时需询问故障表现、损坏经过或核对凭证；不能默认非人为损坏。家居用品的质量问题按质量退换货条款处理，不凭电子类条款编造保修期。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 电子类商品保修与维修",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "1e69bb3ce8d5dbdeba12fa7028d98da753ff81c67de4e36337d7a1dd29fea133",
+            "source_url": "/kb/source/3437647713525028649"
+          }
+        ],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "退款退货",
+        "route": "aftersales",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "c11e22ad5e234e32885dd2a3912b5d25-order",
+            "round": 0,
+            "name": "load_order",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "{\"order_id\":\"1001\",\"user_id\":\"ch06-http-20261002-01-user\",\"product_name\":\"机械键盘\",\"product_category\":\"数码配件\",\"status\":\"已签收\",\"paid_amount\":\"199.00\",\"ordered_at\":\"2026-09-27\",\"received_at\":\"2026-09-29\",\"condition\":\"unopened\",\"as_of\":\"2026-10-02\"}",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "ensure_order",
+          "load_order",
+          "expand_queries",
+          "retrieve_policy",
+          "confidence_gate",
+          "assess_order",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 6648,
+          "output_tokens": 333,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 1,
+          "understanding": 1,
+          "expansion": 1,
+          "assessment": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "订单1001未拆封，能退吗",
+        "intent_confidence": 0.97,
+        "order_selection": null,
+        "order": {
+          "order_id": "1001",
+          "user_id": "ch06-http-20261002-01-user",
+          "product_name": "机械键盘",
+          "product_category": "数码配件",
+          "status": "已签收",
+          "paid_amount": "199.00",
+          "ordered_at": "2026-09-27",
+          "received_at": "2026-09-29",
+          "condition": "unopened",
+          "as_of": "2026-10-02"
+        },
+        "assessment": {
+          "verdict": "eligible",
+          "explanation": "订单于2026-09-29签收，as_of为2026-10-02，签收次日起第3天，仍在7天期限内[2]。订单快照condition=unopened，用户也明确表示未拆封，符合七天无理由退货对未拆封的要求[2]。可支持提出七天无理由退货申请，但申请仍需人工审核，且需满足不影响二次销售等前提条件[2][4]。",
+          "missing_facts": []
+        },
+        "refund_offer": {
+          "offer_id": "02ef298cfed05a19c27dc8f9e0d8beb021202cf71fef47aca135b2ccedc55613",
+          "turn_id": "c11e22ad5e234e32885dd2a3912b5d25",
+          "order": {
+            "order_id": "1001",
+            "user_id": "ch06-http-20261002-01-user",
+            "product_name": "机械键盘",
+            "product_category": "数码配件",
+            "status": "已签收",
+            "paid_amount": "199.00",
+            "ordered_at": "2026-09-27",
+            "received_at": "2026-09-29",
+            "condition": "unopened",
+            "as_of": "2026-10-02"
+          },
+          "question": "订单1001未拆封，能退吗",
+          "assessment": {
+            "verdict": "eligible",
+            "explanation": "订单于2026-09-29签收，as_of为2026-10-02，签收次日起第3天，仍在7天期限内[2]。订单快照condition=unopened，用户也明确表示未拆封，符合七天无理由退货对未拆封的要求[2]。可支持提出七天无理由退货申请，但申请仍需人工审核，且需满足不影响二次销售等前提条件[2][4]。",
+            "missing_facts": []
+          },
+          "sources": [
+            {
+              "number": 1,
+              "chunk_id": "8002212589846549456",
+              "questions": "无理由退货例外与未知事实",
+              "answer": "超过上述 7 天期限，不支持七天无理由退货。本演示中拆封或使用的商品视为影响二次销售，不适用无理由退货。商品是否拆封、是否影响二次销售未知时，需先澄清相关事实，不能默认未拆封。质量问题按下一节单独处理。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 无理由退货例外与未知事实",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "61e6a3cb9ea7761401b2c557c92b67fc29dac4bc918dc10d49752c2822a5883a",
+              "source_url": "/kb/source/8002212589846549456"
+            },
+            {
+              "number": 2,
+              "chunk_id": "7240605041584562577",
+              "questions": "七天无理由退货期限与条件",
+              "answer": "签收次日起 7 天内（含第 7 天），商品未拆封且不影响二次销售，可申请七天无理由退货。期限使用订单签收日期和判断基准日期计算，不能用下单日期替代签收日期。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 七天无理由退货期限与条件",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "58cbd09d3d7486fc6922cca24c70e1b1c6abfe6f25933cf65fdb8381f00d0b3d",
+              "source_url": "/kb/source/7240605041584562577"
+            },
+            {
+              "number": 3,
+              "chunk_id": "5473415109386655321",
+              "questions": "未发货订单取消退款",
+              "answer": "订单尚未发货时，可申请取消订单并退款，无需寄回商品。已发货或已签收的订单需按照对应退货条件判断，不能假称尚未发货。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 未发货订单取消退款",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "2b5c888e6966c507c746827891a5a145b2b7cb3ba5b6605f328ed3f68a1846b5",
+              "source_url": "/kb/source/5473415109386655321"
+            },
+            {
+              "number": 4,
+              "chunk_id": "3734656836206291595",
+              "questions": "退款申请与审核",
+              "answer": "符合申请条件后，用户在退款表单里从固定类目自选原因并明确提交。固定类目为七天无理由、商品质量问题、与描述不符、破损或缺件、发错货、其他；不默认选值，也不由模型代选。资格澄清针对商品事实，不追问表单退款原因。申请提交后状态为“待审核”，提供申请号供查询。同一次申请重试复用原申请号。本系统提交申请不表示审核通过、已执行退款或款项已到账；不得承诺具体退款到账日。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退款申请与审核",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "894e9e4c958dea8a251cf1a82a8d0c728b3fe1077e9b26d3cb674260aaee53ce",
+              "source_url": "/kb/source/3734656836206291595"
+            },
+            {
+              "number": 5,
+              "chunk_id": "2361511256633032761",
+              "questions": "商品质量问题与退换货",
+              "answer": "已确认的商品质量问题不受七天无理由退货期限限制，可申请质量问题退货或换货。破损、缺件、发错货等需核对商品事实和相关凭证；故障表现或质量责任尚不明确时先澄清，不直接承诺符合条件。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 商品质量问题与退换货",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "72ac4e85e60816ca41024b8bac0a9e7ec33623c20d24d6cd7eb0bf03ea6dee94",
+              "source_url": "/kb/source/2361511256633032761"
+            },
+            {
+              "number": 6,
+              "chunk_id": "6534928182256570358",
+              "questions": "退货运费",
+              "answer": "七天无理由退货的寄回运费由用户承担；经核实的商品质量问题、破损缺件或发错货，由商家承担合理寄回运费。无需寄回的未发货取消退款不产生寄回运费。具体费用和责任以审核核实结果为准，不编造运费金额。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退货运费",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "81beb7981ebbe5514a4d852d0fd4a686685a2b34711a7126203dae876d5aa64c",
+              "source_url": "/kb/source/6534928182256570358"
+            },
+            {
+              "number": 7,
+              "chunk_id": "3437647713525028649",
+              "questions": "电子类商品保修与维修",
+              "answer": "电子类商品自签收之日起保修 12 个月，非人为损坏的故障可申请免费保修维修。超过保修期或人为损坏不在免费保修范围内。损坏原因未知时需询问故障表现、损坏经过或核对凭证；不能默认非人为损坏。家居用品的质量问题按质量退换货条款处理，不凭电子类条款编造保修期。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 电子类商品保修与维修",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "1e69bb3ce8d5dbdeba12fa7028d98da753ff81c67de4e36337d7a1dd29fea133",
+              "source_url": "/kb/source/3437647713525028649"
+            }
+          ]
+        }
+      },
+      "result": {
+        "session_id": "ch06-http-20261002-01-explicit",
+        "conversation_id": 3,
+        "resumed": false,
+        "answer": "订单1001于2026-09-29签收，按判断基准日2026-10-02计算，签收次日起第3天，仍在七天无理由退货期限内[2]。订单快照显示商品未拆封，您也明确表示未拆封，符合七天无理由退货对未拆封的要求[2]。\n\n因此，您可以提出七天无理由退货申请，但申请提交后仍需人工审核，且需满足不影响二次销售等前提条件[2][4]。您可在下方选择“申请七天无理由退货”按钮，在退款表单中自行选择原因并提交。提交申请不代表审核通过或退款已到账。",
+        "sources": [
+          {
+            "number": 1,
+            "chunk_id": "8002212589846549456",
+            "questions": "无理由退货例外与未知事实",
+            "answer": "超过上述 7 天期限，不支持七天无理由退货。本演示中拆封或使用的商品视为影响二次销售，不适用无理由退货。商品是否拆封、是否影响二次销售未知时，需先澄清相关事实，不能默认未拆封。质量问题按下一节单独处理。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 无理由退货例外与未知事实",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "61e6a3cb9ea7761401b2c557c92b67fc29dac4bc918dc10d49752c2822a5883a",
+            "source_url": "/kb/source/8002212589846549456"
+          },
+          {
+            "number": 2,
+            "chunk_id": "7240605041584562577",
+            "questions": "七天无理由退货期限与条件",
+            "answer": "签收次日起 7 天内（含第 7 天），商品未拆封且不影响二次销售，可申请七天无理由退货。期限使用订单签收日期和判断基准日期计算，不能用下单日期替代签收日期。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 七天无理由退货期限与条件",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "58cbd09d3d7486fc6922cca24c70e1b1c6abfe6f25933cf65fdb8381f00d0b3d",
+            "source_url": "/kb/source/7240605041584562577"
+          },
+          {
+            "number": 3,
+            "chunk_id": "5473415109386655321",
+            "questions": "未发货订单取消退款",
+            "answer": "订单尚未发货时，可申请取消订单并退款，无需寄回商品。已发货或已签收的订单需按照对应退货条件判断，不能假称尚未发货。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 未发货订单取消退款",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "2b5c888e6966c507c746827891a5a145b2b7cb3ba5b6605f328ed3f68a1846b5",
+            "source_url": "/kb/source/5473415109386655321"
+          },
+          {
+            "number": 4,
+            "chunk_id": "3734656836206291595",
+            "questions": "退款申请与审核",
+            "answer": "符合申请条件后，用户在退款表单里从固定类目自选原因并明确提交。固定类目为七天无理由、商品质量问题、与描述不符、破损或缺件、发错货、其他；不默认选值，也不由模型代选。资格澄清针对商品事实，不追问表单退款原因。申请提交后状态为“待审核”，提供申请号供查询。同一次申请重试复用原申请号。本系统提交申请不表示审核通过、已执行退款或款项已到账；不得承诺具体退款到账日。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退款申请与审核",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "894e9e4c958dea8a251cf1a82a8d0c728b3fe1077e9b26d3cb674260aaee53ce",
+            "source_url": "/kb/source/3734656836206291595"
+          },
+          {
+            "number": 5,
+            "chunk_id": "2361511256633032761",
+            "questions": "商品质量问题与退换货",
+            "answer": "已确认的商品质量问题不受七天无理由退货期限限制，可申请质量问题退货或换货。破损、缺件、发错货等需核对商品事实和相关凭证；故障表现或质量责任尚不明确时先澄清，不直接承诺符合条件。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 商品质量问题与退换货",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "72ac4e85e60816ca41024b8bac0a9e7ec33623c20d24d6cd7eb0bf03ea6dee94",
+            "source_url": "/kb/source/2361511256633032761"
+          },
+          {
+            "number": 6,
+            "chunk_id": "6534928182256570358",
+            "questions": "退货运费",
+            "answer": "七天无理由退货的寄回运费由用户承担；经核实的商品质量问题、破损缺件或发错货，由商家承担合理寄回运费。无需寄回的未发货取消退款不产生寄回运费。具体费用和责任以审核核实结果为准，不编造运费金额。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退货运费",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "81beb7981ebbe5514a4d852d0fd4a686685a2b34711a7126203dae876d5aa64c",
+            "source_url": "/kb/source/6534928182256570358"
+          },
+          {
+            "number": 7,
+            "chunk_id": "3437647713525028649",
+            "questions": "电子类商品保修与维修",
+            "answer": "电子类商品自签收之日起保修 12 个月，非人为损坏的故障可申请免费保修维修。超过保修期或人为损坏不在免费保修范围内。损坏原因未知时需询问故障表现、损坏经过或核对凭证；不能默认非人为损坏。家居用品的质量问题按质量退换货条款处理，不凭电子类条款编造保修期。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 电子类商品保修与维修",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "1e69bb3ce8d5dbdeba12fa7028d98da753ff81c67de4e36337d7a1dd29fea133",
+            "source_url": "/kb/source/3437647713525028649"
+          }
+        ],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "退款退货",
+        "route": "aftersales",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "c11e22ad5e234e32885dd2a3912b5d25-order",
+            "round": 0,
+            "name": "load_order",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "{\"order_id\":\"1001\",\"user_id\":\"ch06-http-20261002-01-user\",\"product_name\":\"机械键盘\",\"product_category\":\"数码配件\",\"status\":\"已签收\",\"paid_amount\":\"199.00\",\"ordered_at\":\"2026-09-27\",\"received_at\":\"2026-09-29\",\"condition\":\"unopened\",\"as_of\":\"2026-10-02\"}",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "ensure_order",
+          "load_order",
+          "expand_queries",
+          "retrieve_policy",
+          "confidence_gate",
+          "assess_order",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 6648,
+          "output_tokens": 333,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 1,
+          "understanding": 1,
+          "expansion": 1,
+          "assessment": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "订单1001未拆封，能退吗",
+        "intent_confidence": 0.97,
+        "order_selection": null,
+        "order": {
+          "order_id": "1001",
+          "user_id": "ch06-http-20261002-01-user",
+          "product_name": "机械键盘",
+          "product_category": "数码配件",
+          "status": "已签收",
+          "paid_amount": "199.00",
+          "ordered_at": "2026-09-27",
+          "received_at": "2026-09-29",
+          "condition": "unopened",
+          "as_of": "2026-10-02"
+        },
+        "assessment": {
+          "verdict": "eligible",
+          "explanation": "订单于2026-09-29签收，as_of为2026-10-02，签收次日起第3天，仍在7天期限内[2]。订单快照condition=unopened，用户也明确表示未拆封，符合七天无理由退货对未拆封的要求[2]。可支持提出七天无理由退货申请，但申请仍需人工审核，且需满足不影响二次销售等前提条件[2][4]。",
+          "missing_facts": []
+        },
+        "refund_offer": {
+          "offer_id": "02ef298cfed05a19c27dc8f9e0d8beb021202cf71fef47aca135b2ccedc55613",
+          "turn_id": "c11e22ad5e234e32885dd2a3912b5d25",
+          "order": {
+            "order_id": "1001",
+            "user_id": "ch06-http-20261002-01-user",
+            "product_name": "机械键盘",
+            "product_category": "数码配件",
+            "status": "已签收",
+            "paid_amount": "199.00",
+            "ordered_at": "2026-09-27",
+            "received_at": "2026-09-29",
+            "condition": "unopened",
+            "as_of": "2026-10-02"
+          },
+          "question": "订单1001未拆封，能退吗",
+          "assessment": {
+            "verdict": "eligible",
+            "explanation": "订单于2026-09-29签收，as_of为2026-10-02，签收次日起第3天，仍在7天期限内[2]。订单快照condition=unopened，用户也明确表示未拆封，符合七天无理由退货对未拆封的要求[2]。可支持提出七天无理由退货申请，但申请仍需人工审核，且需满足不影响二次销售等前提条件[2][4]。",
+            "missing_facts": []
+          },
+          "sources": [
+            {
+              "number": 1,
+              "chunk_id": "8002212589846549456",
+              "questions": "无理由退货例外与未知事实",
+              "answer": "超过上述 7 天期限，不支持七天无理由退货。本演示中拆封或使用的商品视为影响二次销售，不适用无理由退货。商品是否拆封、是否影响二次销售未知时，需先澄清相关事实，不能默认未拆封。质量问题按下一节单独处理。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 无理由退货例外与未知事实",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "61e6a3cb9ea7761401b2c557c92b67fc29dac4bc918dc10d49752c2822a5883a",
+              "source_url": "/kb/source/8002212589846549456"
+            },
+            {
+              "number": 2,
+              "chunk_id": "7240605041584562577",
+              "questions": "七天无理由退货期限与条件",
+              "answer": "签收次日起 7 天内（含第 7 天），商品未拆封且不影响二次销售，可申请七天无理由退货。期限使用订单签收日期和判断基准日期计算，不能用下单日期替代签收日期。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 七天无理由退货期限与条件",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "58cbd09d3d7486fc6922cca24c70e1b1c6abfe6f25933cf65fdb8381f00d0b3d",
+              "source_url": "/kb/source/7240605041584562577"
+            },
+            {
+              "number": 3,
+              "chunk_id": "5473415109386655321",
+              "questions": "未发货订单取消退款",
+              "answer": "订单尚未发货时，可申请取消订单并退款，无需寄回商品。已发货或已签收的订单需按照对应退货条件判断，不能假称尚未发货。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 未发货订单取消退款",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "2b5c888e6966c507c746827891a5a145b2b7cb3ba5b6605f328ed3f68a1846b5",
+              "source_url": "/kb/source/5473415109386655321"
+            },
+            {
+              "number": 4,
+              "chunk_id": "3734656836206291595",
+              "questions": "退款申请与审核",
+              "answer": "符合申请条件后，用户在退款表单里从固定类目自选原因并明确提交。固定类目为七天无理由、商品质量问题、与描述不符、破损或缺件、发错货、其他；不默认选值，也不由模型代选。资格澄清针对商品事实，不追问表单退款原因。申请提交后状态为“待审核”，提供申请号供查询。同一次申请重试复用原申请号。本系统提交申请不表示审核通过、已执行退款或款项已到账；不得承诺具体退款到账日。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退款申请与审核",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "894e9e4c958dea8a251cf1a82a8d0c728b3fe1077e9b26d3cb674260aaee53ce",
+              "source_url": "/kb/source/3734656836206291595"
+            },
+            {
+              "number": 5,
+              "chunk_id": "2361511256633032761",
+              "questions": "商品质量问题与退换货",
+              "answer": "已确认的商品质量问题不受七天无理由退货期限限制，可申请质量问题退货或换货。破损、缺件、发错货等需核对商品事实和相关凭证；故障表现或质量责任尚不明确时先澄清，不直接承诺符合条件。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 商品质量问题与退换货",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "72ac4e85e60816ca41024b8bac0a9e7ec33623c20d24d6cd7eb0bf03ea6dee94",
+              "source_url": "/kb/source/2361511256633032761"
+            },
+            {
+              "number": 6,
+              "chunk_id": "6534928182256570358",
+              "questions": "退货运费",
+              "answer": "七天无理由退货的寄回运费由用户承担；经核实的商品质量问题、破损缺件或发错货，由商家承担合理寄回运费。无需寄回的未发货取消退款不产生寄回运费。具体费用和责任以审核核实结果为准，不编造运费金额。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退货运费",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "81beb7981ebbe5514a4d852d0fd4a686685a2b34711a7126203dae876d5aa64c",
+              "source_url": "/kb/source/6534928182256570358"
+            },
+            {
+              "number": 7,
+              "chunk_id": "3437647713525028649",
+              "questions": "电子类商品保修与维修",
+              "answer": "电子类商品自签收之日起保修 12 个月，非人为损坏的故障可申请免费保修维修。超过保修期或人为损坏不在免费保修范围内。损坏原因未知时需询问故障表现、损坏经过或核对凭证；不能默认非人为损坏。家居用品的质量问题按质量退换货条款处理，不凭电子类条款编造保修期。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 电子类商品保修与维修",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "1e69bb3ce8d5dbdeba12fa7028d98da753ff81c67de4e36337d7a1dd29fea133",
+              "source_url": "/kb/source/3437647713525028649"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "other",
+      "method": "POST",
+      "path": "/ch05/agent",
+      "request": {
+        "user_id": "ch06-http-20261002-01-user",
+        "session_id": "ch06-http-20261002-01-other",
+        "message": "我想给月亮安装一个退款按钮"
+      },
+      "passed": true,
+      "status": 200,
+      "response": {
+        "session_id": "ch06-http-20261002-01-other",
+        "conversation_id": 4,
+        "resumed": false,
+        "answer": "我可以协助商品、订单、物流、退货退款和售后问题。请具体说一下您希望处理什么。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "其他",
+        "route": "other",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "other_reply",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 1332,
+          "output_tokens": 39,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0,
+          "understanding": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "我想给月亮安装一个退款按钮",
+        "intent_confidence": 0.99,
+        "order_selection": null,
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      },
+      "result": {
+        "session_id": "ch06-http-20261002-01-other",
+        "conversation_id": 4,
+        "resumed": false,
+        "answer": "我可以协助商品、订单、物流、退货退款和售后问题。请具体说一下您希望处理什么。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "其他",
+        "route": "other",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "other_reply",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 1332,
+          "output_tokens": 39,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0,
+          "understanding": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "我想给月亮安装一个退款按钮",
+        "intent_confidence": 0.99,
+        "order_selection": null,
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      }
+    },
+    {
+      "name": "weak",
+      "method": "POST",
+      "path": "/ch05/agent",
+      "request": {
+        "user_id": "ch06-http-20261002-01-user",
+        "session_id": "ch06-http-20261002-01-weak",
+        "message": "订单1001能退吗",
+        "filters": {
+          "product_category": "不存在的政策类别"
+        }
+      },
+      "passed": true,
+      "status": 200,
+      "response": {
+        "session_id": "ch06-http-20261002-01-weak",
+        "conversation_id": 5,
+        "resumed": false,
+        "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。",
+        "sources": [],
+        "refused": true,
+        "low_confidence_question_id": "2",
+        "intent": "退款退货",
+        "route": "aftersales",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "7ac4d469c2d245119e25299f1c075670-order",
+            "round": 0,
+            "name": "load_order",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "{\"order_id\":\"1001\",\"user_id\":\"ch06-http-20261002-01-user\",\"product_name\":\"机械键盘\",\"product_category\":\"数码配件\",\"status\":\"已签收\",\"paid_amount\":\"199.00\",\"ordered_at\":\"2026-09-27\",\"received_at\":\"2026-09-29\",\"condition\":\"unopened\",\"as_of\":\"2026-10-02\"}",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "ensure_order",
+          "load_order",
+          "expand_queries",
+          "retrieve_policy",
+          "confidence_gate",
+          "fallback_reply",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 1682,
+          "output_tokens": 85,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0,
+          "understanding": 1,
+          "expansion": 1
+        },
+        "stop_reason": "weak_evidence",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "订单1001能退吗",
+        "intent_confidence": 0.97,
+        "order_selection": null,
+        "order": {
+          "order_id": "1001",
+          "user_id": "ch06-http-20261002-01-user",
+          "product_name": "机械键盘",
+          "product_category": "数码配件",
+          "status": "已签收",
+          "paid_amount": "199.00",
+          "ordered_at": "2026-09-27",
+          "received_at": "2026-09-29",
+          "condition": "unopened",
+          "as_of": "2026-10-02"
+        },
+        "assessment": null,
+        "refund_offer": null
+      },
+      "result": {
+        "session_id": "ch06-http-20261002-01-weak",
+        "conversation_id": 5,
+        "resumed": false,
+        "answer": "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。",
+        "sources": [],
+        "refused": true,
+        "low_confidence_question_id": "2",
+        "intent": "退款退货",
+        "route": "aftersales",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "7ac4d469c2d245119e25299f1c075670-order",
+            "round": 0,
+            "name": "load_order",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "{\"order_id\":\"1001\",\"user_id\":\"ch06-http-20261002-01-user\",\"product_name\":\"机械键盘\",\"product_category\":\"数码配件\",\"status\":\"已签收\",\"paid_amount\":\"199.00\",\"ordered_at\":\"2026-09-27\",\"received_at\":\"2026-09-29\",\"condition\":\"unopened\",\"as_of\":\"2026-10-02\"}",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "ensure_order",
+          "load_order",
+          "expand_queries",
+          "retrieve_policy",
+          "confidence_gate",
+          "fallback_reply",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 1682,
+          "output_tokens": 85,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0,
+          "understanding": 1,
+          "expansion": 1
+        },
+        "stop_reason": "weak_evidence",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "订单1001能退吗",
+        "intent_confidence": 0.97,
+        "order_selection": null,
+        "order": {
+          "order_id": "1001",
+          "user_id": "ch06-http-20261002-01-user",
+          "product_name": "机械键盘",
+          "product_category": "数码配件",
+          "status": "已签收",
+          "paid_amount": "199.00",
+          "ordered_at": "2026-09-27",
+          "received_at": "2026-09-29",
+          "condition": "unopened",
+          "as_of": "2026-10-02"
+        },
+        "assessment": null,
+        "refund_offer": null
+      }
+    },
+    {
+      "name": "missing",
+      "method": "POST",
+      "path": "/ch05/chat/stream",
+      "request": {
+        "user_id": "ch06-http-20261002-01-user",
+        "session_id": "ch06-http-20261002-01-missing",
+        "message": "这个能退吗"
+      },
+      "passed": true,
+      "status": 200,
+      "response": "event: session\ndata: {\"session_id\": \"ch06-http-20261002-01-missing\", \"conversation_id\": 6, \"resumed\": false}\n\nevent: node\ndata: {\"name\": \"begin_turn\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\"}\n\nevent: node\ndata: {\"name\": \"understand_query\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\"}\n\nevent: node\ndata: {\"name\": \"classify_intent\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\"}\n\nevent: node\ndata: {\"name\": \"route_intent\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\"}\n\nevent: node\ndata: {\"name\": \"ensure_order\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\"}\n\nevent: node\ndata: {\"name\": \"prepare_order_selection\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\"}\n\nevent: token\ndata: {\"text\": \"\\u8bf7\\u9009\\u62e9\\u4e00\\u7b14\\u8ba2\\u5355\\uff0c\\u6211\\u4f1a\\u6838\\u5bf9\\u8be5\\u8ba2\\u5355\\u4e0e\\u9000\\u6b3e/\\u552e\\u540e\\u653f\\u7b56\\u3002\"}\n\nevent: node\ndata: {\"name\": \"offer_order_selection\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\"}\n\nevent: order_selection\ndata: {\"selection_id\": \"03714391584b435e9af812e1d76507ac\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\", \"orders\": [{\"order_id\": \"1001\", \"user_id\": \"ch06-http-20261002-01-user\", \"product_name\": \"\\u673a\\u68b0\\u952e\\u76d8\", \"product_category\": \"\\u6570\\u7801\\u914d\\u4ef6\", \"status\": \"\\u5df2\\u7b7e\\u6536\", \"paid_amount\": \"199.00\", \"ordered_at\": \"2026-09-27\", \"received_at\": \"2026-09-29\", \"condition\": \"unopened\", \"as_of\": \"2026-10-02\"}, {\"order_id\": \"1002\", \"user_id\": \"ch06-http-20261002-01-user\", \"product_name\": \"\\u65e0\\u7ebf\\u8033\\u673a\", \"product_category\": \"\\u6570\\u7801\\u914d\\u4ef6\", \"status\": \"\\u5df2\\u7b7e\\u6536\", \"paid_amount\": \"399.00\", \"ordered_at\": \"2026-09-10\", \"received_at\": \"2026-09-15\", \"condition\": \"unknown\", \"as_of\": \"2026-10-02\"}, {\"order_id\": \"1003\", \"user_id\": \"ch06-http-20261002-01-user\", \"product_name\": \"\\u4fdd\\u6e29\\u676f\", \"product_category\": \"\\u5bb6\\u5c45\\u7528\\u54c1\", \"status\": \"\\u5f85\\u53d1\\u8d27\", \"paid_amount\": \"89.00\", \"ordered_at\": \"2026-10-01\", \"received_at\": null, \"condition\": \"unknown\", \"as_of\": \"2026-10-02\"}]}\n\nevent: waiting_for_order\ndata: {\"session_id\": \"ch06-http-20261002-01-missing\", \"conversation_id\": 6, \"resumed\": false, \"answer\": \"\\u8bf7\\u9009\\u62e9\\u4e00\\u7b14\\u8ba2\\u5355\\uff0c\\u6211\\u4f1a\\u6838\\u5bf9\\u8be5\\u8ba2\\u5355\\u4e0e\\u9000\\u6b3e/\\u552e\\u540e\\u653f\\u7b56\\u3002\", \"sources\": [], \"refused\": false, \"low_confidence_question_id\": null, \"intent\": \"\\u9000\\u6b3e\\u9000\\u8d27\", \"route\": \"aftersales\", \"actions\": [], \"offer\": null, \"tool_trace\": [], \"node_trace\": [\"begin_turn\", \"understand_query\", \"classify_intent\", \"route_intent\", \"ensure_order\", \"prepare_order_selection\"], \"usage\": {\"input_tokens\": 1326, \"output_tokens\": 39, \"estimated\": false}, \"calls\": {\"classifier\": 1, \"decision\": 0, \"answer\": 0, \"understanding\": 1}, \"stop_reason\": \"waiting_for_order\", \"ledger_error\": null, \"status\": \"waiting_for_order\", \"resolved_question\": \"\\u8fd9\\u4e2a\\u80fd\\u9000\\u5417\", \"intent_confidence\": 0.97, \"order_selection\": {\"selection_id\": \"03714391584b435e9af812e1d76507ac\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\", \"orders\": [{\"order_id\": \"1001\", \"user_id\": \"ch06-http-20261002-01-user\", \"product_name\": \"\\u673a\\u68b0\\u952e\\u76d8\", \"product_category\": \"\\u6570\\u7801\\u914d\\u4ef6\", \"status\": \"\\u5df2\\u7b7e\\u6536\", \"paid_amount\": \"199.00\", \"ordered_at\": \"2026-09-27\", \"received_at\": \"2026-09-29\", \"condition\": \"unopened\", \"as_of\": \"2026-10-02\"}, {\"order_id\": \"1002\", \"user_id\": \"ch06-http-20261002-01-user\", \"product_name\": \"\\u65e0\\u7ebf\\u8033\\u673a\", \"product_category\": \"\\u6570\\u7801\\u914d\\u4ef6\", \"status\": \"\\u5df2\\u7b7e\\u6536\", \"paid_amount\": \"399.00\", \"ordered_at\": \"2026-09-10\", \"received_at\": \"2026-09-15\", \"condition\": \"unknown\", \"as_of\": \"2026-10-02\"}, {\"order_id\": \"1003\", \"user_id\": \"ch06-http-20261002-01-user\", \"product_name\": \"\\u4fdd\\u6e29\\u676f\", \"product_category\": \"\\u5bb6\\u5c45\\u7528\\u54c1\", \"status\": \"\\u5f85\\u53d1\\u8d27\", \"paid_amount\": \"89.00\", \"ordered_at\": \"2026-10-01\", \"received_at\": null, \"condition\": \"unknown\", \"as_of\": \"2026-10-02\"}]}, \"order\": null, \"assessment\": null, \"refund_offer\": null}\n\n",
+      "result": {
+        "session_id": "ch06-http-20261002-01-missing",
+        "conversation_id": 6,
+        "resumed": false,
+        "answer": "请选择一笔订单，我会核对该订单与退款/售后政策。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "退款退货",
+        "route": "aftersales",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "ensure_order",
+          "prepare_order_selection"
+        ],
+        "usage": {
+          "input_tokens": 1326,
+          "output_tokens": 39,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0,
+          "understanding": 1
+        },
+        "stop_reason": "waiting_for_order",
+        "ledger_error": null,
+        "status": "waiting_for_order",
+        "resolved_question": "这个能退吗",
+        "intent_confidence": 0.97,
+        "order_selection": {
+          "selection_id": "03714391584b435e9af812e1d76507ac",
+          "turn_id": "65ca2707bc60489298c5eb533237dff3",
+          "orders": [
+            {
+              "order_id": "1001",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "机械键盘",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "199.00",
+              "ordered_at": "2026-09-27",
+              "received_at": "2026-09-29",
+              "condition": "unopened",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1002",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "无线耳机",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "399.00",
+              "ordered_at": "2026-09-10",
+              "received_at": "2026-09-15",
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1003",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "保温杯",
+              "product_category": "家居用品",
+              "status": "待发货",
+              "paid_amount": "89.00",
+              "ordered_at": "2026-10-01",
+              "received_at": null,
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            }
+          ]
+        },
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      }
+    },
+    {
+      "name": "pending",
+      "method": "GET",
+      "path": "/ch06/sessions/ch06-http-20261002-01-missing/pending?user_id=ch06-http-20261002-01-user",
+      "request": null,
+      "passed": true,
+      "status": 200,
+      "response": {
+        "session_id": "ch06-http-20261002-01-missing",
+        "conversation_id": 6,
+        "resumed": false,
+        "answer": "请选择一笔订单，我会核对该订单与退款/售后政策。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "退款退货",
+        "route": "aftersales",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "ensure_order",
+          "prepare_order_selection"
+        ],
+        "usage": {
+          "input_tokens": 1326,
+          "output_tokens": 39,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0,
+          "understanding": 1
+        },
+        "stop_reason": "waiting_for_order",
+        "ledger_error": null,
+        "status": "waiting_for_order",
+        "resolved_question": "这个能退吗",
+        "intent_confidence": 0.97,
+        "order_selection": {
+          "selection_id": "03714391584b435e9af812e1d76507ac",
+          "turn_id": "65ca2707bc60489298c5eb533237dff3",
+          "orders": [
+            {
+              "order_id": "1001",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "机械键盘",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "199.00",
+              "ordered_at": "2026-09-27",
+              "received_at": "2026-09-29",
+              "condition": "unopened",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1002",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "无线耳机",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "399.00",
+              "ordered_at": "2026-09-10",
+              "received_at": "2026-09-15",
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1003",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "保温杯",
+              "product_category": "家居用品",
+              "status": "待发货",
+              "paid_amount": "89.00",
+              "ordered_at": "2026-10-01",
+              "received_at": null,
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            }
+          ]
+        },
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      },
+      "result": {
+        "session_id": "ch06-http-20261002-01-missing",
+        "conversation_id": 6,
+        "resumed": false,
+        "answer": "请选择一笔订单，我会核对该订单与退款/售后政策。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "退款退货",
+        "route": "aftersales",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "ensure_order",
+          "prepare_order_selection"
+        ],
+        "usage": {
+          "input_tokens": 1326,
+          "output_tokens": 39,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0,
+          "understanding": 1
+        },
+        "stop_reason": "waiting_for_order",
+        "ledger_error": null,
+        "status": "waiting_for_order",
+        "resolved_question": "这个能退吗",
+        "intent_confidence": 0.97,
+        "order_selection": {
+          "selection_id": "03714391584b435e9af812e1d76507ac",
+          "turn_id": "65ca2707bc60489298c5eb533237dff3",
+          "orders": [
+            {
+              "order_id": "1001",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "机械键盘",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "199.00",
+              "ordered_at": "2026-09-27",
+              "received_at": "2026-09-29",
+              "condition": "unopened",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1002",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "无线耳机",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "399.00",
+              "ordered_at": "2026-09-10",
+              "received_at": "2026-09-15",
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1003",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "保温杯",
+              "product_category": "家居用品",
+              "status": "待发货",
+              "paid_amount": "89.00",
+              "ordered_at": "2026-10-01",
+              "received_at": null,
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            }
+          ]
+        },
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      }
+    },
+    {
+      "name": "select",
+      "method": "POST",
+      "path": "/ch06/orders/selection/stream",
+      "request": {
+        "session_id": "ch06-http-20261002-01-missing",
+        "user_id": "ch06-http-20261002-01-user",
+        "selection_id": "03714391584b435e9af812e1d76507ac",
+        "order_id": "1001"
+      },
+      "passed": true,
+      "status": 200,
+      "response": "event: session\ndata: {\"session_id\": \"ch06-http-20261002-01-missing\", \"conversation_id\": 6, \"resumed\": true}\n\nevent: node\ndata: {\"name\": \"offer_order_selection\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\"}\n\nevent: node\ndata: {\"name\": \"load_order\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\"}\n\nevent: node\ndata: {\"name\": \"expand_queries\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\"}\n\nevent: node\ndata: {\"name\": \"retrieve_policy\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\"}\n\nevent: node\ndata: {\"name\": \"confidence_gate\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\"}\n\nevent: sources\ndata: {\"sources\": [{\"number\": 1, \"chunk_id\": \"2361511256633032761\", \"questions\": \"\\u5546\\u54c1\\u8d28\\u91cf\\u95ee\\u9898\\u4e0e\\u9000\\u6362\\u8d27\", \"answer\": \"\\u5df2\\u786e\\u8ba4\\u7684\\u5546\\u54c1\\u8d28\\u91cf\\u95ee\\u9898\\u4e0d\\u53d7\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u671f\\u9650\\u9650\\u5236\\uff0c\\u53ef\\u7533\\u8bf7\\u8d28\\u91cf\\u95ee\\u9898\\u9000\\u8d27\\u6216\\u6362\\u8d27\\u3002\\u7834\\u635f\\u3001\\u7f3a\\u4ef6\\u3001\\u53d1\\u9519\\u8d27\\u7b49\\u9700\\u6838\\u5bf9\\u5546\\u54c1\\u4e8b\\u5b9e\\u548c\\u76f8\\u5173\\u51ed\\u8bc1\\uff1b\\u6545\\u969c\\u8868\\u73b0\\u6216\\u8d28\\u91cf\\u8d23\\u4efb\\u5c1a\\u4e0d\\u660e\\u786e\\u65f6\\u5148\\u6f84\\u6e05\\uff0c\\u4e0d\\u76f4\\u63a5\\u627f\\u8bfa\\u7b26\\u5408\\u6761\\u4ef6\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u5546\\u54c1\\u8d28\\u91cf\\u95ee\\u9898\\u4e0e\\u9000\\u6362\\u8d27\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"72ac4e85e60816ca41024b8bac0a9e7ec33623c20d24d6cd7eb0bf03ea6dee94\", \"source_url\": \"/kb/source/2361511256633032761\"}, {\"number\": 2, \"chunk_id\": \"3734656836206291595\", \"questions\": \"\\u9000\\u6b3e\\u7533\\u8bf7\\u4e0e\\u5ba1\\u6838\", \"answer\": \"\\u7b26\\u5408\\u7533\\u8bf7\\u6761\\u4ef6\\u540e\\uff0c\\u7528\\u6237\\u5728\\u9000\\u6b3e\\u8868\\u5355\\u91cc\\u4ece\\u56fa\\u5b9a\\u7c7b\\u76ee\\u81ea\\u9009\\u539f\\u56e0\\u5e76\\u660e\\u786e\\u63d0\\u4ea4\\u3002\\u56fa\\u5b9a\\u7c7b\\u76ee\\u4e3a\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u3001\\u5546\\u54c1\\u8d28\\u91cf\\u95ee\\u9898\\u3001\\u4e0e\\u63cf\\u8ff0\\u4e0d\\u7b26\\u3001\\u7834\\u635f\\u6216\\u7f3a\\u4ef6\\u3001\\u53d1\\u9519\\u8d27\\u3001\\u5176\\u4ed6\\uff1b\\u4e0d\\u9ed8\\u8ba4\\u9009\\u503c\\uff0c\\u4e5f\\u4e0d\\u7531\\u6a21\\u578b\\u4ee3\\u9009\\u3002\\u8d44\\u683c\\u6f84\\u6e05\\u9488\\u5bf9\\u5546\\u54c1\\u4e8b\\u5b9e\\uff0c\\u4e0d\\u8ffd\\u95ee\\u8868\\u5355\\u9000\\u6b3e\\u539f\\u56e0\\u3002\\u7533\\u8bf7\\u63d0\\u4ea4\\u540e\\u72b6\\u6001\\u4e3a\\u201c\\u5f85\\u5ba1\\u6838\\u201d\\uff0c\\u63d0\\u4f9b\\u7533\\u8bf7\\u53f7\\u4f9b\\u67e5\\u8be2\\u3002\\u540c\\u4e00\\u6b21\\u7533\\u8bf7\\u91cd\\u8bd5\\u590d\\u7528\\u539f\\u7533\\u8bf7\\u53f7\\u3002\\u672c\\u7cfb\\u7edf\\u63d0\\u4ea4\\u7533\\u8bf7\\u4e0d\\u8868\\u793a\\u5ba1\\u6838\\u901a\\u8fc7\\u3001\\u5df2\\u6267\\u884c\\u9000\\u6b3e\\u6216\\u6b3e\\u9879\\u5df2\\u5230\\u8d26\\uff1b\\u4e0d\\u5f97\\u627f\\u8bfa\\u5177\\u4f53\\u9000\\u6b3e\\u5230\\u8d26\\u65e5\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u9000\\u6b3e\\u7533\\u8bf7\\u4e0e\\u5ba1\\u6838\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"894e9e4c958dea8a251cf1a82a8d0c728b3fe1077e9b26d3cb674260aaee53ce\", \"source_url\": \"/kb/source/3734656836206291595\"}, {\"number\": 3, \"chunk_id\": \"8002212589846549456\", \"questions\": \"\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u4f8b\\u5916\\u4e0e\\u672a\\u77e5\\u4e8b\\u5b9e\", \"answer\": \"\\u8d85\\u8fc7\\u4e0a\\u8ff0 7 \\u5929\\u671f\\u9650\\uff0c\\u4e0d\\u652f\\u6301\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u3002\\u672c\\u6f14\\u793a\\u4e2d\\u62c6\\u5c01\\u6216\\u4f7f\\u7528\\u7684\\u5546\\u54c1\\u89c6\\u4e3a\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\uff0c\\u4e0d\\u9002\\u7528\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u3002\\u5546\\u54c1\\u662f\\u5426\\u62c6\\u5c01\\u3001\\u662f\\u5426\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\u672a\\u77e5\\u65f6\\uff0c\\u9700\\u5148\\u6f84\\u6e05\\u76f8\\u5173\\u4e8b\\u5b9e\\uff0c\\u4e0d\\u80fd\\u9ed8\\u8ba4\\u672a\\u62c6\\u5c01\\u3002\\u8d28\\u91cf\\u95ee\\u9898\\u6309\\u4e0b\\u4e00\\u8282\\u5355\\u72ec\\u5904\\u7406\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u65e0\\u7406\\u7531\\u9000\\u8d27\\u4f8b\\u5916\\u4e0e\\u672a\\u77e5\\u4e8b\\u5b9e\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"61e6a3cb9ea7761401b2c557c92b67fc29dac4bc918dc10d49752c2822a5883a\", \"source_url\": \"/kb/source/8002212589846549456\"}, {\"number\": 4, \"chunk_id\": \"7240605041584562577\", \"questions\": \"\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u671f\\u9650\\u4e0e\\u6761\\u4ef6\", \"answer\": \"\\u7b7e\\u6536\\u6b21\\u65e5\\u8d77 7 \\u5929\\u5185\\uff08\\u542b\\u7b2c 7 \\u5929\\uff09\\uff0c\\u5546\\u54c1\\u672a\\u62c6\\u5c01\\u4e14\\u4e0d\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\uff0c\\u53ef\\u7533\\u8bf7\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u3002\\u671f\\u9650\\u4f7f\\u7528\\u8ba2\\u5355\\u7b7e\\u6536\\u65e5\\u671f\\u548c\\u5224\\u65ad\\u57fa\\u51c6\\u65e5\\u671f\\u8ba1\\u7b97\\uff0c\\u4e0d\\u80fd\\u7528\\u4e0b\\u5355\\u65e5\\u671f\\u66ff\\u4ee3\\u7b7e\\u6536\\u65e5\\u671f\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u671f\\u9650\\u4e0e\\u6761\\u4ef6\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"58cbd09d3d7486fc6922cca24c70e1b1c6abfe6f25933cf65fdb8381f00d0b3d\", \"source_url\": \"/kb/source/7240605041584562577\"}, {\"number\": 5, \"chunk_id\": \"5473415109386655321\", \"questions\": \"\\u672a\\u53d1\\u8d27\\u8ba2\\u5355\\u53d6\\u6d88\\u9000\\u6b3e\", \"answer\": \"\\u8ba2\\u5355\\u5c1a\\u672a\\u53d1\\u8d27\\u65f6\\uff0c\\u53ef\\u7533\\u8bf7\\u53d6\\u6d88\\u8ba2\\u5355\\u5e76\\u9000\\u6b3e\\uff0c\\u65e0\\u9700\\u5bc4\\u56de\\u5546\\u54c1\\u3002\\u5df2\\u53d1\\u8d27\\u6216\\u5df2\\u7b7e\\u6536\\u7684\\u8ba2\\u5355\\u9700\\u6309\\u7167\\u5bf9\\u5e94\\u9000\\u8d27\\u6761\\u4ef6\\u5224\\u65ad\\uff0c\\u4e0d\\u80fd\\u5047\\u79f0\\u5c1a\\u672a\\u53d1\\u8d27\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u672a\\u53d1\\u8d27\\u8ba2\\u5355\\u53d6\\u6d88\\u9000\\u6b3e\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"2b5c888e6966c507c746827891a5a145b2b7cb3ba5b6605f328ed3f68a1846b5\", \"source_url\": \"/kb/source/5473415109386655321\"}, {\"number\": 6, \"chunk_id\": \"3437647713525028649\", \"questions\": \"\\u7535\\u5b50\\u7c7b\\u5546\\u54c1\\u4fdd\\u4fee\\u4e0e\\u7ef4\\u4fee\", \"answer\": \"\\u7535\\u5b50\\u7c7b\\u5546\\u54c1\\u81ea\\u7b7e\\u6536\\u4e4b\\u65e5\\u8d77\\u4fdd\\u4fee 12 \\u4e2a\\u6708\\uff0c\\u975e\\u4eba\\u4e3a\\u635f\\u574f\\u7684\\u6545\\u969c\\u53ef\\u7533\\u8bf7\\u514d\\u8d39\\u4fdd\\u4fee\\u7ef4\\u4fee\\u3002\\u8d85\\u8fc7\\u4fdd\\u4fee\\u671f\\u6216\\u4eba\\u4e3a\\u635f\\u574f\\u4e0d\\u5728\\u514d\\u8d39\\u4fdd\\u4fee\\u8303\\u56f4\\u5185\\u3002\\u635f\\u574f\\u539f\\u56e0\\u672a\\u77e5\\u65f6\\u9700\\u8be2\\u95ee\\u6545\\u969c\\u8868\\u73b0\\u3001\\u635f\\u574f\\u7ecf\\u8fc7\\u6216\\u6838\\u5bf9\\u51ed\\u8bc1\\uff1b\\u4e0d\\u80fd\\u9ed8\\u8ba4\\u975e\\u4eba\\u4e3a\\u635f\\u574f\\u3002\\u5bb6\\u5c45\\u7528\\u54c1\\u7684\\u8d28\\u91cf\\u95ee\\u9898\\u6309\\u8d28\\u91cf\\u9000\\u6362\\u8d27\\u6761\\u6b3e\\u5904\\u7406\\uff0c\\u4e0d\\u51ed\\u7535\\u5b50\\u7c7b\\u6761\\u6b3e\\u7f16\\u9020\\u4fdd\\u4fee\\u671f\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u7535\\u5b50\\u7c7b\\u5546\\u54c1\\u4fdd\\u4fee\\u4e0e\\u7ef4\\u4fee\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"1e69bb3ce8d5dbdeba12fa7028d98da753ff81c67de4e36337d7a1dd29fea133\", \"source_url\": \"/kb/source/3437647713525028649\"}, {\"number\": 7, \"chunk_id\": \"6534928182256570358\", \"questions\": \"\\u9000\\u8d27\\u8fd0\\u8d39\", \"answer\": \"\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u7684\\u5bc4\\u56de\\u8fd0\\u8d39\\u7531\\u7528\\u6237\\u627f\\u62c5\\uff1b\\u7ecf\\u6838\\u5b9e\\u7684\\u5546\\u54c1\\u8d28\\u91cf\\u95ee\\u9898\\u3001\\u7834\\u635f\\u7f3a\\u4ef6\\u6216\\u53d1\\u9519\\u8d27\\uff0c\\u7531\\u5546\\u5bb6\\u627f\\u62c5\\u5408\\u7406\\u5bc4\\u56de\\u8fd0\\u8d39\\u3002\\u65e0\\u9700\\u5bc4\\u56de\\u7684\\u672a\\u53d1\\u8d27\\u53d6\\u6d88\\u9000\\u6b3e\\u4e0d\\u4ea7\\u751f\\u5bc4\\u56de\\u8fd0\\u8d39\\u3002\\u5177\\u4f53\\u8d39\\u7528\\u548c\\u8d23\\u4efb\\u4ee5\\u5ba1\\u6838\\u6838\\u5b9e\\u7ed3\\u679c\\u4e3a\\u51c6\\uff0c\\u4e0d\\u7f16\\u9020\\u8fd0\\u8d39\\u91d1\\u989d\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u9000\\u8d27\\u8fd0\\u8d39\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"81beb7981ebbe5514a4d852d0fd4a686685a2b34711a7126203dae876d5aa64c\", \"source_url\": \"/kb/source/6534928182256570358\"}], \"refused\": false, \"low_confidence_question_id\": null}\n\nevent: node\ndata: {\"name\": \"assess_order\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\"}\n\nevent: node\ndata: {\"name\": \"stream_answer\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\"}\n\nevent: token\ndata: {\"text\": \"\\u60a8\\u597d\"}\n\nevent: token\ndata: {\"text\": \"\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u6839\\u636e\"}\n\nevent: token\ndata: {\"text\": \"\\u5f53\\u524d\"}\n\nevent: token\ndata: {\"text\": \"\\u8ba2\\u5355\"}\n\nevent: token\ndata: {\"text\": \"\\u4fe1\\u606f\"}\n\nevent: token\ndata: {\"text\": \"\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u8fd9\\u7b14\"}\n\nevent: token\ndata: {\"text\": \"\\u673a\\u68b0\"}\n\nevent: token\ndata: {\"text\": \"\\u952e\\u76d8\"}\n\nevent: token\ndata: {\"text\": \"\\u8ba2\\u5355\"}\n\nevent: token\ndata: {\"text\": \"\\u53ef\\u4ee5\"}\n\nevent: token\ndata: {\"text\": \"\\u652f\\u6301\"}\n\nevent: token\ndata: {\"text\": \"\\u60a8\"}\n\nevent: token\ndata: {\"text\": \"\\u63d0\\u51fa\"}\n\nevent: token\ndata: {\"text\": \"\\u4e03\\u5929\"}\n\nevent: token\ndata: {\"text\": \"\\u65e0\"}\n\nevent: token\ndata: {\"text\": \"\\u7406\\u7531\"}\n\nevent: token\ndata: {\"text\": \"\\u9000\\u8d27\"}\n\nevent: token\ndata: {\"text\": \"\\u7533\\u8bf7\"}\n\nevent: token\ndata: {\"text\": \"\\u3002\\n\\n\"}\n\nevent: token\ndata: {\"text\": \"\\u8ba2\\u5355\"}\n\nevent: token\ndata: {\"text\": \"\\u5df2\\u4e8e\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"202\"}\n\nevent: token\ndata: {\"text\": \"6\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \"09\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \"29\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u7b7e\"}\n\nevent: token\ndata: {\"text\": \"\\u6536\"}\n\nevent: token\ndata: {\"text\": \"\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u6309\"}\n\nevent: token\ndata: {\"text\": \"\\u7b7e\"}\n\nevent: token\ndata: {\"text\": \"\\u6536\"}\n\nevent: token\ndata: {\"text\": \"\\u6b21\"}\n\nevent: token\ndata: {\"text\": \"\\u65e5\\u8d77\"}\n\nevent: token\ndata: {\"text\": \"\\u7b97\"}\n\nevent: token\ndata: {\"text\": \"\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u76ee\\u524d\"}\n\nevent: token\ndata: {\"text\": \"\\u5904\\u4e8e\"}\n\nevent: token\ndata: {\"text\": \"\\u7b2c\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"3\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u5929\"}\n\nevent: token\ndata: {\"text\": \"\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u4ecd\\u5728\"}\n\nevent: token\ndata: {\"text\": \"\\u4e03\\u5929\"}\n\nevent: token\ndata: {\"text\": \"\\u65e0\"}\n\nevent: token\ndata: {\"text\": \"\\u7406\\u7531\"}\n\nevent: token\ndata: {\"text\": \"\\u9000\\u8d27\"}\n\nevent: token\ndata: {\"text\": \"\\u671f\\u9650\\u5185\"}\n\nevent: token\ndata: {\"text\": \"[\"}\n\nevent: token\ndata: {\"text\": \"4\"}\n\nevent: token\ndata: {\"text\": \"]\"}\n\nevent: token\ndata: {\"text\": \"\\uff1b\"}\n\nevent: token\ndata: {\"text\": \"\\u8ba2\\u5355\"}\n\nevent: token\ndata: {\"text\": \"\\u5feb\"}\n\nevent: token\ndata: {\"text\": \"\\u7167\"}\n\nevent: token\ndata: {\"text\": \"\\u663e\\u793a\"}\n\nevent: token\ndata: {\"text\": \"\\u5546\\u54c1\"}\n\nevent: token\ndata: {\"text\": \"\\u4e3a\"}\n\nevent: token\ndata: {\"text\": \"\\u672a\"}\n\nevent: token\ndata: {\"text\": \"\\u62c6\"}\n\nevent: token\ndata: {\"text\": \"\\u5c01\"}\n\nevent: token\ndata: {\"text\": \"\\u72b6\\u6001\"}\n\nevent: token\ndata: {\"text\": \"\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u4e14\"}\n\nevent: token\ndata: {\"text\": \"\\u60a8\"}\n\nevent: token\ndata: {\"text\": \"\\u672a\"}\n\nevent: token\ndata: {\"text\": \"\\u53cd\\u9988\"}\n\nevent: token\ndata: {\"text\": \"\\u5546\\u54c1\"}\n\nevent: token\ndata: {\"text\": \"\\u72b6\\u6001\"}\n\nevent: token\ndata: {\"text\": \"\\u6709\"}\n\nevent: token\ndata: {\"text\": \"\\u53d8\\u5316\"}\n\nevent: token\ndata: {\"text\": \"\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u56e0\\u6b64\"}\n\nevent: token\ndata: {\"text\": \"\\u7b26\\u5408\"}\n\nevent: token\ndata: {\"text\": \"\\u671f\\u9650\\u5185\"}\n\nevent: token\ndata: {\"text\": \"\\u672a\"}\n\nevent: token\ndata: {\"text\": \"\\u62c6\"}\n\nevent: token\ndata: {\"text\": \"\\u5c01\"}\n\nevent: token\ndata: {\"text\": \"\\u7684\"}\n\nevent: token\ndata: {\"text\": \"\\u7533\\u8bf7\"}\n\nevent: token\ndata: {\"text\": \"\\u6761\\u4ef6\"}\n\nevent: token\ndata: {\"text\": \"[\"}\n\nevent: token\ndata: {\"text\": \"4\"}\n\nevent: token\ndata: {\"text\": \"]\\u3002\\n\\n\"}\n\nevent: token\ndata: {\"text\": \"\\u9700\\u8981\"}\n\nevent: token\ndata: {\"text\": \"\\u63d0\\u9192\"}\n\nevent: token\ndata: {\"text\": \"\\u60a8\"}\n\nevent: token\ndata: {\"text\": \"\\uff1a\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u63d0\\u4ea4\"}\n\nevent: token\ndata: {\"text\": \"\\u7533\\u8bf7\"}\n\nevent: token\ndata: {\"text\": \"\\u540e\"}\n\nevent: token\ndata: {\"text\": \"\\u72b6\\u6001\"}\n\nevent: token\ndata: {\"text\": \"\\u4e3a\"}\n\nevent: token\ndata: {\"text\": \"\\u201c\"}\n\nevent: token\ndata: {\"text\": \"\\u5f85\"}\n\nevent: token\ndata: {\"text\": \"\\u5ba1\\u6838\"}\n\nevent: token\ndata: {\"text\": \"\\u201d\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u5e76\\u4e0d\"}\n\nevent: token\ndata: {\"text\": \"\\u4ee3\\u8868\"}\n\nevent: token\ndata: {\"text\": \"\\u5ba1\\u6838\"}\n\nevent: token\ndata: {\"text\": \"\\u901a\\u8fc7\"}\n\nevent: token\ndata: {\"text\": \"\\u6216\"}\n\nevent: token\ndata: {\"text\": \"\\u9000\\u6b3e\"}\n\nevent: token\ndata: {\"text\": \"\\u5df2\"}\n\nevent: token\ndata: {\"text\": \"\\u5230\"}\n\nevent: token\ndata: {\"text\": \"\\u8d26\"}\n\nevent: token\ndata: {\"text\": \"[\"}\n\nevent: token\ndata: {\"text\": \"2\"}\n\nevent: token\ndata: {\"text\": \"]\"}\n\nevent: token\ndata: {\"text\": \"\\uff1b\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \\u201c\"}\n\nevent: token\ndata: {\"text\": \"\\u4e0d\\u5f71\\u54cd\"}\n\nevent: token\ndata: {\"text\": \"\\u4e8c\\u6b21\"}\n\nevent: token\ndata: {\"text\": \"\\u9500\\u552e\"}\n\nevent: token\ndata: {\"text\": \"\\u201d\"}\n\nevent: token\ndata: {\"text\": \"\\u7b49\"}\n\nevent: token\ndata: {\"text\": \"\\u6761\\u4ef6\"}\n\nevent: token\ndata: {\"text\": \"\\u4ecd\\u9700\"}\n\nevent: token\ndata: {\"text\": \"\\u5728\"}\n\nevent: token\ndata: {\"text\": \"\\u5ba1\\u6838\"}\n\nevent: token\ndata: {\"text\": \"\\u73af\\u8282\"}\n\nevent: token\ndata: {\"text\": \"\\u786e\\u8ba4\"}\n\nevent: token\ndata: {\"text\": \"\\u6ee1\\u8db3\"}\n\nevent: token\ndata: {\"text\": \"[\"}\n\nevent: token\ndata: {\"text\": \"4\"}\n\nevent: token\ndata: {\"text\": \"]\"}\n\nevent: token\ndata: {\"text\": \"\\uff1b\\n\"}\n\nevent: token\ndata: {\"text\": \"-\"}\n\nevent: token\ndata: {\"text\": \" \"}\n\nevent: token\ndata: {\"text\": \"\\u4e03\\u5929\"}\n\nevent: token\ndata: {\"text\": \"\\u65e0\"}\n\nevent: token\ndata: {\"text\": \"\\u7406\\u7531\"}\n\nevent: token\ndata: {\"text\": \"\\u9000\\u8d27\"}\n\nevent: token\ndata: {\"text\": \"\\u7684\"}\n\nevent: token\ndata: {\"text\": \"\\u5bc4\"}\n\nevent: token\ndata: {\"text\": \"\\u56de\"}\n\nevent: token\ndata: {\"text\": \"\\u8fd0\\u8d39\"}\n\nevent: token\ndata: {\"text\": \"\\u7531\"}\n\nevent: token\ndata: {\"text\": \"\\u60a8\"}\n\nevent: token\ndata: {\"text\": \"\\u627f\\u62c5\"}\n\nevent: token\ndata: {\"text\": \"[\"}\n\nevent: token\ndata: {\"text\": \"7\"}\n\nevent: token\ndata: {\"text\": \"]\\u3002\\n\\n\"}\n\nevent: token\ndata: {\"text\": \"\\u60a8\"}\n\nevent: token\ndata: {\"text\": \"\\u53ef\\u4ee5\\u9009\\u62e9\"}\n\nevent: token\ndata: {\"text\": \"\\u5728\"}\n\nevent: token\ndata: {\"text\": \"\\u9000\\u6b3e\"}\n\nevent: token\ndata: {\"text\": \"\\u8868\\u5355\"}\n\nevent: token\ndata: {\"text\": \"\\u4e2d\"}\n\nevent: token\ndata: {\"text\": \"\\u81ea\\u884c\"}\n\nevent: token\ndata: {\"text\": \"\\u9009\\u62e9\"}\n\nevent: token\ndata: {\"text\": \"\\u539f\\u56e0\"}\n\nevent: token\ndata: {\"text\": \"\\u5e76\"}\n\nevent: token\ndata: {\"text\": \"\\u63d0\\u4ea4\"}\n\nevent: token\ndata: {\"text\": \"\\u7533\\u8bf7\"}\n\nevent: token\ndata: {\"text\": \"\\uff0c\"}\n\nevent: token\ndata: {\"text\": \"\\u5177\\u4f53\"}\n\nevent: token\ndata: {\"text\": \"\\u5ba1\\u6838\"}\n\nevent: token\ndata: {\"text\": \"\\u7ed3\\u679c\"}\n\nevent: token\ndata: {\"text\": \"\\u4ee5\"}\n\nevent: token\ndata: {\"text\": \"\\u6838\\u5b9e\"}\n\nevent: token\ndata: {\"text\": \"\\u4e3a\\u51c6\"}\n\nevent: token\ndata: {\"text\": \"\\u3002\"}\n\nevent: node\ndata: {\"name\": \"log_turn\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\"}\n\nevent: done\ndata: {\"session_id\": \"ch06-http-20261002-01-missing\", \"conversation_id\": 6, \"resumed\": false, \"answer\": \"\\u60a8\\u597d\\uff0c\\u6839\\u636e\\u5f53\\u524d\\u8ba2\\u5355\\u4fe1\\u606f\\uff0c\\u8fd9\\u7b14\\u673a\\u68b0\\u952e\\u76d8\\u8ba2\\u5355\\u53ef\\u4ee5\\u652f\\u6301\\u60a8\\u63d0\\u51fa\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u7533\\u8bf7\\u3002\\n\\n\\u8ba2\\u5355\\u5df2\\u4e8e 2026-09-29 \\u7b7e\\u6536\\uff0c\\u6309\\u7b7e\\u6536\\u6b21\\u65e5\\u8d77\\u7b97\\uff0c\\u76ee\\u524d\\u5904\\u4e8e\\u7b2c 3 \\u5929\\uff0c\\u4ecd\\u5728\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u671f\\u9650\\u5185[4]\\uff1b\\u8ba2\\u5355\\u5feb\\u7167\\u663e\\u793a\\u5546\\u54c1\\u4e3a\\u672a\\u62c6\\u5c01\\u72b6\\u6001\\uff0c\\u4e14\\u60a8\\u672a\\u53cd\\u9988\\u5546\\u54c1\\u72b6\\u6001\\u6709\\u53d8\\u5316\\uff0c\\u56e0\\u6b64\\u7b26\\u5408\\u671f\\u9650\\u5185\\u672a\\u62c6\\u5c01\\u7684\\u7533\\u8bf7\\u6761\\u4ef6[4]\\u3002\\n\\n\\u9700\\u8981\\u63d0\\u9192\\u60a8\\uff1a\\n- \\u63d0\\u4ea4\\u7533\\u8bf7\\u540e\\u72b6\\u6001\\u4e3a\\u201c\\u5f85\\u5ba1\\u6838\\u201d\\uff0c\\u5e76\\u4e0d\\u4ee3\\u8868\\u5ba1\\u6838\\u901a\\u8fc7\\u6216\\u9000\\u6b3e\\u5df2\\u5230\\u8d26[2]\\uff1b\\n- \\u201c\\u4e0d\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\u201d\\u7b49\\u6761\\u4ef6\\u4ecd\\u9700\\u5728\\u5ba1\\u6838\\u73af\\u8282\\u786e\\u8ba4\\u6ee1\\u8db3[4]\\uff1b\\n- \\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u7684\\u5bc4\\u56de\\u8fd0\\u8d39\\u7531\\u60a8\\u627f\\u62c5[7]\\u3002\\n\\n\\u60a8\\u53ef\\u4ee5\\u9009\\u62e9\\u5728\\u9000\\u6b3e\\u8868\\u5355\\u4e2d\\u81ea\\u884c\\u9009\\u62e9\\u539f\\u56e0\\u5e76\\u63d0\\u4ea4\\u7533\\u8bf7\\uff0c\\u5177\\u4f53\\u5ba1\\u6838\\u7ed3\\u679c\\u4ee5\\u6838\\u5b9e\\u4e3a\\u51c6\\u3002\", \"sources\": [{\"number\": 1, \"chunk_id\": \"2361511256633032761\", \"questions\": \"\\u5546\\u54c1\\u8d28\\u91cf\\u95ee\\u9898\\u4e0e\\u9000\\u6362\\u8d27\", \"answer\": \"\\u5df2\\u786e\\u8ba4\\u7684\\u5546\\u54c1\\u8d28\\u91cf\\u95ee\\u9898\\u4e0d\\u53d7\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u671f\\u9650\\u9650\\u5236\\uff0c\\u53ef\\u7533\\u8bf7\\u8d28\\u91cf\\u95ee\\u9898\\u9000\\u8d27\\u6216\\u6362\\u8d27\\u3002\\u7834\\u635f\\u3001\\u7f3a\\u4ef6\\u3001\\u53d1\\u9519\\u8d27\\u7b49\\u9700\\u6838\\u5bf9\\u5546\\u54c1\\u4e8b\\u5b9e\\u548c\\u76f8\\u5173\\u51ed\\u8bc1\\uff1b\\u6545\\u969c\\u8868\\u73b0\\u6216\\u8d28\\u91cf\\u8d23\\u4efb\\u5c1a\\u4e0d\\u660e\\u786e\\u65f6\\u5148\\u6f84\\u6e05\\uff0c\\u4e0d\\u76f4\\u63a5\\u627f\\u8bfa\\u7b26\\u5408\\u6761\\u4ef6\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u5546\\u54c1\\u8d28\\u91cf\\u95ee\\u9898\\u4e0e\\u9000\\u6362\\u8d27\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"72ac4e85e60816ca41024b8bac0a9e7ec33623c20d24d6cd7eb0bf03ea6dee94\", \"source_url\": \"/kb/source/2361511256633032761\"}, {\"number\": 2, \"chunk_id\": \"3734656836206291595\", \"questions\": \"\\u9000\\u6b3e\\u7533\\u8bf7\\u4e0e\\u5ba1\\u6838\", \"answer\": \"\\u7b26\\u5408\\u7533\\u8bf7\\u6761\\u4ef6\\u540e\\uff0c\\u7528\\u6237\\u5728\\u9000\\u6b3e\\u8868\\u5355\\u91cc\\u4ece\\u56fa\\u5b9a\\u7c7b\\u76ee\\u81ea\\u9009\\u539f\\u56e0\\u5e76\\u660e\\u786e\\u63d0\\u4ea4\\u3002\\u56fa\\u5b9a\\u7c7b\\u76ee\\u4e3a\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u3001\\u5546\\u54c1\\u8d28\\u91cf\\u95ee\\u9898\\u3001\\u4e0e\\u63cf\\u8ff0\\u4e0d\\u7b26\\u3001\\u7834\\u635f\\u6216\\u7f3a\\u4ef6\\u3001\\u53d1\\u9519\\u8d27\\u3001\\u5176\\u4ed6\\uff1b\\u4e0d\\u9ed8\\u8ba4\\u9009\\u503c\\uff0c\\u4e5f\\u4e0d\\u7531\\u6a21\\u578b\\u4ee3\\u9009\\u3002\\u8d44\\u683c\\u6f84\\u6e05\\u9488\\u5bf9\\u5546\\u54c1\\u4e8b\\u5b9e\\uff0c\\u4e0d\\u8ffd\\u95ee\\u8868\\u5355\\u9000\\u6b3e\\u539f\\u56e0\\u3002\\u7533\\u8bf7\\u63d0\\u4ea4\\u540e\\u72b6\\u6001\\u4e3a\\u201c\\u5f85\\u5ba1\\u6838\\u201d\\uff0c\\u63d0\\u4f9b\\u7533\\u8bf7\\u53f7\\u4f9b\\u67e5\\u8be2\\u3002\\u540c\\u4e00\\u6b21\\u7533\\u8bf7\\u91cd\\u8bd5\\u590d\\u7528\\u539f\\u7533\\u8bf7\\u53f7\\u3002\\u672c\\u7cfb\\u7edf\\u63d0\\u4ea4\\u7533\\u8bf7\\u4e0d\\u8868\\u793a\\u5ba1\\u6838\\u901a\\u8fc7\\u3001\\u5df2\\u6267\\u884c\\u9000\\u6b3e\\u6216\\u6b3e\\u9879\\u5df2\\u5230\\u8d26\\uff1b\\u4e0d\\u5f97\\u627f\\u8bfa\\u5177\\u4f53\\u9000\\u6b3e\\u5230\\u8d26\\u65e5\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u9000\\u6b3e\\u7533\\u8bf7\\u4e0e\\u5ba1\\u6838\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"894e9e4c958dea8a251cf1a82a8d0c728b3fe1077e9b26d3cb674260aaee53ce\", \"source_url\": \"/kb/source/3734656836206291595\"}, {\"number\": 3, \"chunk_id\": \"8002212589846549456\", \"questions\": \"\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u4f8b\\u5916\\u4e0e\\u672a\\u77e5\\u4e8b\\u5b9e\", \"answer\": \"\\u8d85\\u8fc7\\u4e0a\\u8ff0 7 \\u5929\\u671f\\u9650\\uff0c\\u4e0d\\u652f\\u6301\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u3002\\u672c\\u6f14\\u793a\\u4e2d\\u62c6\\u5c01\\u6216\\u4f7f\\u7528\\u7684\\u5546\\u54c1\\u89c6\\u4e3a\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\uff0c\\u4e0d\\u9002\\u7528\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u3002\\u5546\\u54c1\\u662f\\u5426\\u62c6\\u5c01\\u3001\\u662f\\u5426\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\u672a\\u77e5\\u65f6\\uff0c\\u9700\\u5148\\u6f84\\u6e05\\u76f8\\u5173\\u4e8b\\u5b9e\\uff0c\\u4e0d\\u80fd\\u9ed8\\u8ba4\\u672a\\u62c6\\u5c01\\u3002\\u8d28\\u91cf\\u95ee\\u9898\\u6309\\u4e0b\\u4e00\\u8282\\u5355\\u72ec\\u5904\\u7406\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u65e0\\u7406\\u7531\\u9000\\u8d27\\u4f8b\\u5916\\u4e0e\\u672a\\u77e5\\u4e8b\\u5b9e\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"61e6a3cb9ea7761401b2c557c92b67fc29dac4bc918dc10d49752c2822a5883a\", \"source_url\": \"/kb/source/8002212589846549456\"}, {\"number\": 4, \"chunk_id\": \"7240605041584562577\", \"questions\": \"\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u671f\\u9650\\u4e0e\\u6761\\u4ef6\", \"answer\": \"\\u7b7e\\u6536\\u6b21\\u65e5\\u8d77 7 \\u5929\\u5185\\uff08\\u542b\\u7b2c 7 \\u5929\\uff09\\uff0c\\u5546\\u54c1\\u672a\\u62c6\\u5c01\\u4e14\\u4e0d\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\uff0c\\u53ef\\u7533\\u8bf7\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u3002\\u671f\\u9650\\u4f7f\\u7528\\u8ba2\\u5355\\u7b7e\\u6536\\u65e5\\u671f\\u548c\\u5224\\u65ad\\u57fa\\u51c6\\u65e5\\u671f\\u8ba1\\u7b97\\uff0c\\u4e0d\\u80fd\\u7528\\u4e0b\\u5355\\u65e5\\u671f\\u66ff\\u4ee3\\u7b7e\\u6536\\u65e5\\u671f\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u671f\\u9650\\u4e0e\\u6761\\u4ef6\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"58cbd09d3d7486fc6922cca24c70e1b1c6abfe6f25933cf65fdb8381f00d0b3d\", \"source_url\": \"/kb/source/7240605041584562577\"}, {\"number\": 5, \"chunk_id\": \"5473415109386655321\", \"questions\": \"\\u672a\\u53d1\\u8d27\\u8ba2\\u5355\\u53d6\\u6d88\\u9000\\u6b3e\", \"answer\": \"\\u8ba2\\u5355\\u5c1a\\u672a\\u53d1\\u8d27\\u65f6\\uff0c\\u53ef\\u7533\\u8bf7\\u53d6\\u6d88\\u8ba2\\u5355\\u5e76\\u9000\\u6b3e\\uff0c\\u65e0\\u9700\\u5bc4\\u56de\\u5546\\u54c1\\u3002\\u5df2\\u53d1\\u8d27\\u6216\\u5df2\\u7b7e\\u6536\\u7684\\u8ba2\\u5355\\u9700\\u6309\\u7167\\u5bf9\\u5e94\\u9000\\u8d27\\u6761\\u4ef6\\u5224\\u65ad\\uff0c\\u4e0d\\u80fd\\u5047\\u79f0\\u5c1a\\u672a\\u53d1\\u8d27\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u672a\\u53d1\\u8d27\\u8ba2\\u5355\\u53d6\\u6d88\\u9000\\u6b3e\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"2b5c888e6966c507c746827891a5a145b2b7cb3ba5b6605f328ed3f68a1846b5\", \"source_url\": \"/kb/source/5473415109386655321\"}, {\"number\": 6, \"chunk_id\": \"3437647713525028649\", \"questions\": \"\\u7535\\u5b50\\u7c7b\\u5546\\u54c1\\u4fdd\\u4fee\\u4e0e\\u7ef4\\u4fee\", \"answer\": \"\\u7535\\u5b50\\u7c7b\\u5546\\u54c1\\u81ea\\u7b7e\\u6536\\u4e4b\\u65e5\\u8d77\\u4fdd\\u4fee 12 \\u4e2a\\u6708\\uff0c\\u975e\\u4eba\\u4e3a\\u635f\\u574f\\u7684\\u6545\\u969c\\u53ef\\u7533\\u8bf7\\u514d\\u8d39\\u4fdd\\u4fee\\u7ef4\\u4fee\\u3002\\u8d85\\u8fc7\\u4fdd\\u4fee\\u671f\\u6216\\u4eba\\u4e3a\\u635f\\u574f\\u4e0d\\u5728\\u514d\\u8d39\\u4fdd\\u4fee\\u8303\\u56f4\\u5185\\u3002\\u635f\\u574f\\u539f\\u56e0\\u672a\\u77e5\\u65f6\\u9700\\u8be2\\u95ee\\u6545\\u969c\\u8868\\u73b0\\u3001\\u635f\\u574f\\u7ecf\\u8fc7\\u6216\\u6838\\u5bf9\\u51ed\\u8bc1\\uff1b\\u4e0d\\u80fd\\u9ed8\\u8ba4\\u975e\\u4eba\\u4e3a\\u635f\\u574f\\u3002\\u5bb6\\u5c45\\u7528\\u54c1\\u7684\\u8d28\\u91cf\\u95ee\\u9898\\u6309\\u8d28\\u91cf\\u9000\\u6362\\u8d27\\u6761\\u6b3e\\u5904\\u7406\\uff0c\\u4e0d\\u51ed\\u7535\\u5b50\\u7c7b\\u6761\\u6b3e\\u7f16\\u9020\\u4fdd\\u4fee\\u671f\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u7535\\u5b50\\u7c7b\\u5546\\u54c1\\u4fdd\\u4fee\\u4e0e\\u7ef4\\u4fee\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"1e69bb3ce8d5dbdeba12fa7028d98da753ff81c67de4e36337d7a1dd29fea133\", \"source_url\": \"/kb/source/3437647713525028649\"}, {\"number\": 7, \"chunk_id\": \"6534928182256570358\", \"questions\": \"\\u9000\\u8d27\\u8fd0\\u8d39\", \"answer\": \"\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u7684\\u5bc4\\u56de\\u8fd0\\u8d39\\u7531\\u7528\\u6237\\u627f\\u62c5\\uff1b\\u7ecf\\u6838\\u5b9e\\u7684\\u5546\\u54c1\\u8d28\\u91cf\\u95ee\\u9898\\u3001\\u7834\\u635f\\u7f3a\\u4ef6\\u6216\\u53d1\\u9519\\u8d27\\uff0c\\u7531\\u5546\\u5bb6\\u627f\\u62c5\\u5408\\u7406\\u5bc4\\u56de\\u8fd0\\u8d39\\u3002\\u65e0\\u9700\\u5bc4\\u56de\\u7684\\u672a\\u53d1\\u8d27\\u53d6\\u6d88\\u9000\\u6b3e\\u4e0d\\u4ea7\\u751f\\u5bc4\\u56de\\u8fd0\\u8d39\\u3002\\u5177\\u4f53\\u8d39\\u7528\\u548c\\u8d23\\u4efb\\u4ee5\\u5ba1\\u6838\\u6838\\u5b9e\\u7ed3\\u679c\\u4e3a\\u51c6\\uff0c\\u4e0d\\u7f16\\u9020\\u8fd0\\u8d39\\u91d1\\u989d\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u9000\\u8d27\\u8fd0\\u8d39\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"81beb7981ebbe5514a4d852d0fd4a686685a2b34711a7126203dae876d5aa64c\", \"source_url\": \"/kb/source/6534928182256570358\"}], \"refused\": false, \"low_confidence_question_id\": null, \"intent\": \"\\u9000\\u6b3e\\u9000\\u8d27\", \"route\": \"aftersales\", \"actions\": [], \"offer\": null, \"tool_trace\": [{\"call_id\": \"65ca2707bc60489298c5eb533237dff3-order\", \"round\": 0, \"name\": \"load_order\", \"args\": {\"order_id\": \"1001\"}, \"ok\": true, \"content\": \"{\\\"order_id\\\":\\\"1001\\\",\\\"user_id\\\":\\\"ch06-http-20261002-01-user\\\",\\\"product_name\\\":\\\"\\u673a\\u68b0\\u952e\\u76d8\\\",\\\"product_category\\\":\\\"\\u6570\\u7801\\u914d\\u4ef6\\\",\\\"status\\\":\\\"\\u5df2\\u7b7e\\u6536\\\",\\\"paid_amount\\\":\\\"199.00\\\",\\\"ordered_at\\\":\\\"2026-09-27\\\",\\\"received_at\\\":\\\"2026-09-29\\\",\\\"condition\\\":\\\"unopened\\\",\\\"as_of\\\":\\\"2026-10-02\\\"}\", \"error\": null, \"elapsed_ms\": 0}], \"node_trace\": [\"begin_turn\", \"understand_query\", \"classify_intent\", \"route_intent\", \"ensure_order\", \"prepare_order_selection\", \"offer_order_selection\", \"load_order\", \"expand_queries\", \"retrieve_policy\", \"confidence_gate\", \"assess_order\", \"stream_answer\", \"log_turn\"], \"usage\": {\"input_tokens\": 6622, \"output_tokens\": 381, \"estimated\": false}, \"calls\": {\"classifier\": 1, \"decision\": 0, \"answer\": 1, \"understanding\": 1, \"expansion\": 1, \"assessment\": 1}, \"stop_reason\": \"completed\", \"ledger_error\": null, \"status\": \"completed\", \"resolved_question\": \"\\u8fd9\\u4e2a\\u80fd\\u9000\\u5417\", \"intent_confidence\": 0.97, \"order_selection\": {\"selection_id\": \"03714391584b435e9af812e1d76507ac\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\", \"orders\": [{\"order_id\": \"1001\", \"user_id\": \"ch06-http-20261002-01-user\", \"product_name\": \"\\u673a\\u68b0\\u952e\\u76d8\", \"product_category\": \"\\u6570\\u7801\\u914d\\u4ef6\", \"status\": \"\\u5df2\\u7b7e\\u6536\", \"paid_amount\": \"199.00\", \"ordered_at\": \"2026-09-27\", \"received_at\": \"2026-09-29\", \"condition\": \"unopened\", \"as_of\": \"2026-10-02\"}, {\"order_id\": \"1002\", \"user_id\": \"ch06-http-20261002-01-user\", \"product_name\": \"\\u65e0\\u7ebf\\u8033\\u673a\", \"product_category\": \"\\u6570\\u7801\\u914d\\u4ef6\", \"status\": \"\\u5df2\\u7b7e\\u6536\", \"paid_amount\": \"399.00\", \"ordered_at\": \"2026-09-10\", \"received_at\": \"2026-09-15\", \"condition\": \"unknown\", \"as_of\": \"2026-10-02\"}, {\"order_id\": \"1003\", \"user_id\": \"ch06-http-20261002-01-user\", \"product_name\": \"\\u4fdd\\u6e29\\u676f\", \"product_category\": \"\\u5bb6\\u5c45\\u7528\\u54c1\", \"status\": \"\\u5f85\\u53d1\\u8d27\", \"paid_amount\": \"89.00\", \"ordered_at\": \"2026-10-01\", \"received_at\": null, \"condition\": \"unknown\", \"as_of\": \"2026-10-02\"}]}, \"order\": {\"order_id\": \"1001\", \"user_id\": \"ch06-http-20261002-01-user\", \"product_name\": \"\\u673a\\u68b0\\u952e\\u76d8\", \"product_category\": \"\\u6570\\u7801\\u914d\\u4ef6\", \"status\": \"\\u5df2\\u7b7e\\u6536\", \"paid_amount\": \"199.00\", \"ordered_at\": \"2026-09-27\", \"received_at\": \"2026-09-29\", \"condition\": \"unopened\", \"as_of\": \"2026-10-02\"}, \"assessment\": {\"verdict\": \"eligible\", \"explanation\": \"\\u8ba2\\u5355\\u5df2\\u7b7e\\u6536\\uff0c\\u7b7e\\u6536\\u6b21\\u65e5\\u8d77\\u7b2c3\\u5929\\uff08as_of 2026-10-02\\uff0c\\u7b7e\\u6536 2026-09-29\\uff09\\uff0c\\u4ecd\\u5728\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u671f\\u9650\\u5185[4]\\u3002\\u8ba2\\u5355\\u5feb\\u7167\\u663e\\u793a\\u5546\\u54c1\\u672a\\u62c6\\u5c01[4]\\uff0c\\u4e14\\u7528\\u6237\\u672a\\u62a5\\u544a\\u66f4\\u65b0\\u7684\\u5546\\u54c1\\u72b6\\u6001\\uff0c\\u56e0\\u6b64\\u53ef\\u652f\\u6301\\u63d0\\u51fa\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u7533\\u8bf7\\u3002\\u9700\\u6ce8\\u610f\\uff1a\\u7533\\u8bf7\\u63d0\\u4ea4\\u540e\\u4e3a\\u201c\\u5f85\\u5ba1\\u6838\\u201d\\u72b6\\u6001\\uff0c\\u4e0d\\u4ee3\\u8868\\u5ba1\\u6838\\u901a\\u8fc7\\u6216\\u9000\\u6b3e\\u5230\\u8d26[2]\\uff1b\\u540c\\u65f6\\u201c\\u4e0d\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\u201d\\u7b49\\u6761\\u4ef6\\u4ecd\\u9700\\u5728\\u5ba1\\u6838\\u4e2d\\u6ee1\\u8db3[4]\\u3002\", \"missing_facts\": []}, \"refund_offer\": {\"offer_id\": \"dc2fda9fcf6451f358f5346ec840c2caf173424b8269fa266e19637f8672a94b\", \"turn_id\": \"65ca2707bc60489298c5eb533237dff3\", \"order\": {\"order_id\": \"1001\", \"user_id\": \"ch06-http-20261002-01-user\", \"product_name\": \"\\u673a\\u68b0\\u952e\\u76d8\", \"product_category\": \"\\u6570\\u7801\\u914d\\u4ef6\", \"status\": \"\\u5df2\\u7b7e\\u6536\", \"paid_amount\": \"199.00\", \"ordered_at\": \"2026-09-27\", \"received_at\": \"2026-09-29\", \"condition\": \"unopened\", \"as_of\": \"2026-10-02\"}, \"question\": \"\\u8fd9\\u4e2a\\u80fd\\u9000\\u5417\", \"assessment\": {\"verdict\": \"eligible\", \"explanation\": \"\\u8ba2\\u5355\\u5df2\\u7b7e\\u6536\\uff0c\\u7b7e\\u6536\\u6b21\\u65e5\\u8d77\\u7b2c3\\u5929\\uff08as_of 2026-10-02\\uff0c\\u7b7e\\u6536 2026-09-29\\uff09\\uff0c\\u4ecd\\u5728\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u671f\\u9650\\u5185[4]\\u3002\\u8ba2\\u5355\\u5feb\\u7167\\u663e\\u793a\\u5546\\u54c1\\u672a\\u62c6\\u5c01[4]\\uff0c\\u4e14\\u7528\\u6237\\u672a\\u62a5\\u544a\\u66f4\\u65b0\\u7684\\u5546\\u54c1\\u72b6\\u6001\\uff0c\\u56e0\\u6b64\\u53ef\\u652f\\u6301\\u63d0\\u51fa\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u7533\\u8bf7\\u3002\\u9700\\u6ce8\\u610f\\uff1a\\u7533\\u8bf7\\u63d0\\u4ea4\\u540e\\u4e3a\\u201c\\u5f85\\u5ba1\\u6838\\u201d\\u72b6\\u6001\\uff0c\\u4e0d\\u4ee3\\u8868\\u5ba1\\u6838\\u901a\\u8fc7\\u6216\\u9000\\u6b3e\\u5230\\u8d26[2]\\uff1b\\u540c\\u65f6\\u201c\\u4e0d\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\u201d\\u7b49\\u6761\\u4ef6\\u4ecd\\u9700\\u5728\\u5ba1\\u6838\\u4e2d\\u6ee1\\u8db3[4]\\u3002\", \"missing_facts\": []}, \"sources\": [{\"number\": 1, \"chunk_id\": \"2361511256633032761\", \"questions\": \"\\u5546\\u54c1\\u8d28\\u91cf\\u95ee\\u9898\\u4e0e\\u9000\\u6362\\u8d27\", \"answer\": \"\\u5df2\\u786e\\u8ba4\\u7684\\u5546\\u54c1\\u8d28\\u91cf\\u95ee\\u9898\\u4e0d\\u53d7\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u671f\\u9650\\u9650\\u5236\\uff0c\\u53ef\\u7533\\u8bf7\\u8d28\\u91cf\\u95ee\\u9898\\u9000\\u8d27\\u6216\\u6362\\u8d27\\u3002\\u7834\\u635f\\u3001\\u7f3a\\u4ef6\\u3001\\u53d1\\u9519\\u8d27\\u7b49\\u9700\\u6838\\u5bf9\\u5546\\u54c1\\u4e8b\\u5b9e\\u548c\\u76f8\\u5173\\u51ed\\u8bc1\\uff1b\\u6545\\u969c\\u8868\\u73b0\\u6216\\u8d28\\u91cf\\u8d23\\u4efb\\u5c1a\\u4e0d\\u660e\\u786e\\u65f6\\u5148\\u6f84\\u6e05\\uff0c\\u4e0d\\u76f4\\u63a5\\u627f\\u8bfa\\u7b26\\u5408\\u6761\\u4ef6\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u5546\\u54c1\\u8d28\\u91cf\\u95ee\\u9898\\u4e0e\\u9000\\u6362\\u8d27\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"72ac4e85e60816ca41024b8bac0a9e7ec33623c20d24d6cd7eb0bf03ea6dee94\", \"source_url\": \"/kb/source/2361511256633032761\"}, {\"number\": 2, \"chunk_id\": \"3734656836206291595\", \"questions\": \"\\u9000\\u6b3e\\u7533\\u8bf7\\u4e0e\\u5ba1\\u6838\", \"answer\": \"\\u7b26\\u5408\\u7533\\u8bf7\\u6761\\u4ef6\\u540e\\uff0c\\u7528\\u6237\\u5728\\u9000\\u6b3e\\u8868\\u5355\\u91cc\\u4ece\\u56fa\\u5b9a\\u7c7b\\u76ee\\u81ea\\u9009\\u539f\\u56e0\\u5e76\\u660e\\u786e\\u63d0\\u4ea4\\u3002\\u56fa\\u5b9a\\u7c7b\\u76ee\\u4e3a\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u3001\\u5546\\u54c1\\u8d28\\u91cf\\u95ee\\u9898\\u3001\\u4e0e\\u63cf\\u8ff0\\u4e0d\\u7b26\\u3001\\u7834\\u635f\\u6216\\u7f3a\\u4ef6\\u3001\\u53d1\\u9519\\u8d27\\u3001\\u5176\\u4ed6\\uff1b\\u4e0d\\u9ed8\\u8ba4\\u9009\\u503c\\uff0c\\u4e5f\\u4e0d\\u7531\\u6a21\\u578b\\u4ee3\\u9009\\u3002\\u8d44\\u683c\\u6f84\\u6e05\\u9488\\u5bf9\\u5546\\u54c1\\u4e8b\\u5b9e\\uff0c\\u4e0d\\u8ffd\\u95ee\\u8868\\u5355\\u9000\\u6b3e\\u539f\\u56e0\\u3002\\u7533\\u8bf7\\u63d0\\u4ea4\\u540e\\u72b6\\u6001\\u4e3a\\u201c\\u5f85\\u5ba1\\u6838\\u201d\\uff0c\\u63d0\\u4f9b\\u7533\\u8bf7\\u53f7\\u4f9b\\u67e5\\u8be2\\u3002\\u540c\\u4e00\\u6b21\\u7533\\u8bf7\\u91cd\\u8bd5\\u590d\\u7528\\u539f\\u7533\\u8bf7\\u53f7\\u3002\\u672c\\u7cfb\\u7edf\\u63d0\\u4ea4\\u7533\\u8bf7\\u4e0d\\u8868\\u793a\\u5ba1\\u6838\\u901a\\u8fc7\\u3001\\u5df2\\u6267\\u884c\\u9000\\u6b3e\\u6216\\u6b3e\\u9879\\u5df2\\u5230\\u8d26\\uff1b\\u4e0d\\u5f97\\u627f\\u8bfa\\u5177\\u4f53\\u9000\\u6b3e\\u5230\\u8d26\\u65e5\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u9000\\u6b3e\\u7533\\u8bf7\\u4e0e\\u5ba1\\u6838\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"894e9e4c958dea8a251cf1a82a8d0c728b3fe1077e9b26d3cb674260aaee53ce\", \"source_url\": \"/kb/source/3734656836206291595\"}, {\"number\": 3, \"chunk_id\": \"8002212589846549456\", \"questions\": \"\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u4f8b\\u5916\\u4e0e\\u672a\\u77e5\\u4e8b\\u5b9e\", \"answer\": \"\\u8d85\\u8fc7\\u4e0a\\u8ff0 7 \\u5929\\u671f\\u9650\\uff0c\\u4e0d\\u652f\\u6301\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u3002\\u672c\\u6f14\\u793a\\u4e2d\\u62c6\\u5c01\\u6216\\u4f7f\\u7528\\u7684\\u5546\\u54c1\\u89c6\\u4e3a\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\uff0c\\u4e0d\\u9002\\u7528\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u3002\\u5546\\u54c1\\u662f\\u5426\\u62c6\\u5c01\\u3001\\u662f\\u5426\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\u672a\\u77e5\\u65f6\\uff0c\\u9700\\u5148\\u6f84\\u6e05\\u76f8\\u5173\\u4e8b\\u5b9e\\uff0c\\u4e0d\\u80fd\\u9ed8\\u8ba4\\u672a\\u62c6\\u5c01\\u3002\\u8d28\\u91cf\\u95ee\\u9898\\u6309\\u4e0b\\u4e00\\u8282\\u5355\\u72ec\\u5904\\u7406\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u65e0\\u7406\\u7531\\u9000\\u8d27\\u4f8b\\u5916\\u4e0e\\u672a\\u77e5\\u4e8b\\u5b9e\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"61e6a3cb9ea7761401b2c557c92b67fc29dac4bc918dc10d49752c2822a5883a\", \"source_url\": \"/kb/source/8002212589846549456\"}, {\"number\": 4, \"chunk_id\": \"7240605041584562577\", \"questions\": \"\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u671f\\u9650\\u4e0e\\u6761\\u4ef6\", \"answer\": \"\\u7b7e\\u6536\\u6b21\\u65e5\\u8d77 7 \\u5929\\u5185\\uff08\\u542b\\u7b2c 7 \\u5929\\uff09\\uff0c\\u5546\\u54c1\\u672a\\u62c6\\u5c01\\u4e14\\u4e0d\\u5f71\\u54cd\\u4e8c\\u6b21\\u9500\\u552e\\uff0c\\u53ef\\u7533\\u8bf7\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u3002\\u671f\\u9650\\u4f7f\\u7528\\u8ba2\\u5355\\u7b7e\\u6536\\u65e5\\u671f\\u548c\\u5224\\u65ad\\u57fa\\u51c6\\u65e5\\u671f\\u8ba1\\u7b97\\uff0c\\u4e0d\\u80fd\\u7528\\u4e0b\\u5355\\u65e5\\u671f\\u66ff\\u4ee3\\u7b7e\\u6536\\u65e5\\u671f\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u671f\\u9650\\u4e0e\\u6761\\u4ef6\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"58cbd09d3d7486fc6922cca24c70e1b1c6abfe6f25933cf65fdb8381f00d0b3d\", \"source_url\": \"/kb/source/7240605041584562577\"}, {\"number\": 5, \"chunk_id\": \"5473415109386655321\", \"questions\": \"\\u672a\\u53d1\\u8d27\\u8ba2\\u5355\\u53d6\\u6d88\\u9000\\u6b3e\", \"answer\": \"\\u8ba2\\u5355\\u5c1a\\u672a\\u53d1\\u8d27\\u65f6\\uff0c\\u53ef\\u7533\\u8bf7\\u53d6\\u6d88\\u8ba2\\u5355\\u5e76\\u9000\\u6b3e\\uff0c\\u65e0\\u9700\\u5bc4\\u56de\\u5546\\u54c1\\u3002\\u5df2\\u53d1\\u8d27\\u6216\\u5df2\\u7b7e\\u6536\\u7684\\u8ba2\\u5355\\u9700\\u6309\\u7167\\u5bf9\\u5e94\\u9000\\u8d27\\u6761\\u4ef6\\u5224\\u65ad\\uff0c\\u4e0d\\u80fd\\u5047\\u79f0\\u5c1a\\u672a\\u53d1\\u8d27\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u672a\\u53d1\\u8d27\\u8ba2\\u5355\\u53d6\\u6d88\\u9000\\u6b3e\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"2b5c888e6966c507c746827891a5a145b2b7cb3ba5b6605f328ed3f68a1846b5\", \"source_url\": \"/kb/source/5473415109386655321\"}, {\"number\": 6, \"chunk_id\": \"3437647713525028649\", \"questions\": \"\\u7535\\u5b50\\u7c7b\\u5546\\u54c1\\u4fdd\\u4fee\\u4e0e\\u7ef4\\u4fee\", \"answer\": \"\\u7535\\u5b50\\u7c7b\\u5546\\u54c1\\u81ea\\u7b7e\\u6536\\u4e4b\\u65e5\\u8d77\\u4fdd\\u4fee 12 \\u4e2a\\u6708\\uff0c\\u975e\\u4eba\\u4e3a\\u635f\\u574f\\u7684\\u6545\\u969c\\u53ef\\u7533\\u8bf7\\u514d\\u8d39\\u4fdd\\u4fee\\u7ef4\\u4fee\\u3002\\u8d85\\u8fc7\\u4fdd\\u4fee\\u671f\\u6216\\u4eba\\u4e3a\\u635f\\u574f\\u4e0d\\u5728\\u514d\\u8d39\\u4fdd\\u4fee\\u8303\\u56f4\\u5185\\u3002\\u635f\\u574f\\u539f\\u56e0\\u672a\\u77e5\\u65f6\\u9700\\u8be2\\u95ee\\u6545\\u969c\\u8868\\u73b0\\u3001\\u635f\\u574f\\u7ecf\\u8fc7\\u6216\\u6838\\u5bf9\\u51ed\\u8bc1\\uff1b\\u4e0d\\u80fd\\u9ed8\\u8ba4\\u975e\\u4eba\\u4e3a\\u635f\\u574f\\u3002\\u5bb6\\u5c45\\u7528\\u54c1\\u7684\\u8d28\\u91cf\\u95ee\\u9898\\u6309\\u8d28\\u91cf\\u9000\\u6362\\u8d27\\u6761\\u6b3e\\u5904\\u7406\\uff0c\\u4e0d\\u51ed\\u7535\\u5b50\\u7c7b\\u6761\\u6b3e\\u7f16\\u9020\\u4fdd\\u4fee\\u671f\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u7535\\u5b50\\u7c7b\\u5546\\u54c1\\u4fdd\\u4fee\\u4e0e\\u7ef4\\u4fee\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"1e69bb3ce8d5dbdeba12fa7028d98da753ff81c67de4e36337d7a1dd29fea133\", \"source_url\": \"/kb/source/3437647713525028649\"}, {\"number\": 7, \"chunk_id\": \"6534928182256570358\", \"questions\": \"\\u9000\\u8d27\\u8fd0\\u8d39\", \"answer\": \"\\u4e03\\u5929\\u65e0\\u7406\\u7531\\u9000\\u8d27\\u7684\\u5bc4\\u56de\\u8fd0\\u8d39\\u7531\\u7528\\u6237\\u627f\\u62c5\\uff1b\\u7ecf\\u6838\\u5b9e\\u7684\\u5546\\u54c1\\u8d28\\u91cf\\u95ee\\u9898\\u3001\\u7834\\u635f\\u7f3a\\u4ef6\\u6216\\u53d1\\u9519\\u8d27\\uff0c\\u7531\\u5546\\u5bb6\\u627f\\u62c5\\u5408\\u7406\\u5bc4\\u56de\\u8fd0\\u8d39\\u3002\\u65e0\\u9700\\u5bc4\\u56de\\u7684\\u672a\\u53d1\\u8d27\\u53d6\\u6d88\\u9000\\u6b3e\\u4e0d\\u4ea7\\u751f\\u5bc4\\u56de\\u8fd0\\u8d39\\u3002\\u5177\\u4f53\\u8d39\\u7528\\u548c\\u8d23\\u4efb\\u4ee5\\u5ba1\\u6838\\u6838\\u5b9e\\u7ed3\\u679c\\u4e3a\\u51c6\\uff0c\\u4e0d\\u7f16\\u9020\\u8fd0\\u8d39\\u91d1\\u989d\\u3002\", \"section_path\": \"corpus:09dc5b52e49e9194/aftersales-policy.md::\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56 / \\u9000\\u8d27\\u8fd0\\u8d39\", \"category\": \"\\u9000\\u6b3e\\u552e\\u540e\\u653f\\u7b56\", \"product_category\": null, \"content_hash\": \"81beb7981ebbe5514a4d852d0fd4a686685a2b34711a7126203dae876d5aa64c\", \"source_url\": \"/kb/source/6534928182256570358\"}]}, \"finish_reason\": \"completed\"}\n\n",
+      "result": {
+        "session_id": "ch06-http-20261002-01-missing",
+        "conversation_id": 6,
+        "resumed": false,
+        "answer": "您好，根据当前订单信息，这笔机械键盘订单可以支持您提出七天无理由退货申请。\n\n订单已于 2026-09-29 签收，按签收次日起算，目前处于第 3 天，仍在七天无理由退货期限内[4]；订单快照显示商品为未拆封状态，且您未反馈商品状态有变化，因此符合期限内未拆封的申请条件[4]。\n\n需要提醒您：\n- 提交申请后状态为“待审核”，并不代表审核通过或退款已到账[2]；\n- “不影响二次销售”等条件仍需在审核环节确认满足[4]；\n- 七天无理由退货的寄回运费由您承担[7]。\n\n您可以选择在退款表单中自行选择原因并提交申请，具体审核结果以核实为准。",
+        "sources": [
+          {
+            "number": 1,
+            "chunk_id": "2361511256633032761",
+            "questions": "商品质量问题与退换货",
+            "answer": "已确认的商品质量问题不受七天无理由退货期限限制，可申请质量问题退货或换货。破损、缺件、发错货等需核对商品事实和相关凭证；故障表现或质量责任尚不明确时先澄清，不直接承诺符合条件。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 商品质量问题与退换货",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "72ac4e85e60816ca41024b8bac0a9e7ec33623c20d24d6cd7eb0bf03ea6dee94",
+            "source_url": "/kb/source/2361511256633032761"
+          },
+          {
+            "number": 2,
+            "chunk_id": "3734656836206291595",
+            "questions": "退款申请与审核",
+            "answer": "符合申请条件后，用户在退款表单里从固定类目自选原因并明确提交。固定类目为七天无理由、商品质量问题、与描述不符、破损或缺件、发错货、其他；不默认选值，也不由模型代选。资格澄清针对商品事实，不追问表单退款原因。申请提交后状态为“待审核”，提供申请号供查询。同一次申请重试复用原申请号。本系统提交申请不表示审核通过、已执行退款或款项已到账；不得承诺具体退款到账日。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退款申请与审核",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "894e9e4c958dea8a251cf1a82a8d0c728b3fe1077e9b26d3cb674260aaee53ce",
+            "source_url": "/kb/source/3734656836206291595"
+          },
+          {
+            "number": 3,
+            "chunk_id": "8002212589846549456",
+            "questions": "无理由退货例外与未知事实",
+            "answer": "超过上述 7 天期限，不支持七天无理由退货。本演示中拆封或使用的商品视为影响二次销售，不适用无理由退货。商品是否拆封、是否影响二次销售未知时，需先澄清相关事实，不能默认未拆封。质量问题按下一节单独处理。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 无理由退货例外与未知事实",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "61e6a3cb9ea7761401b2c557c92b67fc29dac4bc918dc10d49752c2822a5883a",
+            "source_url": "/kb/source/8002212589846549456"
+          },
+          {
+            "number": 4,
+            "chunk_id": "7240605041584562577",
+            "questions": "七天无理由退货期限与条件",
+            "answer": "签收次日起 7 天内（含第 7 天），商品未拆封且不影响二次销售，可申请七天无理由退货。期限使用订单签收日期和判断基准日期计算，不能用下单日期替代签收日期。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 七天无理由退货期限与条件",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "58cbd09d3d7486fc6922cca24c70e1b1c6abfe6f25933cf65fdb8381f00d0b3d",
+            "source_url": "/kb/source/7240605041584562577"
+          },
+          {
+            "number": 5,
+            "chunk_id": "5473415109386655321",
+            "questions": "未发货订单取消退款",
+            "answer": "订单尚未发货时，可申请取消订单并退款，无需寄回商品。已发货或已签收的订单需按照对应退货条件判断，不能假称尚未发货。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 未发货订单取消退款",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "2b5c888e6966c507c746827891a5a145b2b7cb3ba5b6605f328ed3f68a1846b5",
+            "source_url": "/kb/source/5473415109386655321"
+          },
+          {
+            "number": 6,
+            "chunk_id": "3437647713525028649",
+            "questions": "电子类商品保修与维修",
+            "answer": "电子类商品自签收之日起保修 12 个月，非人为损坏的故障可申请免费保修维修。超过保修期或人为损坏不在免费保修范围内。损坏原因未知时需询问故障表现、损坏经过或核对凭证；不能默认非人为损坏。家居用品的质量问题按质量退换货条款处理，不凭电子类条款编造保修期。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 电子类商品保修与维修",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "1e69bb3ce8d5dbdeba12fa7028d98da753ff81c67de4e36337d7a1dd29fea133",
+            "source_url": "/kb/source/3437647713525028649"
+          },
+          {
+            "number": 7,
+            "chunk_id": "6534928182256570358",
+            "questions": "退货运费",
+            "answer": "七天无理由退货的寄回运费由用户承担；经核实的商品质量问题、破损缺件或发错货，由商家承担合理寄回运费。无需寄回的未发货取消退款不产生寄回运费。具体费用和责任以审核核实结果为准，不编造运费金额。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退货运费",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "81beb7981ebbe5514a4d852d0fd4a686685a2b34711a7126203dae876d5aa64c",
+            "source_url": "/kb/source/6534928182256570358"
+          }
+        ],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "退款退货",
+        "route": "aftersales",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "65ca2707bc60489298c5eb533237dff3-order",
+            "round": 0,
+            "name": "load_order",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "{\"order_id\":\"1001\",\"user_id\":\"ch06-http-20261002-01-user\",\"product_name\":\"机械键盘\",\"product_category\":\"数码配件\",\"status\":\"已签收\",\"paid_amount\":\"199.00\",\"ordered_at\":\"2026-09-27\",\"received_at\":\"2026-09-29\",\"condition\":\"unopened\",\"as_of\":\"2026-10-02\"}",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "ensure_order",
+          "prepare_order_selection",
+          "offer_order_selection",
+          "load_order",
+          "expand_queries",
+          "retrieve_policy",
+          "confidence_gate",
+          "assess_order",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 6622,
+          "output_tokens": 381,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 1,
+          "understanding": 1,
+          "expansion": 1,
+          "assessment": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "这个能退吗",
+        "intent_confidence": 0.97,
+        "order_selection": {
+          "selection_id": "03714391584b435e9af812e1d76507ac",
+          "turn_id": "65ca2707bc60489298c5eb533237dff3",
+          "orders": [
+            {
+              "order_id": "1001",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "机械键盘",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "199.00",
+              "ordered_at": "2026-09-27",
+              "received_at": "2026-09-29",
+              "condition": "unopened",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1002",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "无线耳机",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "399.00",
+              "ordered_at": "2026-09-10",
+              "received_at": "2026-09-15",
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1003",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "保温杯",
+              "product_category": "家居用品",
+              "status": "待发货",
+              "paid_amount": "89.00",
+              "ordered_at": "2026-10-01",
+              "received_at": null,
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            }
+          ]
+        },
+        "order": {
+          "order_id": "1001",
+          "user_id": "ch06-http-20261002-01-user",
+          "product_name": "机械键盘",
+          "product_category": "数码配件",
+          "status": "已签收",
+          "paid_amount": "199.00",
+          "ordered_at": "2026-09-27",
+          "received_at": "2026-09-29",
+          "condition": "unopened",
+          "as_of": "2026-10-02"
+        },
+        "assessment": {
+          "verdict": "eligible",
+          "explanation": "订单已签收，签收次日起第3天（as_of 2026-10-02，签收 2026-09-29），仍在七天无理由退货期限内[4]。订单快照显示商品未拆封[4]，且用户未报告更新的商品状态，因此可支持提出七天无理由退货申请。需注意：申请提交后为“待审核”状态，不代表审核通过或退款到账[2]；同时“不影响二次销售”等条件仍需在审核中满足[4]。",
+          "missing_facts": []
+        },
+        "refund_offer": {
+          "offer_id": "dc2fda9fcf6451f358f5346ec840c2caf173424b8269fa266e19637f8672a94b",
+          "turn_id": "65ca2707bc60489298c5eb533237dff3",
+          "order": {
+            "order_id": "1001",
+            "user_id": "ch06-http-20261002-01-user",
+            "product_name": "机械键盘",
+            "product_category": "数码配件",
+            "status": "已签收",
+            "paid_amount": "199.00",
+            "ordered_at": "2026-09-27",
+            "received_at": "2026-09-29",
+            "condition": "unopened",
+            "as_of": "2026-10-02"
+          },
+          "question": "这个能退吗",
+          "assessment": {
+            "verdict": "eligible",
+            "explanation": "订单已签收，签收次日起第3天（as_of 2026-10-02，签收 2026-09-29），仍在七天无理由退货期限内[4]。订单快照显示商品未拆封[4]，且用户未报告更新的商品状态，因此可支持提出七天无理由退货申请。需注意：申请提交后为“待审核”状态，不代表审核通过或退款到账[2]；同时“不影响二次销售”等条件仍需在审核中满足[4]。",
+            "missing_facts": []
+          },
+          "sources": [
+            {
+              "number": 1,
+              "chunk_id": "2361511256633032761",
+              "questions": "商品质量问题与退换货",
+              "answer": "已确认的商品质量问题不受七天无理由退货期限限制，可申请质量问题退货或换货。破损、缺件、发错货等需核对商品事实和相关凭证；故障表现或质量责任尚不明确时先澄清，不直接承诺符合条件。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 商品质量问题与退换货",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "72ac4e85e60816ca41024b8bac0a9e7ec33623c20d24d6cd7eb0bf03ea6dee94",
+              "source_url": "/kb/source/2361511256633032761"
+            },
+            {
+              "number": 2,
+              "chunk_id": "3734656836206291595",
+              "questions": "退款申请与审核",
+              "answer": "符合申请条件后，用户在退款表单里从固定类目自选原因并明确提交。固定类目为七天无理由、商品质量问题、与描述不符、破损或缺件、发错货、其他；不默认选值，也不由模型代选。资格澄清针对商品事实，不追问表单退款原因。申请提交后状态为“待审核”，提供申请号供查询。同一次申请重试复用原申请号。本系统提交申请不表示审核通过、已执行退款或款项已到账；不得承诺具体退款到账日。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退款申请与审核",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "894e9e4c958dea8a251cf1a82a8d0c728b3fe1077e9b26d3cb674260aaee53ce",
+              "source_url": "/kb/source/3734656836206291595"
+            },
+            {
+              "number": 3,
+              "chunk_id": "8002212589846549456",
+              "questions": "无理由退货例外与未知事实",
+              "answer": "超过上述 7 天期限，不支持七天无理由退货。本演示中拆封或使用的商品视为影响二次销售，不适用无理由退货。商品是否拆封、是否影响二次销售未知时，需先澄清相关事实，不能默认未拆封。质量问题按下一节单独处理。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 无理由退货例外与未知事实",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "61e6a3cb9ea7761401b2c557c92b67fc29dac4bc918dc10d49752c2822a5883a",
+              "source_url": "/kb/source/8002212589846549456"
+            },
+            {
+              "number": 4,
+              "chunk_id": "7240605041584562577",
+              "questions": "七天无理由退货期限与条件",
+              "answer": "签收次日起 7 天内（含第 7 天），商品未拆封且不影响二次销售，可申请七天无理由退货。期限使用订单签收日期和判断基准日期计算，不能用下单日期替代签收日期。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 七天无理由退货期限与条件",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "58cbd09d3d7486fc6922cca24c70e1b1c6abfe6f25933cf65fdb8381f00d0b3d",
+              "source_url": "/kb/source/7240605041584562577"
+            },
+            {
+              "number": 5,
+              "chunk_id": "5473415109386655321",
+              "questions": "未发货订单取消退款",
+              "answer": "订单尚未发货时，可申请取消订单并退款，无需寄回商品。已发货或已签收的订单需按照对应退货条件判断，不能假称尚未发货。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 未发货订单取消退款",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "2b5c888e6966c507c746827891a5a145b2b7cb3ba5b6605f328ed3f68a1846b5",
+              "source_url": "/kb/source/5473415109386655321"
+            },
+            {
+              "number": 6,
+              "chunk_id": "3437647713525028649",
+              "questions": "电子类商品保修与维修",
+              "answer": "电子类商品自签收之日起保修 12 个月，非人为损坏的故障可申请免费保修维修。超过保修期或人为损坏不在免费保修范围内。损坏原因未知时需询问故障表现、损坏经过或核对凭证；不能默认非人为损坏。家居用品的质量问题按质量退换货条款处理，不凭电子类条款编造保修期。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 电子类商品保修与维修",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "1e69bb3ce8d5dbdeba12fa7028d98da753ff81c67de4e36337d7a1dd29fea133",
+              "source_url": "/kb/source/3437647713525028649"
+            },
+            {
+              "number": 7,
+              "chunk_id": "6534928182256570358",
+              "questions": "退货运费",
+              "answer": "七天无理由退货的寄回运费由用户承担；经核实的商品质量问题、破损缺件或发错货，由商家承担合理寄回运费。无需寄回的未发货取消退款不产生寄回运费。具体费用和责任以审核核实结果为准，不编造运费金额。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退货运费",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "81beb7981ebbe5514a4d852d0fd4a686685a2b34711a7126203dae876d5aa64c",
+              "source_url": "/kb/source/6534928182256570358"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "select_replay",
+      "method": "POST",
+      "path": "/ch06/orders/selection",
+      "request": {
+        "session_id": "ch06-http-20261002-01-missing",
+        "user_id": "ch06-http-20261002-01-user",
+        "selection_id": "03714391584b435e9af812e1d76507ac",
+        "order_id": "1001"
+      },
+      "passed": true,
+      "status": 200,
+      "response": {
+        "session_id": "ch06-http-20261002-01-missing",
+        "conversation_id": 6,
+        "resumed": false,
+        "answer": "您好，根据当前订单信息，这笔机械键盘订单可以支持您提出七天无理由退货申请。\n\n订单已于 2026-09-29 签收，按签收次日起算，目前处于第 3 天，仍在七天无理由退货期限内[4]；订单快照显示商品为未拆封状态，且您未反馈商品状态有变化，因此符合期限内未拆封的申请条件[4]。\n\n需要提醒您：\n- 提交申请后状态为“待审核”，并不代表审核通过或退款已到账[2]；\n- “不影响二次销售”等条件仍需在审核环节确认满足[4]；\n- 七天无理由退货的寄回运费由您承担[7]。\n\n您可以选择在退款表单中自行选择原因并提交申请，具体审核结果以核实为准。",
+        "sources": [
+          {
+            "number": 1,
+            "chunk_id": "2361511256633032761",
+            "questions": "商品质量问题与退换货",
+            "answer": "已确认的商品质量问题不受七天无理由退货期限限制，可申请质量问题退货或换货。破损、缺件、发错货等需核对商品事实和相关凭证；故障表现或质量责任尚不明确时先澄清，不直接承诺符合条件。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 商品质量问题与退换货",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "72ac4e85e60816ca41024b8bac0a9e7ec33623c20d24d6cd7eb0bf03ea6dee94",
+            "source_url": "/kb/source/2361511256633032761"
+          },
+          {
+            "number": 2,
+            "chunk_id": "3734656836206291595",
+            "questions": "退款申请与审核",
+            "answer": "符合申请条件后，用户在退款表单里从固定类目自选原因并明确提交。固定类目为七天无理由、商品质量问题、与描述不符、破损或缺件、发错货、其他；不默认选值，也不由模型代选。资格澄清针对商品事实，不追问表单退款原因。申请提交后状态为“待审核”，提供申请号供查询。同一次申请重试复用原申请号。本系统提交申请不表示审核通过、已执行退款或款项已到账；不得承诺具体退款到账日。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退款申请与审核",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "894e9e4c958dea8a251cf1a82a8d0c728b3fe1077e9b26d3cb674260aaee53ce",
+            "source_url": "/kb/source/3734656836206291595"
+          },
+          {
+            "number": 3,
+            "chunk_id": "8002212589846549456",
+            "questions": "无理由退货例外与未知事实",
+            "answer": "超过上述 7 天期限，不支持七天无理由退货。本演示中拆封或使用的商品视为影响二次销售，不适用无理由退货。商品是否拆封、是否影响二次销售未知时，需先澄清相关事实，不能默认未拆封。质量问题按下一节单独处理。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 无理由退货例外与未知事实",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "61e6a3cb9ea7761401b2c557c92b67fc29dac4bc918dc10d49752c2822a5883a",
+            "source_url": "/kb/source/8002212589846549456"
+          },
+          {
+            "number": 4,
+            "chunk_id": "7240605041584562577",
+            "questions": "七天无理由退货期限与条件",
+            "answer": "签收次日起 7 天内（含第 7 天），商品未拆封且不影响二次销售，可申请七天无理由退货。期限使用订单签收日期和判断基准日期计算，不能用下单日期替代签收日期。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 七天无理由退货期限与条件",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "58cbd09d3d7486fc6922cca24c70e1b1c6abfe6f25933cf65fdb8381f00d0b3d",
+            "source_url": "/kb/source/7240605041584562577"
+          },
+          {
+            "number": 5,
+            "chunk_id": "5473415109386655321",
+            "questions": "未发货订单取消退款",
+            "answer": "订单尚未发货时，可申请取消订单并退款，无需寄回商品。已发货或已签收的订单需按照对应退货条件判断，不能假称尚未发货。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 未发货订单取消退款",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "2b5c888e6966c507c746827891a5a145b2b7cb3ba5b6605f328ed3f68a1846b5",
+            "source_url": "/kb/source/5473415109386655321"
+          },
+          {
+            "number": 6,
+            "chunk_id": "3437647713525028649",
+            "questions": "电子类商品保修与维修",
+            "answer": "电子类商品自签收之日起保修 12 个月，非人为损坏的故障可申请免费保修维修。超过保修期或人为损坏不在免费保修范围内。损坏原因未知时需询问故障表现、损坏经过或核对凭证；不能默认非人为损坏。家居用品的质量问题按质量退换货条款处理，不凭电子类条款编造保修期。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 电子类商品保修与维修",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "1e69bb3ce8d5dbdeba12fa7028d98da753ff81c67de4e36337d7a1dd29fea133",
+            "source_url": "/kb/source/3437647713525028649"
+          },
+          {
+            "number": 7,
+            "chunk_id": "6534928182256570358",
+            "questions": "退货运费",
+            "answer": "七天无理由退货的寄回运费由用户承担；经核实的商品质量问题、破损缺件或发错货，由商家承担合理寄回运费。无需寄回的未发货取消退款不产生寄回运费。具体费用和责任以审核核实结果为准，不编造运费金额。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退货运费",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "81beb7981ebbe5514a4d852d0fd4a686685a2b34711a7126203dae876d5aa64c",
+            "source_url": "/kb/source/6534928182256570358"
+          }
+        ],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "退款退货",
+        "route": "aftersales",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "65ca2707bc60489298c5eb533237dff3-order",
+            "round": 0,
+            "name": "load_order",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "{\"order_id\":\"1001\",\"user_id\":\"ch06-http-20261002-01-user\",\"product_name\":\"机械键盘\",\"product_category\":\"数码配件\",\"status\":\"已签收\",\"paid_amount\":\"199.00\",\"ordered_at\":\"2026-09-27\",\"received_at\":\"2026-09-29\",\"condition\":\"unopened\",\"as_of\":\"2026-10-02\"}",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "ensure_order",
+          "prepare_order_selection",
+          "offer_order_selection",
+          "load_order",
+          "expand_queries",
+          "retrieve_policy",
+          "confidence_gate",
+          "assess_order",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 6622,
+          "output_tokens": 381,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 1,
+          "understanding": 1,
+          "expansion": 1,
+          "assessment": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "这个能退吗",
+        "intent_confidence": 0.97,
+        "order_selection": {
+          "selection_id": "03714391584b435e9af812e1d76507ac",
+          "turn_id": "65ca2707bc60489298c5eb533237dff3",
+          "orders": [
+            {
+              "order_id": "1001",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "机械键盘",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "199.00",
+              "ordered_at": "2026-09-27",
+              "received_at": "2026-09-29",
+              "condition": "unopened",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1002",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "无线耳机",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "399.00",
+              "ordered_at": "2026-09-10",
+              "received_at": "2026-09-15",
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1003",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "保温杯",
+              "product_category": "家居用品",
+              "status": "待发货",
+              "paid_amount": "89.00",
+              "ordered_at": "2026-10-01",
+              "received_at": null,
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            }
+          ]
+        },
+        "order": {
+          "order_id": "1001",
+          "user_id": "ch06-http-20261002-01-user",
+          "product_name": "机械键盘",
+          "product_category": "数码配件",
+          "status": "已签收",
+          "paid_amount": "199.00",
+          "ordered_at": "2026-09-27",
+          "received_at": "2026-09-29",
+          "condition": "unopened",
+          "as_of": "2026-10-02"
+        },
+        "assessment": {
+          "verdict": "eligible",
+          "explanation": "订单已签收，签收次日起第3天（as_of 2026-10-02，签收 2026-09-29），仍在七天无理由退货期限内[4]。订单快照显示商品未拆封[4]，且用户未报告更新的商品状态，因此可支持提出七天无理由退货申请。需注意：申请提交后为“待审核”状态，不代表审核通过或退款到账[2]；同时“不影响二次销售”等条件仍需在审核中满足[4]。",
+          "missing_facts": []
+        },
+        "refund_offer": {
+          "offer_id": "dc2fda9fcf6451f358f5346ec840c2caf173424b8269fa266e19637f8672a94b",
+          "turn_id": "65ca2707bc60489298c5eb533237dff3",
+          "order": {
+            "order_id": "1001",
+            "user_id": "ch06-http-20261002-01-user",
+            "product_name": "机械键盘",
+            "product_category": "数码配件",
+            "status": "已签收",
+            "paid_amount": "199.00",
+            "ordered_at": "2026-09-27",
+            "received_at": "2026-09-29",
+            "condition": "unopened",
+            "as_of": "2026-10-02"
+          },
+          "question": "这个能退吗",
+          "assessment": {
+            "verdict": "eligible",
+            "explanation": "订单已签收，签收次日起第3天（as_of 2026-10-02，签收 2026-09-29），仍在七天无理由退货期限内[4]。订单快照显示商品未拆封[4]，且用户未报告更新的商品状态，因此可支持提出七天无理由退货申请。需注意：申请提交后为“待审核”状态，不代表审核通过或退款到账[2]；同时“不影响二次销售”等条件仍需在审核中满足[4]。",
+            "missing_facts": []
+          },
+          "sources": [
+            {
+              "number": 1,
+              "chunk_id": "2361511256633032761",
+              "questions": "商品质量问题与退换货",
+              "answer": "已确认的商品质量问题不受七天无理由退货期限限制，可申请质量问题退货或换货。破损、缺件、发错货等需核对商品事实和相关凭证；故障表现或质量责任尚不明确时先澄清，不直接承诺符合条件。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 商品质量问题与退换货",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "72ac4e85e60816ca41024b8bac0a9e7ec33623c20d24d6cd7eb0bf03ea6dee94",
+              "source_url": "/kb/source/2361511256633032761"
+            },
+            {
+              "number": 2,
+              "chunk_id": "3734656836206291595",
+              "questions": "退款申请与审核",
+              "answer": "符合申请条件后，用户在退款表单里从固定类目自选原因并明确提交。固定类目为七天无理由、商品质量问题、与描述不符、破损或缺件、发错货、其他；不默认选值，也不由模型代选。资格澄清针对商品事实，不追问表单退款原因。申请提交后状态为“待审核”，提供申请号供查询。同一次申请重试复用原申请号。本系统提交申请不表示审核通过、已执行退款或款项已到账；不得承诺具体退款到账日。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退款申请与审核",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "894e9e4c958dea8a251cf1a82a8d0c728b3fe1077e9b26d3cb674260aaee53ce",
+              "source_url": "/kb/source/3734656836206291595"
+            },
+            {
+              "number": 3,
+              "chunk_id": "8002212589846549456",
+              "questions": "无理由退货例外与未知事实",
+              "answer": "超过上述 7 天期限，不支持七天无理由退货。本演示中拆封或使用的商品视为影响二次销售，不适用无理由退货。商品是否拆封、是否影响二次销售未知时，需先澄清相关事实，不能默认未拆封。质量问题按下一节单独处理。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 无理由退货例外与未知事实",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "61e6a3cb9ea7761401b2c557c92b67fc29dac4bc918dc10d49752c2822a5883a",
+              "source_url": "/kb/source/8002212589846549456"
+            },
+            {
+              "number": 4,
+              "chunk_id": "7240605041584562577",
+              "questions": "七天无理由退货期限与条件",
+              "answer": "签收次日起 7 天内（含第 7 天），商品未拆封且不影响二次销售，可申请七天无理由退货。期限使用订单签收日期和判断基准日期计算，不能用下单日期替代签收日期。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 七天无理由退货期限与条件",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "58cbd09d3d7486fc6922cca24c70e1b1c6abfe6f25933cf65fdb8381f00d0b3d",
+              "source_url": "/kb/source/7240605041584562577"
+            },
+            {
+              "number": 5,
+              "chunk_id": "5473415109386655321",
+              "questions": "未发货订单取消退款",
+              "answer": "订单尚未发货时，可申请取消订单并退款，无需寄回商品。已发货或已签收的订单需按照对应退货条件判断，不能假称尚未发货。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 未发货订单取消退款",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "2b5c888e6966c507c746827891a5a145b2b7cb3ba5b6605f328ed3f68a1846b5",
+              "source_url": "/kb/source/5473415109386655321"
+            },
+            {
+              "number": 6,
+              "chunk_id": "3437647713525028649",
+              "questions": "电子类商品保修与维修",
+              "answer": "电子类商品自签收之日起保修 12 个月，非人为损坏的故障可申请免费保修维修。超过保修期或人为损坏不在免费保修范围内。损坏原因未知时需询问故障表现、损坏经过或核对凭证；不能默认非人为损坏。家居用品的质量问题按质量退换货条款处理，不凭电子类条款编造保修期。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 电子类商品保修与维修",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "1e69bb3ce8d5dbdeba12fa7028d98da753ff81c67de4e36337d7a1dd29fea133",
+              "source_url": "/kb/source/3437647713525028649"
+            },
+            {
+              "number": 7,
+              "chunk_id": "6534928182256570358",
+              "questions": "退货运费",
+              "answer": "七天无理由退货的寄回运费由用户承担；经核实的商品质量问题、破损缺件或发错货，由商家承担合理寄回运费。无需寄回的未发货取消退款不产生寄回运费。具体费用和责任以审核核实结果为准，不编造运费金额。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退货运费",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "81beb7981ebbe5514a4d852d0fd4a686685a2b34711a7126203dae876d5aa64c",
+              "source_url": "/kb/source/6534928182256570358"
+            }
+          ]
+        }
+      },
+      "result": {
+        "session_id": "ch06-http-20261002-01-missing",
+        "conversation_id": 6,
+        "resumed": false,
+        "answer": "您好，根据当前订单信息，这笔机械键盘订单可以支持您提出七天无理由退货申请。\n\n订单已于 2026-09-29 签收，按签收次日起算，目前处于第 3 天，仍在七天无理由退货期限内[4]；订单快照显示商品为未拆封状态，且您未反馈商品状态有变化，因此符合期限内未拆封的申请条件[4]。\n\n需要提醒您：\n- 提交申请后状态为“待审核”，并不代表审核通过或退款已到账[2]；\n- “不影响二次销售”等条件仍需在审核环节确认满足[4]；\n- 七天无理由退货的寄回运费由您承担[7]。\n\n您可以选择在退款表单中自行选择原因并提交申请，具体审核结果以核实为准。",
+        "sources": [
+          {
+            "number": 1,
+            "chunk_id": "2361511256633032761",
+            "questions": "商品质量问题与退换货",
+            "answer": "已确认的商品质量问题不受七天无理由退货期限限制，可申请质量问题退货或换货。破损、缺件、发错货等需核对商品事实和相关凭证；故障表现或质量责任尚不明确时先澄清，不直接承诺符合条件。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 商品质量问题与退换货",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "72ac4e85e60816ca41024b8bac0a9e7ec33623c20d24d6cd7eb0bf03ea6dee94",
+            "source_url": "/kb/source/2361511256633032761"
+          },
+          {
+            "number": 2,
+            "chunk_id": "3734656836206291595",
+            "questions": "退款申请与审核",
+            "answer": "符合申请条件后，用户在退款表单里从固定类目自选原因并明确提交。固定类目为七天无理由、商品质量问题、与描述不符、破损或缺件、发错货、其他；不默认选值，也不由模型代选。资格澄清针对商品事实，不追问表单退款原因。申请提交后状态为“待审核”，提供申请号供查询。同一次申请重试复用原申请号。本系统提交申请不表示审核通过、已执行退款或款项已到账；不得承诺具体退款到账日。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退款申请与审核",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "894e9e4c958dea8a251cf1a82a8d0c728b3fe1077e9b26d3cb674260aaee53ce",
+            "source_url": "/kb/source/3734656836206291595"
+          },
+          {
+            "number": 3,
+            "chunk_id": "8002212589846549456",
+            "questions": "无理由退货例外与未知事实",
+            "answer": "超过上述 7 天期限，不支持七天无理由退货。本演示中拆封或使用的商品视为影响二次销售，不适用无理由退货。商品是否拆封、是否影响二次销售未知时，需先澄清相关事实，不能默认未拆封。质量问题按下一节单独处理。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 无理由退货例外与未知事实",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "61e6a3cb9ea7761401b2c557c92b67fc29dac4bc918dc10d49752c2822a5883a",
+            "source_url": "/kb/source/8002212589846549456"
+          },
+          {
+            "number": 4,
+            "chunk_id": "7240605041584562577",
+            "questions": "七天无理由退货期限与条件",
+            "answer": "签收次日起 7 天内（含第 7 天），商品未拆封且不影响二次销售，可申请七天无理由退货。期限使用订单签收日期和判断基准日期计算，不能用下单日期替代签收日期。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 七天无理由退货期限与条件",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "58cbd09d3d7486fc6922cca24c70e1b1c6abfe6f25933cf65fdb8381f00d0b3d",
+            "source_url": "/kb/source/7240605041584562577"
+          },
+          {
+            "number": 5,
+            "chunk_id": "5473415109386655321",
+            "questions": "未发货订单取消退款",
+            "answer": "订单尚未发货时，可申请取消订单并退款，无需寄回商品。已发货或已签收的订单需按照对应退货条件判断，不能假称尚未发货。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 未发货订单取消退款",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "2b5c888e6966c507c746827891a5a145b2b7cb3ba5b6605f328ed3f68a1846b5",
+            "source_url": "/kb/source/5473415109386655321"
+          },
+          {
+            "number": 6,
+            "chunk_id": "3437647713525028649",
+            "questions": "电子类商品保修与维修",
+            "answer": "电子类商品自签收之日起保修 12 个月，非人为损坏的故障可申请免费保修维修。超过保修期或人为损坏不在免费保修范围内。损坏原因未知时需询问故障表现、损坏经过或核对凭证；不能默认非人为损坏。家居用品的质量问题按质量退换货条款处理，不凭电子类条款编造保修期。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 电子类商品保修与维修",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "1e69bb3ce8d5dbdeba12fa7028d98da753ff81c67de4e36337d7a1dd29fea133",
+            "source_url": "/kb/source/3437647713525028649"
+          },
+          {
+            "number": 7,
+            "chunk_id": "6534928182256570358",
+            "questions": "退货运费",
+            "answer": "七天无理由退货的寄回运费由用户承担；经核实的商品质量问题、破损缺件或发错货，由商家承担合理寄回运费。无需寄回的未发货取消退款不产生寄回运费。具体费用和责任以审核核实结果为准，不编造运费金额。",
+            "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退货运费",
+            "category": "退款售后政策",
+            "product_category": null,
+            "content_hash": "81beb7981ebbe5514a4d852d0fd4a686685a2b34711a7126203dae876d5aa64c",
+            "source_url": "/kb/source/6534928182256570358"
+          }
+        ],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "退款退货",
+        "route": "aftersales",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "65ca2707bc60489298c5eb533237dff3-order",
+            "round": 0,
+            "name": "load_order",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "{\"order_id\":\"1001\",\"user_id\":\"ch06-http-20261002-01-user\",\"product_name\":\"机械键盘\",\"product_category\":\"数码配件\",\"status\":\"已签收\",\"paid_amount\":\"199.00\",\"ordered_at\":\"2026-09-27\",\"received_at\":\"2026-09-29\",\"condition\":\"unopened\",\"as_of\":\"2026-10-02\"}",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "ensure_order",
+          "prepare_order_selection",
+          "offer_order_selection",
+          "load_order",
+          "expand_queries",
+          "retrieve_policy",
+          "confidence_gate",
+          "assess_order",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 6622,
+          "output_tokens": 381,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 1,
+          "understanding": 1,
+          "expansion": 1,
+          "assessment": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "这个能退吗",
+        "intent_confidence": 0.97,
+        "order_selection": {
+          "selection_id": "03714391584b435e9af812e1d76507ac",
+          "turn_id": "65ca2707bc60489298c5eb533237dff3",
+          "orders": [
+            {
+              "order_id": "1001",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "机械键盘",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "199.00",
+              "ordered_at": "2026-09-27",
+              "received_at": "2026-09-29",
+              "condition": "unopened",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1002",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "无线耳机",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "399.00",
+              "ordered_at": "2026-09-10",
+              "received_at": "2026-09-15",
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1003",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "保温杯",
+              "product_category": "家居用品",
+              "status": "待发货",
+              "paid_amount": "89.00",
+              "ordered_at": "2026-10-01",
+              "received_at": null,
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            }
+          ]
+        },
+        "order": {
+          "order_id": "1001",
+          "user_id": "ch06-http-20261002-01-user",
+          "product_name": "机械键盘",
+          "product_category": "数码配件",
+          "status": "已签收",
+          "paid_amount": "199.00",
+          "ordered_at": "2026-09-27",
+          "received_at": "2026-09-29",
+          "condition": "unopened",
+          "as_of": "2026-10-02"
+        },
+        "assessment": {
+          "verdict": "eligible",
+          "explanation": "订单已签收，签收次日起第3天（as_of 2026-10-02，签收 2026-09-29），仍在七天无理由退货期限内[4]。订单快照显示商品未拆封[4]，且用户未报告更新的商品状态，因此可支持提出七天无理由退货申请。需注意：申请提交后为“待审核”状态，不代表审核通过或退款到账[2]；同时“不影响二次销售”等条件仍需在审核中满足[4]。",
+          "missing_facts": []
+        },
+        "refund_offer": {
+          "offer_id": "dc2fda9fcf6451f358f5346ec840c2caf173424b8269fa266e19637f8672a94b",
+          "turn_id": "65ca2707bc60489298c5eb533237dff3",
+          "order": {
+            "order_id": "1001",
+            "user_id": "ch06-http-20261002-01-user",
+            "product_name": "机械键盘",
+            "product_category": "数码配件",
+            "status": "已签收",
+            "paid_amount": "199.00",
+            "ordered_at": "2026-09-27",
+            "received_at": "2026-09-29",
+            "condition": "unopened",
+            "as_of": "2026-10-02"
+          },
+          "question": "这个能退吗",
+          "assessment": {
+            "verdict": "eligible",
+            "explanation": "订单已签收，签收次日起第3天（as_of 2026-10-02，签收 2026-09-29），仍在七天无理由退货期限内[4]。订单快照显示商品未拆封[4]，且用户未报告更新的商品状态，因此可支持提出七天无理由退货申请。需注意：申请提交后为“待审核”状态，不代表审核通过或退款到账[2]；同时“不影响二次销售”等条件仍需在审核中满足[4]。",
+            "missing_facts": []
+          },
+          "sources": [
+            {
+              "number": 1,
+              "chunk_id": "2361511256633032761",
+              "questions": "商品质量问题与退换货",
+              "answer": "已确认的商品质量问题不受七天无理由退货期限限制，可申请质量问题退货或换货。破损、缺件、发错货等需核对商品事实和相关凭证；故障表现或质量责任尚不明确时先澄清，不直接承诺符合条件。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 商品质量问题与退换货",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "72ac4e85e60816ca41024b8bac0a9e7ec33623c20d24d6cd7eb0bf03ea6dee94",
+              "source_url": "/kb/source/2361511256633032761"
+            },
+            {
+              "number": 2,
+              "chunk_id": "3734656836206291595",
+              "questions": "退款申请与审核",
+              "answer": "符合申请条件后，用户在退款表单里从固定类目自选原因并明确提交。固定类目为七天无理由、商品质量问题、与描述不符、破损或缺件、发错货、其他；不默认选值，也不由模型代选。资格澄清针对商品事实，不追问表单退款原因。申请提交后状态为“待审核”，提供申请号供查询。同一次申请重试复用原申请号。本系统提交申请不表示审核通过、已执行退款或款项已到账；不得承诺具体退款到账日。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退款申请与审核",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "894e9e4c958dea8a251cf1a82a8d0c728b3fe1077e9b26d3cb674260aaee53ce",
+              "source_url": "/kb/source/3734656836206291595"
+            },
+            {
+              "number": 3,
+              "chunk_id": "8002212589846549456",
+              "questions": "无理由退货例外与未知事实",
+              "answer": "超过上述 7 天期限，不支持七天无理由退货。本演示中拆封或使用的商品视为影响二次销售，不适用无理由退货。商品是否拆封、是否影响二次销售未知时，需先澄清相关事实，不能默认未拆封。质量问题按下一节单独处理。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 无理由退货例外与未知事实",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "61e6a3cb9ea7761401b2c557c92b67fc29dac4bc918dc10d49752c2822a5883a",
+              "source_url": "/kb/source/8002212589846549456"
+            },
+            {
+              "number": 4,
+              "chunk_id": "7240605041584562577",
+              "questions": "七天无理由退货期限与条件",
+              "answer": "签收次日起 7 天内（含第 7 天），商品未拆封且不影响二次销售，可申请七天无理由退货。期限使用订单签收日期和判断基准日期计算，不能用下单日期替代签收日期。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 七天无理由退货期限与条件",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "58cbd09d3d7486fc6922cca24c70e1b1c6abfe6f25933cf65fdb8381f00d0b3d",
+              "source_url": "/kb/source/7240605041584562577"
+            },
+            {
+              "number": 5,
+              "chunk_id": "5473415109386655321",
+              "questions": "未发货订单取消退款",
+              "answer": "订单尚未发货时，可申请取消订单并退款，无需寄回商品。已发货或已签收的订单需按照对应退货条件判断，不能假称尚未发货。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 未发货订单取消退款",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "2b5c888e6966c507c746827891a5a145b2b7cb3ba5b6605f328ed3f68a1846b5",
+              "source_url": "/kb/source/5473415109386655321"
+            },
+            {
+              "number": 6,
+              "chunk_id": "3437647713525028649",
+              "questions": "电子类商品保修与维修",
+              "answer": "电子类商品自签收之日起保修 12 个月，非人为损坏的故障可申请免费保修维修。超过保修期或人为损坏不在免费保修范围内。损坏原因未知时需询问故障表现、损坏经过或核对凭证；不能默认非人为损坏。家居用品的质量问题按质量退换货条款处理，不凭电子类条款编造保修期。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 电子类商品保修与维修",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "1e69bb3ce8d5dbdeba12fa7028d98da753ff81c67de4e36337d7a1dd29fea133",
+              "source_url": "/kb/source/3437647713525028649"
+            },
+            {
+              "number": 7,
+              "chunk_id": "6534928182256570358",
+              "questions": "退货运费",
+              "answer": "七天无理由退货的寄回运费由用户承担；经核实的商品质量问题、破损缺件或发错货，由商家承担合理寄回运费。无需寄回的未发货取消退款不产生寄回运费。具体费用和责任以审核核实结果为准，不编造运费金额。",
+              "section_path": "corpus:09dc5b52e49e9194/aftersales-policy.md::退款售后政策 / 退货运费",
+              "category": "退款售后政策",
+              "product_category": null,
+              "content_hash": "81beb7981ebbe5514a4d852d0fd4a686685a2b34711a7126203dae876d5aa64c",
+              "source_url": "/kb/source/6534928182256570358"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "refund_submit",
+      "method": "POST",
+      "path": "/ch06/refunds",
+      "request": {
+        "session_id": "ch06-http-20261002-01-missing",
+        "user_id": "ch06-http-20261002-01-user",
+        "offer_id": "dc2fda9fcf6451f358f5346ec840c2caf173424b8269fa266e19637f8672a94b",
+        "order_id": "1001",
+        "reason": "七天无理由",
+        "confirmed": true
+      },
+      "passed": true,
+      "status": 200,
+      "response": {
+        "application_no": "RF706bd324a9bb96f47b8ff0659b95b7",
+        "order_id": "1001",
+        "reason": "七天无理由",
+        "status": "pending",
+        "replayed": false
+      },
+      "result": {
+        "application_no": "RF706bd324a9bb96f47b8ff0659b95b7",
+        "order_id": "1001",
+        "reason": "七天无理由",
+        "status": "pending",
+        "replayed": false
+      }
+    },
+    {
+      "name": "refund_replay",
+      "method": "POST",
+      "path": "/ch06/refunds",
+      "request": {
+        "session_id": "ch06-http-20261002-01-missing",
+        "user_id": "ch06-http-20261002-01-user",
+        "offer_id": "dc2fda9fcf6451f358f5346ec840c2caf173424b8269fa266e19637f8672a94b",
+        "order_id": "1001",
+        "reason": "七天无理由",
+        "confirmed": true
+      },
+      "passed": true,
+      "status": 200,
+      "response": {
+        "application_no": "RF706bd324a9bb96f47b8ff0659b95b7",
+        "order_id": "1001",
+        "reason": "七天无理由",
+        "status": "pending",
+        "replayed": true
+      },
+      "result": {
+        "application_no": "RF706bd324a9bb96f47b8ff0659b95b7",
+        "order_id": "1001",
+        "reason": "七天无理由",
+        "status": "pending",
+        "replayed": true
+      }
+    },
+    {
+      "name": "receipt",
+      "method": "GET",
+      "path": "/ch06/refunds/dc2fda9fcf6451f358f5346ec840c2caf173424b8269fa266e19637f8672a94b?session_id=ch06-http-20261002-01-missing&user_id=ch06-http-20261002-01-user",
+      "request": null,
+      "passed": true,
+      "status": 200,
+      "response": {
+        "application_no": "RF706bd324a9bb96f47b8ff0659b95b7",
+        "order_id": "1001",
+        "reason": "七天无理由",
+        "status": "pending",
+        "replayed": true
+      },
+      "result": {
+        "application_no": "RF706bd324a9bb96f47b8ff0659b95b7",
+        "order_id": "1001",
+        "reason": "七天无理由",
+        "status": "pending",
+        "replayed": true
+      }
+    },
+    {
+      "name": "changed_reason",
+      "method": "POST",
+      "path": "/ch06/refunds",
+      "request": {
+        "session_id": "ch06-http-20261002-01-missing",
+        "user_id": "ch06-http-20261002-01-user",
+        "offer_id": "dc2fda9fcf6451f358f5346ec840c2caf173424b8269fa266e19637f8672a94b",
+        "order_id": "1001",
+        "reason": "其他",
+        "confirmed": true
+      },
+      "passed": true,
+      "status": 409,
+      "response": {
+        "detail": "同一退款建议不能更换订单或原因"
+      },
+      "result": {
+        "detail": "同一退款建议不能更换订单或原因"
+      }
+    },
+    {
+      "name": "logistics_first",
+      "method": "POST",
+      "path": "/ch05/agent",
+      "request": {
+        "user_id": "ch06-http-20261002-01-user",
+        "session_id": "ch06-http-20261002-01-switch",
+        "message": "订单1001物流到哪了"
+      },
+      "passed": true,
+      "status": 200,
+      "response": {
+        "session_id": "ch06-http-20261002-01-switch",
+        "conversation_id": 7,
+        "resumed": false,
+        "answer": "订单 1001 的物流显示已签收：承运商为京东物流，运单号 F678104970636，最新状态是「已签收」，已由收件人签收（2026-09-29）。轨迹为广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "物流",
+        "route": "business",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "call_00_y94M4qEoaPC5ejVB95ZE8099",
+            "round": 1,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「已签收」,最新位置 已由收件人签收(2026-09-29)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "agent_decide",
+          "execute_tools",
+          "agent_decide",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 3579,
+          "output_tokens": 174,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 2,
+          "answer": 1,
+          "understanding": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "订单1001物流到哪了",
+        "intent_confidence": 0.98,
+        "order_selection": null,
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      },
+      "result": {
+        "session_id": "ch06-http-20261002-01-switch",
+        "conversation_id": 7,
+        "resumed": false,
+        "answer": "订单 1001 的物流显示已签收：承运商为京东物流，运单号 F678104970636，最新状态是「已签收」，已由收件人签收（2026-09-29）。轨迹为广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "物流",
+        "route": "business",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "call_00_y94M4qEoaPC5ejVB95ZE8099",
+            "round": 1,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「已签收」,最新位置 已由收件人签收(2026-09-29)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "agent_decide",
+          "execute_tools",
+          "agent_decide",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 3579,
+          "output_tokens": 174,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 2,
+          "answer": 1,
+          "understanding": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "订单1001物流到哪了",
+        "intent_confidence": 0.98,
+        "order_selection": null,
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      }
+    },
+    {
+      "name": "refund_reference",
+      "method": "POST",
+      "path": "/ch05/agent",
+      "request": {
+        "user_id": "ch06-http-20261002-01-user",
+        "session_id": "ch06-http-20261002-01-switch",
+        "message": "这个能退吗"
+      },
+      "passed": false,
+      "status": 200,
+      "response": {
+        "session_id": "ch06-http-20261002-01-switch",
+        "conversation_id": 7,
+        "resumed": true,
+        "answer": "请选择一笔订单，我会核对该订单与退款/售后政策。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "退款退货",
+        "route": "aftersales",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "ensure_order",
+          "prepare_order_selection"
+        ],
+        "usage": {
+          "input_tokens": 1605,
+          "output_tokens": 50,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0,
+          "understanding": 1
+        },
+        "stop_reason": "waiting_for_order",
+        "ledger_error": null,
+        "status": "waiting_for_order",
+        "resolved_question": "这个能退吗",
+        "intent_confidence": 0.97,
+        "order_selection": {
+          "selection_id": "db734fe0de28421a9b372960797ae047",
+          "turn_id": "6dcf0ee8b12b48e08127c3e8249b40a3",
+          "orders": [
+            {
+              "order_id": "1001",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "机械键盘",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "199.00",
+              "ordered_at": "2026-09-27",
+              "received_at": "2026-09-29",
+              "condition": "unopened",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1002",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "无线耳机",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "399.00",
+              "ordered_at": "2026-09-10",
+              "received_at": "2026-09-15",
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1003",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "保温杯",
+              "product_category": "家居用品",
+              "status": "待发货",
+              "paid_amount": "89.00",
+              "ordered_at": "2026-10-01",
+              "received_at": null,
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            }
+          ]
+        },
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      },
+      "error": "ValueError: waiting result is not a completed turn",
+      "service_error": false
+    },
+    {
+      "name": "back_logistics",
+      "method": "POST",
+      "path": "/ch05/agent",
+      "request": {
+        "user_id": "ch06-http-20261002-01-user",
+        "session_id": "ch06-http-20261002-01-switch",
+        "message": "它的物流到哪了"
+      },
+      "passed": true,
+      "status": 200,
+      "response": {
+        "session_id": "ch06-http-20261002-01-switch",
+        "conversation_id": 7,
+        "resumed": true,
+        "answer": "订单 1001 的物流显示已签收：承运商为京东物流，运单号 F678104970636，最新状态是「已签收」，已由收件人签收（2026-09-29）。轨迹为广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "物流",
+        "route": "business",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "agent_decide",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 3869,
+          "output_tokens": 232,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 2,
+          "answer": 1,
+          "understanding": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "订单1001的物流到哪了",
+        "intent_confidence": 0.98,
+        "order_selection": null,
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      },
+      "result": {
+        "session_id": "ch06-http-20261002-01-switch",
+        "conversation_id": 7,
+        "resumed": true,
+        "answer": "订单 1001 的物流显示已签收：承运商为京东物流，运单号 F678104970636，最新状态是「已签收」，已由收件人签收（2026-09-29）。轨迹为广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "物流",
+        "route": "business",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "agent_decide",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 3869,
+          "output_tokens": 232,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 2,
+          "answer": 1,
+          "understanding": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "订单1001的物流到哪了",
+        "intent_confidence": 0.98,
+        "order_selection": null,
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      }
+    },
+    {
+      "name": "observe_two",
+      "method": "POST",
+      "path": "/ch05/agent",
+      "request": {
+        "user_id": "ch06-http-20261002-01-user",
+        "session_id": "ch06-http-20261002-01-double",
+        "message": "查订单1001和1002的物流"
+      },
+      "passed": true,
+      "status": 200,
+      "response": {
+        "session_id": "ch06-http-20261002-01-double",
+        "conversation_id": 8,
+        "resumed": false,
+        "answer": "两个订单的物流信息如下：\n\n**订单 1001**\n- 承运商：京东物流\n- 运单号：F678104970636\n- 当前状态：已签收\n- 最新位置：已由收件人签收（2026-09-29）\n- 轨迹：广州集散中心 → 杭州转运中心 → 上海分拨中心\n\n**订单 1002**\n- 承运商：京东物流\n- 运单号：Y178703484942\n- 当前状态：已签收\n- 最新位置：已由收件人签收（2026-09-15）\n- 轨迹：上海分拨中心 → 广州集散中心 → 杭州转运中心\n\n两单均已签收，承运商同为京东物流。如需进一步核对其他信息，请告诉我。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "物流",
+        "route": "business",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "call_00_vyLTOcOZJzOTmO88IVkA5918",
+            "round": 1,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「已签收」,最新位置 已由收件人签收(2026-09-29)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+            "error": null,
+            "elapsed_ms": 0
+          },
+          {
+            "call_id": "call_01_bTU31d9G1YfXrAWMD6sv1602",
+            "round": 1,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1002"
+            },
+            "ok": true,
+            "content": "订单 1002 的物流:承运商 京东物流,运单号 Y178703484942,当前状态「已签收」,最新位置 已由收件人签收(2026-09-15)。轨迹:上海分拨中心 → 广州集散中心 → 杭州转运中心。",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "agent_decide",
+          "execute_tools",
+          "agent_decide",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 3817,
+          "output_tokens": 321,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 2,
+          "answer": 1,
+          "understanding": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "查订单1001和1002的物流",
+        "intent_confidence": 0.97,
+        "order_selection": null,
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      },
+      "result": {
+        "session_id": "ch06-http-20261002-01-double",
+        "conversation_id": 8,
+        "resumed": false,
+        "answer": "两个订单的物流信息如下：\n\n**订单 1001**\n- 承运商：京东物流\n- 运单号：F678104970636\n- 当前状态：已签收\n- 最新位置：已由收件人签收（2026-09-29）\n- 轨迹：广州集散中心 → 杭州转运中心 → 上海分拨中心\n\n**订单 1002**\n- 承运商：京东物流\n- 运单号：Y178703484942\n- 当前状态：已签收\n- 最新位置：已由收件人签收（2026-09-15）\n- 轨迹：上海分拨中心 → 广州集散中心 → 杭州转运中心\n\n两单均已签收，承运商同为京东物流。如需进一步核对其他信息，请告诉我。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "物流",
+        "route": "business",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "call_00_vyLTOcOZJzOTmO88IVkA5918",
+            "round": 1,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「已签收」,最新位置 已由收件人签收(2026-09-29)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+            "error": null,
+            "elapsed_ms": 0
+          },
+          {
+            "call_id": "call_01_bTU31d9G1YfXrAWMD6sv1602",
+            "round": 1,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1002"
+            },
+            "ok": true,
+            "content": "订单 1002 的物流:承运商 京东物流,运单号 Y178703484942,当前状态「已签收」,最新位置 已由收件人签收(2026-09-15)。轨迹:上海分拨中心 → 广州集散中心 → 杭州转运中心。",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "agent_decide",
+          "execute_tools",
+          "agent_decide",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 3817,
+          "output_tokens": 321,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 2,
+          "answer": 1,
+          "understanding": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "查订单1001和1002的物流",
+        "intent_confidence": 0.97,
+        "order_selection": null,
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      }
+    },
+    {
+      "name": "two_candidates",
+      "method": "POST",
+      "path": "/ch05/agent",
+      "request": {
+        "user_id": "ch06-http-20261002-01-user",
+        "session_id": "ch06-http-20261002-01-double",
+        "message": "这个能退吗"
+      },
+      "passed": true,
+      "status": 200,
+      "response": {
+        "session_id": "ch06-http-20261002-01-double",
+        "conversation_id": 8,
+        "resumed": true,
+        "answer": "请选择一笔订单，我会核对该订单与退款/售后政策。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "退款退货",
+        "route": "aftersales",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "ensure_order",
+          "prepare_order_selection"
+        ],
+        "usage": {
+          "input_tokens": 1849,
+          "output_tokens": 50,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0,
+          "understanding": 1
+        },
+        "stop_reason": "waiting_for_order",
+        "ledger_error": null,
+        "status": "waiting_for_order",
+        "resolved_question": "这个能退吗",
+        "intent_confidence": 0.97,
+        "order_selection": {
+          "selection_id": "58c3b738a5914d9ca8e52ff20ba3bd57",
+          "turn_id": "fee228d7aa4547bd974e68e197387a88",
+          "orders": [
+            {
+              "order_id": "1001",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "机械键盘",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "199.00",
+              "ordered_at": "2026-09-27",
+              "received_at": "2026-09-29",
+              "condition": "unopened",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1002",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "无线耳机",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "399.00",
+              "ordered_at": "2026-09-10",
+              "received_at": "2026-09-15",
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1003",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "保温杯",
+              "product_category": "家居用品",
+              "status": "待发货",
+              "paid_amount": "89.00",
+              "ordered_at": "2026-10-01",
+              "received_at": null,
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            }
+          ]
+        },
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      },
+      "result": {
+        "session_id": "ch06-http-20261002-01-double",
+        "conversation_id": 8,
+        "resumed": true,
+        "answer": "请选择一笔订单，我会核对该订单与退款/售后政策。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "退款退货",
+        "route": "aftersales",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "ensure_order",
+          "prepare_order_selection"
+        ],
+        "usage": {
+          "input_tokens": 1849,
+          "output_tokens": 50,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0,
+          "understanding": 1
+        },
+        "stop_reason": "waiting_for_order",
+        "ledger_error": null,
+        "status": "waiting_for_order",
+        "resolved_question": "这个能退吗",
+        "intent_confidence": 0.97,
+        "order_selection": {
+          "selection_id": "58c3b738a5914d9ca8e52ff20ba3bd57",
+          "turn_id": "fee228d7aa4547bd974e68e197387a88",
+          "orders": [
+            {
+              "order_id": "1001",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "机械键盘",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "199.00",
+              "ordered_at": "2026-09-27",
+              "received_at": "2026-09-29",
+              "condition": "unopened",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1002",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "无线耳机",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "399.00",
+              "ordered_at": "2026-09-10",
+              "received_at": "2026-09-15",
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1003",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "保温杯",
+              "product_category": "家居用品",
+              "status": "待发货",
+              "paid_amount": "89.00",
+              "ordered_at": "2026-10-01",
+              "received_at": null,
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            }
+          ]
+        },
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      }
+    },
+    {
+      "name": "cancel_wait",
+      "method": "POST",
+      "path": "/ch05/agent",
+      "request": {
+        "user_id": "ch06-http-20261002-01-user",
+        "session_id": "ch06-http-20261002-01-cancel",
+        "message": "我想退一笔订单"
+      },
+      "passed": true,
+      "status": 200,
+      "response": {
+        "session_id": "ch06-http-20261002-01-cancel",
+        "conversation_id": 9,
+        "resumed": false,
+        "answer": "请选择一笔订单，我会核对该订单与退款/售后政策。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "退款退货",
+        "route": "aftersales",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "ensure_order",
+          "prepare_order_selection"
+        ],
+        "usage": {
+          "input_tokens": 1326,
+          "output_tokens": 44,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0,
+          "understanding": 1
+        },
+        "stop_reason": "waiting_for_order",
+        "ledger_error": null,
+        "status": "waiting_for_order",
+        "resolved_question": "我想退一笔订单",
+        "intent_confidence": 0.97,
+        "order_selection": {
+          "selection_id": "e8bc5178aa0d4573b30376bcdc0fb77d",
+          "turn_id": "e31f17886f824e30b289c3f715577683",
+          "orders": [
+            {
+              "order_id": "1001",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "机械键盘",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "199.00",
+              "ordered_at": "2026-09-27",
+              "received_at": "2026-09-29",
+              "condition": "unopened",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1002",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "无线耳机",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "399.00",
+              "ordered_at": "2026-09-10",
+              "received_at": "2026-09-15",
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1003",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "保温杯",
+              "product_category": "家居用品",
+              "status": "待发货",
+              "paid_amount": "89.00",
+              "ordered_at": "2026-10-01",
+              "received_at": null,
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            }
+          ]
+        },
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      },
+      "result": {
+        "session_id": "ch06-http-20261002-01-cancel",
+        "conversation_id": 9,
+        "resumed": false,
+        "answer": "请选择一笔订单，我会核对该订单与退款/售后政策。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "退款退货",
+        "route": "aftersales",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "ensure_order",
+          "prepare_order_selection"
+        ],
+        "usage": {
+          "input_tokens": 1326,
+          "output_tokens": 44,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 0,
+          "answer": 0,
+          "understanding": 1
+        },
+        "stop_reason": "waiting_for_order",
+        "ledger_error": null,
+        "status": "waiting_for_order",
+        "resolved_question": "我想退一笔订单",
+        "intent_confidence": 0.97,
+        "order_selection": {
+          "selection_id": "e8bc5178aa0d4573b30376bcdc0fb77d",
+          "turn_id": "e31f17886f824e30b289c3f715577683",
+          "orders": [
+            {
+              "order_id": "1001",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "机械键盘",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "199.00",
+              "ordered_at": "2026-09-27",
+              "received_at": "2026-09-29",
+              "condition": "unopened",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1002",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "无线耳机",
+              "product_category": "数码配件",
+              "status": "已签收",
+              "paid_amount": "399.00",
+              "ordered_at": "2026-09-10",
+              "received_at": "2026-09-15",
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            },
+            {
+              "order_id": "1003",
+              "user_id": "ch06-http-20261002-01-user",
+              "product_name": "保温杯",
+              "product_category": "家居用品",
+              "status": "待发货",
+              "paid_amount": "89.00",
+              "ordered_at": "2026-10-01",
+              "received_at": null,
+              "condition": "unknown",
+              "as_of": "2026-10-02"
+            }
+          ]
+        },
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      }
+    },
+    {
+      "name": "cancel_with_text",
+      "method": "POST",
+      "path": "/ch05/agent",
+      "request": {
+        "user_id": "ch06-http-20261002-01-user",
+        "session_id": "ch06-http-20261002-01-cancel",
+        "message": "查订单1001物流"
+      },
+      "passed": true,
+      "status": 200,
+      "response": {
+        "session_id": "ch06-http-20261002-01-cancel",
+        "conversation_id": 9,
+        "resumed": true,
+        "answer": "订单 1001 的物流信息如下：\n\n- 商品：机械键盘\n- 下单时间：2026-09-27\n- 实付：199.00 元\n- 承运商：京东物流\n- 运单号：F678104970636\n- 当前状态：已签收\n- 签收时间：2026-09-29\n- 最新位置：已由收件人签收（2026-09-29）\n- 轨迹：广州集散中心 → 杭州转运中心 → 上海分拨中心\n\n订单与物流状态均为「已签收」。如需申请退货或售后，请提供具体诉求，我可以帮您核对相关政策。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "物流",
+        "route": "business",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "call_00_WgUUnzCj073X6h6UrBkc7455",
+            "round": 1,
+            "name": "query_order",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001:商品「机械键盘」,下单时间 2026-09-27,实付 199.00 元,当前状态「已签收」,签收时间 2026-09-29。",
+            "error": null,
+            "elapsed_ms": 0
+          },
+          {
+            "call_id": "call_00_2kbBvP9NgTc71kN2cHpT2845",
+            "round": 2,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「已签收」,最新位置 已由收件人签收(2026-09-29)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "agent_decide",
+          "execute_tools",
+          "agent_decide",
+          "execute_tools",
+          "agent_decide",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 4867,
+          "output_tokens": 300,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 3,
+          "answer": 1,
+          "understanding": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "查订单1001物流",
+        "intent_confidence": 0.98,
+        "order_selection": null,
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      },
+      "result": {
+        "session_id": "ch06-http-20261002-01-cancel",
+        "conversation_id": 9,
+        "resumed": true,
+        "answer": "订单 1001 的物流信息如下：\n\n- 商品：机械键盘\n- 下单时间：2026-09-27\n- 实付：199.00 元\n- 承运商：京东物流\n- 运单号：F678104970636\n- 当前状态：已签收\n- 签收时间：2026-09-29\n- 最新位置：已由收件人签收（2026-09-29）\n- 轨迹：广州集散中心 → 杭州转运中心 → 上海分拨中心\n\n订单与物流状态均为「已签收」。如需申请退货或售后，请提供具体诉求，我可以帮您核对相关政策。",
+        "sources": [],
+        "refused": false,
+        "low_confidence_question_id": null,
+        "intent": "物流",
+        "route": "business",
+        "actions": [],
+        "offer": null,
+        "tool_trace": [
+          {
+            "call_id": "call_00_WgUUnzCj073X6h6UrBkc7455",
+            "round": 1,
+            "name": "query_order",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001:商品「机械键盘」,下单时间 2026-09-27,实付 199.00 元,当前状态「已签收」,签收时间 2026-09-29。",
+            "error": null,
+            "elapsed_ms": 0
+          },
+          {
+            "call_id": "call_00_2kbBvP9NgTc71kN2cHpT2845",
+            "round": 2,
+            "name": "query_logistics",
+            "args": {
+              "order_id": "1001"
+            },
+            "ok": true,
+            "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「已签收」,最新位置 已由收件人签收(2026-09-29)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。",
+            "error": null,
+            "elapsed_ms": 0
+          }
+        ],
+        "node_trace": [
+          "begin_turn",
+          "understand_query",
+          "classify_intent",
+          "route_intent",
+          "agent_decide",
+          "execute_tools",
+          "agent_decide",
+          "execute_tools",
+          "agent_decide",
+          "stream_answer",
+          "log_turn"
+        ],
+        "usage": {
+          "input_tokens": 4867,
+          "output_tokens": 300,
+          "estimated": false
+        },
+        "calls": {
+          "classifier": 1,
+          "decision": 3,
+          "answer": 1,
+          "understanding": 1
+        },
+        "stop_reason": "completed",
+        "ledger_error": null,
+        "status": "completed",
+        "resolved_question": "查订单1001物流",
+        "intent_confidence": 0.98,
+        "order_selection": null,
+        "order": null,
+        "assessment": null,
+        "refund_offer": null
+      }
+    },
+    {
+      "name": "expired_selection",
+      "method": "POST",
+      "path": "/ch06/orders/selection",
+      "request": {
+        "session_id": "ch06-http-20261002-01-cancel",
+        "user_id": "ch06-http-20261002-01-user",
+        "order_id": "1001",
+        "selection_id": "e8bc5178aa0d4573b30376bcdc0fb77d"
+      },
+      "passed": true,
+      "status": 409,
+      "response": {
+        "detail": "订单卡片已经失效"
+      },
+      "result": {
+        "detail": "订单卡片已经失效"
+      }
+    }
+  ],
+  "total": 20,
+  "passed": 18,
+  "service_errors": 0
+}

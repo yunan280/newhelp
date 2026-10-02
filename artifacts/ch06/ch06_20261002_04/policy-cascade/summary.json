@@ -1,0 +1,18 @@
+{
+  "complete": true,
+  "service_errors": 0,
+  "calibration": {
+    "threshold": 0.07062195986509323,
+    "model_metadata": {
+      "model_id": "BAAI/bge-reranker-v2-m3",
+      "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+      "max_length": 8192,
+      "score_transform": "sigmoid"
+    },
+    "corpus_hash": "a81580982f6ad62eb394d3f8c1be639615d5ade47668f877d6bd71995e4dbfb9",
+    "query_hash": "3c3c3db4e82fd799f03ad6b594262ec841edf8016d2fd1efe8aa194f38160963",
+    "false_allow": 0,
+    "false_refuse": 0
+  },
+  "sample_count": 16
+}

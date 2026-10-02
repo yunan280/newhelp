@@ -1,0 +1,68 @@
+[
+  {
+    "question": "这个能退吗",
+    "actual": {
+      "question": "这个能退吗",
+      "scope": "order_specific",
+      "trusted_order_id": null
+    },
+    "raw_responses": [
+      {
+        "content": "{\n  \"question\": \"这个能退吗\",\n  \"scope\": \"order_specific\",\n  \"reference_order_id\": null,\n  \"reference_message_id\": null\n}",
+        "request_model": "deepseek-v4-pro",
+        "response_model": "deepseek-v4-pro",
+        "usage": {
+          "input_tokens": 969,
+          "output_tokens": 37,
+          "estimated": false
+        },
+        "elapsed_ms": 1459,
+        "parsed": true,
+        "repair": false
+      }
+    ],
+    "usage": {
+      "input_tokens": 969,
+      "output_tokens": 37,
+      "estimated": false
+    },
+    "calls": {
+      "understanding": 1
+    },
+    "diagnostics": [],
+    "control_error": null
+  },
+  {
+    "question": "我问另一单，这个能退吗",
+    "actual": {
+      "question": "我问另一单，这个能退吗",
+      "scope": "order_specific",
+      "trusted_order_id": null
+    },
+    "raw_responses": [
+      {
+        "content": "{\n  \"question\": \"我问另一单，这个能退吗\",\n  \"scope\": \"order_specific\",\n  \"reference_order_id\": null,\n  \"reference_message_id\": null\n}",
+        "request_model": "deepseek-v4-pro",
+        "response_model": "deepseek-v4-pro",
+        "usage": {
+          "input_tokens": 973,
+          "output_tokens": 41,
+          "estimated": false
+        },
+        "elapsed_ms": 1040,
+        "parsed": true,
+        "repair": false
+      }
+    ],
+    "usage": {
+      "input_tokens": 973,
+      "output_tokens": 41,
+      "estimated": false
+    },
+    "calls": {
+      "understanding": 1
+    },
+    "diagnostics": [],
+    "control_error": null
+  }
+]

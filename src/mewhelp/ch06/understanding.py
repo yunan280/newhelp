@@ -19,6 +19,10 @@ _REFERENCE = re.compile(
 )
 _COLLOQUIAL = re.compile(r"啥|咋|俺|晓得|退不|修不|能.{0,8}不[？?]?$")
 _ELLIPTICAL = re.compile(r"(?:未|没|没有|已|已经)(?:拆封|开封)|(?:非|不是|是)人为损坏")
+_IMPLIED_ORDER = re.compile(
+    r"那(?:快递|物流)|(?:看看?|查询?|查看).{0,8}(?:订单状态|物流|快递)|(?:快递|物流)(?:是哪家|到哪)"
+    r"|我(?:不想要|不要).{0,12}(?:退|退款)"
+)
 _BARE_ID = re.compile(
     r"(?<![A-Za-z0-9])\d{4,}(?![A-Za-z0-9]|[-/.]\d)(?!\s*(?:元|天|年|月|日|小时|分钟|个))"
 )
@@ -57,6 +61,7 @@ def _history_rows(history: list) -> list[dict]:
             }
         else:
             row = {"id": message.id, "role": message.type, "content": message.content}
+        row["role"] = {"human": "user", "ai": "assistant"}.get(row["role"], row["role"])
         row["content"] = str(row["content"])[:2000]
         rows.append(row)
     return rows
@@ -169,8 +174,14 @@ async def understand_query(
     diagnostics = []
     order_id = parsed.reference_order_id
     selected = None
+    contextual = bool(
+        _REFERENCE.search(question) or _ELLIPTICAL.fullmatch(question.strip())
+        or _IMPLIED_ORDER.search(question)
+    )
     if order_id in current:
         selected = order_id
+    elif order_id and not contextual:
+        diagnostics.append("unrequested_history_reference")
     elif order_id:
         candidates = [
             entity
@@ -185,9 +196,13 @@ async def understand_query(
     if selected is None and len(current) == 1:
         selected = next(iter(current))
     elliptical = bool(selected and _ELLIPTICAL.fullmatch(question.strip()))
-    needs_rewrite = bool(_REFERENCE.search(question) or _COLLOQUIAL.search(question) or elliptical)
+    implied = bool(selected and not current and parsed.scope == "order_specific"
+                   and _IMPLIED_ORDER.search(question))
+    needs_rewrite = bool(_REFERENCE.search(question) or _COLLOQUIAL.search(question) or elliptical or implied)
     canonical = parsed.question if needs_rewrite else question
     scope = parsed.scope
+    if "unrequested_history_reference" in diagnostics:
+        scope = _fallback_scope(question)
     if selected:
         scope = "order_specific"
     if (

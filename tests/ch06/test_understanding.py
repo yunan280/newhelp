@@ -79,6 +79,29 @@ async def test_new_session_does_not_import_old_entities():
     assert result.trusted_order_id is None and "1001" not in result.question
 
 
+@pytest.mark.parametrize("question", ["帮我证明数学猜想", "机械键盘支持蓝牙吗？"])
+async def test_complete_new_topic_rejects_historical_order_reference(question):
+    result = await resolve(
+        question,
+        output("订单1002的耳机物流到哪了", "1002", "a2"),
+        history=[{"id": "a2", "role": "assistant", "content": "订单1002商品是无线耳机"}],
+        entities=[{"order_id": "1002", "product_name": "无线耳机", "message_id": "a2"}],
+    )
+    assert result.question == question
+    assert result.trusted_order_id is None and result.scope == "general"
+
+
+async def test_implicit_return_request_can_reference_verified_order():
+    result = await resolve(
+        "我不想要了，能退掉不",
+        output("订单1001的机械键盘能退货吗？", "1001", "a1"),
+        history=[{"id": "a1", "role": "assistant", "content": "订单1001是机械键盘，已签收"}],
+        entities=[{"order_id": "1001", "product_name": "机械键盘", "message_id": "a1"}],
+    )
+    assert result.trusted_order_id == "1001" and result.scope == "order_specific"
+    assert "1001" in result.question and "不想要" in result.question and "退" in result.question
+
+
 async def test_unique_checkpoint_entity_resolves_reference():
     result = await resolve(
         "它能退吗",
@@ -140,3 +163,23 @@ async def test_reply_to_agent_clarification_can_complete_elliptical_fact():
         [{"order_id":"1001", "product_name":"机械键盘", "message_id":"a1"}],
     )
     assert "退货" in result.question and "未拆封" in result.question
+
+
+@pytest.mark.parametrize("original,rewritten", [
+    ("那快递是哪家？", "订单1003的快递是哪家？"),
+    ("我不退了，看看订单状态", "我不退了，看看订单1003的状态"),
+])
+async def test_implied_order_reference_becomes_standalone(original, rewritten):
+    result = await resolve(original, output(rewritten, "1003", "a1"),
+        [{"id": "a1", "role": "assistant", "content": "订单1003是保温杯"}],
+        [{"order_id": "1003", "product_name": "保温杯", "message_id": "a1"}])
+    assert "1003" in result.question and original.startswith("我不退了") == ("我不退了" in result.question)
+
+
+def test_real_langchain_history_uses_prompt_roles():
+    from langchain_core.messages import AIMessage, HumanMessage
+
+    from mewhelp.ch06.understanding import _history_rows
+    rows = _history_rows([HumanMessage(content="查1001", id="u1"),
+                          AIMessage(content="1001已签收", id="a1")])
+    assert [row["role"] for row in rows] == ["user", "assistant"]

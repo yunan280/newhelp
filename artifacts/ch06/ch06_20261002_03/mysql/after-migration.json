@@ -1,0 +1,284 @@
+{
+  "scope": "actual_mysql_3307",
+  "old_rows_unchanged": true,
+  "old_tables": {
+    "conversations": {
+      "before": 79,
+      "after": 79,
+      "unchanged": true
+    },
+    "faq": {
+      "before": 12,
+      "after": 12,
+      "unchanged": true
+    },
+    "knowledge_chunks": {
+      "before": 20,
+      "after": 20,
+      "unchanged": true
+    },
+    "knowledge_chunks_draft_backup": {
+      "before": 14,
+      "after": 14,
+      "unchanged": true
+    },
+    "knowledge_jobs_draft_backup": {
+      "before": 0,
+      "after": 0,
+      "unchanged": true
+    },
+    "knowledge_qa_staging_draft_backup": {
+      "before": 0,
+      "after": 0,
+      "unchanged": true
+    },
+    "low_confidence_questions": {
+      "before": 18,
+      "after": 18,
+      "unchanged": true
+    },
+    "messages": {
+      "before": 390,
+      "after": 390,
+      "unchanged": true
+    },
+    "qa_extraction_staging": {
+      "before": 8,
+      "after": 8,
+      "unchanged": true
+    },
+    "tickets": {
+      "before": 7,
+      "after": 7,
+      "unchanged": true
+    }
+  },
+  "schema": {
+    "messages": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "default": null,
+          "comment": "消息主键",
+          "nullable": false,
+          "autoincrement": true
+        },
+        {
+          "name": "conversation_id",
+          "type": "BIGINT",
+          "default": null,
+          "comment": "所属会话",
+          "nullable": false,
+          "autoincrement": false
+        },
+        {
+          "name": "role",
+          "type": "ENUM",
+          "default": null,
+          "comment": "角色:用户/助手/工具结果",
+          "nullable": false
+        },
+        {
+          "name": "content",
+          "type": "TEXT",
+          "default": null,
+          "comment": "消息正文,assistant 纯工具调用时可为空",
+          "nullable": true
+        },
+        {
+          "name": "tool_calls",
+          "type": "JSON",
+          "default": null,
+          "comment": "assistant 消息带的工具调用申请单",
+          "nullable": true
+        },
+        {
+          "name": "tool_call_id",
+          "type": "VARCHAR(64)",
+          "default": null,
+          "comment": "tool 消息对应的申请单 id,回灌时对号入座",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME",
+          "default": "CURRENT_TIMESTAMP",
+          "comment": "产生时间",
+          "nullable": false
+        },
+        {
+          "name": "citations",
+          "type": "JSON",
+          "default": null,
+          "comment": null,
+          "nullable": true
+        },
+        {
+          "name": "ch06_event_key",
+          "type": "VARCHAR(64)",
+          "default": null,
+          "comment": null,
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_conversation_id",
+          "column_names": [
+            "conversation_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "uk_messages_ch06_event_key",
+          "column_names": [
+            "ch06_event_key"
+          ],
+          "unique": true
+        }
+      ],
+      "foreign_keys": [
+        {
+          "name": "fk_messages_conversation",
+          "constrained_columns": [
+            "conversation_id"
+          ],
+          "referred_schema": null,
+          "referred_table": "conversations",
+          "referred_columns": [
+            "id"
+          ],
+          "options": {}
+        }
+      ]
+    },
+    "refund_applications": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "default": null,
+          "comment": null,
+          "nullable": false,
+          "autoincrement": true
+        },
+        {
+          "name": "application_no",
+          "type": "VARCHAR(32)",
+          "default": null,
+          "comment": null,
+          "nullable": false
+        },
+        {
+          "name": "offer_id",
+          "type": "VARCHAR(64)",
+          "default": null,
+          "comment": null,
+          "nullable": false
+        },
+        {
+          "name": "conversation_id",
+          "type": "BIGINT",
+          "default": null,
+          "comment": null,
+          "nullable": false,
+          "autoincrement": false
+        },
+        {
+          "name": "user_id",
+          "type": "VARCHAR(64)",
+          "default": null,
+          "comment": null,
+          "nullable": false
+        },
+        {
+          "name": "order_id",
+          "type": "VARCHAR(64)",
+          "default": null,
+          "comment": null,
+          "nullable": false
+        },
+        {
+          "name": "reason",
+          "type": "VARCHAR(32)",
+          "default": null,
+          "comment": null,
+          "nullable": false
+        },
+        {
+          "name": "order_snapshot",
+          "type": "JSON",
+          "default": null,
+          "comment": null,
+          "nullable": false
+        },
+        {
+          "name": "assessment_snapshot",
+          "type": "JSON",
+          "default": null,
+          "comment": null,
+          "nullable": false
+        },
+        {
+          "name": "policy_snapshot",
+          "type": "JSON",
+          "default": null,
+          "comment": null,
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(16)",
+          "default": "'pending'",
+          "comment": null,
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME",
+          "default": "CURRENT_TIMESTAMP",
+          "comment": null,
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_refund_applications_conversation",
+          "column_names": [
+            "conversation_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "uk_refund_applications_application_no",
+          "column_names": [
+            "application_no"
+          ],
+          "unique": true
+        },
+        {
+          "name": "uk_refund_applications_offer_id",
+          "column_names": [
+            "offer_id"
+          ],
+          "unique": true
+        }
+      ],
+      "foreign_keys": [
+        {
+          "name": "fk_refund_applications_conversation",
+          "constrained_columns": [
+            "conversation_id"
+          ],
+          "referred_schema": null,
+          "referred_table": "conversations",
+          "referred_columns": [
+            "id"
+          ],
+          "options": {}
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "scope": "actual_mysql_business_separate_milvus_demo_collection",
+  "collection": "ch06_eval_mysql_20261002_01",
+  "new_policy_rows": 0,
+  "published_rows": 28,
+  "index_audit_errors": 0,
+  "old_sql_rows_preserved": true
+}

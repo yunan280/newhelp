@@ -1,0 +1,37 @@
+{
+  "database": "actual MySQL localhost:3307/mewhelp",
+  "session_id": "d711699e1a06491693795a1376ee126e",
+  "user_id": "web-igsv21rv",
+  "application_no": "RFb98b25a9a0934a33c6e863ddc217c5",
+  "status": "pending",
+  "order_id": "1001",
+  "reason": "七天无理由",
+  "order_snapshot": {
+    "as_of": "2026-10-02",
+    "status": "已签收",
+    "user_id": "web-igsv21rv",
+    "order_id": "1001",
+    "condition": "unopened",
+    "ordered_at": "2026-09-27",
+    "paid_amount": "199.00",
+    "received_at": "2026-09-29",
+    "product_name": "机械键盘",
+    "product_category": "数码配件"
+  },
+  "assessment": {
+    "verdict": "eligible",
+    "explanation": "订单已签收，签收次日起第3天（as_of=2026-10-02，elapsed_days_since_receipt=3），仍在签收次日起7天内（含第7天）[4]。订单快照condition=unopened，符合七天无理由退货要求的未拆封条件[4]。因此已知事实支持提出七天无理由退货申请，申请提交后为待审核状态，不代表审核通过或款项已到账[2]。需注意：不影响二次销售等条件仍需在审核中满足[4]，寄回运费由用户承担[7]。",
+    "missing_facts": []
+  },
+  "policy_source_count": 7,
+  "original_user_question_rows": 1,
+  "refund_application_rows": 1,
+  "browser_actions_verified": [
+    "missing_order_picker",
+    "refresh_picker",
+    "select_1001_resume_same_question",
+    "fixed_reason_submit",
+    "refresh_server_receipt"
+  ],
+  "passed": true
+}

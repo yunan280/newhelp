@@ -552,6 +552,13 @@ def select_router_thresholds(rows: list[dict], *, has_small: bool) -> tuple[tupl
     return min(candidates), candidates
 
 
+def parse_parts(value: str) -> tuple[str, ...]:
+    parts = PARTS if value == "all" else tuple(value.split(","))
+    if not parts or len(set(parts)) != len(parts) or any(part not in PARTS for part in parts):
+        raise ValueError("select all or distinct formal evaluation parts")
+    return parts
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=["freeze", "calibrate", "run"])
@@ -572,7 +579,7 @@ def main():
         evaluate(
             args.dataset,
             args.outdir,
-            parts=tuple(args.parts.split(",")),
+            parts=parse_parts(args.parts),
             mode=args.mode,
             calibration_path=args.calibration,
         )

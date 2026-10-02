@@ -1,0 +1,98 @@
+{
+  "mode": "primary",
+  "total": 156,
+  "passed": 93,
+  "failed": 63,
+  "service_errors": 63,
+  "integrity_errors": [],
+  "json_cases": 85,
+  "original_json_parsed": 85,
+  "final_json_parsed": 85,
+  "manual_semantic_review_required": [
+    "understanding",
+    "multiturn",
+    "expansion"
+  ],
+  "usage": {
+    "input_tokens": 62052,
+    "output_tokens": 1667,
+    "estimated": false
+  },
+  "calls": {
+    "classifier": 64,
+    "understanding": 18,
+    "assessment": 3
+  },
+  "classification_cases": 64,
+  "escalations": 0,
+  "intent_metrics": {
+    "物流": {
+      "total": 8,
+      "correct": 8
+    },
+    "订单": {
+      "total": 8,
+      "correct": 8
+    },
+    "商品咨询": {
+      "total": 8,
+      "correct": 8
+    },
+    "退款退货": {
+      "total": 8,
+      "correct": 8
+    },
+    "售后": {
+      "total": 8,
+      "correct": 8
+    },
+    "投诉": {
+      "total": 8,
+      "correct": 8
+    },
+    "闲聊": {
+      "total": 8,
+      "correct": 8
+    },
+    "其他": {
+      "total": 8,
+      "correct": 8
+    }
+  },
+  "parts": {
+    "intents": {
+      "hash": "15e56502b97ec105ab368a486de26f97f5e83f30d9b9e79f9cf006928a7c6554",
+      "total": 64,
+      "passed": 64,
+      "failed": 0
+    },
+    "understanding": {
+      "hash": "1fc557b7438332edd32fd0bec6f7d747bcb4657219959ae7b6987664e9c7f4fd",
+      "total": 32,
+      "passed": 18,
+      "failed": 14
+    },
+    "multiturn": {
+      "hash": "47deaa2bacf8cd25e792d601921d2baf4402a9bb5d3062a6c48b8c785bcd95ea",
+      "total": 32,
+      "passed": 0,
+      "failed": 32
+    },
+    "expansion": {
+      "hash": "e5e3cfdc55d527a6587ad9bcae131a3e3df8aa655375378d847a2d7039ec1e73",
+      "total": 16,
+      "passed": 8,
+      "failed": 8
+    },
+    "assessment": {
+      "hash": "2b0008fc061d98e502f6e45ba203f9a6610661673e8457b3a2976c034d0d0630",
+      "total": 12,
+      "passed": 3,
+      "failed": 9
+    }
+  },
+  "dataset_hash": "b3a4c10157b144dc9482ac99c569ad6249db672ca4fb02c055a191318978976c",
+  "original_json_parse_rate": 1.0,
+  "final_json_parse_rate": 1.0,
+  "complete": true
+}

@@ -1,0 +1,99 @@
+{
+  "mode": "cascade",
+  "total": 156,
+  "passed": 154,
+  "failed": 2,
+  "service_errors": 0,
+  "integrity_errors": [],
+  "json_cases": 148,
+  "original_json_parsed": 148,
+  "final_json_parsed": 148,
+  "manual_semantic_review_required": [
+    "understanding",
+    "multiturn",
+    "expansion"
+  ],
+  "usage": {
+    "input_tokens": 125044,
+    "output_tokens": 5177,
+    "estimated": false
+  },
+  "calls": {
+    "classifier": 96,
+    "understanding": 64,
+    "expansion": 8,
+    "assessment": 12
+  },
+  "classification_cases": 96,
+  "escalations": 0,
+  "intent_metrics": {
+    "物流": {
+      "total": 17,
+      "correct": 17
+    },
+    "订单": {
+      "total": 14,
+      "correct": 14
+    },
+    "商品咨询": {
+      "total": 9,
+      "correct": 9
+    },
+    "退款退货": {
+      "total": 17,
+      "correct": 17
+    },
+    "售后": {
+      "total": 11,
+      "correct": 11
+    },
+    "投诉": {
+      "total": 10,
+      "correct": 10
+    },
+    "闲聊": {
+      "total": 9,
+      "correct": 9
+    },
+    "其他": {
+      "total": 9,
+      "correct": 9
+    }
+  },
+  "parts": {
+    "intents": {
+      "hash": "ef37d8964c2888a2d5728ef19cb595c1f91f6573849700c30dd40f4b95b541dc",
+      "total": 64,
+      "passed": 64,
+      "failed": 0
+    },
+    "understanding": {
+      "hash": "3a002e9498f9e5f5ab098d4699533dab990e5826a29e6cbd5cd7d960dae59cb8",
+      "total": 32,
+      "passed": 32,
+      "failed": 0
+    },
+    "multiturn": {
+      "hash": "41065679d52930dbe15ce545ced68e40f28bed734f3bb211c5baf25d4b9b0d56",
+      "total": 32,
+      "passed": 30,
+      "failed": 2
+    },
+    "expansion": {
+      "hash": "52f7ceddba8f294f40757d6495c5779e3636d5ff425f0d5ef3612dfa937027e4",
+      "total": 16,
+      "passed": 16,
+      "failed": 0
+    },
+    "assessment": {
+      "hash": "aa486a9a08b7e921a69a2090d7137f3f9bd013af601ad0deadf1c66dac651eeb",
+      "total": 12,
+      "passed": 12,
+      "failed": 0
+    }
+  },
+  "dataset_hash": "b3a4c10157b144dc9482ac99c569ad6249db672ca4fb02c055a191318978976c",
+  "original_json_parse_rate": 1.0,
+  "final_json_parse_rate": 1.0,
+  "complete": true
+}

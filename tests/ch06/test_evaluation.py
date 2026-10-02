@@ -181,3 +181,12 @@ async def test_report_keeps_usage_and_upgrade_denominator(tmp_path):
     assert summary["usage"] == {"input_tokens": 10, "output_tokens": 5, "estimated": False}
     assert summary["calls"] == {"classifier": 2}
     assert summary["classification_cases"] == 1 and summary["escalations"] == 1
+
+
+def test_cli_all_resolves_to_every_formal_part():
+    module = evaluator_module()
+    assert module.parse_parts("all") == module.PARTS
+    assert module.parse_parts("intents,assessment") == ("intents", "assessment")
+    for invalid in ("", "all,intents", "unknown", "intents,intents"):
+        with pytest.raises(ValueError):
+            module.parse_parts(invalid)

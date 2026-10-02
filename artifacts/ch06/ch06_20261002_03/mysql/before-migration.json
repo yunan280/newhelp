@@ -1,0 +1,47 @@
+{
+  "scope": "actual_mysql_3307",
+  "backup_path": ".cache\\ch06\\mysql-backup-20261002\\backup.json",
+  "backup_sha256": "6187d97e3d336d2c2a2018e0bbaa920e03a16074f7f922391e52b3e0d96d4ed7",
+  "tables": {
+    "conversations": {
+      "count": 79,
+      "sha256": "078804ea44fc0786a0baf8dc389c50c373bff918d78508c0576f3855178d0f86"
+    },
+    "faq": {
+      "count": 12,
+      "sha256": "300eca51e56a3f16da64b355a7ab33ab131e0e959bddd9f525cc5ed3f5cef3c0"
+    },
+    "knowledge_chunks": {
+      "count": 20,
+      "sha256": "7033e5d99d7aca6d6bef2dd124cd1c9c8cc28db071401dff38a8bc58a71f3afe"
+    },
+    "knowledge_chunks_draft_backup": {
+      "count": 14,
+      "sha256": "eb2a9a604dcb0d1e709c645fa92cf44aed31d6afd041473b024b980ed72eb6ee"
+    },
+    "knowledge_jobs_draft_backup": {
+      "count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "knowledge_qa_staging_draft_backup": {
+      "count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "low_confidence_questions": {
+      "count": 18,
+      "sha256": "5f86def5d614e77e4861c7f0cf4cf041e62238e23e3a8d898aa1e65f1dabde06"
+    },
+    "messages": {
+      "count": 390,
+      "sha256": "6dca2773e7ba067d606b7be189dbd23144c6a4d241c885f56e4e6d69f3023a18"
+    },
+    "qa_extraction_staging": {
+      "count": 8,
+      "sha256": "8df6541308d611d1dca2a858dc8359994698c7908dabecedd146cfccb22322a7"
+    },
+    "tickets": {
+      "count": 7,
+      "sha256": "5f196fee72648b4012a724059ccef68ddcdf6ebd67a3a726ea20158cac17d531"
+    }
+  }
+}

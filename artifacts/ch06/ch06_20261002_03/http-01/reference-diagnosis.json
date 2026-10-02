@@ -1,0 +1,79 @@
+{
+  "understanding": {
+    "actual": {
+      "question": "这个能退吗",
+      "scope": "order_specific",
+      "trusted_order_id": null
+    },
+    "raw_responses": [
+      {
+        "content": "{\n  \"question\": \"这个能退吗\",\n  \"scope\": \"order_specific\",\n  \"reference_order_id\": null,\n  \"reference_message_id\": null\n}",
+        "request_model": "deepseek-v4-pro",
+        "response_model": "deepseek-v4-pro",
+        "usage": {
+          "input_tokens": 938,
+          "output_tokens": 37,
+          "estimated": false
+        },
+        "elapsed_ms": 1069,
+        "parsed": true,
+        "repair": false
+      }
+    ],
+    "usage": {
+      "input_tokens": 938,
+      "output_tokens": 37,
+      "estimated": false
+    },
+    "calls": {
+      "classifier": 0,
+      "decision": 0,
+      "answer": 0,
+      "understanding": 1
+    },
+    "diagnostics": [],
+    "control_error": null
+  },
+  "trusted_entities": [
+    {
+      "order_id": "1001",
+      "user_id": "ch06-http-20261002-01-user",
+      "product_name": "机械键盘",
+      "product_category": "数码配件",
+      "status": "已签收",
+      "paid_amount": "199.00",
+      "ordered_at": "2026-09-27",
+      "received_at": "2026-09-29",
+      "condition": "unopened",
+      "as_of": "2026-10-02",
+      "message_id": "30d1ab643d1e467f8b276be5aaac3842-answer"
+    }
+  ],
+  "messages": [
+    {
+      "id": "30d1ab643d1e467f8b276be5aaac3842-user",
+      "type": "human",
+      "content": "订单1001物流到哪了"
+    },
+    {
+      "id": "30d1ab643d1e467f8b276be5aaac3842-answer",
+      "type": "ai",
+      "content": "订单 1001 的物流显示已签收：承运商为京东物流，运单号 F678104970636，最新状态是「已签收」，已由收件人签收（2026-09-29）。轨迹为广州集散中心 → 杭州转运中心 → 上海分拨中心。"
+    },
+    {
+      "id": "6dcf0ee8b12b48e08127c3e8249b40a3-user",
+      "type": "human",
+      "content": "这个能退吗"
+    },
+    {
+      "id": "6dcf0ee8b12b48e08127c3e8249b40a3-waiting",
+      "type": "ai",
+      "content": "请选择一笔订单，我会核对该订单与退款/售后政策。"
+    },
+    {
+      "id": "6dcf0ee8b12b48e08127c3e8249b40a3-answer",
+      "type": "ai",
+      "content": "已取消本次订单选择。"
+    }
+  ]
+}

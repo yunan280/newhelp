@@ -28,7 +28,8 @@ def ingest_faq(session: Session) -> int:
     return len(rows)
 
 
-def ingest_documents(session: Session, root: Path, *, deleted_ids: list[int] | None = None) -> int:
+def ingest_documents(session: Session, root: Path, *, deleted_ids: list[int] | None = None,
+                     include_paths: set[str] | None = None) -> int:
     if not root.is_dir():
         raise FileNotFoundError(f"知识文档目录不存在：{root}")
     # DDL 没有独立来源列；把规范化根目录的短哈希放在主键来源和溯源路径中。
@@ -43,6 +44,8 @@ def ingest_documents(session: Session, root: Path, *, deleted_ids: list[int] | N
     links: list[tuple[int, int | None, int | None]] = []
     for path in sorted(root.rglob("*.md")):
         source = path.relative_to(root).as_posix()
+        if include_paths is not None and source not in include_paths:
+            continue
         prefix = "doc:" + corpus + ":" + _key(source) + ":"
         markdown = path.read_text(encoding="utf-8-sig")
         header = re.match(r"\A\s*<!--\s*product-category:\s*([^\r\n]*?)\s*-->\s*", markdown)
@@ -83,6 +86,9 @@ def ingest_documents(session: Session, root: Path, *, deleted_ids: list[int] | N
         | KnowledgeChunk.section_path.startswith("__deleting__::" + scope, autoescape=True)
     )).all()
     for row in stale:
+        source = row.section_path.removeprefix("__deleting__::").removeprefix(scope).split("::", 1)[0]
+        if include_paths is not None and source not in include_paths:
+            continue
         if row.id not in all_seen:
             # 先提交不可检索状态，再删 Milvus 向量；若中断，下一次仍能发现此行。
             row.vectorize_status = "pending"

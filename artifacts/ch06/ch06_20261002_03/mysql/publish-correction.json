@@ -1,0 +1,8 @@
+{
+  "only_own_new_shipping_ids_removed": [
+    "1637524391607763811",
+    "4014837857855001712"
+  ],
+  "original_ids_preserved": true,
+  "recovery_backup": ".cache/ch06/mysql-backup-20261002/extra-shipping-rollback.json"
+}
