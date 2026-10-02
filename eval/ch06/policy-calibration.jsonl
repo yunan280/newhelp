@@ -1,0 +1,16 @@
+{"id": "p-001", "split": "calibration", "question": "签收3天未拆封键盘能退货吗", "expected": {"relevant": true}}
+{"id": "p-002", "split": "calibration", "question": "未发货订单取消退款", "expected": {"relevant": true}}
+{"id": "p-003", "split": "calibration", "question": "签收8天能无理由退货吗", "expected": {"relevant": true}}
+{"id": "p-004", "split": "calibration", "question": "耳机保修期限", "expected": {"relevant": true}}
+{"id": "p-005", "split": "calibration", "question": "人为损坏是否免费保修", "expected": {"relevant": true}}
+{"id": "p-006", "split": "calibration", "question": "质量问题退货限制", "expected": {"relevant": true}}
+{"id": "p-007", "split": "calibration", "question": "退货运费和申请流程", "expected": {"relevant": true}}
+{"id": "p-008", "split": "calibration", "question": "拆封状态未知能否直接批准", "expected": {"relevant": true}}
+{"id": "p-009", "split": "calibration", "question": "包裹到达哪个中转站", "expected": {"relevant": false}}
+{"id": "p-010", "split": "calibration", "question": "键盘有几种颜色", "expected": {"relevant": false}}
+{"id": "p-011", "split": "calibration", "question": "支持什么付款方式", "expected": {"relevant": false}}
+{"id": "p-012", "split": "calibration", "question": "订单实付金额是多少", "expected": {"relevant": false}}
+{"id": "p-013", "split": "calibration", "question": "杯子的材质和容量", "expected": {"relevant": false}}
+{"id": "p-014", "split": "calibration", "question": "店铺营业时间", "expected": {"relevant": false}}
+{"id": "p-015", "split": "calibration", "question": "快递单号查询", "expected": {"relevant": false}}
+{"id": "p-016", "split": "calibration", "question": "外星人天气预报", "expected": {"relevant": false}}

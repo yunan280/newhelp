@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "files": {
+    "intents.jsonl": {
+      "sha256": "027589f16b2657be4ed9461c5ef048bf142a6dbae04d459e7e349cb9fd07fa2b",
+      "count": 64,
+      "split": "acceptance"
+    },
+    "understanding.jsonl": {
+      "sha256": "19c2eccae6e23afbbfd41d809ec8d285e01cdd632fb0bdabc658ba37c810dad6",
+      "count": 32,
+      "split": "acceptance"
+    },
+    "multiturn.jsonl": {
+      "sha256": "da1c498dac8498c8ac3382e2b966442aa883912ccda231fbc46845a83190ffe6",
+      "count": 32,
+      "split": "acceptance"
+    },
+    "expansion.jsonl": {
+      "sha256": "b28051df163a50a9723aa06388016a1efb4c08111337221ecdac675c9a17fb50",
+      "count": 16,
+      "split": "acceptance"
+    },
+    "assessment.jsonl": {
+      "sha256": "37d0b2d2881c7cbec6e3677821ff384ba684fa8dba5794afce18562eca377bb1",
+      "count": 12,
+      "split": "acceptance"
+    },
+    "calibration.jsonl": {
+      "sha256": "16bec632e15b26189362b2bb4d3801fb4d2431e772d7bd3d908831e12170047b",
+      "count": 32,
+      "split": "calibration"
+    },
+    "policy-calibration.jsonl": {
+      "sha256": "ab2a1eb216db99dfbfd3dd64eb30ba2ec102e3d178d61993d68fcfd3f6d397a8",
+      "count": 16,
+      "split": "calibration"
+    }
+  },
+  "dataset_hash": "b3a4c10157b144dc9482ac99c569ad6249db672ca4fb02c055a191318978976c"
+}

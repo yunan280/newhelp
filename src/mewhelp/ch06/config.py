@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from mewhelp.llm import get_chat_model
@@ -24,6 +24,27 @@ class Ch06Settings(BaseSettings):
         ):
             raise ValueError("cascade requires an explicit model distinct from primary_model")
         return self
+
+
+class RouterCalibration(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    model_hash: str
+    understanding_hash: str
+    intent_hash: str
+    dataset_hash: str
+    intent_min_confidence: float = Field(ge=0, le=1, allow_inf_nan=False)
+    cascade_upgrade_threshold: float = Field(ge=0, le=1, allow_inf_nan=False)
+    sample_count: int = Field(gt=0)
+
+
+class PolicyCalibration(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    policy_rerank_threshold: float = Field(ge=0, le=1, allow_inf_nan=False)
+    reranker_metadata: dict
+    corpus_hash: str
+    retrieval_input_hash: str
+    dataset_hash: str
+    sample_count: int = Field(gt=0)
 
 
 def get_router_model(*, purpose: str, model_name: str, output_tokens: int, request_seconds: float):
