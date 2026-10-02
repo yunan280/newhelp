@@ -1,0 +1,83 @@
+{
+  "scope": "isolated_acceptance_sqlite_real_model_real_milvus",
+  "url": "http://127.0.0.1:9006/",
+  "session": {
+    "session_id": "f57d41965c9c4043af4fcb6562c32eff",
+    "user_id": "web-5ae0jmsf"
+  },
+  "receipt": {
+    "application_no": "RFf63a4645774d21c810dcbef89b317d",
+    "offer_id": "58061d473606b48cd5a0494510068670546d82185d5bf9376ce6a245362c467a",
+    "conversation_id": 1,
+    "user_id": "web-5ae0jmsf",
+    "order_id": "1001",
+    "reason": "七天无理由",
+    "status": "pending"
+  },
+  "refund_count": 1,
+  "original_user_message_count": 1,
+  "messages": [
+    {
+      "role": "user",
+      "content": "这个能退吗"
+    },
+    {
+      "role": "assistant",
+      "content": "请选择一笔订单，我会核对该订单与退款/售后政策。"
+    },
+    {
+      "role": "assistant",
+      "content": "您的订单已签收，签收次日起第3天，仍在七天无理由退货期限内（含第7天）[5]。订单快照显示商品未拆封，符合未拆封条件[5]，因此可以提出七天无理由退货申请。\n\n需要说明的是：申请提交后为“待审核”状态，不代表审核通过或退款已到账[2]；同时还需满足不影响二次销售等前提条件[5]。您可选择下方按钮提交退货申请。"
+    },
+    {
+      "role": "user",
+      "content": "我要退另一笔订单，还没选是哪一单"
+    },
+    {
+      "role": "assistant",
+      "content": "请选择一笔订单，我会核对该订单与退款/售后政策。"
+    },
+    {
+      "role": "assistant",
+      "content": "已取消本次订单选择。"
+    },
+    {
+      "role": "user",
+      "content": "订单 1001 的物流到哪了"
+    },
+    {
+      "role": "assistant",
+      "content": null
+    },
+    {
+      "role": "tool",
+      "content": "订单 1001 的物流:承运商 京东物流,运单号 F678104970636,当前状态「已签收」,最新位置 已由收件人签收(2026-09-29)。轨迹:广州集散中心 → 杭州转运中心 → 上海分拨中心。"
+    },
+    {
+      "role": "assistant",
+      "content": "订单 1001 的物流信息如下：\n\n- 承运商：京东物流\n- 运单号：F678104970636\n- 当前状态：已签收\n- 最新位置：已由收件人签收（2026-09-29）\n- 轨迹：广州集散中心 → 杭州转运中心 → 上海分拨中心\n\n包裹已签收，如需申请退货，请告诉我具体订单，我可以帮您核对退货政策。"
+    }
+  ],
+  "observed_browser_checks": [
+    "missing_order_cards",
+    "refresh_pending_cards",
+    "same_message_resume_answer_with_citations",
+    "empty_reason_submit_disabled",
+    "cancel_no_application",
+    "select_fixed_reason_submit_pending",
+    "refresh_server_receipt",
+    "new_logistics_expires_old_card",
+    "refresh_old_card_not_active"
+  ],
+  "screenshots": [
+    "01-order-selector.png",
+    "02-refreshed-selector.png",
+    "03-refund-form.png",
+    "04-cancelled-form.png",
+    "05-cancelled-final.png",
+    "06-refund-receipt.png",
+    "07-refreshed-receipt.png",
+    "08-expired-card-logistics.png",
+    "09-expired-after-refresh.png"
+  ]
+}

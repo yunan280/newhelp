@@ -1,0 +1,9 @@
+{
+  "scope": "isolated_acceptance_sqlite",
+  "stage": "after_browser_cancel_before_submit",
+  "refund_count": 0,
+  "session": [
+    "f57d41965c9c4043af4fcb6562c32eff",
+    "web-5ae0jmsf"
+  ]
+}
