@@ -1,0 +1,33 @@
+{
+  "review_base": "74e325b",
+  "review_head": "38f04c970afa35c064191d8595bb4d752e18fd89",
+  "independent_reviewers": 1,
+  "fix_passes": 1,
+  "important_fixed": 2,
+  "minor_deferred": 1,
+  "new_verification": {
+    "control_suite": {"passed": 781, "deselected": 5, "seconds": 30.96, "command": ".venv-ch03/Scripts/python.exe -X utf8 -m pytest -q", "log": "execution-audit/review-suite.log"},
+    "selection": {"red": 1, "green": 9, "log": "execution-audit/review-selection-green.log"},
+    "policy_publish": {"red": 4, "green": 7, "log": "execution-audit/review-publish-green.log"},
+    "ruff": "All checks passed: src tests scripts",
+    "git_diff_check": "passed",
+    "new_upstream_calls": 0
+  },
+  "reused_evidence": {
+    "mysql_http": {"passed": 20, "total": 20, "report": "../ch06_20261002_05/http-mysql/http.json"},
+    "mysql_commit_checkpoint_failure": "../ch06_20261002_05/mysql-refund-recovery.json",
+    "mysql_browser": "../ch06_20261002_05/ui-mysql/browser-report.json",
+    "page_smoke": "execution-audit/task11-offline-final.log",
+    "formal_primary_run05": {"passed": 156, "total": 156},
+    "formal_cascade_run05": {"passed": 155, "total": 156},
+    "current_end_to_end_model_certified": false,
+    "reason": "User explicitly requested no repeated model/HTTP/browser runs. History is retained unchanged; classifier compatibility rebind is not end-to-end certification."
+  },
+  "deployment": {
+    "url": "http://127.0.0.1:9007/",
+    "business_database": "actual MySQL",
+    "checkpoint": "official SQLite saver",
+    "worker_count": 1,
+    "refund_execution": "pending local demo application only"
+  }
+}

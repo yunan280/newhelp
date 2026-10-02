@@ -518,7 +518,9 @@ $env:CH06_SMALL_MODEL = 'deepseek-flash'
 
 独立服务模式 `scripts/smoke_ch06_acceptance.py --serve --workdir .cache/ch06/acceptance-01 --collection ch06_eval_acceptance_20261002_01 --calibration artifacts/ch06/ch06_20261002_07/calibration-primary-reused/router.json --policy-calibration artifacts/ch06/ch06_20261002_01/policy-calibration-02/policy.json --port 9006` 使用同一 `main.app`，SQLite 隔离业务账本、真实模型/Milvus。启动该模式前恢复 `CH06_CASCADE_ENABLED=false` 并移除 `CH06_SMALL_MODEL`。它只有原文政策库，没有真实 MySQL 的12条既有FAQ，因此不能用它冒充真实库完整 FAQ 验收。最终交付以9007的 MySQL 证据为准。
 
-本次沿用已完成验证：当前后端776 passed、5 deselected，Ruff与page-smoke通过；[最近真实MySQL HTTP](artifacts/ch06/ch06_20261002_05/http-mysql/http.json)20/20，[提交后checkpoint故障恢复](artifacts/ch06/ch06_20261002_05/mysql-refund-recovery.json)只一行，[真实MySQL浏览器](artifacts/ch06/ch06_20261002_05/ui-mysql/browser-report.json)卡片/刷新/点选/表单/原回执全部确认。最近完整模型结果为run-05 [primary156/156](artifacts/ch06/ch06_20261002_05/primary/summary.json)和[cascade155/156](artifacts/ch06/ch06_20261002_05/cascade/summary.json)，首次/最终JSON均148/148；cascade的一条历史串扰和后续隐含退货误拒已由失败回归修复。run-06中途402，不能计为通过。
+独立后端审查的两项 Important 已在唯一修复 pass 关闭：[审查与修复](artifacts/ch06/ch06_20261002_07/review-resolution.md)。旧选择回执只读重放，保留另一张活跃卡的原生中断；发布失败后按批准来源补偿 pending 政策，未全部发布不能报告成功。修复后完整本地控制验证一次：781 passed、5 deselected，Ruff通过；page-smoke沿用已完成结果。级联升级前预算不足可能漏记已完成的小模型用量，业务正确停止，Low延期，默认primary不受影响。
+
+沿用真实验证：[最近真实MySQL HTTP](artifacts/ch06/ch06_20261002_05/http-mysql/http.json)20/20，[提交后checkpoint故障恢复](artifacts/ch06/ch06_20261002_05/mysql-refund-recovery.json)只一行，[真实MySQL浏览器](artifacts/ch06/ch06_20261002_05/ui-mysql/browser-report.json)卡片/刷新/点选/表单/原回执全部确认。最近完整模型结果为run-05 [primary156/156](artifacts/ch06/ch06_20261002_05/primary/summary.json)和[cascade155/156](artifacts/ch06/ch06_20261002_05/cascade/summary.json)，首次/最终JSON均148/148；cascade的一条历史串扰和后续隐含退货误拒已由失败回归修复。run-06中途402，不能计为通过。
 
 用户明确要求“接着你上次的，别再重新跑，浪费token”，因此不再重跑模型评估/HTTP，历史结果不改hash、不冒称当前全量模型通过。上方启动配置来自[离线复用审计](artifacts/ch06/ch06_20261002_07/calibration-primary-reused/reuse-audit.json)：核对分类Prompt、请求/校准代码、模型hash及冻结32条输入未变，以保存的真实响应重新计算原阈值0.5/0.7；只更新当前代码兼容绑定，新增模型调用0。它不验证新理解防护的总体模型准确率。这部分由既有控制回归覆盖；最新完整真实模型评估留为明确未重跑项。
 

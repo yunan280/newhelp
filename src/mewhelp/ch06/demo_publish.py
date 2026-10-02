@@ -1,7 +1,9 @@
 """Add the approved policy without replacing old SQL knowledge or its Milvus collection."""
 
 import argparse
+import hashlib
 import json
+import os
 import re
 from pathlib import Path
 
@@ -21,6 +23,12 @@ def prepare_demo_corpus(factory, index, docs, embed):
         raise ValueError("use an explicitly separate ch06_eval_mysql_ collection")
     if not (docs / "aftersales-policy.md").is_file():
         raise ValueError("approved aftersales-policy.md is required")
+    # Match ingest_documents' normalized corpus namespace, including Windows casing.
+    canonical_root = docs.resolve().as_posix()
+    if os.name == "nt":
+        canonical_root = canonical_root.casefold()
+    corpus = hashlib.sha256(canonical_root.encode("utf-8")).hexdigest()[:16]
+    policy_prefix = f"corpus:{corpus}/aftersales-policy.md::"
     with factory() as db:
         before = {row.id: _row_values(row) for row in db.scalars(select(KnowledgeChunk))}
         ingest_documents(db, docs, include_paths={"aftersales-policy.md"})
@@ -30,13 +38,20 @@ def prepare_demo_corpus(factory, index, docs, embed):
             db.rollback()
             raise ValueError("existing knowledge would change; stopped before publishing")
         new_ids = sorted(after.keys() - before.keys())
+        policy_ids = sorted(row_id for row_id, data in after.items()
+                            if (data["section_path"] or "").startswith(policy_prefix))
+        if not policy_ids:
+            raise ValueError("approved policy is empty; not fully published")
         db.commit()
     index.ensure_collection()
-    sync_pending(factory, embed, index, row_ids=new_ids)
+    # A previous attempt may have committed these rows before vector publication failed.
+    sync_pending(factory, embed, index, row_ids=policy_ids, limit=len(policy_ids))
     with factory() as db:
         snapshots = [snapshot_chunk(row) for row in db.scalars(select(KnowledgeChunk))
                      if row.vectorize_status == "done" and row.vector_id == str(row.id)
                      and not (row.section_path or "").startswith("__deleting__::")]
+    if not set(policy_ids).issubset({row.id for row in snapshots}):
+        raise ValueError("approved policy not fully published; retry compensation")
     # Build a separate demo index from the same published SQL originals, never duplicate SQL rows.
     old = [snapshot for snapshot in snapshots if snapshot.id not in new_ids]
     for row, vector in zip(old, embed([row.text for row in old]), strict=True):

@@ -31,6 +31,22 @@ async def test_resume_restarts_only_wait_node(selection_runtime):
     assert replay == after
 
 
+async def test_old_receipt_replay_preserves_new_native_interrupt(selection_runtime):
+    from mewhelp.ch06.selection import pending_selection, resume_order
+
+    first = await waiting(selection_runtime)
+    completed = await resume_order(selection_runtime, request(first))
+    second = await waiting(selection_runtime, first.session_id)
+    assert second.order_selection.selection_id != first.order_selection.selection_id
+
+    assert await resume_order(selection_runtime, request(first)) == completed
+    pending = await pending_selection(selection_runtime, first.session_id, request(first).resolved_user_id)
+    assert pending is not None
+    assert pending.order_selection.selection_id == second.order_selection.selection_id
+    resumed = await resume_order(selection_runtime, request(second, "1002"))
+    assert resumed.status == "completed" and resumed.order.order_id == "1002"
+
+
 async def test_stale_card_and_wrong_owner_rejected(selection_runtime):
     from mewhelp.ch06.selection import SelectionError, resume_order
     before = await waiting(selection_runtime)

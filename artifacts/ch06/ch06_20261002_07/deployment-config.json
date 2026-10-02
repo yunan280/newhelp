@@ -1,0 +1,20 @@
+{
+  "router_modes": [
+    {
+      "mode": "primary",
+      "configuration_valid": true,
+      "min_confidence": 0.5,
+      "upgrade_threshold": 0.7,
+      "new_model_calls": 0
+    },
+    {
+      "mode": "cascade",
+      "configuration_valid": true,
+      "min_confidence": 0.5,
+      "upgrade_threshold": 0.7,
+      "new_model_calls": 0
+    }
+  ],
+  "policy_threshold": 0.07062195986509323,
+  "validation": "strict configuration/hash validation only; no API/model/e2e rerun"
+}

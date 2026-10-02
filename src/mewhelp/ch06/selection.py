@@ -156,7 +156,9 @@ async def stream_order_resume(runtime, request):
                 yield event("sources", sources=[s.model_dump() for s in result.sources], refused=result.refused)
             if result.answer:
                 yield event("token", text=result.answer)
-        await _remember_result(runtime, config, request, result)
+        # Saved receipt replays must not create a checkpoint over another live interrupt.
+        if receipt is None:
+            await _remember_result(runtime, config, request, result)
         yield event("done", **result.model_dump(mode="json"), finish_reason=result.stop_reason)
 
 
