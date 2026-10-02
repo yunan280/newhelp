@@ -1,0 +1,70 @@
+{
+  "sha256": "e278c180259075dd146b76e6e04e2f5dfa03a899d85aec7953477c095db98bbd",
+  "chunks": [
+    {
+      "section": "退款售后政策",
+      "category": "",
+      "is_key_clause": false,
+      "characters": 102
+    },
+    {
+      "section": "退款售后政策 / 七天无理由退货期限与条件",
+      "category": "退款售后政策",
+      "is_key_clause": true,
+      "characters": 78
+    },
+    {
+      "section": "退款售后政策 / 无理由退货例外与未知事实",
+      "category": "退款售后政策",
+      "is_key_clause": false,
+      "characters": 101
+    },
+    {
+      "section": "退款售后政策 / 商品质量问题与退换货",
+      "category": "退款售后政策",
+      "is_key_clause": true,
+      "characters": 88
+    },
+    {
+      "section": "退款售后政策 / 未发货订单取消退款",
+      "category": "退款售后政策",
+      "is_key_clause": true,
+      "characters": 57
+    },
+    {
+      "section": "退款售后政策 / 电子类商品保修与维修",
+      "category": "退款售后政策",
+      "is_key_clause": true,
+      "characters": 126
+    },
+    {
+      "section": "退款售后政策 / 退货运费",
+      "category": "退款售后政策",
+      "is_key_clause": false,
+      "characters": 95
+    },
+    {
+      "section": "退款售后政策 / 退款申请与审核",
+      "category": "退款售后政策",
+      "is_key_clause": false,
+      "characters": 179
+    }
+  ],
+  "relevant_old_faq": [
+    [
+      "退货政策是什么",
+      "签收后 7 天内,商品不影响二次销售可无理由退货。",
+      "退换货"
+    ],
+    [
+      "商品有质量问题怎么办",
+      "拍照留证后在订单页申请售后,审核通过可退可换。",
+      "商品"
+    ],
+    [
+      "保修期是多久",
+      "电子类商品保修 12 个月,人为损坏不在保修范围内。",
+      "售后"
+    ]
+  ]
+}
