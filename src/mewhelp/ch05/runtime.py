@@ -22,7 +22,13 @@ class WorkflowRuntime:
 
 @asynccontextmanager
 async def open_runtime(
-    session_factory, *, settings: Ch05Settings, model_factory=get_ch05_model, rag_factory=None
+    session_factory,
+    *,
+    settings: Ch05Settings,
+    model_factory=get_ch05_model,
+    rag_factory=None,
+    router_settings=None,
+    router_model_factory=None,
 ):
     @lru_cache(maxsize=1)
     def default_rag_factory():
@@ -34,6 +40,11 @@ async def open_runtime(
     settings.checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
     async with AsyncSqliteSaver.from_conn_string(str(settings.checkpoint_path)) as saver:
         context = WorkflowContext(
-            session_factory, model_factory, rag_factory or default_rag_factory, settings.limits()
+            session_factory,
+            model_factory,
+            rag_factory or default_rag_factory,
+            settings.limits(),
+            **({"router_settings": router_settings} if router_settings is not None else {}),
+            router_model_factory=router_model_factory,
         )
         yield WorkflowRuntime(build_workflow(saver), context, SessionStore())

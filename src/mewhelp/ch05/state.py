@@ -1,9 +1,11 @@
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Annotated, TypedDict
 
 from langchain_core.messages import AnyMessage
 from langgraph.graph.message import add_messages
+
+from mewhelp.ch06.config import Ch06Settings
 
 from .limits import AgentLimits
 
@@ -43,6 +45,24 @@ class WorkflowState(TypedDict, total=False):
     refused: bool
     low_confidence_question_id: str | None
     offer: dict | None
+    status: str
+    scope: str
+    intent_confidence: float | None
+    trusted_order_id: str | None
+    trusted_entities: list[dict]
+    understanding: dict
+    classification: dict
+    expansion: dict
+    queries: list[str]
+    order: dict | None
+    order_selection: dict | None
+    selection_status: str | None
+    selected_order_id: str | None
+    selection_receipts: dict[str, dict]
+    assessment: dict | None
+    refund_offer: dict | None
+    refund_offers: dict[str, dict]
+    refund_receipts: dict[str, dict]
 
 
 @dataclass
@@ -51,3 +71,5 @@ class WorkflowContext:
     model_factory: Callable
     rag_factory: Callable
     limits: AgentLimits
+    router_settings: Ch06Settings = field(default_factory=Ch06Settings, kw_only=True)
+    router_model_factory: Callable | None = field(default=None, kw_only=True)

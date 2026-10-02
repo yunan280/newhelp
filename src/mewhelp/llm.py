@@ -8,14 +8,16 @@ from langchain_openai import ChatOpenAI
 from mewhelp.config import get_settings
 
 
-def get_chat_model(*, temperature: float | None = None, **kwargs) -> ChatOpenAI:
+def get_chat_model(
+    *, model_name: str | None = None, temperature: float | None = None, **kwargs
+) -> ChatOpenAI:
     """按 .env 构造 ChatOpenAI。
 
     不传 streaming=True —— 显式调用 .astream() 就会流式,少一个可能过时的参数。
     """
     s = get_settings()
     return ChatOpenAI(
-        model=s.llm_model,
+        model=model_name or s.llm_model,
         base_url=s.openai_base_url,
         api_key=s.openai_api_key,
         temperature=s.llm_temperature if temperature is None else temperature,
