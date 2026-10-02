@@ -6,7 +6,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from mewhelp.ch05.config import Ch05Settings
+from mewhelp.ch05.intent import match_chitchat
 from mewhelp.ch05.schemas import TurnRequest
+from mewhelp.ch06.config import Ch06Settings
 from mewhelp.db.base import Base
 from mewhelp.knowledge.answering import SourceDTO
 
@@ -30,6 +32,9 @@ class ModelFactory:
             else "decision",
         )
 
+    def router(self, *, purpose, **kwargs):
+        return FakeModel(self, purpose)
+
 
 class FakeModel:
     def __init__(self, owner, kind):
@@ -45,7 +50,14 @@ class FakeModel:
                 raise RuntimeError("classifier unavailable")
             return AIMessage(
                 content=json.dumps(
-                    {"intent": self.owner.intents.pop(0) if self.owner.intents else "退款退货"},
+                    {
+                        "intent": self.owner.intents.pop(0)
+                        if self.owner.intents
+                        else "闲聊"
+                        if match_chitchat(messages[-1].content)
+                        else "退款退货",
+                        "confidence": 0.99,
+                    },
                     ensure_ascii=False,
                 )
             )
@@ -86,6 +98,30 @@ def checkpoint_settings(tmp_path):
 
 
 @pytest.fixture
+def router_settings(tmp_path):
+    from pathlib import Path
+
+    from mewhelp.ch06.evaluation import model_hash, runtime_hash, verify_dataset
+
+    path = tmp_path / "router-calibration.json"
+    path.write_text(
+        json.dumps(
+            {
+                "model_hash": model_hash(),
+                "understanding_hash": runtime_hash("understanding"),
+                "intent_hash": runtime_hash("intents"),
+                "dataset_hash": verify_dataset(Path("eval/ch06"))["dataset_hash"],
+                "intent_min_confidence": 0.6,
+                "cascade_upgrade_threshold": 0.8,
+                "sample_count": 32,
+            }
+        ),
+        encoding="utf-8",
+    )
+    return Ch06Settings(calibration_path=path)
+
+
+@pytest.fixture
 def strong_evidence():
     try:
         from mewhelp.ch05.evidence import EvidenceEnvelope
@@ -107,7 +143,12 @@ def strong_evidence():
 
 @pytest.fixture
 async def workflow_runtime(
-    session_factory, checkpoint_settings, model_factory, strong_evidence, monkeypatch
+    session_factory,
+    checkpoint_settings,
+    model_factory,
+    strong_evidence,
+    monkeypatch,
+    router_settings,
 ):
     try:
         from mewhelp.ch05 import workflow
@@ -124,6 +165,8 @@ async def workflow_runtime(
         settings=checkpoint_settings,
         model_factory=model_factory,
         rag_factory=lambda: object(),
+        router_settings=router_settings,
+        router_model_factory=model_factory.router,
     ) as runtime:
         yield runtime
 

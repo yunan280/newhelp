@@ -24,6 +24,13 @@ def evaluation_hash(dataset: Path) -> str:
     for name in names:
         digest.update(Path(__file__).with_name(name).read_bytes())
     digest.update(get_settings().llm_model.encode())
+    if dataset.name == "intents.jsonl":
+        from mewhelp.ch06.config import Ch06Settings
+        from mewhelp.ch06.evaluation import runtime_hash
+
+        digest.update(
+            runtime_hash("intents", calibration_path=Ch06Settings().calibration_path).encode()
+        )
     return digest.hexdigest()
 
 
@@ -160,7 +167,7 @@ async def evaluate_prompts(
         return max(first, second)
     outdir.mkdir(parents=True, exist_ok=False)
     dataset = dataset_dir / ("intents.jsonl" if part == "intents" else "agent-decisions.jsonl")
-    model = get_ch05_model(128)
+    context = WorkflowContext(lambda: None, get_ch05_model, lambda: None, AgentLimits())
     results = []
     for line in dataset.read_text(encoding="utf-8").splitlines():
         case = json.loads(line)
@@ -169,14 +176,15 @@ async def evaluate_prompts(
             if part == "decisions":
                 row.update(await evaluate_decision_case(case))
             else:
-                actual = await classifier(case["question"], model=model)
+                row["request_model"] = context.router_settings.primary_model
+                actual = await classifier(case["question"], context=context, state={})
                 row.update(
                     actual=actual.intent,
                     raw=actual.raw,
                     origin=actual.origin,
                     response_model=actual.response_model,
                     usage=actual.usage.model_dump(),
-                    calls=0 if actual.origin == "local" else 1,
+                    calls=actual.calls.get("classifier", 0),
                     passed=actual.intent == case["expected"],
                 )
         except Exception as exc:  # noqa: BLE001 -- every provider failure is a failed eval case

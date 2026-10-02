@@ -139,7 +139,7 @@ async def test_weak_knowledge_records_before_fallback_without_agent(
         assert str(row.id) == done["low_confidence_question_id"]
 
 
-@pytest.mark.parametrize("intent", ["物流", "订单", "售后"])
+@pytest.mark.parametrize("intent", ["物流", "订单"])
 async def test_business_skips_retrieval_and_gate(workflow_runtime, model_factory, intent):
     model_factory.intents = [intent]
     result = await service().run_turn(workflow_runtime, TurnRequest(message="查询业务"))
@@ -147,6 +147,14 @@ async def test_business_skips_retrieval_and_gate(workflow_runtime, model_factory
     assert (
         "retrieve_knowledge" not in result.node_trace and "confidence_gate" not in result.node_trace
     )
+
+
+async def test_general_warranty_faq_uses_single_knowledge_path(workflow_runtime, model_factory):
+    model_factory.intents = ["售后"]
+    result = await service().run_turn(workflow_runtime, TurnRequest(message="商品一般保修多久？"))
+    assert result.route == "knowledge"
+    assert result.node_trace.count("retrieve_knowledge") == 1
+    assert result.node_trace.index("confidence_gate") < result.node_trace.index("agent_decide")
 
 
 async def test_complaint_and_greeting_cannot_write_ticket(
@@ -159,7 +167,7 @@ async def test_complaint_and_greeting_cannot_write_ticket(
     assert first.actions == ["handoff", "create_ticket"] and first.offer
     assert first.calls == {"classifier": 1, "decision": 0, "answer": 0}
     second = await service().run_turn(workflow_runtime, TurnRequest(message="你好", session_id="x"))
-    assert second.calls == {"classifier": 0, "decision": 0, "answer": 0}
+    assert second.calls == {"classifier": 1, "decision": 0, "answer": 0}
     assert second.actions == [] and second.offer is None and second.sources == []
     state = await workflow_runtime.graph.aget_state({"configurable": {"thread_id": "x"}})
     assert first.offer.offer_id in state.values["offers"]

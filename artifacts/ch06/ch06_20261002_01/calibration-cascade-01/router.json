@@ -1,0 +1,9 @@
+{
+  "model_hash": "f326901334b9959069504159725ecd9f40b32416e83cce616fabe41fcb57fcca",
+  "understanding_hash": "4fb2c1773c44cfa3dbef8260096274ee8ffae7294171122d872e699c452e8a75",
+  "intent_hash": "53f1709536e838ab7b38ea0646de1d8bfd5910ff14b51413240af567945932dd",
+  "dataset_hash": "b3a4c10157b144dc9482ac99c569ad6249db672ca4fb02c055a191318978976c",
+  "intent_min_confidence": 0.5,
+  "cascade_upgrade_threshold": 0.7,
+  "sample_count": 32
+}

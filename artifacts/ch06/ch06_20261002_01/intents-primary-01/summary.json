@@ -1,0 +1,68 @@
+{
+  "mode": "primary",
+  "total": 64,
+  "passed": 64,
+  "failed": 0,
+  "service_errors": 0,
+  "integrity_errors": [],
+  "json_cases": 64,
+  "original_json_parsed": 64,
+  "final_json_parsed": 64,
+  "manual_semantic_review_required": [],
+  "usage": {
+    "input_tokens": 42838,
+    "output_tokens": 784,
+    "estimated": false
+  },
+  "calls": {
+    "classifier": 64
+  },
+  "classification_cases": 64,
+  "escalations": 0,
+  "intent_metrics": {
+    "物流": {
+      "total": 8,
+      "correct": 8
+    },
+    "订单": {
+      "total": 8,
+      "correct": 8
+    },
+    "商品咨询": {
+      "total": 8,
+      "correct": 8
+    },
+    "退款退货": {
+      "total": 8,
+      "correct": 8
+    },
+    "售后": {
+      "total": 8,
+      "correct": 8
+    },
+    "投诉": {
+      "total": 8,
+      "correct": 8
+    },
+    "闲聊": {
+      "total": 8,
+      "correct": 8
+    },
+    "其他": {
+      "total": 8,
+      "correct": 8
+    }
+  },
+  "parts": {
+    "intents": {
+      "hash": "050990b0dd6054fca904349b3e1e80fe5a729ccf43830bdffb149ca411731447",
+      "total": 64,
+      "passed": 64,
+      "failed": 0
+    }
+  },
+  "dataset_hash": "b3a4c10157b144dc9482ac99c569ad6249db672ca4fb02c055a191318978976c",
+  "original_json_parse_rate": 1.0,
+  "final_json_parse_rate": 1.0,
+  "complete": true
+}

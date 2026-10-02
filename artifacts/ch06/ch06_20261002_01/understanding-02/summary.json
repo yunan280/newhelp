@@ -1,0 +1,26 @@
+{
+  "mode": "primary",
+  "total": 32,
+  "passed": 32,
+  "failed": 0,
+  "service_errors": 0,
+  "integrity_errors": [],
+  "json_cases": 32,
+  "original_json_parsed": 32,
+  "final_json_parsed": 32,
+  "manual_semantic_review_required": [
+    "understanding"
+  ],
+  "parts": {
+    "understanding": {
+      "hash": "4c928f7c4595e8ecccbcdf02765ccb9ece8d28334998a0315fb27aa27a5055c6",
+      "total": 32,
+      "passed": 32,
+      "failed": 0
+    }
+  },
+  "dataset_hash": "b3a4c10157b144dc9482ac99c569ad6249db672ca4fb02c055a191318978976c",
+  "original_json_parse_rate": 1.0,
+  "final_json_parse_rate": 1.0,
+  "complete": true
+}

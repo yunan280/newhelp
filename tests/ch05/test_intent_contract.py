@@ -18,11 +18,12 @@ def module():
     [
         ("物流", "business"),
         ("订单", "business"),
-        ("售后", "business"),
+        ("售后", "knowledge"),
         ("商品咨询", "knowledge"),
         ("退款退货", "knowledge"),
         ("投诉", "complaint"),
         ("闲聊", "chitchat"),
+        ("其他", "other"),
     ],
 )
 def test_fixed_routes(value, want):
@@ -39,15 +40,27 @@ def test_mixed_refund_is_not_a_local_greeting():
 @pytest.mark.parametrize(
     "raw", ['{"intent":"execute_tools"}', "not JSON", '{"intent":"闲聊","route":"agent_decide"}']
 )
-async def test_invalid_classifier_output_cannot_control_graph(raw):
+async def test_invalid_classifier_output_cannot_control_graph(raw, router_settings):
     m = module()
 
     class Model:
         async def ainvoke(self, messages):
             return AIMessage(content=raw)
 
-    with pytest.raises(m.ClassificationError):
-        await m.classify_intent("帮我处理", model=Model())
+    from mewhelp.ch05.limits import AgentLimits
+    from mewhelp.ch05.state import WorkflowContext
+
+    context = WorkflowContext(
+        lambda: None,
+        lambda: None,
+        lambda: None,
+        AgentLimits(),
+        router_settings=router_settings,
+        router_model_factory=lambda **kw: Model(),
+    )
+    result = await m.classify_intent("帮我处理", context=context, state={})
+    assert result.intent == "其他" and result.control_error == "invalid_classification"
+    assert result.calls["classifier"] == 2
 
 
 async def test_sdk_sends_provider_token_limit(monkeypatch):

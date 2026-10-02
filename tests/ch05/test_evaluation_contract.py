@@ -21,11 +21,12 @@ async def test_evaluator_fails_on_bad_label_or_provider_error(tmp_path, raise_er
         encoding="utf-8",
     )
 
-    async def classify(text, *, model):
+    async def classify(text, *, context, state):
         if raise_error:
             raise RuntimeError("provider unavailable")
         return ClassificationResult(
             intent="闲聊",
+            confidence=0.9,
             usage=TokenUsage(),
             origin="llm",
             raw='{"intent":"闲聊"}',

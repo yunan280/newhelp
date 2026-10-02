@@ -7,7 +7,7 @@ from mewhelp.db.models import Conversation, Message, MsgRole
 
 
 async def test_file_reopen_preserves_history_and_isolates_sessions(
-    session_factory, checkpoint_settings, model_factory
+    session_factory, checkpoint_settings, model_factory, router_settings
 ):
     try:
         from mewhelp.ch05.runtime import open_runtime
@@ -15,11 +15,19 @@ async def test_file_reopen_preserves_history_and_isolates_sessions(
     except ImportError:
         pytest.fail("file checkpointer runtime missing")
     async with open_runtime(
-        session_factory, settings=checkpoint_settings, model_factory=model_factory
+        session_factory,
+        settings=checkpoint_settings,
+        model_factory=model_factory,
+        router_settings=router_settings,
+        router_model_factory=model_factory.router,
     ) as runtime:
         await run_turn(runtime, TurnRequest(message="你好", session_id="persist"))
     async with open_runtime(
-        session_factory, settings=checkpoint_settings, model_factory=model_factory
+        session_factory,
+        settings=checkpoint_settings,
+        model_factory=model_factory,
+        router_settings=router_settings,
+        router_model_factory=model_factory.router,
     ) as runtime:
         result = await run_turn(runtime, TurnRequest(message="谢谢", session_id="persist"))
         assert result.resumed

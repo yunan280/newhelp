@@ -9,6 +9,8 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
+from mewhelp.ch05.config import Ch05Settings
+from mewhelp.ch05.limits import TokenUsage
 from mewhelp.ch05.schemas import ExpansionOutput, IntentOutput, OrderAssessment, UnderstandingOutput
 from mewhelp.config import get_settings
 
@@ -96,8 +98,10 @@ def verify_dataset(dataset: Path) -> dict:
     return freeze_dataset(dataset)
 
 
-def model_hash() -> str:
-    settings = Ch06Settings()
+def model_hash(
+    settings: Ch06Settings | None = None, *, classifier_max_tokens: int | None = None
+) -> str:
+    settings = settings or Ch06Settings()
     return _digest(
         {
             "primary": settings.primary_model,
@@ -105,11 +109,28 @@ def model_hash() -> str:
             "chat": get_settings().llm_model,
             "upstream": get_settings().openai_base_url,
             "protocol": "json_object/thinking_disabled/no_tools",
+            "router_output_limits": {
+                key: getattr(settings, key)
+                for key in (
+                    "understanding_max_tokens",
+                    "expansion_max_tokens",
+                    "assessment_max_tokens",
+                )
+            },
+            "classifier_output_limit": classifier_max_tokens
+            if classifier_max_tokens is not None
+            else Ch05Settings().classifier_max_tokens,
         }
     )
 
 
-def runtime_hash(part: str, *, mode="primary", calibration_path: Path | None = None) -> str:
+def runtime_hash(
+    part: str,
+    *,
+    mode="primary",
+    calibration_path: Path | None = None,
+    settings: Ch06Settings | None = None,
+) -> str:
     paths = [
         Path(__file__),
         Path(__file__).with_name("config.py"),
@@ -140,7 +161,7 @@ def runtime_hash(part: str, *, mode="primary", calibration_path: Path | None = N
         {
             "part": part,
             "sources": sources,
-            "model_hash": model_hash(),
+            "model_hash": model_hash(settings),
             "mode": mode,
             "calibration": calibration,
         }
@@ -255,6 +276,11 @@ async def evaluate(
         "original_json_parsed": 0,
         "final_json_parsed": 0,
         "manual_semantic_review_required": [],
+        "usage": TokenUsage().model_dump(),
+        "calls": {},
+        "classification_cases": 0,
+        "escalations": 0,
+        "intent_metrics": {},
         "parts": {},
     }
     rows = []
@@ -290,6 +316,23 @@ async def evaluate(
                     summary["json_cases"] += stats[0]
                     summary["original_json_parsed"] += stats[1]
                     summary["final_json_parsed"] += stats[2]
+                    if isinstance(result, dict):
+                        summary["usage"] = (
+                            TokenUsage.model_validate(summary["usage"])
+                            .plus(TokenUsage.model_validate(result.get("usage", {})))
+                            .model_dump()
+                        )
+                        for key, count in result.get("calls", {}).items():
+                            summary["calls"][key] = summary["calls"].get(key, 0) + count
+                        if part in {"intents", "multiturn"}:
+                            summary["classification_cases"] += 1
+                            summary["escalations"] += int(result.get("escalated", False))
+                            category = case["expected"]["intent"]
+                            metrics = summary["intent_metrics"].setdefault(
+                                category, {"total": 0, "correct": 0}
+                            )
+                            metrics["total"] += 1
+                            metrics["correct"] += result.get("actual", {}).get("intent") == category
                 except Exception as error:  # noqa: BLE001 - retain every failed case; never skip SDK/evaluator failures
                     row.update(
                         {
@@ -333,7 +376,6 @@ async def evaluate(
 def default_evaluator(part):
     async def run(case, *, mode, calibration_path):
         from mewhelp.ch05.intent import classify_intent, route_intent
-        from mewhelp.ch05.limits import AgentLimits
         from mewhelp.ch05.state import WorkflowContext
 
         from .understanding import understand_query
@@ -342,7 +384,11 @@ def default_evaluator(part):
             cascade_enabled=mode == "cascade", calibration_path=calibration_path
         )
         context = WorkflowContext(
-            lambda: None, lambda: None, lambda: None, AgentLimits(), router_settings=settings
+            lambda: None,
+            lambda: None,
+            lambda: None,
+            Ch05Settings().limits(),
+            router_settings=settings,
         )
         state = {"usage": {}, "calls": {}, "started_at": time.time()}
         if part == "intents":
@@ -370,6 +416,9 @@ def default_evaluator(part):
                 result["classification_raw"] = classified.raw_responses
                 result["usage"] = classified.usage.model_dump()
                 result["calls"] = classified.calls
+                result["origin"] = classified.origin
+                result["escalated"] = classified.escalated
+                result["failures"] = [classified.control_error] if classified.control_error else []
             return result
         if part == "expansion":
             from .expansion import expand_queries
@@ -402,7 +451,6 @@ def default_evaluator(part):
 async def calibrate_router(dataset: Path, outdir: Path) -> int:
     """Run the separate split; choose conservative thresholds, never tune on acceptance."""
     from mewhelp.ch05.intent import classifier_messages
-    from mewhelp.ch05.limits import AgentLimits
     from mewhelp.ch05.state import WorkflowContext
 
     from .structured import invoke_json
@@ -412,7 +460,7 @@ async def calibrate_router(dataset: Path, outdir: Path) -> int:
     cases = _read_cases(dataset / "calibration.jsonl")
     settings = Ch06Settings()
     context = WorkflowContext(
-        lambda: None, lambda: None, lambda: None, AgentLimits(), router_settings=settings
+        lambda: None, lambda: None, lambda: None, Ch05Settings().limits(), router_settings=settings
     )
     rows, errors = [], []
     for case in cases:
@@ -431,7 +479,7 @@ async def calibrate_router(dataset: Path, outdir: Path) -> int:
                     messages=classifier_messages(case["question"]),
                     schema=IntentOutput,
                     model_name=model,
-                    output_tokens=128,
+                    output_tokens=context.limits.classifier_max_tokens,
                 )
                 row[key] = {
                     "actual": call.parsed.model_dump() if call.parsed else None,
@@ -453,21 +501,7 @@ async def calibrate_router(dataset: Path, outdir: Path) -> int:
             outdir / "summary.json", {"complete": False, "errors": errors, "total": len(rows)}
         )
         return 1
-    candidates = []
-    for minimum in (0.5, 0.6, 0.7, 0.8):
-        for upgrade in (0.7, 0.8, 0.9):
-            failures = leaks = escalations = 0
-            for row in rows:
-                actual = row.get("small", row["primary"])["actual"]
-                if settings.small_model and actual["confidence"] < upgrade:
-                    actual = row["primary"]["actual"]
-                    escalations += 1
-                intent = actual["intent"] if actual["confidence"] >= minimum else "其他"
-                expected = row["case"]["expected"]["intent"]
-                failures += intent != expected
-                leaks += expected in {"退款退货", "售后"} and intent != expected
-            candidates.append((leaks, failures, escalations, minimum, upgrade))
-    selected = min(candidates)
+    selected, candidates = select_router_thresholds(rows, has_small=bool(settings.small_model))
     calibration = RouterCalibration(
         model_hash=model_hash(),
         understanding_hash=runtime_hash("understanding"),
@@ -489,6 +523,24 @@ async def calibrate_router(dataset: Path, outdir: Path) -> int:
         },
     )
     return 0
+
+
+def select_router_thresholds(rows: list[dict], *, has_small: bool) -> tuple[tuple, list[tuple]]:
+    candidates = []
+    for minimum in (0.5, 0.6, 0.7, 0.8):
+        for upgrade in (0.7, 0.8, 0.9):
+            failures = leaks = escalations = 0
+            for row in rows:
+                actual = row["small" if has_small else "primary"]["actual"]
+                if has_small and actual["confidence"] < upgrade:
+                    actual = row["primary"]["actual"]
+                    escalations += 1
+                intent = actual["intent"] if actual["confidence"] >= minimum else "其他"
+                expected = row["case"]["expected"]["intent"]
+                failures += intent != expected
+                leaks += expected in {"退款退货", "售后"} and intent != expected
+            candidates.append((leaks, failures, escalations, minimum, upgrade))
+    return min(candidates), candidates
 
 
 def main():

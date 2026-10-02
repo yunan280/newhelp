@@ -170,3 +170,14 @@ def test_refreeze_refuses_modified_labels(tmp_path):
     (dataset / "intents.jsonl").write_text("{}\n", encoding="utf-8")
     with pytest.raises(ValueError, match="frozen"):
         module.freeze_dataset(dataset)
+
+
+async def test_report_keeps_usage_and_upgrade_denominator(tmp_path):
+    async def upgraded(case, **kwargs):
+        return {**valid_result(), "escalated": True, "calls": {"classifier": 2}}
+
+    code, summary = await run(tmp_path, upgraded)
+    assert code == 0
+    assert summary["usage"] == {"input_tokens": 10, "output_tokens": 5, "estimated": False}
+    assert summary["calls"] == {"classifier": 2}
+    assert summary["classification_cases"] == 1 and summary["escalations"] == 1

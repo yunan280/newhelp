@@ -23,14 +23,8 @@ from .agent import (
 )
 from .events import event
 from .evidence import EvidenceEnvelope, evaluate_gate, persist_refusal, retrieve_knowledge
-from .intent import (
-    classifier_messages,
-    classify_intent,
-    match_chitchat,
-    resolve_reference,
-    route_intent,
-)
-from .limits import TokenUsage, estimate_call_tokens, reserve_call
+from .intent import classify_intent, resolve_reference, route_intent
+from .limits import TokenUsage
 from .prompts import CHITCHAT_REPLY, COMPLAINT_REPLY
 from .schemas import ActionOffer
 from .state import WorkflowContext, WorkflowState
@@ -68,31 +62,24 @@ async def resolve_node(state, context, emit):
 
 
 async def classify_node(state, context, emit):
-    text = state["resolved_question"]
-    model = None
-    if not match_chitchat(text):
-        messages = classifier_messages(text)
-        bound = estimate_call_tokens([m.model_dump() for m in messages], [])
-        reserve_call(
-            0,
-            bound,
-            context.limits.classifier_max_tokens,
-            context.limits.final_max_tokens,
-            context.limits,
-        )
-        model = context.model_factory(context.limits.classifier_max_tokens)
-    result = await asyncio.wait_for(
-        classify_intent(text, model=model), context.limits.request_seconds
-    )
-    return {
-        "intent": result.intent,
-        "usage": result.usage.model_dump(),
-        "calls": {"classifier": int(result.origin == "llm"), "decision": 0, "answer": 0},
-    }
+    result = await classify_intent(state["resolved_question"], context=context, state=state)
+    return result.patch()
 
 
 async def route_node(state, context, emit):
-    return {"route": route_intent(state["intent"])}
+    return {"route": route_intent(state["intent"], state.get("scope", "general"))}
+
+
+async def other_node(state, context, emit):
+    return await fixed_reply(
+        state,
+        context,
+        emit,
+        answer="我可以协助商品、订单、物流、退货退款和售后问题。请具体说一下您希望处理什么。",
+        stop_reason="invalid_classification"
+        if state.get("classification", {}).get("control_error")
+        else "completed",
+    )
 
 
 async def retrieve_node(state, context, emit):
@@ -237,6 +224,7 @@ def build_workflow(checkpointer):
         "fallback_reply": fallback_node,
         "complaint_reply": complaint_node,
         "chitchat_reply": chitchat_node,
+        "other_reply": other_node,
         "agent_decide": decide_node,
         "execute_tools": execute_agent_tools,
         "stream_answer": answer_node,
@@ -271,6 +259,7 @@ def build_workflow(checkpointer):
             "business": "agent_decide",
             "complaint": "complaint_reply",
             "chitchat": "chitchat_reply",
+            "other": "other_reply",
         },
     )
     graph.add_edge("retrieve_knowledge", "confidence_gate")
@@ -295,6 +284,7 @@ def build_workflow(checkpointer):
         "fallback_reply",
         "complaint_reply",
         "chitchat_reply",
+        "other_reply",
     ]:
         graph.add_edge(name, "log_turn")
     graph.add_edge("log_turn", END)
