@@ -141,8 +141,8 @@
     },
     {
       "path": "progress.md",
-      "bytes": 11477,
-      "sha256": "a177ad5435bce224c1dcebd28d877f60ddbc3c7cadee6e1f9bf29e529be9c025"
+      "bytes": 12024,
+      "sha256": "54341687986038dc626e217aa2d5aaab9d389ee4bcf7c30be6fb25eb8945f484"
     },
     {
       "path": "prove_mysql_refund.py",
@@ -939,5 +939,6 @@
       "bytes": 1950,
       "sha256": "bf500dff2672c8996b8a84bd6512c6ea2382068adcd8faa4b5e63af41e8eb265"
     }
-  ]
+  ],
+  "cleanup_status": "retained: automatic safety review rejected recursive removal, blocked by policy"
 }

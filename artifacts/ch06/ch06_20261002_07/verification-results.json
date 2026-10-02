@@ -23,6 +23,7 @@
     "current_end_to_end_model_certified": false,
     "reason": "User explicitly requested no repeated model/HTTP/browser runs. History is retained unchanged; classifier compatibility rebind is not end-to-end certification."
   },
+  "cleanup": "Execution audit committed; ignored plan scratch retained because automatic safety review rejected recursive removal (blocked by policy). No workaround attempted.",
   "deployment": {
     "url": "http://127.0.0.1:9007/",
     "business_database": "actual MySQL",
