@@ -1,0 +1,18 @@
+...........F                                                             [100%]
+================================== FAILURES ===================================
+_______ test_reply_to_agent_clarification_can_complete_elliptical_fact ________
+
+    async def test_reply_to_agent_clarification_can_complete_elliptical_fact():
+        result = await resolve(
+            "未拆封", output("订单1001的机械键盘未拆封，可以退货吗？", "1001", "a1"),
+            [{"id":"a1", "role":"assistant", "content":"订单1001的机械键盘是否已经拆封？"}],
+            [{"order_id":"1001", "product_name":"机械键盘", "message_id":"a1"}],
+        )
+>       assert "退货" in result.question and "未拆封" in result.question
+E       AssertionError: assert ('退货' in '未拆封')
+E        +  where '未拆封' = UnderstandingResult(original='未拆封', question='未拆封', scope='order_specific', trusted_order_id='1001', call=StructuredCa...e}], usage=TokenUsage(input_tokens=40, output_tokens=20, estimated=False), calls={'understanding': 1}), diagnostics=[]).question
+
+tests\ch06\test_understanding.py:142: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_understanding.py::test_reply_to_agent_clarification_can_complete_elliptical_fact
+1 failed, 11 passed in 0.57s

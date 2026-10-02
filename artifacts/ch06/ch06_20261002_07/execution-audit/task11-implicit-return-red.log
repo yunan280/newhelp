@@ -1,0 +1,19 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_implicit_return_request_can_reference_verified_order __________
+
+    async def test_implicit_return_request_can_reference_verified_order():
+        result = await resolve(
+            "我不想要了，能退掉不",
+            output("订单1001的机械键盘能退货吗？", "1001", "a1"),
+            history=[{"id": "a1", "role": "assistant", "content": "订单1001是机械键盘，已签收"}],
+            entities=[{"order_id": "1001", "product_name": "机械键盘", "message_id": "a1"}],
+        )
+>       assert result.trusted_order_id == "1001" and result.scope == "order_specific"
+E       AssertionError: assert (None == '1001')
+E        +  where None = UnderstandingResult(original='我不想要了，能退掉不', question='我不想要了，能退掉不', scope='general', trusted_order_id=None, call=Structu...ed=False), calls={'understanding': 1}), diagnostics=['unrequested_history_reference', 'unsafe_normalization_rejected']).trusted_order_id
+
+tests\ch06\test_understanding.py:101: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_understanding.py::test_implicit_return_request_can_reference_verified_order
+1 failed, 17 deselected in 0.78s

@@ -1,0 +1,16 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_general_colloquial_faq_can_normalize_without_choosing_order _______
+
+    async def test_general_colloquial_faq_can_normalize_without_choosing_order():
+        result = await resolve("这个产品售后咋办", output("如何申请产品售后服务？", scope="general"))
+>       assert result.question == "如何申请产品售后服务？" and result.trusted_order_id is None
+E       AssertionError: assert ('这个产品售后咋办' == '如何申请产品售后服务？'
+E         
+E         - 如何申请产品售后服务？
+E         + 这个产品售后咋办)
+
+tests\ch06\test_understanding.py:133: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_understanding.py::test_general_colloquial_faq_can_normalize_without_choosing_order
+1 failed in 5.06s

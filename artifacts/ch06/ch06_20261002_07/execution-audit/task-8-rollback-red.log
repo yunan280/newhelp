@@ -1,0 +1,26 @@
+.F                                                                       [100%]
+================================== FAILURES ===================================
+_____________________ test_ledger_respects_outer_rollback _____________________
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-363%5Ctest_ledger_respects_outer_rol0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+
+    def test_ledger_respects_outer_rollback(session_factory):
+        from mewhelp.db.repository import append_messages_once
+        with session_factory() as db:
+            conv = Conversation(session_id="rollback", user_id="demo-user")
+            db.add(conv); db.commit(); cid = conv.id
+        with session_factory() as db:
+            append_messages_once(db, conversation_id=cid, rows=[
+                TurnMessage(role=MsgRole.user, content="不能提前提交", ch06_event_key="c" * 64)])
+            db.rollback()
+        with session_factory() as db:
+>           assert db.scalars(select(Message)).all() == []
+E           assert [<mewhelp.db....01DD2BFB6540>] == []
+E             
+E             Left contains one more item: <mewhelp.db.models.Message object at 0x000001DD2BFB6540>
+E             Use -v to get more diff
+
+tests\ch06\test_ledger.py:37: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_ledger.py::test_ledger_respects_outer_rollback - asser...
+1 failed, 1 passed in 0.63s

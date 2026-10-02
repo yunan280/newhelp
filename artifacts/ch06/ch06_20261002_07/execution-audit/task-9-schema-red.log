@@ -1,0 +1,163 @@
+.....F..F...FFFF                                                         [100%]
+================================== FAILURES ===================================
+________________ test_incomplete_assessment_cannot_create_form ________________
+
+    def test_incomplete_assessment_cannot_create_form():
+        refunds = module()
+>       assert refunds.create_refund_offer({"intent":"退款退货", "route":"aftersales",
+                                          "stop_reason":"completed", "assessment":None}) is None
+
+tests\ch06\test_refunds.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = {'intent': '退款退货', 'route': 'aftersales', 'stop_reason': 'completed', 'assessment': None}
+
+    def create_refund_offer(state: dict):
+        if (state.get("intent") != "退款退货" or state.get("route") != "aftersales"
+            or state.get("stop_reason") != "completed" or state.get("refused")
+>           or state.get("ledger_error") or state.get("assessment", {}).get("verdict") != "eligible"
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            or not state.get("order") or not state.get("gate", {}).get("passed")):
+E           AttributeError: 'NoneType' object has no attribute 'get'
+
+src\mewhelp\ch06\refunds.py:22: AttributeError
+____________ test_message_upgrade_twice_preserves_null_legacy_rows ____________
+
+    def test_message_upgrade_twice_preserves_null_legacy_rows():
+        engine = create_engine("sqlite://")
+        with engine.begin() as conn:
+            conn.exec_driver_sql("CREATE TABLE conversations (id INTEGER PRIMARY KEY)")
+            conn.exec_driver_sql("CREATE TABLE messages (id INTEGER PRIMARY KEY, content TEXT)")
+            conn.exec_driver_sql("INSERT INTO messages VALUES (1,'旧消息')")
+        migrate(engine); migrate(engine)
+        with engine.begin() as conn:
+            assert conn.exec_driver_sql("SELECT content,ch06_event_key FROM messages").one() == ("旧消息", None)
+        indexes = inspect(engine).get_indexes("messages")
+        assert any(i["name"] == "uk_messages_ch06_event_key" and i["unique"] for i in indexes)
+>       assert "refund_applications" in inspect(engine).get_table_names()
+E       AssertionError: assert 'refund_applications' in ['conversations', 'messages']
+E        +  where ['conversations', 'messages'] = get_table_names()
+E        +    where get_table_names = <sqlalchemy.engine.reflection.Inspector object at 0x000001C2972E6E10>.get_table_names
+E        +      where <sqlalchemy.engine.reflection.Inspector object at 0x000001C2972E6E10> = inspect(Engine(sqlite://))
+
+tests\ch06\test_migration.py:25: AssertionError
+____ test_existing_refund_schema_must_match_exact_contract[column_length] _____
+
+defect = 'column_length'
+
+    @pytest.mark.parametrize("defect", ["column_length", "extra_column", "nonunique_offer", "wrong_status"])
+    def test_existing_refund_schema_must_match_exact_contract(defect):
+        from sqlalchemy import Column, MetaData, String, text
+        from mewhelp.db.models import Conversation, Message, RefundApplication
+        metadata = MetaData()
+        Conversation.__table__.to_metadata(metadata)
+        Message.__table__.to_metadata(metadata)
+        refund = RefundApplication.__table__.to_metadata(metadata)
+        if defect == "column_length":
+            refund.c.offer_id.type = String(32)
+        elif defect == "extra_column":
+            refund.append_column(Column("unexpected", String(16)))
+        elif defect == "wrong_status":
+            from sqlalchemy import DefaultClause
+            refund.c.status.server_default = DefaultClause(text("'approved'"))
+        else:
+            next(i for i in refund.indexes if i.name == "uk_refund_applications_offer_id").unique = False
+        engine = create_engine("sqlite://")
+        metadata.create_all(engine)
+>       with pytest.raises(RuntimeError, match="Incompatible"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests\ch06\test_migration.py:62: Failed
+_____ test_existing_refund_schema_must_match_exact_contract[extra_column] _____
+
+defect = 'extra_column'
+
+    @pytest.mark.parametrize("defect", ["column_length", "extra_column", "nonunique_offer", "wrong_status"])
+    def test_existing_refund_schema_must_match_exact_contract(defect):
+        from sqlalchemy import Column, MetaData, String, text
+        from mewhelp.db.models import Conversation, Message, RefundApplication
+        metadata = MetaData()
+        Conversation.__table__.to_metadata(metadata)
+        Message.__table__.to_metadata(metadata)
+        refund = RefundApplication.__table__.to_metadata(metadata)
+        if defect == "column_length":
+            refund.c.offer_id.type = String(32)
+        elif defect == "extra_column":
+            refund.append_column(Column("unexpected", String(16)))
+        elif defect == "wrong_status":
+            from sqlalchemy import DefaultClause
+            refund.c.status.server_default = DefaultClause(text("'approved'"))
+        else:
+            next(i for i in refund.indexes if i.name == "uk_refund_applications_offer_id").unique = False
+        engine = create_engine("sqlite://")
+        metadata.create_all(engine)
+>       with pytest.raises(RuntimeError, match="Incompatible"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests\ch06\test_migration.py:62: Failed
+___ test_existing_refund_schema_must_match_exact_contract[nonunique_offer] ____
+
+defect = 'nonunique_offer'
+
+    @pytest.mark.parametrize("defect", ["column_length", "extra_column", "nonunique_offer", "wrong_status"])
+    def test_existing_refund_schema_must_match_exact_contract(defect):
+        from sqlalchemy import Column, MetaData, String, text
+        from mewhelp.db.models import Conversation, Message, RefundApplication
+        metadata = MetaData()
+        Conversation.__table__.to_metadata(metadata)
+        Message.__table__.to_metadata(metadata)
+        refund = RefundApplication.__table__.to_metadata(metadata)
+        if defect == "column_length":
+            refund.c.offer_id.type = String(32)
+        elif defect == "extra_column":
+            refund.append_column(Column("unexpected", String(16)))
+        elif defect == "wrong_status":
+            from sqlalchemy import DefaultClause
+            refund.c.status.server_default = DefaultClause(text("'approved'"))
+        else:
+            next(i for i in refund.indexes if i.name == "uk_refund_applications_offer_id").unique = False
+        engine = create_engine("sqlite://")
+        metadata.create_all(engine)
+>       with pytest.raises(RuntimeError, match="Incompatible"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests\ch06\test_migration.py:62: Failed
+_____ test_existing_refund_schema_must_match_exact_contract[wrong_status] _____
+
+defect = 'wrong_status'
+
+    @pytest.mark.parametrize("defect", ["column_length", "extra_column", "nonunique_offer", "wrong_status"])
+    def test_existing_refund_schema_must_match_exact_contract(defect):
+        from sqlalchemy import Column, MetaData, String, text
+        from mewhelp.db.models import Conversation, Message, RefundApplication
+        metadata = MetaData()
+        Conversation.__table__.to_metadata(metadata)
+        Message.__table__.to_metadata(metadata)
+        refund = RefundApplication.__table__.to_metadata(metadata)
+        if defect == "column_length":
+            refund.c.offer_id.type = String(32)
+        elif defect == "extra_column":
+            refund.append_column(Column("unexpected", String(16)))
+        elif defect == "wrong_status":
+            from sqlalchemy import DefaultClause
+            refund.c.status.server_default = DefaultClause(text("'approved'"))
+        else:
+            next(i for i in refund.indexes if i.name == "uk_refund_applications_offer_id").unique = False
+        engine = create_engine("sqlite://")
+        metadata.create_all(engine)
+>       with pytest.raises(RuntimeError, match="Incompatible"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests\ch06\test_migration.py:62: Failed
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_refunds.py::test_incomplete_assessment_cannot_create_form
+FAILED tests/ch06/test_migration.py::test_message_upgrade_twice_preserves_null_legacy_rows
+FAILED tests/ch06/test_migration.py::test_existing_refund_schema_must_match_exact_contract[column_length]
+FAILED tests/ch06/test_migration.py::test_existing_refund_schema_must_match_exact_contract[extra_column]
+FAILED tests/ch06/test_migration.py::test_existing_refund_schema_must_match_exact_contract[nonunique_offer]
+FAILED tests/ch06/test_migration.py::test_existing_refund_schema_must_match_exact_contract[wrong_status]
+6 failed, 10 passed in 3.64s

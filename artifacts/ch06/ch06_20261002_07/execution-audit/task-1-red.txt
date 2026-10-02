@@ -1,0 +1,693 @@
+FFFFFFFFFFFFFFFFFFFFFF                                                   [100%]
+================================== FAILURES ===================================
+________ test_intent_rejects_non_numeric_or_unbounded_confidence[True] ________
+
+confidence = True
+
+    @pytest.mark.parametrize("confidence", [True, "0.9", float("nan"), float("inf"), -0.1, 1.1])
+    def test_intent_rejects_non_numeric_or_unbounded_confidence(confidence):
+        with pytest.raises(ValidationError):
+>           contract("IntentOutput")(intent="退款退货", confidence=confidence)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_contracts.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'IntentOutput'
+
+    def contract(name):
+        value = getattr(schemas, name, None)
+>       assert value is not None, f"missing router contract {name}"
+E       AssertionError: missing router contract IntentOutput
+E       assert None is not None
+
+tests\ch06\test_contracts.py:12: AssertionError
+________ test_intent_rejects_non_numeric_or_unbounded_confidence[0.9] _________
+
+confidence = '0.9'
+
+    @pytest.mark.parametrize("confidence", [True, "0.9", float("nan"), float("inf"), -0.1, 1.1])
+    def test_intent_rejects_non_numeric_or_unbounded_confidence(confidence):
+        with pytest.raises(ValidationError):
+>           contract("IntentOutput")(intent="退款退货", confidence=confidence)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_contracts.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'IntentOutput'
+
+    def contract(name):
+        value = getattr(schemas, name, None)
+>       assert value is not None, f"missing router contract {name}"
+E       AssertionError: missing router contract IntentOutput
+E       assert None is not None
+
+tests\ch06\test_contracts.py:12: AssertionError
+________ test_intent_rejects_non_numeric_or_unbounded_confidence[nan] _________
+
+confidence = nan
+
+    @pytest.mark.parametrize("confidence", [True, "0.9", float("nan"), float("inf"), -0.1, 1.1])
+    def test_intent_rejects_non_numeric_or_unbounded_confidence(confidence):
+        with pytest.raises(ValidationError):
+>           contract("IntentOutput")(intent="退款退货", confidence=confidence)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_contracts.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'IntentOutput'
+
+    def contract(name):
+        value = getattr(schemas, name, None)
+>       assert value is not None, f"missing router contract {name}"
+E       AssertionError: missing router contract IntentOutput
+E       assert None is not None
+
+tests\ch06\test_contracts.py:12: AssertionError
+________ test_intent_rejects_non_numeric_or_unbounded_confidence[inf] _________
+
+confidence = inf
+
+    @pytest.mark.parametrize("confidence", [True, "0.9", float("nan"), float("inf"), -0.1, 1.1])
+    def test_intent_rejects_non_numeric_or_unbounded_confidence(confidence):
+        with pytest.raises(ValidationError):
+>           contract("IntentOutput")(intent="退款退货", confidence=confidence)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_contracts.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'IntentOutput'
+
+    def contract(name):
+        value = getattr(schemas, name, None)
+>       assert value is not None, f"missing router contract {name}"
+E       AssertionError: missing router contract IntentOutput
+E       assert None is not None
+
+tests\ch06\test_contracts.py:12: AssertionError
+________ test_intent_rejects_non_numeric_or_unbounded_confidence[-0.1] ________
+
+confidence = -0.1
+
+    @pytest.mark.parametrize("confidence", [True, "0.9", float("nan"), float("inf"), -0.1, 1.1])
+    def test_intent_rejects_non_numeric_or_unbounded_confidence(confidence):
+        with pytest.raises(ValidationError):
+>           contract("IntentOutput")(intent="退款退货", confidence=confidence)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_contracts.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'IntentOutput'
+
+    def contract(name):
+        value = getattr(schemas, name, None)
+>       assert value is not None, f"missing router contract {name}"
+E       AssertionError: missing router contract IntentOutput
+E       assert None is not None
+
+tests\ch06\test_contracts.py:12: AssertionError
+________ test_intent_rejects_non_numeric_or_unbounded_confidence[1.1] _________
+
+confidence = 1.1
+
+    @pytest.mark.parametrize("confidence", [True, "0.9", float("nan"), float("inf"), -0.1, 1.1])
+    def test_intent_rejects_non_numeric_or_unbounded_confidence(confidence):
+        with pytest.raises(ValidationError):
+>           contract("IntentOutput")(intent="退款退货", confidence=confidence)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_contracts.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'IntentOutput'
+
+    def contract(name):
+        value = getattr(schemas, name, None)
+>       assert value is not None, f"missing router contract {name}"
+E       AssertionError: missing router contract IntentOutput
+E       assert None is not None
+
+tests\ch06\test_contracts.py:12: AssertionError
+_____________ test_intent_has_only_two_fields_and_other_fallback ______________
+
+    def test_intent_has_only_two_fields_and_other_fallback():
+>       output = contract("IntentOutput")(intent="其他", confidence=0.9)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_contracts.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'IntentOutput'
+
+    def contract(name):
+        value = getattr(schemas, name, None)
+>       assert value is not None, f"missing router contract {name}"
+E       AssertionError: missing router contract IntentOutput
+E       assert None is not None
+
+tests\ch06\test_contracts.py:12: AssertionError
+___ test_expansion_requires_two_to_four_distinct_nonblank_queries[queries0] ___
+
+queries = []
+
+    @pytest.mark.parametrize("queries", [[], ["政策"], ["a", "b", "c", "d", "e"], ["a", " "], ["a", "a"]])
+    def test_expansion_requires_two_to_four_distinct_nonblank_queries(queries):
+        with pytest.raises(ValidationError):
+>           contract("ExpansionOutput")(queries=queries)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_contracts.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'ExpansionOutput'
+
+    def contract(name):
+        value = getattr(schemas, name, None)
+>       assert value is not None, f"missing router contract {name}"
+E       AssertionError: missing router contract ExpansionOutput
+E       assert None is not None
+
+tests\ch06\test_contracts.py:12: AssertionError
+___ test_expansion_requires_two_to_four_distinct_nonblank_queries[queries1] ___
+
+queries = ['政策']
+
+    @pytest.mark.parametrize("queries", [[], ["政策"], ["a", "b", "c", "d", "e"], ["a", " "], ["a", "a"]])
+    def test_expansion_requires_two_to_four_distinct_nonblank_queries(queries):
+        with pytest.raises(ValidationError):
+>           contract("ExpansionOutput")(queries=queries)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_contracts.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'ExpansionOutput'
+
+    def contract(name):
+        value = getattr(schemas, name, None)
+>       assert value is not None, f"missing router contract {name}"
+E       AssertionError: missing router contract ExpansionOutput
+E       assert None is not None
+
+tests\ch06\test_contracts.py:12: AssertionError
+___ test_expansion_requires_two_to_four_distinct_nonblank_queries[queries2] ___
+
+queries = ['a', 'b', 'c', 'd', 'e']
+
+    @pytest.mark.parametrize("queries", [[], ["政策"], ["a", "b", "c", "d", "e"], ["a", " "], ["a", "a"]])
+    def test_expansion_requires_two_to_four_distinct_nonblank_queries(queries):
+        with pytest.raises(ValidationError):
+>           contract("ExpansionOutput")(queries=queries)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_contracts.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'ExpansionOutput'
+
+    def contract(name):
+        value = getattr(schemas, name, None)
+>       assert value is not None, f"missing router contract {name}"
+E       AssertionError: missing router contract ExpansionOutput
+E       assert None is not None
+
+tests\ch06\test_contracts.py:12: AssertionError
+___ test_expansion_requires_two_to_four_distinct_nonblank_queries[queries3] ___
+
+queries = ['a', ' ']
+
+    @pytest.mark.parametrize("queries", [[], ["政策"], ["a", "b", "c", "d", "e"], ["a", " "], ["a", "a"]])
+    def test_expansion_requires_two_to_four_distinct_nonblank_queries(queries):
+        with pytest.raises(ValidationError):
+>           contract("ExpansionOutput")(queries=queries)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_contracts.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'ExpansionOutput'
+
+    def contract(name):
+        value = getattr(schemas, name, None)
+>       assert value is not None, f"missing router contract {name}"
+E       AssertionError: missing router contract ExpansionOutput
+E       assert None is not None
+
+tests\ch06\test_contracts.py:12: AssertionError
+___ test_expansion_requires_two_to_four_distinct_nonblank_queries[queries4] ___
+
+queries = ['a', 'a']
+
+    @pytest.mark.parametrize("queries", [[], ["政策"], ["a", "b", "c", "d", "e"], ["a", " "], ["a", "a"]])
+    def test_expansion_requires_two_to_four_distinct_nonblank_queries(queries):
+        with pytest.raises(ValidationError):
+>           contract("ExpansionOutput")(queries=queries)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_contracts.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'ExpansionOutput'
+
+    def contract(name):
+        value = getattr(schemas, name, None)
+>       assert value is not None, f"missing router contract {name}"
+E       AssertionError: missing router contract ExpansionOutput
+E       assert None is not None
+
+tests\ch06\test_contracts.py:12: AssertionError
+_____________________ test_expansion_forbids_extra_fields _____________________
+
+    def test_expansion_forbids_extra_fields():
+        with pytest.raises(ValidationError):
+>           contract("ExpansionOutput")(queries=["退货期限", "拆封限制"], intent="退款退货")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_contracts.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'ExpansionOutput'
+
+    def contract(name):
+        value = getattr(schemas, name, None)
+>       assert value is not None, f"missing router contract {name}"
+E       AssertionError: missing router contract ExpansionOutput
+E       assert None is not None
+
+tests\ch06\test_contracts.py:12: AssertionError
+______ test_turn_defaults_preserve_legacy_result_and_waiting_is_explicit ______
+
+    def test_turn_defaults_preserve_legacy_result_and_waiting_is_explicit():
+        result = schemas.TurnResult(
+            session_id="s", conversation_id=1, resumed=False, answer="你好", intent="闲聊",
+            route="chitchat", node_trace=[], usage={}, calls={}, stop_reason="completed",
+        )
+>       assert getattr(result, "status", None) == "completed"
+E       AssertionError: assert None == 'completed'
+E        +  where None = getattr(TurnResult(session_id='s', conversation_id=1, resumed=False, answer='你好', sources=[], refused=False, low_confidence_qu...age=TokenUsage(input_tokens=0, output_tokens=0, estimated=False), calls={}, stop_reason='completed', ledger_error=None), 'status', None)
+
+tests\ch06\test_contracts.py:45: AssertionError
+_______________ test_context_keeps_four_positional_dependencies _______________
+
+    def test_context_keeps_four_positional_dependencies():
+        context = WorkflowContext(lambda: None, lambda: None, lambda: None, AgentLimits())
+>       assert getattr(context, "router_settings", None) is not None
+E       AssertionError: assert None is not None
+E        +  where None = getattr(WorkflowContext(session_factory=<function test_context_keeps_four_positional_dependencies.<locals>.<lambda> at 0x00000..._tokens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180, request_seconds=30, max_retries=0)), 'router_settings', None)
+
+tests\ch06\test_contracts.py:54: AssertionError
+_____________ test_cost_cascade_requires_distinct_explicit_models _____________
+
+    def test_cost_cascade_requires_distinct_explicit_models():
+        from importlib import import_module
+        try:
+>           settings = import_module("mewhelp.ch06.config").Ch06Settings
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_contracts.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1310: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06', import_ = <function _gcd_import at 0x000001D9368C80E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    def test_cost_cascade_requires_distinct_explicit_models():
+        from importlib import import_module
+        try:
+            settings = import_module("mewhelp.ch06.config").Ch06Settings
+        except ImportError:
+>           pytest.fail("missing router settings")
+E           Failed: missing router settings
+
+tests\ch06\test_contracts.py:63: Failed
+_______ test_router_actual_payload_uses_explicit_model_and_bounded_json _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001D9603516A0>
+
+    async def test_router_actual_payload_uses_explicit_model_and_bounded_json(monkeypatch):
+        try:
+>           config = import_module("mewhelp.ch06.config")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_model_requests.py:11: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1310: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06', import_ = <function _gcd_import at 0x000001D9368C80E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001D9603516A0>
+
+    async def test_router_actual_payload_uses_explicit_model_and_bounded_json(monkeypatch):
+        try:
+            config = import_module("mewhelp.ch06.config")
+        except ImportError:
+>           pytest.fail("missing router model factory")
+E           Failed: missing router model factory
+
+tests\ch06\test_model_requests.py:13: Failed
+_____________ test_one_repair_keeps_prior_usage_and_all_attempts ______________
+
+    def boundary():
+        try:
+>           return import_module("mewhelp.ch06.structured").invoke_json
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_model_budget.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1310: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06', import_ = <function _gcd_import at 0x000001D9368C80E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    async def test_one_repair_keeps_prior_usage_and_all_attempts():
+        context, requests = context_for([response("wrong"), response('{"intent":"物流","confidence":0.9}')])
+>       result = await invoke(context, {"usage": {"input_tokens": 40, "output_tokens": 10}, "calls": {"understanding": 1}})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_model_budget.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_model_budget.py:44: in invoke
+    return await boundary()(context, state, purpose="classifier", messages=[HumanMessage(content="JSON please")],
+                 ^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def boundary():
+        try:
+            return import_module("mewhelp.ch06.structured").invoke_json
+        except ImportError:
+>           pytest.fail("missing bounded structured request")
+E           Failed: missing bounded structured request
+
+tests\ch06\test_model_budget.py:15: Failed
+__________________ test_invalid_control_has_only_one_repair ___________________
+
+    def boundary():
+        try:
+>           return import_module("mewhelp.ch06.structured").invoke_json
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_model_budget.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1310: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06', import_ = <function _gcd_import at 0x000001D9368C80E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    async def test_invalid_control_has_only_one_repair():
+        context, requests = context_for([response("bad"), response("still bad"), response('{"intent":"物流","confidence":1}')])
+>       result = await invoke(context, {})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_model_budget.py:59: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_model_budget.py:44: in invoke
+    return await boundary()(context, state, purpose="classifier", messages=[HumanMessage(content="JSON please")],
+                 ^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def boundary():
+        try:
+            return import_module("mewhelp.ch06.structured").invoke_json
+        except ImportError:
+>           pytest.fail("missing bounded structured request")
+E           Failed: missing bounded structured request
+
+tests\ch06\test_model_budget.py:15: Failed
+________________ test_repair_cannot_spend_final_answer_reserve ________________
+
+    def boundary():
+        try:
+>           return import_module("mewhelp.ch06.structured").invoke_json
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_model_budget.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1310: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06', import_ = <function _gcd_import at 0x000001D9368C80E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    async def test_repair_cannot_spend_final_answer_reserve():
+        context, requests = context_for([response("bad", tokens=6000)], limits=AgentLimits(total_model_tokens=7000))
+>       result = await invoke(context, {})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_model_budget.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_model_budget.py:44: in invoke
+    return await boundary()(context, state, purpose="classifier", messages=[HumanMessage(content="JSON please")],
+                 ^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def boundary():
+        try:
+            return import_module("mewhelp.ch06.structured").invoke_json
+        except ImportError:
+>           pytest.fail("missing bounded structured request")
+E           Failed: missing bounded structured request
+
+tests\ch06\test_model_budget.py:15: Failed
+_______________ test_exhausted_initial_budget_sends_no_request ________________
+
+    def boundary():
+        try:
+>           return import_module("mewhelp.ch06.structured").invoke_json
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_model_budget.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1310: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06', import_ = <function _gcd_import at 0x000001D9368C80E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    async def test_exhausted_initial_budget_sends_no_request():
+        context, requests = context_for([], limits=AgentLimits(total_model_tokens=100))
+        with pytest.raises(BudgetExceeded):
+>           await invoke(context, {})
+
+tests\ch06\test_model_budget.py:74: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_model_budget.py:44: in invoke
+    return await boundary()(context, state, purpose="classifier", messages=[HumanMessage(content="JSON please")],
+                 ^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def boundary():
+        try:
+            return import_module("mewhelp.ch06.structured").invoke_json
+        except ImportError:
+>           pytest.fail("missing bounded structured request")
+E           Failed: missing bounded structured request
+
+tests\ch06\test_model_budget.py:15: Failed
+_____________ test_provider_failure_is_not_other_or_format_repair _____________
+
+    def boundary():
+        try:
+>           return import_module("mewhelp.ch06.structured").invoke_json
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_model_budget.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1310: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06', import_ = <function _gcd_import at 0x000001D9368C80E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    async def test_provider_failure_is_not_other_or_format_repair():
+        context, requests = context_for([RuntimeError("provider unavailable")])
+        with pytest.raises(RuntimeError, match="provider unavailable"):
+>           await invoke(context, {})
+
+tests\ch06\test_model_budget.py:81: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_model_budget.py:44: in invoke
+    return await boundary()(context, state, purpose="classifier", messages=[HumanMessage(content="JSON please")],
+                 ^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def boundary():
+        try:
+            return import_module("mewhelp.ch06.structured").invoke_json
+        except ImportError:
+>           pytest.fail("missing bounded structured request")
+E           Failed: missing bounded structured request
+
+tests\ch06\test_model_budget.py:15: Failed
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_contracts.py::test_intent_rejects_non_numeric_or_unbounded_confidence[True]
+FAILED tests/ch06/test_contracts.py::test_intent_rejects_non_numeric_or_unbounded_confidence[0.9]
+FAILED tests/ch06/test_contracts.py::test_intent_rejects_non_numeric_or_unbounded_confidence[nan]
+FAILED tests/ch06/test_contracts.py::test_intent_rejects_non_numeric_or_unbounded_confidence[inf]
+FAILED tests/ch06/test_contracts.py::test_intent_rejects_non_numeric_or_unbounded_confidence[-0.1]
+FAILED tests/ch06/test_contracts.py::test_intent_rejects_non_numeric_or_unbounded_confidence[1.1]
+FAILED tests/ch06/test_contracts.py::test_intent_has_only_two_fields_and_other_fallback
+FAILED tests/ch06/test_contracts.py::test_expansion_requires_two_to_four_distinct_nonblank_queries[queries0]
+FAILED tests/ch06/test_contracts.py::test_expansion_requires_two_to_four_distinct_nonblank_queries[queries1]
+FAILED tests/ch06/test_contracts.py::test_expansion_requires_two_to_four_distinct_nonblank_queries[queries2]
+FAILED tests/ch06/test_contracts.py::test_expansion_requires_two_to_four_distinct_nonblank_queries[queries3]
+FAILED tests/ch06/test_contracts.py::test_expansion_requires_two_to_four_distinct_nonblank_queries[queries4]
+FAILED tests/ch06/test_contracts.py::test_expansion_forbids_extra_fields - As...
+FAILED tests/ch06/test_contracts.py::test_turn_defaults_preserve_legacy_result_and_waiting_is_explicit
+FAILED tests/ch06/test_contracts.py::test_context_keeps_four_positional_dependencies
+FAILED tests/ch06/test_contracts.py::test_cost_cascade_requires_distinct_explicit_models
+FAILED tests/ch06/test_model_requests.py::test_router_actual_payload_uses_explicit_model_and_bounded_json
+FAILED tests/ch06/test_model_budget.py::test_one_repair_keeps_prior_usage_and_all_attempts
+FAILED tests/ch06/test_model_budget.py::test_invalid_control_has_only_one_repair
+FAILED tests/ch06/test_model_budget.py::test_repair_cannot_spend_final_answer_reserve
+FAILED tests/ch06/test_model_budget.py::test_exhausted_initial_budget_sends_no_request
+FAILED tests/ch06/test_model_budget.py::test_provider_failure_is_not_other_or_format_repair
+22 failed in 5.14s

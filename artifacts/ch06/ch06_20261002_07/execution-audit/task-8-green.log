@@ -1,0 +1,94 @@
+........................................................................ [ 62%]
+............................F........FF....F                             [100%]
+================================== FAILURES ===================================
+_____ test_plaintext_decision_completes_safely_and_next_turn_can_continue _____
+
+workflow_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000002B0C56F12B0>, context=WorkflowContext...onftest.ModelFactory object at 0x000002B0C5712F30>>), locks=<mewhelp.memory.SessionStore object at 0x000002B0C56F1220>)
+model_factory = <conftest.ModelFactory object at 0x000002B0C5712F30>
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-362%5Ctest_plaintext_decision_comple0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+
+    async def test_plaintext_decision_completes_safely_and_next_turn_can_continue(
+        workflow_runtime, model_factory, session_factory
+    ):
+        model_factory.decisions = [AIMessage(content="邮费规则如下：满99元包邮。") for _ in range(2)]
+        request = TurnRequest(message="邮费是多少", session_id="invalid-control")
+        events = [
+            e async for e in service().stream_turn(workflow_runtime, request, entry_point="chat_stream")
+        ]
+        done = events[-1]["data"]
+        assert events[-1]["event"] == "done" and done["stop_reason"] == "invalid_decision"
+>       assert done["calls"] == {"classifier": 1, "decision": 2, "answer": 0}
+E       AssertionError: assert {'classifier'...rstanding': 1} == {'classifier'..., 'answer': 0}
+E         
+E         Omitting 3 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'understanding': 1}
+E         Use -v to get more diff
+
+tests\ch05\test_workflow.py:28: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  mewhelp.ch05.agent:agent.py:143 Ch05 invalid Agent decision; attempting one control correction
+WARNING  mewhelp.ch05.agent:agent.py:81 Ch05 invalid Agent correction; using fixed reply
+_______________ test_complaint_and_greeting_cannot_write_ticket _______________
+
+workflow_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000002B0C5959550>, context=WorkflowContext...onftest.ModelFactory object at 0x000002B0C58E01A0>>), locks=<mewhelp.memory.SessionStore object at 0x000002B0C595A240>)
+model_factory = <conftest.ModelFactory object at 0x000002B0C58E01A0>
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-362%5Ctest_complaint_and_greeting_ca0%5Cbusiness.sqlite3), autoflush=True, expire_on_commit=False)
+
+    async def test_complaint_and_greeting_cannot_write_ticket(
+        workflow_runtime, model_factory, session_factory
+    ):
+        model_factory.intents = ["投诉"]
+        first = await service().run_turn(
+            workflow_runtime, TurnRequest(message="我要投诉", session_id="x")
+        )
+        assert first.actions == ["handoff", "create_ticket"] and first.offer
+>       assert first.calls == {"classifier": 1, "decision": 0, "answer": 0}
+E       AssertionError: assert {'classifier'...rstanding': 1} == {'classifier'..., 'answer': 0}
+E         
+E         Omitting 3 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'understanding': 1}
+E         Use -v to get more diff
+
+tests\ch05\test_workflow.py:168: AssertionError
+________________ test_classified_chitchat_uses_only_classifier ________________
+
+workflow_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000002B0C59BC260>, context=WorkflowContext...onftest.ModelFactory object at 0x000002B0C5927E00>>), locks=<mewhelp.memory.SessionStore object at 0x000002B0C59BD4C0>)
+model_factory = <conftest.ModelFactory object at 0x000002B0C5927E00>
+
+    async def test_classified_chitchat_uses_only_classifier(workflow_runtime, model_factory):
+        model_factory.intents = ["闲聊"]
+        result = await service().run_turn(workflow_runtime, TurnRequest(message="天气真好"))
+>       assert result.calls == {"classifier": 1, "decision": 0, "answer": 0}
+E       AssertionError: assert {'classifier'...rstanding': 1} == {'classifier'..., 'answer': 0}
+E         
+E         Omitting 3 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'understanding': 1}
+E         Use -v to get more diff
+
+tests\ch05\test_workflow.py:181: AssertionError
+________ test_ledger_failure_is_visible_and_checkpoint_still_completes ________
+
+workflow_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000002B0C5A27800>, context=WorkflowContext...onftest.ModelFactory object at 0x000002B0C5A0A3C0>>), locks=<mewhelp.memory.SessionStore object at 0x000002B0C5A24C50>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002B0C5A09400>
+
+    async def test_ledger_failure_is_visible_and_checkpoint_still_completes(
+        workflow_runtime, monkeypatch
+    ):
+        from mewhelp.ch05 import workflow
+    
+        def broken(*args, **kwargs):
+            raise RuntimeError("ledger failed")
+    
+>       monkeypatch.setattr(workflow, "append_messages", broken)
+E       AttributeError: <module 'mewhelp.ch05.workflow' from 'C:\\Users\\27497\\projects\\mewhelp-wt\\ch02-tools\\src\\mewhelp\\ch05\\workflow.py'> has no attribute 'append_messages'
+
+tests\ch05\test_workflow.py:262: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/ch05/test_workflow.py::test_plaintext_decision_completes_safely_and_next_turn_can_continue
+FAILED tests/ch05/test_workflow.py::test_complaint_and_greeting_cannot_write_ticket
+FAILED tests/ch05/test_workflow.py::test_classified_chitchat_uses_only_classifier
+FAILED tests/ch05/test_workflow.py::test_ledger_failure_is_visible_and_checkpoint_still_completes
+4 failed, 112 passed in 8.73s

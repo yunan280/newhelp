@@ -1,0 +1,36 @@
+.......F                                                                 [100%]
+================================== FAILURES ===================================
+______ test_calibration_measures_real_fallback_instead_of_dropping_case _______
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-350/test_calibration_measures_real0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000231D7F7CD40>
+
+    async def test_calibration_measures_real_fallback_instead_of_dropping_case(tmp_path, monkeypatch):
+        from mewhelp.ch06 import policy_evaluation as pe
+        from mewhelp.ch06.expansion import ExpansionResult
+    
+        runtime, chunks, _ = environment()
+        metadata = {"model_id": "BAAI/bge-reranker-v2-m3", "revision": "fixture",
+                    "max_length": 8192, "score_transform": "sigmoid"}
+        monkeypatch.setattr(pe, "verify_dataset", lambda p: {})
+        monkeypatch.setattr(pe, "policy_dataset_hash", lambda: "c" * 64)
+        monkeypatch.setattr(pe, "reranker_metadata", lambda: metadata)
+        monkeypatch.setattr(pe, "_read_cases", lambda p: [
+            {"id": f"p-{i}", "question": f"问题{i}", "expected": {"relevant": i < 8}}
+            for i in range(16)
+        ])
+        async def fallback(question, *a, **kw):
+            return ExpansionResult(True, [question], ["invented_expansion_fact"])
+        monkeypatch.setattr(pe, "expand_queries", fallback)
+        seen = []
+        def retrieve(rt, queries, *a, **kw):
+            seen.append(queries[0].canonical)
+            return SimpleNamespace(final=[RankedChunk(chunks[0], .8)])
+        monkeypatch.setattr(pe, "retrieve_multi_evidence", retrieve)
+>       assert await pe.calibrate_policy(tmp_path, tmp_path / "out", runtime) == 0
+E       assert 1 == 0
+
+tests\ch06\test_policy_retrieval.py:169: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_policy_retrieval.py::test_calibration_measures_real_fallback_instead_of_dropping_case
+1 failed, 7 passed in 4.30s

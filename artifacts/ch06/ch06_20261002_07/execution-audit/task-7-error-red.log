@@ -1,0 +1,19 @@
+....F..                                                                  [100%]
+================================== FAILURES ===================================
+____________ test_error_checkpoint_cannot_be_mistaken_for_waiting _____________
+
+    def test_error_checkpoint_cannot_be_mistaken_for_waiting():
+        from types import SimpleNamespace
+        from mewhelp.ch06.selection import active_selection
+        selection = {"selection_id": "s", "turn_id": "t", "orders": []}
+        snapshot = SimpleNamespace(values={"selection_status": "pending", "order_selection": selection},
+                                   tasks=[SimpleNamespace(error="RuntimeError",
+                                          interrupts=[SimpleNamespace(value={"kind": "order_selection", **selection})])])
+>       assert active_selection(snapshot) is None
+E       AssertionError: assert {'selection_id': 's', 'turn_id': 't', 'orders': []} is None
+E        +  where {'selection_id': 's', 'turn_id': 't', 'orders': []} = <function active_selection at 0x000001D890F7DC60>(namespace(values={'selection_status': 'pending', 'order_selection': {'selection_id': 's', 'turn_id': 't', 'orders': []...Error', interrupts=[namespace(value={'kind': 'order_selection', 'selection_id': 's', 'turn_id': 't', 'orders': []})])]))
+
+tests\ch06\test_selection.py:79: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_selection.py::test_error_checkpoint_cannot_be_mistaken_for_waiting
+1 failed, 6 passed in 1.20s

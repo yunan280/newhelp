@@ -1,0 +1,23 @@
+BLE001 Do not catch blind exception: `Exception`
+   --> src\mewhelp\ch06\evaluation.py:205:24
+    |
+203 | …         summary["original_json_parsed"] += stats[1]
+204 | …         summary["final_json_parsed"] += stats[2]
+205 | …     except Exception as error:
+    |              ^^^^^^^^^
+206 | …         row.update({"passed": False, "failures": ["service/evaluator error"], "error": type(error).__name__ + ": " + str(error)[:50…
+207 | …         summary["service_errors"] += 1
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> src\mewhelp\ch06\evaluation.py:288:16
+    |
+286 |                 if call.error:
+287 |                     errors.append(case["id"] + ": " + key + ": " + call.error)
+288 |         except Exception as error:
+    |                ^^^^^^^^^
+289 |             errors.append(case["id"] + ": " + type(error).__name__ + ": " + str(error)[:300])
+290 |         rows.append(row)
+    |
+
+Found 4 errors (2 fixed, 2 remaining).

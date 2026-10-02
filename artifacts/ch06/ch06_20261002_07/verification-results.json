@@ -17,7 +17,7 @@
     "mysql_http": {"passed": 20, "total": 20, "report": "../ch06_20261002_05/http-mysql/http.json"},
     "mysql_commit_checkpoint_failure": "../ch06_20261002_05/mysql-refund-recovery.json",
     "mysql_browser": "../ch06_20261002_05/ui-mysql/browser-report.json",
-    "page_smoke": "execution-audit/task11-offline-final.log",
+    "page_smoke": "execution-audit/task10-page-smoke.log",
     "formal_primary_run05": {"passed": 156, "total": 156},
     "formal_cascade_run05": {"passed": 155, "total": 156},
     "current_end_to_end_model_certified": false,

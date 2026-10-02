@@ -1,0 +1,267 @@
+FFFFFFF....                                                              [100%]
+================================== FAILURES ===================================
+__________ test_same_offer_exact_replay_is_one_persisted_application __________
+
+    def module():
+        try:
+>           return import_module("mewhelp.ch06.refunds")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_refunds.py:12: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.refunds'
+import_ = <function _gcd_import at 0x000001B6C00A80E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.refunds'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+core_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000001B6E9C9B500>, context=WorkflowContext...onftest.ModelFactory object at 0x000001B6E9C192E0>>), locks=<mewhelp.memory.SessionStore object at 0x000001B6E9C43A10>)
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-372%5Ctest_same_offer_exact_replay_i0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+
+    async def test_same_offer_exact_replay_is_one_persisted_application(core_runtime, session_factory):
+>       refunds = module()
+                  ^^^^^^^^
+
+tests\ch06\test_refunds.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            return import_module("mewhelp.ch06.refunds")
+        except ImportError:
+>           pytest.fail("missing persisted refund application")
+E           Failed: missing persisted refund application
+
+tests\ch06\test_refunds.py:14: Failed
+_____________ test_wrong_owner_order_and_stale_offer_do_not_write _____________
+
+    def module():
+        try:
+>           return import_module("mewhelp.ch06.refunds")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_refunds.py:12: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.refunds'
+import_ = <function _gcd_import at 0x000001B6C00A80E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.refunds'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+core_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000001B6E9E47E00>, context=WorkflowContext...onftest.ModelFactory object at 0x000001B6E9C9D190>>), locks=<mewhelp.memory.SessionStore object at 0x000001B6E9C99AC0>)
+core_factory = <tests.ch05.conftest.ModelFactory object at 0x000001B6E9C9D190>
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-372%5Ctest_wrong_owner_order_and_sta0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+
+    async def test_wrong_owner_order_and_stale_offer_do_not_write(core_runtime, core_factory, session_factory):
+>       refunds = module()
+                  ^^^^^^^^
+
+tests\ch06\test_refunds.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            return import_module("mewhelp.ch06.refunds")
+        except ImportError:
+>           pytest.fail("missing persisted refund application")
+E           Failed: missing persisted refund application
+
+tests\ch06\test_refunds.py:14: Failed
+_____________________ test_aftersales_has_no_refund_form ______________________
+
+core_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000001B6E9E52780>, context=WorkflowContext...onftest.ModelFactory object at 0x000001B6E9C9E6F0>>), locks=<mewhelp.memory.SessionStore object at 0x000001B6E9C9CB60>)
+core_factory = <tests.ch05.conftest.ModelFactory object at 0x000001B6E9C9E6F0>
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-372%5Ctest_aftersales_has_no_refund_0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+
+    async def test_aftersales_has_no_refund_form(core_runtime, core_factory, session_factory):
+        core_factory.intents = ["售后"]
+        result = await run_turn(core_runtime, TurnRequest(message="订单1002想维修"))
+        assert result.assessment.verdict == "eligible" and result.refund_offer is None
+>       assert count(session_factory) == 0
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_refunds.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-372%5Ctest_aftersales_has_no_refund_0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+
+    def count(factory):
+>       from mewhelp.db.models import RefundApplication
+E       ImportError: cannot import name 'RefundApplication' from 'mewhelp.db.models' (C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\db\models.py)
+
+tests\ch06\test_refunds.py:31: ImportError
+____________ test_commit_then_checkpoint_failure_recovers_from_sql ____________
+
+    def module():
+        try:
+>           return import_module("mewhelp.ch06.refunds")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_refunds.py:12: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.refunds'
+import_ = <function _gcd_import at 0x000001B6C00A80E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.refunds'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+core_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000001B6E9F0E4E0>, context=WorkflowContext...onftest.ModelFactory object at 0x000001B6E9C9D220>>), locks=<mewhelp.memory.SessionStore object at 0x000001B6E9F0F560>)
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-372%5Ctest_commit_then_checkpoint_fa0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001B6E9C9D970>
+
+    async def test_commit_then_checkpoint_failure_recovers_from_sql(core_runtime, session_factory, monkeypatch):
+>       refunds = module()
+                  ^^^^^^^^
+
+tests\ch06\test_refunds.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            return import_module("mewhelp.ch06.refunds")
+        except ImportError:
+>           pytest.fail("missing persisted refund application")
+E           Failed: missing persisted refund application
+
+tests\ch06\test_refunds.py:14: Failed
+_______________ test_offer_identity_is_stable_for_original_turn _______________
+
+    def module():
+        try:
+>           return import_module("mewhelp.ch06.refunds")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_refunds.py:12: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.refunds'
+import_ = <function _gcd_import at 0x000001B6C00A80E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.refunds'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+core_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000001B6E9F138C0>, context=WorkflowContext...onftest.ModelFactory object at 0x000001B6E9C9E1B0>>), locks=<mewhelp.memory.SessionStore object at 0x000001B6E9F10E60>)
+
+    async def test_offer_identity_is_stable_for_original_turn(core_runtime):
+>       refunds = module()
+                  ^^^^^^^^
+
+tests\ch06\test_refunds.py:93: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def module():
+        try:
+            return import_module("mewhelp.ch06.refunds")
+        except ImportError:
+>           pytest.fail("missing persisted refund application")
+E           Failed: missing persisted refund application
+
+tests\ch06\test_refunds.py:14: Failed
+_______ test_invalid_confirmation_reason_or_client_amount_never_writes ________
+
+refund_app = <fastapi.applications.FastAPI object at 0x000001B6E9C1AEA0>
+core_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000001B6E9F7B470>, context=WorkflowContext...onftest.ModelFactory object at 0x000001B6E9F10350>>), locks=<mewhelp.memory.SessionStore object at 0x000001B6E9F79700>)
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-372%5Ctest_invalid_confirmation_reas0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+
+    async def test_invalid_confirmation_reason_or_client_amount_never_writes(refund_app, core_runtime, session_factory):
+>       result = await offered(core_runtime)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_refund_api.py:17: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000001B6E9F7B470>, context=WorkflowContext...onftest.ModelFactory object at 0x000001B6E9F10350>>), locks=<mewhelp.memory.SessionStore object at 0x000001B6E9F79700>)
+question = '订单1001能退吗', session = 'refund'
+
+    async def offered(runtime, question="订单1001能退吗", session="refund"):
+        result = await run_turn(runtime, TurnRequest(message=question, session_id=session))
+>       assert result.refund_offer is not None, "eligible refund needs stable form offer"
+E       AssertionError: eligible refund needs stable form offer
+E       assert None is not None
+E        +  where None = TurnResult(session_id='refund', conversation_id=1, resumed=False, answer='根据结果为您回答[1]。', sources=[SourceDTO(number=1, ... assessment=OrderAssessment(verdict='eligible', explanation='依据政策，可以申请并等待审核[1]。', missing_facts=[]), refund_offer=None).refund_offer
+
+tests\ch06\test_refunds.py:19: AssertionError
+_____________________ test_submit_read_receipt_and_replay _____________________
+
+refund_app = <fastapi.applications.FastAPI object at 0x000001B6E9C1AEA0>
+core_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000001B6E9FB38C0>, context=WorkflowContext...onftest.ModelFactory object at 0x000001B6E9F0C0B0>>), locks=<mewhelp.memory.SessionStore object at 0x000001B6E9FB39B0>)
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-372%5Ctest_submit_read_receipt_and_r0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+
+    async def test_submit_read_receipt_and_replay(refund_app, core_runtime, session_factory):
+>       result = await offered(core_runtime)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_refund_api.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000001B6E9FB38C0>, context=WorkflowContext...onftest.ModelFactory object at 0x000001B6E9F0C0B0>>), locks=<mewhelp.memory.SessionStore object at 0x000001B6E9FB39B0>)
+question = '订单1001能退吗', session = 'refund'
+
+    async def offered(runtime, question="订单1001能退吗", session="refund"):
+        result = await run_turn(runtime, TurnRequest(message=question, session_id=session))
+>       assert result.refund_offer is not None, "eligible refund needs stable form offer"
+E       AssertionError: eligible refund needs stable form offer
+E       assert None is not None
+E        +  where None = TurnResult(session_id='refund', conversation_id=1, resumed=False, answer='根据结果为您回答[1]。', sources=[SourceDTO(number=1, ... assessment=OrderAssessment(verdict='eligible', explanation='依据政策，可以申请并等待审核[1]。', missing_facts=[]), refund_offer=None).refund_offer
+
+tests\ch06\test_refunds.py:19: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_refunds.py::test_same_offer_exact_replay_is_one_persisted_application
+FAILED tests/ch06/test_refunds.py::test_wrong_owner_order_and_stale_offer_do_not_write
+FAILED tests/ch06/test_refunds.py::test_aftersales_has_no_refund_form - Impor...
+FAILED tests/ch06/test_refunds.py::test_commit_then_checkpoint_failure_recovers_from_sql
+FAILED tests/ch06/test_refunds.py::test_offer_identity_is_stable_for_original_turn
+FAILED tests/ch06/test_refund_api.py::test_invalid_confirmation_reason_or_client_amount_never_writes
+FAILED tests/ch06/test_refund_api.py::test_submit_read_receipt_and_replay - A...
+7 failed, 4 passed in 2.09s

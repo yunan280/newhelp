@@ -1,0 +1,42 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_ test_complete_new_topic_rejects_historical_order_reference[\u5e2e\u6211\u8bc1\u660e\u6570\u5b66\u731c\u60f3] _
+
+question = '帮我证明数学猜想'
+
+    @pytest.mark.parametrize("question", ["帮我证明数学猜想", "机械键盘支持蓝牙吗？"])
+    async def test_complete_new_topic_rejects_historical_order_reference(question):
+        result = await resolve(
+            question,
+            output("订单1002的耳机物流到哪了", "1002", "a2"),
+            history=[{"id": "a2", "role": "assistant", "content": "订单1002商品是无线耳机"}],
+            entities=[{"order_id": "1002", "product_name": "无线耳机", "message_id": "a2"}],
+        )
+        assert result.question == question
+>       assert result.trusted_order_id is None and result.scope == "general"
+E       AssertionError: assert ('1002' is None)
+E        +  where '1002' = UnderstandingResult(original='帮我证明数学猜想', question='帮我证明数学猜想', scope='order_specific', trusted_order_id='1002', call=St...e}], usage=TokenUsage(input_tokens=40, output_tokens=20, estimated=False), calls={'understanding': 1}), diagnostics=[]).trusted_order_id
+
+tests\ch06\test_understanding.py:91: AssertionError
+_ test_complete_new_topic_rejects_historical_order_reference[\u673a\u68b0\u952e\u76d8\u652f\u6301\u84dd\u7259\u5417\uff1f] _
+
+question = '机械键盘支持蓝牙吗？'
+
+    @pytest.mark.parametrize("question", ["帮我证明数学猜想", "机械键盘支持蓝牙吗？"])
+    async def test_complete_new_topic_rejects_historical_order_reference(question):
+        result = await resolve(
+            question,
+            output("订单1002的耳机物流到哪了", "1002", "a2"),
+            history=[{"id": "a2", "role": "assistant", "content": "订单1002商品是无线耳机"}],
+            entities=[{"order_id": "1002", "product_name": "无线耳机", "message_id": "a2"}],
+        )
+        assert result.question == question
+>       assert result.trusted_order_id is None and result.scope == "general"
+E       AssertionError: assert ('1002' is None)
+E        +  where '1002' = UnderstandingResult(original='机械键盘支持蓝牙吗？', question='机械键盘支持蓝牙吗？', scope='order_specific', trusted_order_id='1002', cal...e}], usage=TokenUsage(input_tokens=40, output_tokens=20, estimated=False), calls={'understanding': 1}), diagnostics=[]).trusted_order_id
+
+tests\ch06\test_understanding.py:91: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_understanding.py::test_complete_new_topic_rejects_historical_order_reference[\u5e2e\u6211\u8bc1\u660e\u6570\u5b66\u731c\u60f3]
+FAILED tests/ch06/test_understanding.py::test_complete_new_topic_rejects_historical_order_reference[\u673a\u68b0\u952e\u76d8\u652f\u6301\u84dd\u7259\u5417\uff1f]
+2 failed, 15 deselected in 0.92s

@@ -1,0 +1,486 @@
+EEEEEF                                                                   [100%]
+=================================== ERRORS ====================================
+____________ ERROR at setup of test_resume_restarts_only_wait_node ____________
+
+factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-353%5Ctest_resume_restarts_only_wait0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-353/test_resume_restarts_only_wait0/checkpoint.sqlite')
+
+    @asynccontextmanager
+    async def open_selection_runtime(factory, path):
+        try:
+>           selection = import_module("mewhelp.ch06.selection")
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\conftest.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.selection', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'mewhelp.ch06.selection'
+
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_resume_restarts_only_wait_node>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\ch06\conftest.py:65: in selection_runtime
+    async with open_selection_runtime(session_factory, tmp_path / "checkpoint.sqlite") as runtime:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\contextlib.py:210: in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-353%5Ctest_resume_restarts_only_wait0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-353/test_resume_restarts_only_wait0/checkpoint.sqlite')
+
+    @asynccontextmanager
+    async def open_selection_runtime(factory, path):
+        try:
+            selection = import_module("mewhelp.ch06.selection")
+        except ImportError:
+>           pytest.fail("missing native selection mechanism")
+E           Failed: missing native selection mechanism
+
+tests\ch06\conftest.py:32: Failed
+_________ ERROR at setup of test_stale_card_and_wrong_owner_rejected __________
+
+factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-353%5Ctest_stale_card_and_wrong_owne0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-353/test_stale_card_and_wrong_owne0/checkpoint.sqlite')
+
+    @asynccontextmanager
+    async def open_selection_runtime(factory, path):
+        try:
+>           selection = import_module("mewhelp.ch06.selection")
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\conftest.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.selection', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'mewhelp.ch06.selection'
+
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_stale_card_and_wrong_owner_rejected>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\ch06\conftest.py:65: in selection_runtime
+    async with open_selection_runtime(session_factory, tmp_path / "checkpoint.sqlite") as runtime:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\contextlib.py:210: in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-353%5Ctest_stale_card_and_wrong_owne0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-353/test_stale_card_and_wrong_owne0/checkpoint.sqlite')
+
+    @asynccontextmanager
+    async def open_selection_runtime(factory, path):
+        try:
+            selection = import_module("mewhelp.ch06.selection")
+        except ImportError:
+>           pytest.fail("missing native selection mechanism")
+E           Failed: missing native selection mechanism
+
+tests\ch06\conftest.py:32: Failed
+________ ERROR at setup of test_new_message_cancels_pending_selection _________
+
+factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-353%5Ctest_new_message_cancels_pendi0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-353/test_new_message_cancels_pendi0/checkpoint.sqlite')
+
+    @asynccontextmanager
+    async def open_selection_runtime(factory, path):
+        try:
+>           selection = import_module("mewhelp.ch06.selection")
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\conftest.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.selection', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'mewhelp.ch06.selection'
+
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_new_message_cancels_pending_selection>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\ch06\conftest.py:65: in selection_runtime
+    async with open_selection_runtime(session_factory, tmp_path / "checkpoint.sqlite") as runtime:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\contextlib.py:210: in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-353%5Ctest_new_message_cancels_pendi0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-353/test_new_message_cancels_pendi0/checkpoint.sqlite')
+
+    @asynccontextmanager
+    async def open_selection_runtime(factory, path):
+        try:
+            selection = import_module("mewhelp.ch06.selection")
+        except ImportError:
+>           pytest.fail("missing native selection mechanism")
+E           Failed: missing native selection mechanism
+
+tests\ch06\conftest.py:32: Failed
+_________ ERROR at setup of test_resume_after_181_seconds_keeps_usage _________
+
+factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-353%5Ctest_resume_after_181_seconds_0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-353/test_resume_after_181_seconds_0/checkpoint.sqlite')
+
+    @asynccontextmanager
+    async def open_selection_runtime(factory, path):
+        try:
+>           selection = import_module("mewhelp.ch06.selection")
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\conftest.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.selection', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'mewhelp.ch06.selection'
+
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_resume_after_181_seconds_keeps_usage>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\ch06\conftest.py:65: in selection_runtime
+    async with open_selection_runtime(session_factory, tmp_path / "checkpoint.sqlite") as runtime:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\contextlib.py:210: in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-353%5Ctest_resume_after_181_seconds_0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-353/test_resume_after_181_seconds_0/checkpoint.sqlite')
+
+    @asynccontextmanager
+    async def open_selection_runtime(factory, path):
+        try:
+            selection = import_module("mewhelp.ch06.selection")
+        except ImportError:
+>           pytest.fail("missing native selection mechanism")
+E           Failed: missing native selection mechanism
+
+tests\ch06\conftest.py:32: Failed
+____________ ERROR at setup of test_json_sse_and_readonly_pending _____________
+
+factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-353%5Ctest_json_sse_and_readonly_pen0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-353/test_json_sse_and_readonly_pen0/checkpoint.sqlite')
+
+    @asynccontextmanager
+    async def open_selection_runtime(factory, path):
+        try:
+>           selection = import_module("mewhelp.ch06.selection")
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\conftest.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.selection', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'mewhelp.ch06.selection'
+
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+self = <Coroutine test_json_sse_and_readonly_pending>
+
+    def setup(self) -> None:
+        runner_fixture_id = f"_{self._loop_scope}_scoped_runner"
+        if runner_fixture_id not in self.fixturenames:
+            self.fixturenames.append(runner_fixture_id)
+        # When loop factories are configured, resolve the loop factory
+        # fixture early so that a factory variant change cascades cache
+        # invalidation before any async fixture checks its cache.
+        hook_caller = self.config.hook.pytest_asyncio_loop_factories
+        if hook_caller.get_hookimpls():
+            _ = self._request.getfixturevalue(_asyncio_loop_factory.__name__)
+>       return super().setup()
+               ^^^^^^^^^^^^^^^
+
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:944: in pytest_fixture_setup
+    hook_result = yield
+                  ^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:407: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\asyncio\base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\pytest_asyncio\plugin.py:403: in setup
+    res = await gen_obj.__anext__()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\ch06\conftest.py:65: in selection_runtime
+    async with open_selection_runtime(session_factory, tmp_path / "checkpoint.sqlite") as runtime:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\contextlib.py:210: in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-353%5Ctest_json_sse_and_readonly_pen0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-353/test_json_sse_and_readonly_pen0/checkpoint.sqlite')
+
+    @asynccontextmanager
+    async def open_selection_runtime(factory, path):
+        try:
+            selection = import_module("mewhelp.ch06.selection")
+        except ImportError:
+>           pytest.fail("missing native selection mechanism")
+E           Failed: missing native selection mechanism
+
+tests\ch06\conftest.py:32: Failed
+================================== FAILURES ===================================
+____________________ test_file_reopen_resumes_same_thread _____________________
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-353%5Ctest_file_reopen_resumes_same_0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-353/test_file_reopen_resumes_same_0')
+
+    async def test_file_reopen_resumes_same_thread(session_factory, tmp_path):
+>       from mewhelp.ch06.selection import pending_selection, resume_order
+E       ModuleNotFoundError: No module named 'mewhelp.ch06.selection'
+
+tests\ch06\test_resume_persistence.py:6: ModuleNotFoundError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_resume_persistence.py::test_file_reopen_resumes_same_thread
+ERROR tests/ch06/test_selection.py::test_resume_restarts_only_wait_node - Fai...
+ERROR tests/ch06/test_selection.py::test_stale_card_and_wrong_owner_rejected
+ERROR tests/ch06/test_selection.py::test_new_message_cancels_pending_selection
+ERROR tests/ch06/test_selection.py::test_resume_after_181_seconds_keeps_usage
+ERROR tests/ch06/test_resume_api.py::test_json_sse_and_readonly_pending - Fai...
+1 failed, 5 errors in 1.16s

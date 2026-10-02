@@ -1,0 +1,55 @@
+............FFF                                                          [100%]
+================================== FAILURES ===================================
+_ test_implied_order_reference_becomes_standalone[\u90a3\u5feb\u9012\u662f\u54ea\u5bb6\uff1f-\u8ba2\u53551003\u7684\u5feb\u9012\u662f\u54ea\u5bb6\uff1f] _
+
+original = '那快递是哪家？', rewritten = '订单1003的快递是哪家？'
+
+    @pytest.mark.parametrize("original,rewritten", [
+        ("那快递是哪家？", "订单1003的快递是哪家？"),
+        ("我不退了，看看订单状态", "我不退了，看看订单1003的状态"),
+    ])
+    async def test_implied_order_reference_becomes_standalone(original, rewritten):
+        result = await resolve(original, output(rewritten, "1003", "a1"),
+            [{"id": "a1", "role": "assistant", "content": "订单1003是保温杯"}],
+            [{"order_id": "1003", "product_name": "保温杯", "message_id": "a1"}])
+>       assert "1003" in result.question and original.startswith("我不退了") == ("我不退了" in result.question)
+E       AssertionError: assert ('1003' in '那快递是哪家？')
+E        +  where '那快递是哪家？' = UnderstandingResult(original='那快递是哪家？', question='那快递是哪家？', scope='order_specific', trusted_order_id='1003', call=Stru...e}], usage=TokenUsage(input_tokens=40, output_tokens=20, estimated=False), calls={'understanding': 1}), diagnostics=[]).question
+
+tests\ch06\test_understanding.py:153: AssertionError
+_ test_implied_order_reference_becomes_standalone[\u6211\u4e0d\u9000\u4e86\uff0c\u770b\u770b\u8ba2\u5355\u72b6\u6001-\u6211\u4e0d\u9000\u4e86\uff0c\u770b\u770b\u8ba2\u53551003\u7684\u72b6\u6001] _
+
+original = '我不退了，看看订单状态', rewritten = '我不退了，看看订单1003的状态'
+
+    @pytest.mark.parametrize("original,rewritten", [
+        ("那快递是哪家？", "订单1003的快递是哪家？"),
+        ("我不退了，看看订单状态", "我不退了，看看订单1003的状态"),
+    ])
+    async def test_implied_order_reference_becomes_standalone(original, rewritten):
+        result = await resolve(original, output(rewritten, "1003", "a1"),
+            [{"id": "a1", "role": "assistant", "content": "订单1003是保温杯"}],
+            [{"order_id": "1003", "product_name": "保温杯", "message_id": "a1"}])
+>       assert "1003" in result.question and original.startswith("我不退了") == ("我不退了" in result.question)
+E       AssertionError: assert ('1003' in '我不退了，看看订单状态')
+E        +  where '我不退了，看看订单状态' = UnderstandingResult(original='我不退了，看看订单状态', question='我不退了，看看订单状态', scope='order_specific', trusted_order_id='1003', c...e}], usage=TokenUsage(input_tokens=40, output_tokens=20, estimated=False), calls={'understanding': 1}), diagnostics=[]).question
+
+tests\ch06\test_understanding.py:153: AssertionError
+________________ test_real_langchain_history_uses_prompt_roles ________________
+
+    def test_real_langchain_history_uses_prompt_roles():
+        from langchain_core.messages import AIMessage, HumanMessage
+        from mewhelp.ch06.understanding import _history_rows
+        rows = _history_rows([HumanMessage(content="查1001", id="u1"),
+                              AIMessage(content="1001已签收", id="a1")])
+>       assert [row["role"] for row in rows] == ["user", "assistant"]
+E       AssertionError: assert ['human', 'ai'] == ['user', 'assistant']
+E         
+E         At index 0 diff: 'human' != 'user'
+E         Use -v to get more diff
+
+tests\ch06\test_understanding.py:161: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_understanding.py::test_implied_order_reference_becomes_standalone[\u90a3\u5feb\u9012\u662f\u54ea\u5bb6\uff1f-\u8ba2\u53551003\u7684\u5feb\u9012\u662f\u54ea\u5bb6\uff1f]
+FAILED tests/ch06/test_understanding.py::test_implied_order_reference_becomes_standalone[\u6211\u4e0d\u9000\u4e86\uff0c\u770b\u770b\u8ba2\u5355\u72b6\u6001-\u6211\u4e0d\u9000\u4e86\uff0c\u770b\u770b\u8ba2\u53551003\u7684\u72b6\u6001]
+FAILED tests/ch06/test_understanding.py::test_real_langchain_history_uses_prompt_roles
+3 failed, 12 passed in 0.87s

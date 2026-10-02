@@ -1,0 +1,220 @@
+...FFFF                                                                  [100%]
+================================== FAILURES ===================================
+_______ test_retry_publishes_committed_pending_policy_only[collection] ________
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-403%5Ctest_retry_publishes_committed0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-403/test_retry_publishes_committed0')
+failure_stage = 'collection'
+
+    @pytest.mark.parametrize("failure_stage", ["collection", "embedding", "upsert"])
+    def test_retry_publishes_committed_pending_policy_only(session_factory, tmp_path, failure_stage):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "shipping-policy.md").write_text("# 配送政策\n## 时效\n发货时效。", encoding="utf-8")
+        with session_factory() as db:
+            ingest_documents(db, docs)
+            db.commit()
+            unrelated = {row.id: {column.name: getattr(row, column.name)
+                                 for column in row.__table__.columns}
+                         for row in db.scalars(select(KnowledgeChunk))}
+        (docs / "aftersales-policy.md").write_text(
+            "# 退款售后政策\n## 期限\n签收七天。\n## 条件\n须不影响二次销售。", encoding="utf-8")
+    
+        class FailingIndex(Index):
+            failed = False
+            writes = 0
+    
+            def ensure_collection(self):
+                if failure_stage == "collection" and not self.failed:
+                    self.failed = True
+                    raise RuntimeError("publish interrupted")
+    
+            def upsert(self, row, vector):
+                self.writes += 1
+                if failure_stage == "upsert" and self.writes == 2 and not self.failed:
+                    self.failed = True
+                    raise RuntimeError("publish interrupted")
+                super().upsert(row, vector)
+    
+        index = FailingIndex()
+    
+        def embed(texts):
+            if failure_stage == "embedding" and not index.failed:
+                index.failed = True
+                raise RuntimeError("publish interrupted")
+            return [[0] * 1024 for _ in texts]
+    
+        module = import_module("mewhelp.ch06.demo_publish")
+        with pytest.raises(RuntimeError, match="publish interrupted"):
+            module.prepare_demo_corpus(session_factory, index, docs, embed)
+        with session_factory() as db:
+            policy_ids = {row.id for row in db.scalars(select(KnowledgeChunk))
+                          if "aftersales-policy.md" in row.section_path}
+            assert len(policy_ids) >= 2
+            assert any(db.get(KnowledgeChunk, row_id).vectorize_status == "pending"
+                       for row_id in policy_ids)
+    
+        result = module.prepare_demo_corpus(session_factory, index, docs, embed)
+        with session_factory() as db:
+            for row_id in policy_ids:
+                row = db.get(KnowledgeChunk, row_id)
+>               assert row.vectorize_status == "done" and row.vector_id == str(row_id)
+E               AssertionError: assert ('pending' == 'done'
+E                 
+E                 - done
+E                 + pending)
+
+tests\ch06\test_demo_publish.py:119: AssertionError
+________ test_retry_publishes_committed_pending_policy_only[embedding] ________
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-403%5Ctest_retry_publishes_committed1%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-403/test_retry_publishes_committed1')
+failure_stage = 'embedding'
+
+    @pytest.mark.parametrize("failure_stage", ["collection", "embedding", "upsert"])
+    def test_retry_publishes_committed_pending_policy_only(session_factory, tmp_path, failure_stage):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "shipping-policy.md").write_text("# 配送政策\n## 时效\n发货时效。", encoding="utf-8")
+        with session_factory() as db:
+            ingest_documents(db, docs)
+            db.commit()
+            unrelated = {row.id: {column.name: getattr(row, column.name)
+                                 for column in row.__table__.columns}
+                         for row in db.scalars(select(KnowledgeChunk))}
+        (docs / "aftersales-policy.md").write_text(
+            "# 退款售后政策\n## 期限\n签收七天。\n## 条件\n须不影响二次销售。", encoding="utf-8")
+    
+        class FailingIndex(Index):
+            failed = False
+            writes = 0
+    
+            def ensure_collection(self):
+                if failure_stage == "collection" and not self.failed:
+                    self.failed = True
+                    raise RuntimeError("publish interrupted")
+    
+            def upsert(self, row, vector):
+                self.writes += 1
+                if failure_stage == "upsert" and self.writes == 2 and not self.failed:
+                    self.failed = True
+                    raise RuntimeError("publish interrupted")
+                super().upsert(row, vector)
+    
+        index = FailingIndex()
+    
+        def embed(texts):
+            if failure_stage == "embedding" and not index.failed:
+                index.failed = True
+                raise RuntimeError("publish interrupted")
+            return [[0] * 1024 for _ in texts]
+    
+        module = import_module("mewhelp.ch06.demo_publish")
+        with pytest.raises(RuntimeError, match="publish interrupted"):
+            module.prepare_demo_corpus(session_factory, index, docs, embed)
+        with session_factory() as db:
+            policy_ids = {row.id for row in db.scalars(select(KnowledgeChunk))
+                          if "aftersales-policy.md" in row.section_path}
+            assert len(policy_ids) >= 2
+            assert any(db.get(KnowledgeChunk, row_id).vectorize_status == "pending"
+                       for row_id in policy_ids)
+    
+        result = module.prepare_demo_corpus(session_factory, index, docs, embed)
+        with session_factory() as db:
+            for row_id in policy_ids:
+                row = db.get(KnowledgeChunk, row_id)
+>               assert row.vectorize_status == "done" and row.vector_id == str(row_id)
+E               AssertionError: assert ('pending' == 'done'
+E                 
+E                 - done
+E                 + pending)
+
+tests\ch06\test_demo_publish.py:119: AssertionError
+_________ test_retry_publishes_committed_pending_policy_only[upsert] __________
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-403%5Ctest_retry_publishes_committed2%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-403/test_retry_publishes_committed2')
+failure_stage = 'upsert'
+
+    @pytest.mark.parametrize("failure_stage", ["collection", "embedding", "upsert"])
+    def test_retry_publishes_committed_pending_policy_only(session_factory, tmp_path, failure_stage):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "shipping-policy.md").write_text("# 配送政策\n## 时效\n发货时效。", encoding="utf-8")
+        with session_factory() as db:
+            ingest_documents(db, docs)
+            db.commit()
+            unrelated = {row.id: {column.name: getattr(row, column.name)
+                                 for column in row.__table__.columns}
+                         for row in db.scalars(select(KnowledgeChunk))}
+        (docs / "aftersales-policy.md").write_text(
+            "# 退款售后政策\n## 期限\n签收七天。\n## 条件\n须不影响二次销售。", encoding="utf-8")
+    
+        class FailingIndex(Index):
+            failed = False
+            writes = 0
+    
+            def ensure_collection(self):
+                if failure_stage == "collection" and not self.failed:
+                    self.failed = True
+                    raise RuntimeError("publish interrupted")
+    
+            def upsert(self, row, vector):
+                self.writes += 1
+                if failure_stage == "upsert" and self.writes == 2 and not self.failed:
+                    self.failed = True
+                    raise RuntimeError("publish interrupted")
+                super().upsert(row, vector)
+    
+        index = FailingIndex()
+    
+        def embed(texts):
+            if failure_stage == "embedding" and not index.failed:
+                index.failed = True
+                raise RuntimeError("publish interrupted")
+            return [[0] * 1024 for _ in texts]
+    
+        module = import_module("mewhelp.ch06.demo_publish")
+        with pytest.raises(RuntimeError, match="publish interrupted"):
+            module.prepare_demo_corpus(session_factory, index, docs, embed)
+        with session_factory() as db:
+            policy_ids = {row.id for row in db.scalars(select(KnowledgeChunk))
+                          if "aftersales-policy.md" in row.section_path}
+            assert len(policy_ids) >= 2
+            assert any(db.get(KnowledgeChunk, row_id).vectorize_status == "pending"
+                       for row_id in policy_ids)
+    
+        result = module.prepare_demo_corpus(session_factory, index, docs, embed)
+        with session_factory() as db:
+            for row_id in policy_ids:
+                row = db.get(KnowledgeChunk, row_id)
+>               assert row.vectorize_status == "done" and row.vector_id == str(row_id)
+E               AssertionError: assert ('pending' == 'done'
+E                 
+E                 - done
+E                 + pending)
+
+tests\ch06\test_demo_publish.py:119: AssertionError
+______________ test_demo_publish_rejects_incomplete_policy_sync _______________
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-403%5Ctest_demo_publish_rejects_inco0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-403/test_demo_publish_rejects_inco0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000024B16347FB0>
+
+    def test_demo_publish_rejects_incomplete_policy_sync(session_factory, tmp_path, monkeypatch):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "aftersales-policy.md").write_text("# 退款售后政策\n## 期限\n签收七天。", encoding="utf-8")
+        module = import_module("mewhelp.ch06.demo_publish")
+        monkeypatch.setattr(module, "sync_pending", lambda *args, **kwargs: 0)
+>       with pytest.raises(ValueError, match="not fully published"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests\ch06\test_demo_publish.py:134: Failed
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_demo_publish.py::test_retry_publishes_committed_pending_policy_only[collection]
+FAILED tests/ch06/test_demo_publish.py::test_retry_publishes_committed_pending_policy_only[embedding]
+FAILED tests/ch06/test_demo_publish.py::test_retry_publishes_committed_pending_policy_only[upsert]
+FAILED tests/ch06/test_demo_publish.py::test_demo_publish_rejects_incomplete_policy_sync
+4 failed, 3 passed in 1.32s

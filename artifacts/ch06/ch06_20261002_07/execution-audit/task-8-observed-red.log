@@ -1,0 +1,100 @@
+........F                                                                [100%]
+================================== FAILURES ===================================
+___________ test_observed_usage_exhaustion_stops_before_classifier ____________
+
+core_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000001B31685B8C0>, context=WorkflowContext...classifier.<locals>.<lambda> at 0x000001B316A3DEE0>), locks=<mewhelp.memory.SessionStore object at 0x000001B31685B9B0>)
+
+    async def test_observed_usage_exhaustion_stops_before_classifier(core_runtime):
+        import json
+        class LargeUsage:
+            async def ainvoke(self, messages):
+                question = json.loads(messages[-1].content)["question"]
+                return AIMessage(content=json.dumps({"question":question, "scope":"order_specific",
+                    "reference_order_id":None, "reference_message_id":None}),
+                    usage_metadata={"input_tokens":64000, "output_tokens":100, "total_tokens":64100})
+        core_runtime.context.router_model_factory = lambda **kw: LargeUsage()
+>       result = await run_turn(core_runtime, TurnRequest(message="这个能退吗"))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_workflow.py:113: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\mewhelp\ch05\service.py:102: in run_turn
+    async for item in stream:
+src\mewhelp\ch05\service.py:81: in stream_turn
+    async for item in stream:
+.venv-ch03\Lib\site-packages\langgraph\pregel\main.py:3440: in astream
+    async for _ in runner.atick(
+.venv-ch03\Lib\site-packages\langgraph\pregel\_runner.py:557: in atick
+    _panic_or_proceed(
+.venv-ch03\Lib\site-packages\langgraph\pregel\_runner.py:687: in _panic_or_proceed
+    raise exc
+.venv-ch03\Lib\site-packages\langgraph\pregel\_retry.py:744: in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\langgraph\_internal\_runnable.py:756: in ainvoke
+    input = await asyncio.create_task(
+.venv-ch03\Lib\site-packages\langgraph\_internal\_runnable.py:522: in ainvoke
+    ret = await self.afunc(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\mewhelp\ch05\workflow.py:360: in node
+    update = await operation(state, runtime.context, writer)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\mewhelp\ch05\workflow.py:95: in classify_node
+    result = await classify_intent(state["resolved_question"], context=context, state=state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\mewhelp\ch05\intent.py:123: in classify_intent
+    call = await invoke_json(
+src\mewhelp\ch06\structured.py:54: in invoke_json
+    reserve_call(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+used = 64100, input_bound = 3083, output_limit = 128, final_reserve = 1024
+limits = AgentLimits(max_decisions=4, max_tools=8, final_max_tokens=1024, decision_max_tokens=256, classifier_max_tokens=128, total_model_tokens=64000, turn_seconds=180.0, request_seconds=30.0, max_retries=0)
+
+    def reserve_call(
+        used: int, input_bound: int, output_limit: int, final_reserve: int, limits: AgentLimits
+    ) -> None:
+        if used + input_bound + output_limit + final_reserve > limits.total_model_tokens:
+>           raise BudgetExceeded("turn token budget cannot accommodate this request")
+E           mewhelp.ch05.limits.BudgetExceeded: turn token budget cannot accommodate this request
+E           During task with name 'classify_intent' and id '0a1b221b-b65b-a716-ff40-8b57926e9dc0'
+
+src\mewhelp\ch05\limits.py:59: BudgetExceeded
+------------------------------ Captured log call ------------------------------
+ERROR    mewhelp.ch05.service:service.py:96 Ch05 turn failed session=66df38c65b9d4d0cab11b9a2dbffd8cd
+Traceback (most recent call last):
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\service.py", line 81, in stream_turn
+    async for item in stream:
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\.venv-ch03\Lib\site-packages\langgraph\pregel\main.py", line 3440, in astream
+    async for _ in runner.atick(
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\.venv-ch03\Lib\site-packages\langgraph\pregel\_runner.py", line 557, in atick
+    _panic_or_proceed(
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\.venv-ch03\Lib\site-packages\langgraph\pregel\_runner.py", line 687, in _panic_or_proceed
+    raise exc
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\.venv-ch03\Lib\site-packages\langgraph\pregel\_retry.py", line 744, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\.venv-ch03\Lib\site-packages\langgraph\_internal\_runnable.py", line 756, in ainvoke
+    input = await asyncio.create_task(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\.venv-ch03\Lib\site-packages\langgraph\_internal\_runnable.py", line 522, in ainvoke
+    ret = await self.afunc(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\workflow.py", line 360, in node
+    update = await operation(state, runtime.context, writer)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\workflow.py", line 95, in classify_node
+    result = await classify_intent(state["resolved_question"], context=context, state=state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\intent.py", line 123, in classify_intent
+    call = await invoke_json(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch06\structured.py", line 54, in invoke_json
+    reserve_call(
+  File "C:\Users\27497\projects\mewhelp-wt\ch02-tools\src\mewhelp\ch05\limits.py", line 59, in reserve_call
+    raise BudgetExceeded("turn token budget cannot accommodate this request")
+mewhelp.ch05.limits.BudgetExceeded: turn token budget cannot accommodate this request
+During task with name 'classify_intent' and id '0a1b221b-b65b-a716-ff40-8b57926e9dc0'
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_workflow.py::test_observed_usage_exhaustion_stops_before_classifier
+1 failed, 8 passed in 3.09s

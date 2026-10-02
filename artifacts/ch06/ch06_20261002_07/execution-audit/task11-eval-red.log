@@ -1,0 +1,14 @@
+..........F                                                              [100%]
+================================== FAILURES ===================================
+_________________ test_cli_all_resolves_to_every_formal_part __________________
+
+    def test_cli_all_resolves_to_every_formal_part():
+        module = evaluator_module()
+>       assert module.parse_parts("all") == module.PARTS
+               ^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'mewhelp.ch06.evaluation' has no attribute 'parse_parts'
+
+tests\ch06\test_evaluation.py:188: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_evaluation.py::test_cli_all_resolves_to_every_formal_part
+1 failed, 10 passed in 1.16s

@@ -1,0 +1,19 @@
+INFO:     127.0.0.1:57309 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57309 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:54268 - "POST /ch05/chat/stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57870 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57870 - "GET /ch06/sessions/f57d41965c9c4043af4fcb6562c32eff/pending?user_id=web-5ae0jmsf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57870 - "POST /ch06/orders/selection/stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57870 - "GET /ch06/refunds/58061d473606b48cd5a0494510068670546d82185d5bf9376ce6a245362c467a?session_id=f57d41965c9c4043af4fcb6562c32eff&user_id=web-5ae0jmsf HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:52765 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52765 - "GET /ch06/refunds/58061d473606b48cd5a0494510068670546d82185d5bf9376ce6a245362c467a?session_id=f57d41965c9c4043af4fcb6562c32eff&user_id=web-5ae0jmsf HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:65076 - "GET /ch06/sessions/f57d41965c9c4043af4fcb6562c32eff/pending?user_id=web-5ae0jmsf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65076 - "POST /ch06/refunds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49842 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49842 - "GET /ch06/refunds/58061d473606b48cd5a0494510068670546d82185d5bf9376ce6a245362c467a?session_id=f57d41965c9c4043af4fcb6562c32eff&user_id=web-5ae0jmsf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50985 - "GET /ch06/sessions/f57d41965c9c4043af4fcb6562c32eff/pending?user_id=web-5ae0jmsf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50985 - "POST /ch05/chat/stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64448 - "POST /ch05/chat/stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58944 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58944 - "GET /ch06/refunds/58061d473606b48cd5a0494510068670546d82185d5bf9376ce6a245362c467a?session_id=f57d41965c9c4043af4fcb6562c32eff&user_id=web-5ae0jmsf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54889 - "GET /ch06/sessions/f57d41965c9c4043af4fcb6562c32eff/pending?user_id=web-5ae0jmsf HTTP/1.1" 200 OK

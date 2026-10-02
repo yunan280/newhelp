@@ -1,0 +1,24 @@
+..F                                                                      [100%]
+================================== FAILURES ===================================
+_________ test_demo_publisher_ingests_only_approved_aftersales_source _________
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-390%5Ctest_demo_publisher_ingests_on0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-390/test_demo_publisher_ingests_on0')
+
+    def test_demo_publisher_ingests_only_approved_aftersales_source(session_factory, tmp_path):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "aftersales-policy.md").write_text("# 退款售后政策\n## 期限\n签收七天。", encoding="utf-8")
+        (docs / "shipping-policy.md").write_text("# 配送政策\n## 时效\n发货时效。", encoding="utf-8")
+        result = import_module("mewhelp.ch06.demo_publish").prepare_demo_corpus(
+            session_factory, Index(), docs, lambda rows: [[0] * 1024] * len(rows))
+        with session_factory() as db:
+            rows = db.scalars(select(KnowledgeChunk)).all()
+>           assert rows and all("aftersales-policy.md" in row.section_path for row in rows)
+E           assert ([<mewhelp.knowledge.store.KnowledgeChunk object at 0x00000185ACADB320>, <mewhelp.knowledge.store.KnowledgeChunk object at 0x00000185ACADB410>] and False)
+E            +  where False = all(<generator object test_demo_publisher_ingests_only_approved_aftersales_source.<locals>.<genexpr> at 0x00000185ACB6B920>)
+
+tests\ch06\test_demo_publish.py:63: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_demo_publish.py::test_demo_publisher_ingests_only_approved_aftersales_source
+1 failed, 2 passed in 0.91s

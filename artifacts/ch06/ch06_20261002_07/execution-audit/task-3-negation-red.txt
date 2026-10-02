@@ -1,0 +1,16 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________________ test_reference_preserves_negation_attachment _________________
+
+    async def test_reference_preserves_negation_attachment():
+        result = await resolve("它不是坏了，只是不想要", output("订单1001的机械键盘坏了，不想退", "1001", "a1"),
+            [{"id": "a1", "role": "assistant", "content": "订单1001的商品为机械键盘"}],
+            [{"order_id": "1001", "product_name": "机械键盘", "message_id": "a1"}])
+>       assert "不是坏了" in result.question and "不想要" in result.question
+E       AssertionError: assert ('不是坏了' in '订单1001的机械键盘坏了，不想退')
+E        +  where '订单1001的机械键盘坏了，不想退' = UnderstandingResult(original='它不是坏了，只是不想要', question='订单1001的机械键盘坏了，不想退', scope='order_specific', trusted_order_id='10...e}], usage=TokenUsage(input_tokens=40, output_tokens=20, estimated=False), calls={'understanding': 1}), diagnostics=[]).question
+
+tests\ch06\test_understanding.py:85: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_understanding.py::test_reference_preserves_negation_attachment
+1 failed in 4.87s

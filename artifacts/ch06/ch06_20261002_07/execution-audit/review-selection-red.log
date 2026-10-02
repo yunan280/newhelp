@@ -1,0 +1,23 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_old_receipt_replay_preserves_new_native_interrupt ____________
+
+selection_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000001AC1F9EDB80>, context=WorkflowContext...sessment_max_tokens=768), router_model_factory=None), locks=<mewhelp.memory.SessionStore object at 0x000001AC1F9EE150>)
+
+    async def test_old_receipt_replay_preserves_new_native_interrupt(selection_runtime):
+        from mewhelp.ch06.selection import pending_selection, resume_order
+    
+        first = await waiting(selection_runtime)
+        completed = await resume_order(selection_runtime, request(first))
+        second = await waiting(selection_runtime, first.session_id)
+        assert second.order_selection.selection_id != first.order_selection.selection_id
+    
+        assert await resume_order(selection_runtime, request(first)) == completed
+        pending = await pending_selection(selection_runtime, first.session_id, request(first).resolved_user_id)
+>       assert pending is not None
+E       assert None is not None
+
+tests\ch06\test_selection.py:44: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_selection.py::test_old_receipt_replay_preserves_new_native_interrupt
+1 failed in 0.95s

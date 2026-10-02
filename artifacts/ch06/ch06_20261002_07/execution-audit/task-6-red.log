@@ -1,0 +1,726 @@
+FFFFFFFFFFFFFF.......                                                    [100%]
+================================== FAILURES ===================================
+_______________ test_general_faq_does_not_call_expansion_model ________________
+
+raw = {}, scope = 'general', intent = '退款退货'
+
+    async def expand(raw, *, scope="order_specific", intent="退款退货"):
+        calls = []
+    
+        class Model:
+            async def ainvoke(self, messages):
+                calls.append(messages)
+                return AIMessage(content=json.dumps(raw, ensure_ascii=False))
+    
+        context = WorkflowContext(
+            lambda: None, lambda: None, lambda: None, AgentLimits(),
+            router_model_factory=lambda **kw: Model(),
+        )
+        try:
+>           function = import_module("mewhelp.ch06.expansion").expand_queries
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_expansion.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.expansion'
+import_ = <function _gcd_import at 0x00000166D57380E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.expansion'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    async def test_general_faq_does_not_call_expansion_model():
+>       result, calls = await expand({}, scope="general")
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_expansion.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+raw = {}, scope = 'general', intent = '退款退货'
+
+    async def expand(raw, *, scope="order_specific", intent="退款退货"):
+        calls = []
+    
+        class Model:
+            async def ainvoke(self, messages):
+                calls.append(messages)
+                return AIMessage(content=json.dumps(raw, ensure_ascii=False))
+    
+        context = WorkflowContext(
+            lambda: None, lambda: None, lambda: None, AgentLimits(),
+            router_model_factory=lambda **kw: Model(),
+        )
+        try:
+            function = import_module("mewhelp.ch06.expansion").expand_queries
+        except ImportError:
+>           pytest.fail("missing retrieval-side expansion")
+E           Failed: missing retrieval-side expansion
+
+tests\ch06\test_expansion.py:27: Failed
+____________ test_valid_expansion_keeps_distinct_queries_and_usage ____________
+
+raw = {'queries': ['机械键盘退货资格有哪些要求', '机械键盘退货期限与例外规定']}, scope = 'order_specific'
+intent = '退款退货'
+
+    async def expand(raw, *, scope="order_specific", intent="退款退货"):
+        calls = []
+    
+        class Model:
+            async def ainvoke(self, messages):
+                calls.append(messages)
+                return AIMessage(content=json.dumps(raw, ensure_ascii=False))
+    
+        context = WorkflowContext(
+            lambda: None, lambda: None, lambda: None, AgentLimits(),
+            router_model_factory=lambda **kw: Model(),
+        )
+        try:
+>           function = import_module("mewhelp.ch06.expansion").expand_queries
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_expansion.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.expansion'
+import_ = <function _gcd_import at 0x00000166D57380E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.expansion'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    async def test_valid_expansion_keeps_distinct_queries_and_usage():
+        queries = ["机械键盘退货资格有哪些要求", "机械键盘退货期限与例外规定"]
+>       result, calls = await expand({"queries": queries})
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_expansion.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+raw = {'queries': ['机械键盘退货资格有哪些要求', '机械键盘退货期限与例外规定']}, scope = 'order_specific'
+intent = '退款退货'
+
+    async def expand(raw, *, scope="order_specific", intent="退款退货"):
+        calls = []
+    
+        class Model:
+            async def ainvoke(self, messages):
+                calls.append(messages)
+                return AIMessage(content=json.dumps(raw, ensure_ascii=False))
+    
+        context = WorkflowContext(
+            lambda: None, lambda: None, lambda: None, AgentLimits(),
+            router_model_factory=lambda **kw: Model(),
+        )
+        try:
+            function = import_module("mewhelp.ch06.expansion").expand_queries
+        except ImportError:
+>           pytest.fail("missing retrieval-side expansion")
+E           Failed: missing retrieval-side expansion
+
+tests\ch06\test_expansion.py:27: Failed
+_______ test_invalid_or_invented_expansion_falls_back_to_original[raw0] _______
+
+raw = {'queries': ['只查一次']}, scope = 'order_specific', intent = '退款退货'
+
+    async def expand(raw, *, scope="order_specific", intent="退款退货"):
+        calls = []
+    
+        class Model:
+            async def ainvoke(self, messages):
+                calls.append(messages)
+                return AIMessage(content=json.dumps(raw, ensure_ascii=False))
+    
+        context = WorkflowContext(
+            lambda: None, lambda: None, lambda: None, AgentLimits(),
+            router_model_factory=lambda **kw: Model(),
+        )
+        try:
+>           function = import_module("mewhelp.ch06.expansion").expand_queries
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_expansion.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.expansion'
+import_ = <function _gcd_import at 0x00000166D57380E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.expansion'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+raw = {'queries': ['只查一次']}
+
+    @pytest.mark.parametrize("raw", [
+        {"queries": ["只查一次"]},
+        {"queries": ["退货条件", "退货条件"]},
+        {"queries": ["退货条件", "退货期限"], "reason": "质量"},
+        {"queries": ["订单1001已拆封能退款吗", "订单1001已批准退款"]},
+        {"queries": ["机械键盘签收99天内退货", "机械键盘退款条件"]},
+    ])
+    async def test_invalid_or_invented_expansion_falls_back_to_original(raw):
+>       result, _ = await expand(raw)
+                    ^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_expansion.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+raw = {'queries': ['只查一次']}, scope = 'order_specific', intent = '退款退货'
+
+    async def expand(raw, *, scope="order_specific", intent="退款退货"):
+        calls = []
+    
+        class Model:
+            async def ainvoke(self, messages):
+                calls.append(messages)
+                return AIMessage(content=json.dumps(raw, ensure_ascii=False))
+    
+        context = WorkflowContext(
+            lambda: None, lambda: None, lambda: None, AgentLimits(),
+            router_model_factory=lambda **kw: Model(),
+        )
+        try:
+            function = import_module("mewhelp.ch06.expansion").expand_queries
+        except ImportError:
+>           pytest.fail("missing retrieval-side expansion")
+E           Failed: missing retrieval-side expansion
+
+tests\ch06\test_expansion.py:27: Failed
+_______ test_invalid_or_invented_expansion_falls_back_to_original[raw1] _______
+
+raw = {'queries': ['退货条件', '退货条件']}, scope = 'order_specific', intent = '退款退货'
+
+    async def expand(raw, *, scope="order_specific", intent="退款退货"):
+        calls = []
+    
+        class Model:
+            async def ainvoke(self, messages):
+                calls.append(messages)
+                return AIMessage(content=json.dumps(raw, ensure_ascii=False))
+    
+        context = WorkflowContext(
+            lambda: None, lambda: None, lambda: None, AgentLimits(),
+            router_model_factory=lambda **kw: Model(),
+        )
+        try:
+>           function = import_module("mewhelp.ch06.expansion").expand_queries
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_expansion.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.expansion'
+import_ = <function _gcd_import at 0x00000166D57380E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.expansion'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+raw = {'queries': ['退货条件', '退货条件']}
+
+    @pytest.mark.parametrize("raw", [
+        {"queries": ["只查一次"]},
+        {"queries": ["退货条件", "退货条件"]},
+        {"queries": ["退货条件", "退货期限"], "reason": "质量"},
+        {"queries": ["订单1001已拆封能退款吗", "订单1001已批准退款"]},
+        {"queries": ["机械键盘签收99天内退货", "机械键盘退款条件"]},
+    ])
+    async def test_invalid_or_invented_expansion_falls_back_to_original(raw):
+>       result, _ = await expand(raw)
+                    ^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_expansion.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+raw = {'queries': ['退货条件', '退货条件']}, scope = 'order_specific', intent = '退款退货'
+
+    async def expand(raw, *, scope="order_specific", intent="退款退货"):
+        calls = []
+    
+        class Model:
+            async def ainvoke(self, messages):
+                calls.append(messages)
+                return AIMessage(content=json.dumps(raw, ensure_ascii=False))
+    
+        context = WorkflowContext(
+            lambda: None, lambda: None, lambda: None, AgentLimits(),
+            router_model_factory=lambda **kw: Model(),
+        )
+        try:
+            function = import_module("mewhelp.ch06.expansion").expand_queries
+        except ImportError:
+>           pytest.fail("missing retrieval-side expansion")
+E           Failed: missing retrieval-side expansion
+
+tests\ch06\test_expansion.py:27: Failed
+_______ test_invalid_or_invented_expansion_falls_back_to_original[raw2] _______
+
+raw = {'queries': ['退货条件', '退货期限'], 'reason': '质量'}, scope = 'order_specific'
+intent = '退款退货'
+
+    async def expand(raw, *, scope="order_specific", intent="退款退货"):
+        calls = []
+    
+        class Model:
+            async def ainvoke(self, messages):
+                calls.append(messages)
+                return AIMessage(content=json.dumps(raw, ensure_ascii=False))
+    
+        context = WorkflowContext(
+            lambda: None, lambda: None, lambda: None, AgentLimits(),
+            router_model_factory=lambda **kw: Model(),
+        )
+        try:
+>           function = import_module("mewhelp.ch06.expansion").expand_queries
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_expansion.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.expansion'
+import_ = <function _gcd_import at 0x00000166D57380E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.expansion'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+raw = {'queries': ['退货条件', '退货期限'], 'reason': '质量'}
+
+    @pytest.mark.parametrize("raw", [
+        {"queries": ["只查一次"]},
+        {"queries": ["退货条件", "退货条件"]},
+        {"queries": ["退货条件", "退货期限"], "reason": "质量"},
+        {"queries": ["订单1001已拆封能退款吗", "订单1001已批准退款"]},
+        {"queries": ["机械键盘签收99天内退货", "机械键盘退款条件"]},
+    ])
+    async def test_invalid_or_invented_expansion_falls_back_to_original(raw):
+>       result, _ = await expand(raw)
+                    ^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_expansion.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+raw = {'queries': ['退货条件', '退货期限'], 'reason': '质量'}, scope = 'order_specific'
+intent = '退款退货'
+
+    async def expand(raw, *, scope="order_specific", intent="退款退货"):
+        calls = []
+    
+        class Model:
+            async def ainvoke(self, messages):
+                calls.append(messages)
+                return AIMessage(content=json.dumps(raw, ensure_ascii=False))
+    
+        context = WorkflowContext(
+            lambda: None, lambda: None, lambda: None, AgentLimits(),
+            router_model_factory=lambda **kw: Model(),
+        )
+        try:
+            function = import_module("mewhelp.ch06.expansion").expand_queries
+        except ImportError:
+>           pytest.fail("missing retrieval-side expansion")
+E           Failed: missing retrieval-side expansion
+
+tests\ch06\test_expansion.py:27: Failed
+_______ test_invalid_or_invented_expansion_falls_back_to_original[raw3] _______
+
+raw = {'queries': ['订单1001已拆封能退款吗', '订单1001已批准退款']}, scope = 'order_specific'
+intent = '退款退货'
+
+    async def expand(raw, *, scope="order_specific", intent="退款退货"):
+        calls = []
+    
+        class Model:
+            async def ainvoke(self, messages):
+                calls.append(messages)
+                return AIMessage(content=json.dumps(raw, ensure_ascii=False))
+    
+        context = WorkflowContext(
+            lambda: None, lambda: None, lambda: None, AgentLimits(),
+            router_model_factory=lambda **kw: Model(),
+        )
+        try:
+>           function = import_module("mewhelp.ch06.expansion").expand_queries
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_expansion.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.expansion'
+import_ = <function _gcd_import at 0x00000166D57380E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.expansion'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+raw = {'queries': ['订单1001已拆封能退款吗', '订单1001已批准退款']}
+
+    @pytest.mark.parametrize("raw", [
+        {"queries": ["只查一次"]},
+        {"queries": ["退货条件", "退货条件"]},
+        {"queries": ["退货条件", "退货期限"], "reason": "质量"},
+        {"queries": ["订单1001已拆封能退款吗", "订单1001已批准退款"]},
+        {"queries": ["机械键盘签收99天内退货", "机械键盘退款条件"]},
+    ])
+    async def test_invalid_or_invented_expansion_falls_back_to_original(raw):
+>       result, _ = await expand(raw)
+                    ^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_expansion.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+raw = {'queries': ['订单1001已拆封能退款吗', '订单1001已批准退款']}, scope = 'order_specific'
+intent = '退款退货'
+
+    async def expand(raw, *, scope="order_specific", intent="退款退货"):
+        calls = []
+    
+        class Model:
+            async def ainvoke(self, messages):
+                calls.append(messages)
+                return AIMessage(content=json.dumps(raw, ensure_ascii=False))
+    
+        context = WorkflowContext(
+            lambda: None, lambda: None, lambda: None, AgentLimits(),
+            router_model_factory=lambda **kw: Model(),
+        )
+        try:
+            function = import_module("mewhelp.ch06.expansion").expand_queries
+        except ImportError:
+>           pytest.fail("missing retrieval-side expansion")
+E           Failed: missing retrieval-side expansion
+
+tests\ch06\test_expansion.py:27: Failed
+_______ test_invalid_or_invented_expansion_falls_back_to_original[raw4] _______
+
+raw = {'queries': ['机械键盘签收99天内退货', '机械键盘退款条件']}, scope = 'order_specific'
+intent = '退款退货'
+
+    async def expand(raw, *, scope="order_specific", intent="退款退货"):
+        calls = []
+    
+        class Model:
+            async def ainvoke(self, messages):
+                calls.append(messages)
+                return AIMessage(content=json.dumps(raw, ensure_ascii=False))
+    
+        context = WorkflowContext(
+            lambda: None, lambda: None, lambda: None, AgentLimits(),
+            router_model_factory=lambda **kw: Model(),
+        )
+        try:
+>           function = import_module("mewhelp.ch06.expansion").expand_queries
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_expansion.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.expansion'
+import_ = <function _gcd_import at 0x00000166D57380E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.expansion'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+raw = {'queries': ['机械键盘签收99天内退货', '机械键盘退款条件']}
+
+    @pytest.mark.parametrize("raw", [
+        {"queries": ["只查一次"]},
+        {"queries": ["退货条件", "退货条件"]},
+        {"queries": ["退货条件", "退货期限"], "reason": "质量"},
+        {"queries": ["订单1001已拆封能退款吗", "订单1001已批准退款"]},
+        {"queries": ["机械键盘签收99天内退货", "机械键盘退款条件"]},
+    ])
+    async def test_invalid_or_invented_expansion_falls_back_to_original(raw):
+>       result, _ = await expand(raw)
+                    ^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_expansion.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+raw = {'queries': ['机械键盘签收99天内退货', '机械键盘退款条件']}, scope = 'order_specific'
+intent = '退款退货'
+
+    async def expand(raw, *, scope="order_specific", intent="退款退货"):
+        calls = []
+    
+        class Model:
+            async def ainvoke(self, messages):
+                calls.append(messages)
+                return AIMessage(content=json.dumps(raw, ensure_ascii=False))
+    
+        context = WorkflowContext(
+            lambda: None, lambda: None, lambda: None, AgentLimits(),
+            router_model_factory=lambda **kw: Model(),
+        )
+        try:
+            function = import_module("mewhelp.ch06.expansion").expand_queries
+        except ImportError:
+>           pytest.fail("missing retrieval-side expansion")
+E           Failed: missing retrieval-side expansion
+
+tests\ch06\test_expansion.py:27: Failed
+__________ test_multi_query_rrf_validates_authority_and_reranks_once __________
+
+    def multi():
+        try:
+>           return import_module("mewhelp.knowledge.retrieval").retrieve_multi_evidence
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'mewhelp.knowledge.retrieval' has no attribute 'retrieve_multi_evidence'. Did you mean: 'retrieve_evidence'?
+
+tests\ch06\test_policy_retrieval.py:62: AttributeError
+
+During handling of the above exception, another exception occurred:
+
+    def test_multi_query_rrf_validates_authority_and_reranks_once():
+        runtime, chunks, calls = environment()
+        queries = [QueryUnderstanding(q, q, q, "knowledge", []) for q in ["原问题", "资格条件", "例外"]]
+>       result = multi()(runtime, queries,
+                 ^^^^^^^
+                         SearchFilters(content_type="policy", category="退款售后政策"),
+                         rerank_question="本单退款资格")
+
+tests\ch06\test_policy_retrieval.py:70: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def multi():
+        try:
+            return import_module("mewhelp.knowledge.retrieval").retrieve_multi_evidence
+        except AttributeError:
+>           pytest.fail("missing multi-query retrieval")
+E           Failed: missing multi-query retrieval
+
+tests\ch06\test_policy_retrieval.py:64: Failed
+______ test_fallback_original_still_forces_policy_and_renumbers_sources _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000166FF3F2B10>
+
+    def test_fallback_original_still_forces_policy_and_renumbers_sources(monkeypatch):
+        from mewhelp.ch05 import evidence
+        runtime, _, calls = environment()
+>       cal = calibration(runtime, monkeypatch)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_policy_retrieval.py:99: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runtime = RetrievalRuntime(session_factory=<function environment.<locals>.<lambda> at 0x00000166FF401620>, embed=<function envir...ment.<locals>.Index object at 0x00000166FF3F1E20>, rerank=<function environment.<locals>.rerank at 0x00000166FF403E20>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000166FF3F2B10>
+
+    def calibration(runtime, monkeypatch):
+        from mewhelp.ch05 import evidence
+        if not hasattr(evidence, "policy_corpus_hash"):
+>           pytest.fail("missing policy calibration binding")
+E           Failed: missing policy calibration binding
+
+tests\ch06\test_policy_retrieval.py:84: Failed
+_______ test_conflicting_filter_is_rejected_before_retrieval[filters0] ________
+
+filters = SearchFilters(category='配送', product_category=None, content_type=None, is_key_clause=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000166FF411F10>
+
+    @pytest.mark.parametrize("filters", [SearchFilters(category="配送"),
+                                         SearchFilters(content_type="faq"),
+                                         SearchFilters(is_key_clause=True)])
+    def test_conflicting_filter_is_rejected_before_retrieval(filters, monkeypatch):
+        from mewhelp.ch05 import evidence
+        runtime, _, calls = environment()
+>       cal = calibration(runtime, monkeypatch)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_policy_retrieval.py:116: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runtime = RetrievalRuntime(session_factory=<function environment.<locals>.<lambda> at 0x00000166FF429260>, embed=<function envir...ment.<locals>.Index object at 0x00000166FD404E60>, rerank=<function environment.<locals>.rerank at 0x00000166FF42A8E0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000166FF411F10>
+
+    def calibration(runtime, monkeypatch):
+        from mewhelp.ch05 import evidence
+        if not hasattr(evidence, "policy_corpus_hash"):
+>           pytest.fail("missing policy calibration binding")
+E           Failed: missing policy calibration binding
+
+tests\ch06\test_policy_retrieval.py:84: Failed
+_______ test_conflicting_filter_is_rejected_before_retrieval[filters1] ________
+
+filters = SearchFilters(category=None, product_category=None, content_type='faq', is_key_clause=None)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000166FF440560>
+
+    @pytest.mark.parametrize("filters", [SearchFilters(category="配送"),
+                                         SearchFilters(content_type="faq"),
+                                         SearchFilters(is_key_clause=True)])
+    def test_conflicting_filter_is_rejected_before_retrieval(filters, monkeypatch):
+        from mewhelp.ch05 import evidence
+        runtime, _, calls = environment()
+>       cal = calibration(runtime, monkeypatch)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_policy_retrieval.py:116: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runtime = RetrievalRuntime(session_factory=<function environment.<locals>.<lambda> at 0x00000166FF438FE0>, embed=<function envir...ment.<locals>.Index object at 0x00000166FF440B90>, rerank=<function environment.<locals>.rerank at 0x00000166FF43A660>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000166FF440560>
+
+    def calibration(runtime, monkeypatch):
+        from mewhelp.ch05 import evidence
+        if not hasattr(evidence, "policy_corpus_hash"):
+>           pytest.fail("missing policy calibration binding")
+E           Failed: missing policy calibration binding
+
+tests\ch06\test_policy_retrieval.py:84: Failed
+_______ test_conflicting_filter_is_rejected_before_retrieval[filters2] ________
+
+filters = SearchFilters(category=None, product_category=None, content_type=None, is_key_clause=True)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000166FF443EF0>
+
+    @pytest.mark.parametrize("filters", [SearchFilters(category="配送"),
+                                         SearchFilters(content_type="faq"),
+                                         SearchFilters(is_key_clause=True)])
+    def test_conflicting_filter_is_rejected_before_retrieval(filters, monkeypatch):
+        from mewhelp.ch05 import evidence
+        runtime, _, calls = environment()
+>       cal = calibration(runtime, monkeypatch)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_policy_retrieval.py:116: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runtime = RetrievalRuntime(session_factory=<function environment.<locals>.<lambda> at 0x00000166FF46CB80>, embed=<function envir...ment.<locals>.Index object at 0x00000166FF443F50>, rerank=<function environment.<locals>.rerank at 0x00000166FF439440>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000166FF443EF0>
+
+    def calibration(runtime, monkeypatch):
+        from mewhelp.ch05 import evidence
+        if not hasattr(evidence, "policy_corpus_hash"):
+>           pytest.fail("missing policy calibration binding")
+E           Failed: missing policy calibration binding
+
+tests\ch06\test_policy_retrieval.py:84: Failed
+____________ test_stale_policy_calibration_cannot_authorize_answer ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000166FF440B60>
+
+    def test_stale_policy_calibration_cannot_authorize_answer(monkeypatch):
+        from mewhelp.ch05 import evidence
+        runtime, _, calls = environment()
+>       cal = calibration(runtime, monkeypatch).model_copy(update={"corpus_hash": "0" * 64})
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_policy_retrieval.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runtime = RetrievalRuntime(session_factory=<function environment.<locals>.<lambda> at 0x00000166FF4019E0>, embed=<function envir...ment.<locals>.Index object at 0x00000166FF4402F0>, rerank=<function environment.<locals>.rerank at 0x00000166FF3BD620>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000166FF440B60>
+
+    def calibration(runtime, monkeypatch):
+        from mewhelp.ch05 import evidence
+        if not hasattr(evidence, "policy_corpus_hash"):
+>           pytest.fail("missing policy calibration binding")
+E           Failed: missing policy calibration binding
+
+tests\ch06\test_policy_retrieval.py:84: Failed
+_________________ test_reject_all_threshold_is_representable __________________
+
+    def test_reject_all_threshold_is_representable():
+>       cal = PolicyCalibration(policy_rerank_threshold=math.nextafter(1., math.inf),
+                                reranker_metadata={}, corpus_hash="a" * 64,
+                                retrieval_input_hash="b" * 64, dataset_hash="c" * 64,
+                                sample_count=16)
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for PolicyCalibration
+E       policy_rerank_threshold
+E         Input should be less than or equal to 1 [type=less_than_equal, input_value=1.0000000000000002, input_type=float]
+E           For further information visit https://errors.pydantic.dev/2.13/v/less_than_equal
+
+tests\ch06\test_policy_retrieval.py:140: ValidationError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_expansion.py::test_general_faq_does_not_call_expansion_model
+FAILED tests/ch06/test_expansion.py::test_valid_expansion_keeps_distinct_queries_and_usage
+FAILED tests/ch06/test_expansion.py::test_invalid_or_invented_expansion_falls_back_to_original[raw0]
+FAILED tests/ch06/test_expansion.py::test_invalid_or_invented_expansion_falls_back_to_original[raw1]
+FAILED tests/ch06/test_expansion.py::test_invalid_or_invented_expansion_falls_back_to_original[raw2]
+FAILED tests/ch06/test_expansion.py::test_invalid_or_invented_expansion_falls_back_to_original[raw3]
+FAILED tests/ch06/test_expansion.py::test_invalid_or_invented_expansion_falls_back_to_original[raw4]
+FAILED tests/ch06/test_policy_retrieval.py::test_multi_query_rrf_validates_authority_and_reranks_once
+FAILED tests/ch06/test_policy_retrieval.py::test_fallback_original_still_forces_policy_and_renumbers_sources
+FAILED tests/ch06/test_policy_retrieval.py::test_conflicting_filter_is_rejected_before_retrieval[filters0]
+FAILED tests/ch06/test_policy_retrieval.py::test_conflicting_filter_is_rejected_before_retrieval[filters1]
+FAILED tests/ch06/test_policy_retrieval.py::test_conflicting_filter_is_rejected_before_retrieval[filters2]
+FAILED tests/ch06/test_policy_retrieval.py::test_stale_policy_calibration_cannot_authorize_answer
+FAILED tests/ch06/test_policy_retrieval.py::test_reject_all_threshold_is_representable
+14 failed, 7 passed in 4.18s

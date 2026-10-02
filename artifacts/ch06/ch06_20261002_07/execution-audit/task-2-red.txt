@@ -1,0 +1,452 @@
+FFFFFFFFF                                                                [100%]
+================================== FAILURES ===================================
+_________________ test_provider_error_is_recorded_and_nonzero _________________
+
+    def evaluator_module():
+        try:
+>           return import_module("mewhelp.ch06.evaluation")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:9: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.evaluation'
+import_ = <function _gcd_import at 0x000001601A9780E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.evaluation'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-333/test_provider_error_is_recorde0')
+
+    async def test_provider_error_is_recorded_and_nonzero(tmp_path):
+        async def broken(case, **kwargs):
+            raise RuntimeError("upstream unavailable")
+>       code, summary = await run(tmp_path, broken)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_evaluation.py:27: in run
+    module = evaluator_module()
+             ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def evaluator_module():
+        try:
+            return import_module("mewhelp.ch06.evaluation")
+        except ImportError:
+>           pytest.fail("missing auditable evaluation runner")
+E           Failed: missing auditable evaluation runner
+
+tests\ch06\test_evaluation.py:11: Failed
+________________ test_fake_passed_flag_cannot_hide_wrong_label ________________
+
+    def evaluator_module():
+        try:
+>           return import_module("mewhelp.ch06.evaluation")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:9: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.evaluation'
+import_ = <function _gcd_import at 0x000001601A9780E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.evaluation'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-333/test_fake_passed_flag_cannot_h0')
+
+    async def test_fake_passed_flag_cannot_hide_wrong_label(tmp_path):
+        async def wrong(case, **kwargs):
+            return {**valid_result("退款退货"), "passed": True}
+>       code, summary = await run(tmp_path, wrong)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_evaluation.py:27: in run
+    module = evaluator_module()
+             ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def evaluator_module():
+        try:
+            return import_module("mewhelp.ch06.evaluation")
+        except ImportError:
+>           pytest.fail("missing auditable evaluation runner")
+E           Failed: missing auditable evaluation runner
+
+tests\ch06\test_evaluation.py:11: Failed
+________________ test_missing_output_is_not_a_skipped_success _________________
+
+    def evaluator_module():
+        try:
+>           return import_module("mewhelp.ch06.evaluation")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:9: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.evaluation'
+import_ = <function _gcd_import at 0x000001601A9780E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.evaluation'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-333/test_missing_output_is_not_a_s0')
+
+    async def test_missing_output_is_not_a_skipped_success(tmp_path):
+        async def missing(case, **kwargs):
+            return None
+>       code, summary = await run(tmp_path, missing)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_evaluation.py:27: in run
+    module = evaluator_module()
+             ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def evaluator_module():
+        try:
+            return import_module("mewhelp.ch06.evaluation")
+        except ImportError:
+>           pytest.fail("missing auditable evaluation runner")
+E           Failed: missing auditable evaluation runner
+
+tests\ch06\test_evaluation.py:11: Failed
+____________ test_changed_frozen_labels_fail_without_running_model ____________
+
+    def evaluator_module():
+        try:
+>           return import_module("mewhelp.ch06.evaluation")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:9: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.evaluation'
+import_ = <function _gcd_import at 0x000001601A9780E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.evaluation'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-333/test_changed_frozen_labels_fai0')
+
+    async def test_changed_frozen_labels_fail_without_running_model(tmp_path):
+>       module = evaluator_module()
+                 ^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def evaluator_module():
+        try:
+            return import_module("mewhelp.ch06.evaluation")
+        except ImportError:
+>           pytest.fail("missing auditable evaluation runner")
+E           Failed: missing auditable evaluation runner
+
+tests\ch06\test_evaluation.py:11: Failed
+____________________ test_removed_frozen_case_is_detected _____________________
+
+    def evaluator_module():
+        try:
+>           return import_module("mewhelp.ch06.evaluation")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:9: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.evaluation'
+import_ = <function _gcd_import at 0x000001601A9780E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.evaluation'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-333/test_removed_frozen_case_is_de0')
+
+    async def test_removed_frozen_case_is_detected(tmp_path):
+>       module = evaluator_module()
+                 ^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def evaluator_module():
+        try:
+            return import_module("mewhelp.ch06.evaluation")
+        except ImportError:
+>           pytest.fail("missing auditable evaluation runner")
+E           Failed: missing auditable evaluation runner
+
+tests\ch06\test_evaluation.py:11: Failed
+_____________ test_original_and_repaired_json_rates_are_separate ______________
+
+    def evaluator_module():
+        try:
+>           return import_module("mewhelp.ch06.evaluation")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:9: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.evaluation'
+import_ = <function _gcd_import at 0x000001601A9780E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.evaluation'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-333/test_original_and_repaired_jso0')
+
+    async def test_original_and_repaired_json_rates_are_separate(tmp_path):
+        async def repaired(case, **kwargs):
+            result = valid_result()
+            result["raw_responses"] = [{"content": "bad", "repair": False}, {**result["raw_responses"][0], "repair": True}]
+            return result
+>       code, summary = await run(tmp_path, repaired)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:85: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_evaluation.py:27: in run
+    module = evaluator_module()
+             ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def evaluator_module():
+        try:
+            return import_module("mewhelp.ch06.evaluation")
+        except ImportError:
+>           pytest.fail("missing auditable evaluation runner")
+E           Failed: missing auditable evaluation runner
+
+tests\ch06\test_evaluation.py:11: Failed
+___________ test_invalid_confidence_fails_even_when_intent_matches ____________
+
+    def evaluator_module():
+        try:
+>           return import_module("mewhelp.ch06.evaluation")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:9: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.evaluation'
+import_ = <function _gcd_import at 0x000001601A9780E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.evaluation'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-333/test_invalid_confidence_fails_0')
+
+    async def test_invalid_confidence_fails_even_when_intent_matches(tmp_path):
+        async def malformed(case, **kwargs):
+            result = valid_result()
+            result["actual"]["confidence"] = "high"
+            return result
+>       code, summary = await run(tmp_path, malformed)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:96: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_evaluation.py:27: in run
+    module = evaluator_module()
+             ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def evaluator_module():
+        try:
+            return import_module("mewhelp.ch06.evaluation")
+        except ImportError:
+>           pytest.fail("missing auditable evaluation runner")
+E           Failed: missing auditable evaluation runner
+
+tests\ch06\test_evaluation.py:11: Failed
+_________________ test_existing_report_cannot_be_overwritten __________________
+
+    def evaluator_module():
+        try:
+>           return import_module("mewhelp.ch06.evaluation")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:9: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.evaluation'
+import_ = <function _gcd_import at 0x000001601A9780E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.evaluation'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-333/test_existing_report_cannot_be0')
+
+    async def test_existing_report_cannot_be_overwritten(tmp_path):
+>       module = evaluator_module()
+                 ^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def evaluator_module():
+        try:
+            return import_module("mewhelp.ch06.evaluation")
+        except ImportError:
+>           pytest.fail("missing auditable evaluation runner")
+E           Failed: missing auditable evaluation runner
+
+tests\ch06\test_evaluation.py:11: Failed
+____________________ test_refreeze_refuses_modified_labels ____________________
+
+    def evaluator_module():
+        try:
+>           return import_module("mewhelp.ch06.evaluation")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:9: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.evaluation'
+import_ = <function _gcd_import at 0x000001601A9780E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.evaluation'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-333/test_refreeze_refuses_modified0')
+
+    def test_refreeze_refuses_modified_labels(tmp_path):
+>       module = evaluator_module()
+                 ^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_evaluation.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def evaluator_module():
+        try:
+            return import_module("mewhelp.ch06.evaluation")
+        except ImportError:
+>           pytest.fail("missing auditable evaluation runner")
+E           Failed: missing auditable evaluation runner
+
+tests\ch06\test_evaluation.py:11: Failed
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_evaluation.py::test_provider_error_is_recorded_and_nonzero
+FAILED tests/ch06/test_evaluation.py::test_fake_passed_flag_cannot_hide_wrong_label
+FAILED tests/ch06/test_evaluation.py::test_missing_output_is_not_a_skipped_success
+FAILED tests/ch06/test_evaluation.py::test_changed_frozen_labels_fail_without_running_model
+FAILED tests/ch06/test_evaluation.py::test_removed_frozen_case_is_detected - ...
+FAILED tests/ch06/test_evaluation.py::test_original_and_repaired_json_rates_are_separate
+FAILED tests/ch06/test_evaluation.py::test_invalid_confidence_fails_even_when_intent_matches
+FAILED tests/ch06/test_evaluation.py::test_existing_report_cannot_be_overwritten
+FAILED tests/ch06/test_evaluation.py::test_refreeze_refuses_modified_labels
+9 failed in 0.52s

@@ -1,0 +1,461 @@
+FFFFFFFFF                                                                [100%]
+================================== FAILURES ===================================
+_ test_rewrite_preserves_numbers_negations_and_conditions[  \u8ba2\u53551001\u7684K87\u952e\u76d8\u672a\u62c6\u5c01\uff0c\u7b7e\u65367\u5929\u5185\u4e14\u4e0d\u5f71\u54cd\u4e8c\u6b21\u9500\u552e\uff0c\u80fd\u9000\u5417\uff1f  ] _
+
+    def understanding():
+        try:
+>           return import_module("mewhelp.ch06.understanding").understand_query
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_understanding.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.understanding'
+import_ = <function _gcd_import at 0x000001A8404280E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.understanding'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+original = '  订单1001的K87键盘未拆封，签收7天内且不影响二次销售，能退吗？  '
+
+    @pytest.mark.parametrize("original", [
+        "  订单1001的K87键盘未拆封，签收7天内且不影响二次销售，能退吗？  ",
+        "机械键盘支持蓝牙连接吗？",
+        "订单1002如果不是人为损坏，能保修吗？",
+    ])
+    async def test_rewrite_preserves_numbers_negations_and_conditions(original):
+>       result = await resolve(original, output("请问键盘可以退货吗？", "1001"))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_understanding.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_understanding.py:23: in resolve
+    return await understanding()(question, history or [], entities or [], context=context, state={})
+                 ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def understanding():
+        try:
+            return import_module("mewhelp.ch06.understanding").understand_query
+        except ImportError:
+>           pytest.fail("missing conservative understanding")
+E           Failed: missing conservative understanding
+
+tests\ch06\test_understanding.py:15: Failed
+_ test_rewrite_preserves_numbers_negations_and_conditions[\u673a\u68b0\u952e\u76d8\u652f\u6301\u84dd\u7259\u8fde\u63a5\u5417\uff1f] _
+
+    def understanding():
+        try:
+>           return import_module("mewhelp.ch06.understanding").understand_query
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_understanding.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.understanding'
+import_ = <function _gcd_import at 0x000001A8404280E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.understanding'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+original = '机械键盘支持蓝牙连接吗？'
+
+    @pytest.mark.parametrize("original", [
+        "  订单1001的K87键盘未拆封，签收7天内且不影响二次销售，能退吗？  ",
+        "机械键盘支持蓝牙连接吗？",
+        "订单1002如果不是人为损坏，能保修吗？",
+    ])
+    async def test_rewrite_preserves_numbers_negations_and_conditions(original):
+>       result = await resolve(original, output("请问键盘可以退货吗？", "1001"))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_understanding.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_understanding.py:23: in resolve
+    return await understanding()(question, history or [], entities or [], context=context, state={})
+                 ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def understanding():
+        try:
+            return import_module("mewhelp.ch06.understanding").understand_query
+        except ImportError:
+>           pytest.fail("missing conservative understanding")
+E           Failed: missing conservative understanding
+
+tests\ch06\test_understanding.py:15: Failed
+_ test_rewrite_preserves_numbers_negations_and_conditions[\u8ba2\u53551002\u5982\u679c\u4e0d\u662f\u4eba\u4e3a\u635f\u574f\uff0c\u80fd\u4fdd\u4fee\u5417\uff1f] _
+
+    def understanding():
+        try:
+>           return import_module("mewhelp.ch06.understanding").understand_query
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_understanding.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.understanding'
+import_ = <function _gcd_import at 0x000001A8404280E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.understanding'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+original = '订单1002如果不是人为损坏，能保修吗？'
+
+    @pytest.mark.parametrize("original", [
+        "  订单1001的K87键盘未拆封，签收7天内且不影响二次销售，能退吗？  ",
+        "机械键盘支持蓝牙连接吗？",
+        "订单1002如果不是人为损坏，能保修吗？",
+    ])
+    async def test_rewrite_preserves_numbers_negations_and_conditions(original):
+>       result = await resolve(original, output("请问键盘可以退货吗？", "1001"))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_understanding.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_understanding.py:23: in resolve
+    return await understanding()(question, history or [], entities or [], context=context, state={})
+                 ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def understanding():
+        try:
+            return import_module("mewhelp.ch06.understanding").understand_query
+        except ImportError:
+>           pytest.fail("missing conservative understanding")
+E           Failed: missing conservative understanding
+
+tests\ch06\test_understanding.py:15: Failed
+___________________ test_two_orders_cannot_invent_referent ____________________
+
+    def understanding():
+        try:
+>           return import_module("mewhelp.ch06.understanding").understand_query
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_understanding.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.understanding'
+import_ = <function _gcd_import at 0x000001A8404280E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.understanding'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    async def test_two_orders_cannot_invent_referent():
+        history = [{"id": "a1", "role": "assistant", "content": "订单1001是键盘"}, {"id": "a2", "role": "assistant", "content": "订单1002是耳机"}]
+        entities = [{"order_id": "1001", "product_name": "键盘", "message_id": "a1"}, {"order_id": "1002", "product_name": "耳机", "message_id": "a2"}]
+>       result = await resolve("它能退吗", output("订单1002的耳机能退货吗？", "1002", "a2"), history, entities)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_understanding.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_understanding.py:23: in resolve
+    return await understanding()(question, history or [], entities or [], context=context, state={})
+                 ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def understanding():
+        try:
+            return import_module("mewhelp.ch06.understanding").understand_query
+        except ImportError:
+>           pytest.fail("missing conservative understanding")
+E           Failed: missing conservative understanding
+
+tests\ch06\test_understanding.py:15: Failed
+________________ test_new_session_does_not_import_old_entities ________________
+
+    def understanding():
+        try:
+>           return import_module("mewhelp.ch06.understanding").understand_query
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_understanding.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.understanding'
+import_ = <function _gcd_import at 0x000001A8404280E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.understanding'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    async def test_new_session_does_not_import_old_entities():
+>       result = await resolve("这个能退吗", output("订单1001的键盘能退吗？", "1001", "old"), entities=[{"order_id": "1001", "product_name": "键盘", "message_id": "old"}])
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_understanding.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_understanding.py:23: in resolve
+    return await understanding()(question, history or [], entities or [], context=context, state={})
+                 ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def understanding():
+        try:
+            return import_module("mewhelp.ch06.understanding").understand_query
+        except ImportError:
+>           pytest.fail("missing conservative understanding")
+E           Failed: missing conservative understanding
+
+tests\ch06\test_understanding.py:15: Failed
+______________ test_unique_checkpoint_entity_resolves_reference _______________
+
+    def understanding():
+        try:
+>           return import_module("mewhelp.ch06.understanding").understand_query
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_understanding.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.understanding'
+import_ = <function _gcd_import at 0x000001A8404280E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.understanding'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    async def test_unique_checkpoint_entity_resolves_reference():
+>       result = await resolve("它能退吗", output("订单1001的机械键盘能退货吗？", "1001", "a1"),
+            [{"id": "a1", "role": "assistant", "content": "订单1001的商品为机械键盘"}],
+            [{"order_id": "1001", "product_name": "机械键盘", "message_id": "a1"}])
+
+tests\ch06\test_understanding.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_understanding.py:23: in resolve
+    return await understanding()(question, history or [], entities or [], context=context, state={})
+                 ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def understanding():
+        try:
+            return import_module("mewhelp.ch06.understanding").understand_query
+        except ImportError:
+>           pytest.fail("missing conservative understanding")
+E           Failed: missing conservative understanding
+
+tests\ch06\test_understanding.py:15: Failed
+______________ test_history_text_alone_cannot_supply_order_fact _______________
+
+    def understanding():
+        try:
+>           return import_module("mewhelp.ch06.understanding").understand_query
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_understanding.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.understanding'
+import_ = <function _gcd_import at 0x000001A8404280E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.understanding'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    async def test_history_text_alone_cannot_supply_order_fact():
+>       result = await resolve("它能退吗", output("订单1001能退货吗？", "1001", "a1"),
+            [{"id": "a1", "role": "assistant", "content": "订单1001未拆封"}], [])
+
+tests\ch06\test_understanding.py:62: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_understanding.py:23: in resolve
+    return await understanding()(question, history or [], entities or [], context=context, state={})
+                 ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def understanding():
+        try:
+            return import_module("mewhelp.ch06.understanding").understand_query
+        except ImportError:
+>           pytest.fail("missing conservative understanding")
+E           Failed: missing conservative understanding
+
+tests\ch06\test_understanding.py:15: Failed
+_____________ test_reference_does_not_invent_condition_or_amount ______________
+
+    def understanding():
+        try:
+>           return import_module("mewhelp.ch06.understanding").understand_query
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_understanding.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.understanding'
+import_ = <function _gcd_import at 0x000001A8404280E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.understanding'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    async def test_reference_does_not_invent_condition_or_amount():
+>       result = await resolve("它能退吗", output("订单1001的机械键盘未拆封，实付1元，能退吗？", "1001", "a1"),
+            [{"id": "a1", "role": "assistant", "content": "订单1001的商品为机械键盘"}],
+            [{"order_id": "1001", "product_name": "机械键盘", "message_id": "a1"}])
+
+tests\ch06\test_understanding.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_understanding.py:23: in resolve
+    return await understanding()(question, history or [], entities or [], context=context, state={})
+                 ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def understanding():
+        try:
+            return import_module("mewhelp.ch06.understanding").understand_query
+        except ImportError:
+>           pytest.fail("missing conservative understanding")
+E           Failed: missing conservative understanding
+
+tests\ch06\test_understanding.py:15: Failed
+___________________ test_price_is_not_an_explicit_order_id ____________________
+
+    def understanding():
+        try:
+>           return import_module("mewhelp.ch06.understanding").understand_query
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_understanding.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.understanding'
+import_ = <function _gcd_import at 0x000001A8404280E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.understanding'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    async def test_price_is_not_an_explicit_order_id():
+>       result = await resolve("1001元的键盘能退吗？", output("订单1001能退货吗？", "1001"))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_understanding.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\ch06\test_understanding.py:23: in resolve
+    return await understanding()(question, history or [], entities or [], context=context, state={})
+                 ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def understanding():
+        try:
+            return import_module("mewhelp.ch06.understanding").understand_query
+        except ImportError:
+>           pytest.fail("missing conservative understanding")
+E           Failed: missing conservative understanding
+
+tests\ch06\test_understanding.py:15: Failed
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_understanding.py::test_rewrite_preserves_numbers_negations_and_conditions[  \u8ba2\u53551001\u7684K87\u952e\u76d8\u672a\u62c6\u5c01\uff0c\u7b7e\u65367\u5929\u5185\u4e14\u4e0d\u5f71\u54cd\u4e8c\u6b21\u9500\u552e\uff0c\u80fd\u9000\u5417\uff1f  ]
+FAILED tests/ch06/test_understanding.py::test_rewrite_preserves_numbers_negations_and_conditions[\u673a\u68b0\u952e\u76d8\u652f\u6301\u84dd\u7259\u8fde\u63a5\u5417\uff1f]
+FAILED tests/ch06/test_understanding.py::test_rewrite_preserves_numbers_negations_and_conditions[\u8ba2\u53551002\u5982\u679c\u4e0d\u662f\u4eba\u4e3a\u635f\u574f\uff0c\u80fd\u4fdd\u4fee\u5417\uff1f]
+FAILED tests/ch06/test_understanding.py::test_two_orders_cannot_invent_referent
+FAILED tests/ch06/test_understanding.py::test_new_session_does_not_import_old_entities
+FAILED tests/ch06/test_understanding.py::test_unique_checkpoint_entity_resolves_reference
+FAILED tests/ch06/test_understanding.py::test_history_text_alone_cannot_supply_order_fact
+FAILED tests/ch06/test_understanding.py::test_reference_does_not_invent_condition_or_amount
+FAILED tests/ch06/test_understanding.py::test_price_is_not_an_explicit_order_id
+9 failed in 3.03s

@@ -1,0 +1,68 @@
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+_______________ test_core_leaks_take_priority_over_upgrade_cost _______________
+
+    def test_core_leaks_take_priority_over_upgrade_cost():
+        rows = [row("退款退货", {"intent": "退款退货", "confidence": 0.99}, {"intent": "订单", "confidence": 0.85})]
+>       selected, grid = select(rows, True)
+                         ^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_calibration.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+rows = [{'case': {'expected': {'intent': '退款退货'}}, 'primary': {'actual': {'intent': '退款退货', 'confidence': 0.99}}, 'small': {'actual': {'intent': '订单', 'confidence': 0.85}}}]
+has_small = True
+
+    def select(rows, has_small):
+        function = getattr(evaluation, "select_router_thresholds", None)
+>       assert function is not None, "missing independently testable threshold selection"
+E       AssertionError: missing independently testable threshold selection
+E       assert None is not None
+
+tests\ch06\test_calibration.py:6: AssertionError
+__ test_primary_threshold_balances_other_and_core_without_acceptance_labels ___
+
+    def test_primary_threshold_balances_other_and_core_without_acceptance_labels():
+        rows = [row("其他", {"intent": "退款退货", "confidence": 0.6}),
+                row("退款退货", {"intent": "退款退货", "confidence": 0.7})]
+>       selected, _ = select(rows, False)
+                      ^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_calibration.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+rows = [{'case': {'expected': {'intent': '其他'}}, 'primary': {'actual': {'intent': '退款退货', 'confidence': 0.6}}}, {'case': {'expected': {'intent': '退款退货'}}, 'primary': {'actual': {'intent': '退款退货', 'confidence': 0.7}}}]
+has_small = False
+
+    def select(rows, has_small):
+        function = getattr(evaluation, "select_router_thresholds", None)
+>       assert function is not None, "missing independently testable threshold selection"
+E       AssertionError: missing independently testable threshold selection
+E       assert None is not None
+
+tests\ch06\test_calibration.py:6: AssertionError
+_________________ test_equal_accuracy_prefers_fewer_upgrades __________________
+
+    def test_equal_accuracy_prefers_fewer_upgrades():
+        rows = [row("订单", {"intent": "订单", "confidence": 0.99}, {"intent": "订单", "confidence": 0.85})]
+>       selected, _ = select(rows, True)
+                      ^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_calibration.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+rows = [{'case': {'expected': {'intent': '订单'}}, 'primary': {'actual': {'intent': '订单', 'confidence': 0.99}}, 'small': {'actual': {'intent': '订单', 'confidence': 0.85}}}]
+has_small = True
+
+    def select(rows, has_small):
+        function = getattr(evaluation, "select_router_thresholds", None)
+>       assert function is not None, "missing independently testable threshold selection"
+E       AssertionError: missing independently testable threshold selection
+E       assert None is not None
+
+tests\ch06\test_calibration.py:6: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_calibration.py::test_core_leaks_take_priority_over_upgrade_cost
+FAILED tests/ch06/test_calibration.py::test_primary_threshold_balances_other_and_core_without_acceptance_labels
+FAILED tests/ch06/test_calibration.py::test_equal_accuracy_prefers_fewer_upgrades
+3 failed in 4.17s

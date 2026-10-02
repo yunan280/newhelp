@@ -1,0 +1,55 @@
+.....F..                                                                 [100%]
+================================== FAILURES ===================================
+__________ test_failed_resume_retries_same_choice_with_fresh_window ___________
+
+selection_runtime = WorkflowRuntime(graph=<langgraph.graph.state.CompiledStateGraph object at 0x000001CFAB3E3680>, context=WorkflowContext...sessment_max_tokens=768), router_model_factory=None), locks=<mewhelp.memory.SessionStore object at 0x000001CFAB468200>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CFAB468230>
+
+    async def test_failed_resume_retries_same_choice_with_fresh_window(selection_runtime, monkeypatch):
+        from mewhelp.ch06 import selection
+        before = await waiting(selection_runtime)
+        selection_runtime.test_controls.fail_once = True
+        with pytest.raises(RuntimeError, match="transient"):
+            await selection.resume_order(selection_runtime, request(before))
+        now = time.time()
+        monkeypatch.setattr(selection.time, "time", lambda: now + 181)
+>       after = await selection.resume_order(selection_runtime, request(before))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_selection.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\mewhelp\ch06\selection.py:163: in resume_order
+    async for item in stream:
+src\mewhelp\ch06\selection.py:145: in stream_order_resume
+    async for item in stream:
+.venv-ch03\Lib\site-packages\langgraph\pregel\main.py:3440: in astream
+    async for _ in runner.atick(
+.venv-ch03\Lib\site-packages\langgraph\pregel\_runner.py:557: in atick
+    _panic_or_proceed(
+.venv-ch03\Lib\site-packages\langgraph\pregel\_runner.py:687: in _panic_or_proceed
+    raise exc
+.venv-ch03\Lib\site-packages\langgraph\pregel\_retry.py:744: in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv-ch03\Lib\site-packages\langgraph\_internal\_runnable.py:756: in ainvoke
+    input = await asyncio.create_task(
+.venv-ch03\Lib\site-packages\langgraph\_internal\_runnable.py:522: in ainvoke
+    ret = await self.afunc(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = {'messages': [], 'question': '这个能退吗', 'resolved_question': '这个能退吗', 'session_id': 'select', ...}
+
+    async def finish(state):
+        if controls.fail_once:
+            controls.fail_once = False
+            raise RuntimeError("transient failure after order resume")
+        if state.get("selected_order_id") and time.time() - state["started_at"] > 180:
+>           raise TimeoutError("execution window expired")
+E           TimeoutError: execution window expired
+E           During task with name 'finish' and id '4ee7b152-095a-9bbd-0014-5784c7e4905d'
+
+tests\ch06\conftest.py:53: TimeoutError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_selection.py::test_failed_resume_retries_same_choice_with_fresh_window
+1 failed, 7 passed in 1.35s

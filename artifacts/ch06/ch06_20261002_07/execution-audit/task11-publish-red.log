@@ -1,0 +1,53 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_______ test_changed_existing_document_rolls_back_before_index_publish ________
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-387%5Ctest_changed_existing_document0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-387/test_changed_existing_document0')
+
+    def test_changed_existing_document_rolls_back_before_index_publish(session_factory, tmp_path):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        policy = docs / "aftersales-policy.md"
+        policy.write_text("# 政策\n## 原条款\n原始政策事实。", encoding="utf-8")
+        with session_factory() as db:
+            ingest_documents(db, docs)
+            db.commit()
+>           before = [(row.id, row.content_hash) for row in db.scalars(select(KnowledgeChunk))]
+                               ^^^^^^^^^^^^^^^^
+E           AttributeError: 'KnowledgeChunk' object has no attribute 'content_hash'. Did you mean: 'content_type'?
+
+tests\ch06\test_demo_publish.py:34: AttributeError
+_______________ test_demo_publisher_refuses_default_collection ________________
+
+session_factory = sessionmaker(class_='Session', bind=Engine(sqlite:///C%3A%5CUsers%5C27497%5CAppData%5CLocal%5CTemp%5Cpytest-of-27497%5Cpytest-387%5Ctest_demo_publisher_refuses_de0%5Cbusiness.sqlite), autoflush=True, expire_on_commit=False)
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-387/test_demo_publisher_refuses_de0')
+
+    def test_demo_publisher_refuses_default_collection(session_factory, tmp_path):
+        index = Index()
+        index.collection = "mewhelp_qa"
+>       module = import_module("mewhelp.ch06.demo_publish")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\ch06\test_demo_publish.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'mewhelp.ch06.demo_publish'
+import_ = <function _gcd_import at 0x0000016F5DF980E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'mewhelp.ch06.demo_publish'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_demo_publish.py::test_changed_existing_document_rolls_back_before_index_publish
+FAILED tests/ch06/test_demo_publish.py::test_demo_publisher_refuses_default_collection
+2 failed in 0.68s

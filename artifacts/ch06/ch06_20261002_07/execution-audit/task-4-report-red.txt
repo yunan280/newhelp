@@ -1,0 +1,19 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_report_keeps_usage_and_upgrade_denominator _______________
+
+tmp_path = WindowsPath('C:/Users/27497/AppData/Local/Temp/pytest-of-27497/pytest-341/test_report_keeps_usage_and_up0')
+
+    async def test_report_keeps_usage_and_upgrade_denominator(tmp_path):
+        async def upgraded(case, **kwargs):
+            return {**valid_result(), "escalated": True, "calls": {"classifier": 2}}
+        code, summary = await run(tmp_path, upgraded)
+        assert code == 0
+>       assert summary["usage"] == {"input_tokens": 10, "output_tokens": 5, "estimated": False}
+               ^^^^^^^^^^^^^^^^
+E       KeyError: 'usage'
+
+tests\ch06\test_evaluation.py:180: KeyError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_evaluation.py::test_report_keeps_usage_and_upgrade_denominator
+1 failed in 3.44s

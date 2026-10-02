@@ -1,0 +1,5 @@
+INFO:     Started server process [42116]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:9006 (Press CTRL+C to quit)
+Ch05 invalid Agent decision; attempting one control correction

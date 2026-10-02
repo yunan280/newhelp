@@ -1,0 +1,201 @@
+FFFFFFFFFFFFFF............                                               [100%]
+================================== FAILURES ===================================
+___ test_eight_way_fixed_routes[\u9000\u6b3e\u9000\u8d27-general-knowledge] ___
+
+category = '退款退货', scope = 'general', want = 'knowledge'
+
+    @pytest.mark.parametrize("category,scope,want", [
+        ("退款退货", "general", "knowledge"), ("售后", "general", "knowledge"),
+        ("退款退货", "order_specific", "aftersales"), ("售后", "order_specific", "aftersales"),
+        ("其他", "general", "other"), ("物流", "order_specific", "business"),
+    ])
+    def test_eight_way_fixed_routes(category, scope, want):
+>       assert intent.route_intent(category, scope) == want
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: route_intent() takes 1 positional argument but 2 were given
+
+tests\ch06\test_intent.py:49: TypeError
+_________ test_eight_way_fixed_routes[\u552e\u540e-general-knowledge] _________
+
+category = '售后', scope = 'general', want = 'knowledge'
+
+    @pytest.mark.parametrize("category,scope,want", [
+        ("退款退货", "general", "knowledge"), ("售后", "general", "knowledge"),
+        ("退款退货", "order_specific", "aftersales"), ("售后", "order_specific", "aftersales"),
+        ("其他", "general", "other"), ("物流", "order_specific", "business"),
+    ])
+    def test_eight_way_fixed_routes(category, scope, want):
+>       assert intent.route_intent(category, scope) == want
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: route_intent() takes 1 positional argument but 2 were given
+
+tests\ch06\test_intent.py:49: TypeError
+_ test_eight_way_fixed_routes[\u9000\u6b3e\u9000\u8d27-order_specific-aftersales] _
+
+category = '退款退货', scope = 'order_specific', want = 'aftersales'
+
+    @pytest.mark.parametrize("category,scope,want", [
+        ("退款退货", "general", "knowledge"), ("售后", "general", "knowledge"),
+        ("退款退货", "order_specific", "aftersales"), ("售后", "order_specific", "aftersales"),
+        ("其他", "general", "other"), ("物流", "order_specific", "business"),
+    ])
+    def test_eight_way_fixed_routes(category, scope, want):
+>       assert intent.route_intent(category, scope) == want
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: route_intent() takes 1 positional argument but 2 were given
+
+tests\ch06\test_intent.py:49: TypeError
+_____ test_eight_way_fixed_routes[\u552e\u540e-order_specific-aftersales] _____
+
+category = '售后', scope = 'order_specific', want = 'aftersales'
+
+    @pytest.mark.parametrize("category,scope,want", [
+        ("退款退货", "general", "knowledge"), ("售后", "general", "knowledge"),
+        ("退款退货", "order_specific", "aftersales"), ("售后", "order_specific", "aftersales"),
+        ("其他", "general", "other"), ("物流", "order_specific", "business"),
+    ])
+    def test_eight_way_fixed_routes(category, scope, want):
+>       assert intent.route_intent(category, scope) == want
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: route_intent() takes 1 positional argument but 2 were given
+
+tests\ch06\test_intent.py:49: TypeError
+___________ test_eight_way_fixed_routes[\u5176\u4ed6-general-other] ___________
+
+category = '其他', scope = 'general', want = 'other'
+
+    @pytest.mark.parametrize("category,scope,want", [
+        ("退款退货", "general", "knowledge"), ("售后", "general", "knowledge"),
+        ("退款退货", "order_specific", "aftersales"), ("售后", "order_specific", "aftersales"),
+        ("其他", "general", "other"), ("物流", "order_specific", "business"),
+    ])
+    def test_eight_way_fixed_routes(category, scope, want):
+>       assert intent.route_intent(category, scope) == want
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: route_intent() takes 1 positional argument but 2 were given
+
+tests\ch06\test_intent.py:49: TypeError
+______ test_eight_way_fixed_routes[\u7269\u6d41-order_specific-business] ______
+
+category = '物流', scope = 'order_specific', want = 'business'
+
+    @pytest.mark.parametrize("category,scope,want", [
+        ("退款退货", "general", "knowledge"), ("售后", "general", "knowledge"),
+        ("退款退货", "order_specific", "aftersales"), ("售后", "order_specific", "aftersales"),
+        ("其他", "general", "other"), ("物流", "order_specific", "business"),
+    ])
+    def test_eight_way_fixed_routes(category, scope, want):
+>       assert intent.route_intent(category, scope) == want
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: route_intent() takes 1 positional argument but 2 were given
+
+tests\ch06\test_intent.py:49: TypeError
+_________ test_default_uses_primary_even_with_small_model_configured __________
+
+factory = <function factory.<locals>.create at 0x000001592DBCDEE0>
+
+    async def test_default_uses_primary_even_with_small_model_configured(factory):
+        context, requests = factory([control("闲聊", 0.9)])
+>       result = await intent.classify_intent("你好", context=context, state={})
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: classify_intent() got an unexpected keyword argument 'context'
+
+tests\ch06\test_intent.py:54: TypeError
+________ test_low_confidence_upgrades_once_and_keeps_cumulative_usage _________
+
+factory = <function factory.<locals>.create at 0x000001592DBCE700>
+
+    async def test_low_confidence_upgrades_once_and_keeps_cumulative_usage(factory):
+        context, requests = factory([control("订单", 0.3), control("退款退货", 0.95)], cascade=True)
+>       result = await intent.classify_intent("这个能退吗", context=context, state={"usage": {"input_tokens": 20, "output_tokens": 5}, "calls": {"understanding": 1}})
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: classify_intent() got an unexpected keyword argument 'context'
+
+tests\ch06\test_intent.py:62: TypeError
+______________ test_high_confidence_small_model_does_not_upgrade ______________
+
+factory = <function factory.<locals>.create at 0x000001592DBCF100>
+
+    async def test_high_confidence_small_model_does_not_upgrade(factory):
+        context, requests = factory([control("物流", 0.9)], cascade=True)
+>       result = await intent.classify_intent("查快递", context=context, state={})
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: classify_intent() got an unexpected keyword argument 'context'
+
+tests\ch06\test_intent.py:70: TypeError
+_________ test_uncertain_primary_is_other_without_repeated_escalation _________
+
+factory = <function factory.<locals>.create at 0x000001592DBCF2E0>
+
+    async def test_uncertain_primary_is_other_without_repeated_escalation(factory):
+        context, requests = factory([control("售后", 0.4), control("订单", 0.4)], cascade=True)
+>       result = await intent.classify_intent("奇怪的问法", context=context, state={})
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: classify_intent() got an unexpected keyword argument 'context'
+
+tests\ch06\test_intent.py:76: TypeError
+__________ test_invalid_classification_stops_after_one_format_repair __________
+
+factory = <function factory.<locals>.create at 0x000001592DBCFEC0>
+
+    async def test_invalid_classification_stops_after_one_format_repair(factory):
+        context, requests = factory(['{"intent":"退款退货","confidence":1,"order_id":"1001"}', 'not JSON'])
+>       result = await intent.classify_intent("处理一下", context=context, state={})
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: classify_intent() got an unexpected keyword argument 'context'
+
+tests\ch06\test_intent.py:82: TypeError
+____________ test_provider_failure_is_not_business_label_or_other _____________
+
+factory = <function factory.<locals>.create at 0x000001592DBCF2E0>
+
+    async def test_provider_failure_is_not_business_label_or_other(factory):
+        context, requests = factory([RuntimeError("upstream unavailable")])
+        with pytest.raises(RuntimeError, match="upstream unavailable"):
+>           await intent.classify_intent("想退款", context=context, state={})
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: classify_intent() got an unexpected keyword argument 'context'
+
+tests\ch06\test_intent.py:90: TypeError
+______ test_missing_calibration_cannot_fall_back_to_default_small_model _______
+
+    async def test_missing_calibration_cannot_fall_back_to_default_small_model():
+        context = WorkflowContext(lambda: None, lambda: None, lambda: None, AgentLimits(), router_settings=Ch06Settings(calibration_path=None))
+        with pytest.raises(ValueError, match="calibration"):
+>           await intent.classify_intent("你好", context=context, state={})
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: classify_intent() got an unexpected keyword argument 'context'
+
+tests\ch06\test_intent.py:97: TypeError
+____________ test_stale_calibration_does_not_send_provider_request ____________
+
+factory = <function factory.<locals>.create at 0x000001592DBCEFC0>
+
+    async def test_stale_calibration_does_not_send_provider_request(factory):
+        context, requests = factory([])
+        path = context.router_settings.calibration_path
+        payload = json.loads(path.read_text())
+        payload["intent_hash"] = "stale"
+        path.write_text(json.dumps(payload))
+        with pytest.raises(ValueError, match="calibration"):
+>           await intent.classify_intent("退货", context=context, state={})
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: classify_intent() got an unexpected keyword argument 'context'
+
+tests\ch06\test_intent.py:107: TypeError
+=========================== short test summary info ===========================
+FAILED tests/ch06/test_intent.py::test_eight_way_fixed_routes[\u9000\u6b3e\u9000\u8d27-general-knowledge]
+FAILED tests/ch06/test_intent.py::test_eight_way_fixed_routes[\u552e\u540e-general-knowledge]
+FAILED tests/ch06/test_intent.py::test_eight_way_fixed_routes[\u9000\u6b3e\u9000\u8d27-order_specific-aftersales]
+FAILED tests/ch06/test_intent.py::test_eight_way_fixed_routes[\u552e\u540e-order_specific-aftersales]
+FAILED tests/ch06/test_intent.py::test_eight_way_fixed_routes[\u5176\u4ed6-general-other]
+FAILED tests/ch06/test_intent.py::test_eight_way_fixed_routes[\u7269\u6d41-order_specific-business]
+FAILED tests/ch06/test_intent.py::test_default_uses_primary_even_with_small_model_configured
+FAILED tests/ch06/test_intent.py::test_low_confidence_upgrades_once_and_keeps_cumulative_usage
+FAILED tests/ch06/test_intent.py::test_high_confidence_small_model_does_not_upgrade
+FAILED tests/ch06/test_intent.py::test_uncertain_primary_is_other_without_repeated_escalation
+FAILED tests/ch06/test_intent.py::test_invalid_classification_stops_after_one_format_repair
+FAILED tests/ch06/test_intent.py::test_provider_failure_is_not_business_label_or_other
+FAILED tests/ch06/test_intent.py::test_missing_calibration_cannot_fall_back_to_default_small_model
+FAILED tests/ch06/test_intent.py::test_stale_calibration_does_not_send_provider_request
+14 failed, 12 passed in 2.40s
