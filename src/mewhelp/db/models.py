@@ -188,3 +188,27 @@ class Ticket(Base):
     created_at: Mapped[dt.datetime] = mapped_column(
         DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP")
     )
+
+
+class RefundApplication(Base):
+    __tablename__ = "refund_applications"
+    __table_args__ = (
+        Index("uk_refund_applications_offer_id", "offer_id", unique=True),
+        Index("uk_refund_applications_application_no", "application_no", unique=True),
+        Index("idx_refund_applications_conversation", "conversation_id"),
+        {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
+    )
+    id: Mapped[int] = mapped_column(BIGINT_PK, primary_key=True, autoincrement=True)
+    application_no: Mapped[str] = mapped_column(String(32), nullable=False)
+    offer_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    conversation_id: Mapped[int] = mapped_column(BIGINT_PK,
+        ForeignKey("conversations.id", name="fk_refund_applications_conversation"), nullable=False)
+    user_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    order_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    reason: Mapped[str] = mapped_column(String(32), nullable=False)
+    order_snapshot: Mapped[dict] = mapped_column(JSON_COLUMN, nullable=False)
+    assessment_snapshot: Mapped[dict] = mapped_column(JSON_COLUMN, nullable=False)
+    policy_snapshot: Mapped[list] = mapped_column(JSON_COLUMN, nullable=False)
+    status: Mapped[str] = mapped_column(String(16), nullable=False, server_default=text("'pending'"))
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime, nullable=False,
+                                                server_default=text("CURRENT_TIMESTAMP"))

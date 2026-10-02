@@ -14,7 +14,7 @@ import pytest
 from sqlalchemy.dialects import mysql
 from sqlalchemy.schema import CreateTable
 
-from mewhelp.db.models import Conversation, Faq, Message, Ticket
+from mewhelp.db.models import Conversation, Faq, Message, RefundApplication, Ticket
 
 DDL_PATH = Path(__file__).resolve().parents[1] / "sql" / "ch02-ddl.sql"
 
@@ -37,7 +37,7 @@ def compiled() -> dict[str, str]:
     dialect = mysql.dialect()
     return {
         t.__tablename__: str(CreateTable(t.__table__).compile(dialect=dialect))
-        for t in (Conversation, Message, Faq, Ticket)
+        for t in (Conversation, Message, Faq, Ticket, RefundApplication)
     }
 
 
@@ -160,3 +160,15 @@ def test_ddl_creates_conversations_before_dependent_tables(ddl_text):
     """
     assert ddl_text.index("CREATE TABLE conversations") < ddl_text.index("CREATE TABLE messages")
     assert ddl_text.index("CREATE TABLE conversations") < ddl_text.index("CREATE TABLE tickets")
+
+
+def test_refund_ddl_matches_persisted_snapshots_and_unique_keys(ddl_text, compiled):
+    refund = RefundApplication.__table__
+    for column in refund.columns:
+        name = column.name
+        assert name in ddl_text and name in compiled[refund.name]
+    for index in refund.indexes:
+        assert index.name in ddl_text
+    assert "fk_refund_applications_conversation" in ddl_text
+    assert "fk_refund_applications_conversation" in compiled[refund.name]
+    assert "JSON NOT NULL" in compiled[refund.name] and "'pending'" in compiled[refund.name]

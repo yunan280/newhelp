@@ -287,6 +287,7 @@ def _write_ledger(context, state, *, phase="complete"):
 
 
 async def log_node(state, context, emit):
+    from mewhelp.ch06.refunds import create_refund_offer
     ledger_error = None
     try:
         await asyncio.to_thread(_write_ledger, context, state,
@@ -315,7 +316,13 @@ async def log_node(state, context, emit):
         except UnknownOrderError:
             continue
         entities.append({**order.model_dump(mode="json"), "message_id": state["turn_id"] + "-answer"})
+    refund_offer = create_refund_offer({**state, "ledger_error": ledger_error})
+    refund_offers = dict(state.get("refund_offers", {}))
+    if refund_offer:
+        refund_offers[refund_offer.offer_id] = refund_offer.model_dump(mode="json")
     return {
+        "refund_offer": refund_offer.model_dump(mode="json") if refund_offer else None,
+        "refund_offers": refund_offers,
         "trusted_entities": entities[-40:],
         "ledger_error": ledger_error,
         "offers": offers,

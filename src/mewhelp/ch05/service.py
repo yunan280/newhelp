@@ -91,7 +91,7 @@ async def stream_turn(runtime, request, *, entry_point):
                 raise RuntimeError("workflow did not complete or enter a valid order interrupt")
             if result.offer:
                 yield event("actions", actions=result.actions, offer=result.offer.model_dump())
-            yield event("done", **result.model_dump(), finish_reason=result.stop_reason)
+            yield event("done", **result.model_dump(mode="json"), finish_reason=result.stop_reason)
         except Exception:
             logger.exception("Ch05 turn failed session=%s", session_id)
             raise

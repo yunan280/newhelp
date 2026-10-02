@@ -45,6 +45,7 @@ def test_tables_are_created(engine):
         "knowledge_chunks",
         "qa_extraction_staging",
         "low_confidence_questions",
+        "refund_applications",
     }
 
 
