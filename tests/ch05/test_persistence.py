@@ -65,7 +65,8 @@ async def test_failed_turn_never_enters_completed_history(workflow_runtime, mode
     model_factory.fail_classifier = False
     await run_turn(workflow_runtime, TurnRequest(message="你好", session_id="fail"))
     snapshot = await workflow_runtime.graph.aget_state({"configurable": {"thread_id": "fail"}})
-    assert [m.content for m in snapshot.values["messages"] if m.type == "human"] == ["你好"]
+    assert [m.content for m in snapshot.values["messages"] if m.type == "human"] == ["坏的问题", "你好"]
+    assert '坏的问题' not in str(snapshot.values['history_ctx']['layer1'])
 
 
 async def test_client_closes_partial_stream_without_completed_history(
@@ -84,4 +85,6 @@ async def test_client_closes_partial_stream_without_completed_history(
         pass
     await asyncio.wait_for(stream.aclose(), 2)
     snapshot = await workflow_runtime.graph.aget_state({"configurable": {"thread_id": "cancel"}})
-    assert snapshot.values.get("messages", []) == []
+    assert any(m.content == '订单1001' for m in snapshot.values.get('messages', []))
+    assert all(not m.additional_kwargs.get('ch07', {}).get('committed')
+               for m in snapshot.values.get('messages', []))

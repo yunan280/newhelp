@@ -20,6 +20,7 @@ def module():
 def initial(**updates):
     return {
         "question": "先查订单1001再查物流",
+        "turn_id": "unit-turn",
         "resolved_question": "先查订单1001再查物流",
         "messages": [],
         "agent_messages": [],

@@ -105,7 +105,8 @@ async def test_observed_usage_exhaustion_stops_before_classifier(core_runtime):
     import json
     class LargeUsage:
         async def ainvoke(self, messages):
-            question = json.loads(messages[-1].content)["question"]
+            payload = json.loads(messages[-1].content)
+            question = payload.get('question', messages[-2].content)
             return AIMessage(content=json.dumps({"question":question, "scope":"order_specific",
                 "reference_order_id":None, "reference_message_id":None}),
                 usage_metadata={"input_tokens":64000, "output_tokens":100, "total_tokens":64100})

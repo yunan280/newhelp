@@ -1,5 +1,6 @@
 """LLM understanding with conservative, provenance-checked reference postprocessing."""
 
+import asyncio
 import json
 import re
 from dataclasses import dataclass
@@ -10,6 +11,9 @@ from mewhelp.ch05.limits import TokenUsage
 from mewhelp.ch05.schemas import QueryScope, UnderstandingOutput
 from mewhelp.ch05.state import WorkflowContext
 from mewhelp.knowledge.query import protected_fragments
+from mewhelp.ch07.context import history_from_payload
+from mewhelp.ch07.projection import model_messages
+from mewhelp.ch07.provenance import chronological_reference, reference_sources, verify_reference
 
 from .prompts import UNDERSTANDING_SYSTEM
 from .structured import StructuredCall, invoke_json
@@ -52,7 +56,7 @@ def explicit_order_ids(question: str) -> set[str]:
 
 def _history_rows(history: list) -> list[dict]:
     rows = []
-    for message in history[-20:]:
+    for message in history:
         if isinstance(message, dict):
             row = {
                 "id": message.get("id"),
@@ -62,7 +66,7 @@ def _history_rows(history: list) -> list[dict]:
         else:
             row = {"id": message.id, "role": message.type, "content": message.content}
         row["role"] = {"human": "user", "ai": "assistant"}.get(row["role"], row["role"])
-        row["content"] = str(row["content"])[:2000]
+        row["content"] = str(row["content"])
         rows.append(row)
     return rows
 
@@ -88,7 +92,10 @@ def _fallback_scope(question: str) -> QueryScope:
     return "general"
 
 
-def understanding_messages(question: str, history: list[dict], entities: list[dict]):
+def understanding_messages(question: str, history: list[dict], entities: list[dict], *, history_ctx=None):
+    if history_ctx is not None:
+        return model_messages(history_ctx, system=UNDERSTANDING_SYSTEM, question=question,
+                              background={'purpose': 'understanding', 'trusted_entities': entities})
     return [
         SystemMessage(content=UNDERSTANDING_SYSTEM),
         HumanMessage(
@@ -149,14 +156,22 @@ async def understand_query(
     context: WorkflowContext,
     state: dict,
 ) -> UnderstandingResult:
-    rows = _history_rows(history)
-    entities = _trusted_entities(rows, trusted_entities, state.get("user_id"))
+    managed = history_from_payload(state['history_ctx']) if state.get('history_ctx') else None
+    if managed is not None:
+        rows = [{'id': f'summary-{s.id}', 'role': 'assistant', 'content': s.content}
+                for s in managed.summary_segments] + _history_rows([*managed.layer2, *managed.layer1])
+        entities = await asyncio.to_thread(reference_sources, managed, user_id=state['user_id'],
+                                            session_factory=context.session_factory)
+        entities += _trusted_entities(rows, trusted_entities, state.get('user_id'))
+    else:
+        rows = _history_rows(history)
+        entities = _trusted_entities(rows, trusted_entities, state.get("user_id"))
     current = explicit_order_ids(question)
     call = await invoke_json(
         context,
         state,
         purpose="understanding",
-        messages=understanding_messages(question, rows, entities),
+        messages=understanding_messages(question, rows, entities, history_ctx=managed),
         schema=UnderstandingOutput,
         model_name=context.router_settings.primary_model,
         output_tokens=context.router_settings.understanding_max_tokens,
@@ -174,8 +189,9 @@ async def understand_query(
     diagnostics = []
     order_id = parsed.reference_order_id
     selected = None
+    chronological = chronological_reference(question, entities) if managed is not None else None
     contextual = bool(
-        _REFERENCE.search(question) or _ELLIPTICAL.fullmatch(question.strip())
+        _REFERENCE.search(question) or chronological or _ELLIPTICAL.fullmatch(question.strip())
         or _IMPLIED_ORDER.search(question)
     )
     if order_id in current:
@@ -189,16 +205,21 @@ async def understand_query(
             if entity["order_id"] == order_id
             and entity["message_id"] == parsed.reference_message_id
         ]
-        if len({entity["order_id"] for entity in entities}) == 1 and candidates:
+        if candidates and (len({entity["order_id"] for entity in entities}) == 1
+                           or order_id == chronological):
             selected = order_id
         else:
             diagnostics.append("untrusted_or_ambiguous_reference")
+    if not current and chronological and any(verify_reference(order_id=chronological,
+        source_id=entity['message_id'], sources=entities) for entity in entities if entity['order_id'] == chronological):
+        selected = chronological
+        diagnostics.append('chronological_reference_grounded')
     if selected is None and len(current) == 1:
         selected = next(iter(current))
     elliptical = bool(selected and _ELLIPTICAL.fullmatch(question.strip()))
     implied = bool(selected and not current and parsed.scope == "order_specific"
                    and _IMPLIED_ORDER.search(question))
-    needs_rewrite = bool(_REFERENCE.search(question) or _COLLOQUIAL.search(question) or elliptical or implied)
+    needs_rewrite = bool(_REFERENCE.search(question) or chronological or _COLLOQUIAL.search(question) or elliptical or implied)
     canonical = parsed.question if needs_rewrite else question
     scope = parsed.scope
     if "unrequested_history_reference" in diagnostics:

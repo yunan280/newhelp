@@ -6,12 +6,15 @@ from langchain_core.messages import AnyMessage
 from langgraph.graph.message import add_messages
 
 from mewhelp.ch06.config import Ch06Settings
+from mewhelp.ch07.config import BudgetProfile, ContextSettings
 
 from .limits import AgentLimits
 
 
 class WorkflowState(TypedDict, total=False):
     messages: Annotated[list[AnyMessage], add_messages]
+    history_ctx: dict
+    history_epoch: str
     question: str
     resolved_question: str
     session_id: str
@@ -75,3 +78,8 @@ class WorkflowContext:
     limits: AgentLimits
     router_settings: Ch06Settings = field(default_factory=Ch06Settings, kw_only=True)
     router_model_factory: Callable | None = field(default=None, kw_only=True)
+    settings: ContextSettings = field(default_factory=ContextSettings, kw_only=True)
+    profile: BudgetProfile = field(default_factory=BudgetProfile, kw_only=True)
+    summary_manager: object | None = field(default=None, kw_only=True)
+    request_epoch: str | None = field(default=None, kw_only=True)
+    request_history: dict | None = field(default=None, kw_only=True)

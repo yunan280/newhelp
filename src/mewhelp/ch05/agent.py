@@ -12,6 +12,7 @@ from mewhelp.config import HISTORY_TOKEN_BUDGET
 from mewhelp.memory import trim_history
 from mewhelp.tools.business import build_business_tools
 from mewhelp.tools.registry import ToolRegistry, ToolSpec
+from mewhelp.ch07.context import tag_message
 
 from .bare import tool_schemas
 from .limits import (
@@ -136,7 +137,10 @@ async def decide_agent(state, context) -> dict:
         keys = [(t["name"], json.dumps(t["args"], sort_keys=True)) for t in tool_calls]
         if len(set(keys)) != len(keys) or any(k in previous for k in keys):
             return {**update, **stopped("no_progress")}
-        return {**update, "agent_messages": [*messages, response], "pending_tool_calls": tool_calls}
+        raw = response.model_copy(update={'id': state['turn_id'] + f'-call-{count}'})
+        raw = tag_message(raw, turn_id=state['turn_id'])
+        return {**update, "agent_messages": [*messages, response], "pending_tool_calls": tool_calls,
+                'messages': [raw]}
     try:
         decision = AgentDecision.model_validate_json(response.content)
     except (ValidationError, TypeError):
@@ -211,6 +215,7 @@ async def execute_agent_tools(state, context, emit) -> dict:
         build_read_registry().run_all(calls), remaining(state, context)
     )
     messages, trace = list(state["agent_messages"]), list(state["tool_trace"])
+    raw_messages = []
     for call, result in zip(calls, results, strict=True):
         item = {
             "call_id": call["id"],
@@ -224,12 +229,16 @@ async def execute_agent_tools(state, context, emit) -> dict:
         }
         trace.append(item)
         emit({"event": "tool", "data": {"phase": "end", **item}})
-        messages.append(ToolMessage(content=result.content, tool_call_id=call["id"]))
+        observation = ToolMessage(content=result.content, tool_call_id=call["id"], name=result.name,
+                                   id=state['turn_id'] + '-result-' + call['id'])
+        messages.append(observation)
+        raw_messages.append(tag_message(observation, turn_id=state['turn_id']))
     return {
         "agent_messages": messages,
         "tool_trace": trace,
         "tool_count": state["tool_count"] + len(calls),
         "pending_tool_calls": [],
+        'messages': raw_messages,
     }
 
 

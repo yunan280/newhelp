@@ -8,6 +8,8 @@ from pydantic import Field
 from mewhelp.ch06.config import RouterCalibration
 from mewhelp.ch06.prompts import INTENT_SYSTEM
 from mewhelp.ch06.structured import invoke_json
+from mewhelp.ch07.context import history_from_payload
+from mewhelp.ch07.projection import model_messages
 
 from .limits import TokenUsage
 from .schemas import Confidence, Intent, IntentOutput, QueryScope, Route, StrictDTO
@@ -85,7 +87,10 @@ def match_chitchat(text: str) -> bool:
     )
 
 
-def classifier_messages(text: str) -> list:
+def classifier_messages(text: str, *, history_ctx=None, question=None) -> list:
+    if history_ctx is not None:
+        return model_messages(history_ctx, system=INTENT_SYSTEM, question=question or text,
+            background={'purpose': 'classifier', 'resolved_question': text})
     return [SystemMessage(content=INTENT_SYSTEM), HumanMessage(content=text)]
 
 
@@ -120,11 +125,14 @@ async def classify_intent(
     calibration = load_router_calibration(context)
     settings = context.router_settings
     origin = "cascade" if settings.cascade_enabled else "llm"
+    messages = classifier_messages(text,
+        history_ctx=history_from_payload(state['history_ctx']) if state.get('history_ctx') else None,
+        question=state.get('question'))
     call = await invoke_json(
         context,
         state,
         purpose="classifier",
-        messages=classifier_messages(text),
+        messages=messages,
         schema=IntentOutput,
         model_name=settings.small_model if settings.cascade_enabled else settings.primary_model,
         output_tokens=context.limits.classifier_max_tokens,
@@ -141,7 +149,7 @@ async def classify_intent(
             context,
             {**state, **call.patch()},
             purpose="classifier",
-            messages=classifier_messages(text),
+            messages=messages,
             schema=IntentOutput,
             model_name=settings.primary_model,
             output_tokens=context.limits.classifier_max_tokens,

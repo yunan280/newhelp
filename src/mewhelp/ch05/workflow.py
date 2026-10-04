@@ -21,6 +21,8 @@ from mewhelp.db.models import MsgRole
 from mewhelp.db.repository import TurnMessage, append_messages_once
 from mewhelp.knowledge.answering import REFUSAL_MESSAGE
 from mewhelp.knowledge.filters import SearchFilters
+from mewhelp.ch07.context import tag_message
+from mewhelp.ch07.store import find_ledger_ids
 
 from .agent import (
     decide_agent,
@@ -48,6 +50,8 @@ logger = logging.getLogger(__name__)
 
 async def begin_turn(state, context, emit):
     return {
+        "messages": [tag_message(HumanMessage(state["question"], id=state["turn_id"] + "-user"),
+                                  turn_id=state["turn_id"])],
         "resolved_question": "",
         "intent": "",
         "route": "",
@@ -130,13 +134,12 @@ async def prepare_selection_node(state, context, emit):
     answer = "请选择一笔订单，我会核对该订单与退款/售后政策。"
     update["answer"] = answer
     try:
-        await asyncio.to_thread(_write_ledger, context, {**state, **update}, phase="waiting")
+        ids = await asyncio.to_thread(_write_ledger, context, {**state, **update}, phase="waiting")
     except Exception as exc:
         # A failed waiting ledger is an error, never a valid pending selection.
         raise RuntimeError("waiting message ledger did not commit") from exc
     emit(event("token", text=answer))
-    update["messages"] = [HumanMessage(content=state["question"], id=state["turn_id"] + "-user"),
-                          AIMessage(content=answer, id=state["turn_id"] + "-waiting")]
+    update["messages"] = _committed_turn_messages({**state, **update}, ids, suffix="waiting")
     return update
 
 
@@ -145,7 +148,12 @@ async def load_order_node(state, context, emit):
     trace = {"call_id": state["turn_id"] + "-order", "round": 0, "name": "load_order",
              "args": {"order_id": order.order_id}, "ok": True,
              "content": order.model_dump_json(), "error": None, "elapsed_ms": 0}
-    return {"order": order.model_dump(mode="json"), "answer": "", "tool_trace": [*state["tool_trace"], trace]}
+    call = AIMessage('', id=state['turn_id'] + '-order-call', tool_calls=[{
+        'id': trace['call_id'], 'name': 'load_order', 'args': trace['args'], 'type': 'tool_call'}])
+    observation = ToolMessage(trace['content'], tool_call_id=trace['call_id'], name='load_order',
+                              id=state['turn_id'] + '-order-result')
+    return {"order": order.model_dump(mode="json"), "answer": "", "tool_trace": [*state["tool_trace"], trace],
+            'messages': [tag_message(m, turn_id=state['turn_id']) for m in (call, observation)]}
 
 
 async def expand_node(state, context, emit):
@@ -259,21 +267,6 @@ def _event_key(turn_id, phase, position):
 def _write_ledger(context, state, *, phase="complete"):
     rows = [TurnMessage(role=MsgRole.user, content=state["question"],
                         ch06_event_key=_event_key(state["turn_id"], "user", 0))]
-    for message in state["agent_messages"]:
-        if isinstance(message, AIMessage) and message.tool_calls:
-            rows.append(
-                TurnMessage(
-                    role=MsgRole.assistant,
-                    content=message.content or None,
-                    tool_calls=message.tool_calls,
-                )
-            )
-        elif isinstance(message, ToolMessage):
-            rows.append(
-                TurnMessage(
-                    role=MsgRole.tool, content=message.content, tool_call_id=message.tool_call_id
-                )
-            )
     sources = state["evidence"]["sources"] if state["evidence"] and not state["refused"] else []
     rows.append(
         TurnMessage(role=MsgRole.assistant, content=state["answer"], citations=sources or None)
@@ -283,14 +276,37 @@ def _write_ledger(context, state, *, phase="complete"):
                        for i, row in enumerate(rows[1:], 1)]]
     with context.session_factory() as db:
         append_messages_once(db, conversation_id=state["conversation_id"], rows=rows)
+        ids = find_ledger_ids(db, conversation_id=state['conversation_id'],
+                              event_keys=[row.ch06_event_key for row in rows])
         db.commit()
+        return {'user': ids[rows[0].ch06_event_key], 'answer': ids[rows[-1].ch06_event_key]}
+
+
+def _committed_turn_messages(state, ids, *, suffix='answer'):
+    current = [m for m in state.get('messages', [])
+               if m.additional_kwargs.get('ch07', {}).get('turn_id') == state['turn_id']]
+    user_id = state['turn_id'] + '-user'
+    if not any(m.id == user_id for m in current):
+        current.insert(0, HumanMessage(state['question'], id=user_id))
+    current.append(AIMessage(state['answer'], id=state['turn_id'] + '-' + suffix))
+    annotated = []
+    for message in current:
+        ledger_id = message.additional_kwargs.get('ch07', {}).get('ledger_id')
+        if message.id == user_id:
+            ledger_id = ids.get('user')
+        elif message.id == state['turn_id'] + '-' + suffix:
+            ledger_id = ids.get('answer')
+        annotated.append(tag_message(message, turn_id=state['turn_id'], ledger_id=ledger_id,
+            from_msg_id=ids.get('user', 0), upto_msg_id=ids.get('answer', 0), committed=bool(ids)))
+    return annotated
 
 
 async def log_node(state, context, emit):
     from mewhelp.ch06.refunds import create_refund_offer
     ledger_error = None
+    ids = {}
     try:
-        await asyncio.to_thread(_write_ledger, context, state,
+        ids = await asyncio.to_thread(_write_ledger, context, state,
                                 phase="cancel" if state.get("stop_reason") == "cancelled" else "complete")
     except Exception as exc:
         logger.exception("Ch05 message ledger failed session=%s", state["session_id"])
@@ -323,14 +339,11 @@ async def log_node(state, context, emit):
     return {
         "refund_offer": refund_offer.model_dump(mode="json") if refund_offer else None,
         "refund_offers": refund_offers,
-        "trusted_entities": entities[-40:],
+        "trusted_entities": entities,
         "ledger_error": ledger_error,
         "offers": offers,
         "offer": offer.model_dump() if offer else None,
-        "messages": [
-            HumanMessage(content=state["question"], id=state["turn_id"] + "-user"),
-            AIMessage(content=state["answer"], id=state["turn_id"] + "-answer"),
-        ],
+        "messages": _committed_turn_messages(state, ids),
     }
 
 
@@ -363,6 +376,11 @@ def build_workflow(checkpointer):
 
     def wrap(name, operation):
         async def node(state: WorkflowState, runtime: Runtime[WorkflowContext]):
+            context_patch = {}
+            if runtime.context.request_epoch and state.get('history_epoch') != runtime.context.request_epoch:
+                context_patch = {'history_ctx': runtime.context.request_history,
+                                 'history_epoch': runtime.context.request_epoch}
+                state = {**state, **context_patch}
             writer = get_stream_writer()
             writer(event("node", name=name, turn_id=state["turn_id"]))
             logger.info(
@@ -370,7 +388,7 @@ def build_workflow(checkpointer):
             )
             update = await operation(state, runtime.context, writer)
             trace = [] if name == "begin_turn" else state.get("node_trace", [])
-            return {**update, "node_trace": [*trace, name]}
+            return {**context_patch, **update, "node_trace": [*trace, name]}
 
         return node
 

@@ -13,6 +13,7 @@ from mewhelp.ch05.config import Ch05Settings
 from mewhelp.ch05.limits import TokenUsage
 from mewhelp.ch05.schemas import ExpansionOutput, IntentOutput, OrderAssessment, UnderstandingOutput
 from mewhelp.config import get_settings
+from mewhelp.ch07.config import ContextSettings, load_profile
 
 from .config import Ch06Settings, RouterCalibration
 
@@ -146,6 +147,9 @@ def runtime_hash(
         "assessment": ["assessment.py", "../ch05/agent.py"],
     }
     paths += [Path(__file__).parent / name for name in names.get(part, [])]
+    if part in {'intents', 'understanding', 'multiturn', 'assessment'}:
+        paths += [Path(__file__).parents[1] / f'ch07/{name}.py'
+                  for name in ('config', 'tokens', 'budget', 'context', 'projection', 'provenance')]
     sources = {
         str(path.relative_to(Path(__file__).parents[1])): hashlib.sha256(
             path.read_bytes()
@@ -164,6 +168,7 @@ def runtime_hash(
             "model_hash": model_hash(settings),
             "mode": mode,
             "calibration": calibration,
+            "context_profile": load_profile(ContextSettings().context_calibration_path).fingerprint,
         }
     )
 

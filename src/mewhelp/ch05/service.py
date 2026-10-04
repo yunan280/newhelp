@@ -10,6 +10,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 from mewhelp.db.models import MsgRole
 from mewhelp.db.repository import get_or_create_conversation, load_replay_messages
+from mewhelp.ch07.context import prepare_request_context
 
 from .events import event
 from .schemas import TurnResult
@@ -68,12 +69,13 @@ async def stream_turn(runtime, request, *, entry_point):
             incoming["messages"] = history
         yield event("session", session_id=session_id, conversation_id=cid, resumed=resumed)
         try:
+            request_context = await prepare_request_context(runtime.context, {**previous.values, **incoming})
             async with asyncio.timeout(runtime.context.limits.turn_seconds):
                 async with aclosing(
                     runtime.graph.astream(
                         incoming,
                         config,
-                        context=runtime.context,
+                        context=request_context,
                         stream_mode="custom",
                         durability="sync",
                     )

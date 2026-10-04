@@ -51,7 +51,7 @@ class FakeModel:
         if self.kind == "understanding":
             payload = json.loads(messages[-1].content)
             parsed = self.owner.understanding_outputs.pop(0) if self.owner.understanding_outputs else {
-                "question": payload["question"], "scope": self.owner.understanding_scope,
+                "question": payload.get("question", messages[-2].content), "scope": self.owner.understanding_scope,
                 "reference_order_id": None, "reference_message_id": None,
             }
             return AIMessage(content=json.dumps(parsed, ensure_ascii=False))
@@ -70,7 +70,7 @@ class FakeModel:
                         "intent": self.owner.intents.pop(0)
                         if self.owner.intents
                         else "闲聊"
-                        if match_chitchat(messages[-1].content)
+                        if match_chitchat(messages[-2].content if len(messages) > 2 else messages[-1].content)
                         else "退款退货",
                         "confidence": 0.99,
                     },

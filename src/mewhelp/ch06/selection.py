@@ -11,6 +11,7 @@ from sqlalchemy import select
 from mewhelp.ch05.events import event
 from mewhelp.ch05.schemas import OrderSelection, TurnResult
 from mewhelp.db.models import Conversation
+from mewhelp.ch07.context import prepare_request_context
 
 from .orders import list_demo_orders
 
@@ -121,6 +122,7 @@ async def stream_order_resume(runtime, request):
             replay = TurnResult.model_validate(receipt["result"])
         selection = state.get("order_selection")
         if replay is None:
+            request_context = await prepare_request_context(runtime.context, state)
             if not selection or selection["selection_id"] != request.selection_id:
                 raise SelectionError("订单卡片已经失效")
             if request.order_id not in {o["order_id"] for o in selection["orders"]
@@ -142,7 +144,7 @@ async def stream_order_resume(runtime, request):
         if replay is None:
             async with asyncio.timeout(runtime.context.limits.turn_seconds):
                 async with aclosing(runtime.graph.astream(
-                    incoming, config, context=runtime.context, stream_mode="custom", durability="sync",
+                    incoming, config, context=request_context, stream_mode="custom", durability="sync",
                 )) as stream:
                     async for item in stream:
                         yield item
