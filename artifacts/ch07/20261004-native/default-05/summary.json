@@ -1,0 +1,34 @@
+{
+  "profile": "default",
+  "session_id": "ch07-native06-default",
+  "user_id": "ch07-native-20261004",
+  "errors": [],
+  "raw_report_dir": "C:\\Users\\27497\\projects\\mewhelp-wt\\ch02-tools\\.cache\\ch07\\reports\\default-05",
+  "conversation_id": 107,
+  "turns_completed": 22,
+  "real_http_sse": true,
+  "real_usage": true,
+  "history_contexts": 22,
+  "model_contexts": 114,
+  "degrades": 0,
+  "summary_triggers": 0,
+  "summary_starts": 0,
+  "summary_segments": 0,
+  "mysql_visible_rows": 44,
+  "mysql_originals_match": true,
+  "immutable_segments": true,
+  "monotonic_anchors": true,
+  "window_violations": 0,
+  "first_order_reference_ok": true,
+  "first_summary_injected": false,
+  "nonblocking_timestamps": [
+    {
+      "kind": "controlled held summary, separate from real-upstream dialogue",
+      "foreground_ms": 0.043,
+      "summary_blocked_until_after_reply": true,
+      "summary_complete_ms": 17.268
+    }
+  ],
+  "validation_errors": [],
+  "complete": true
+}

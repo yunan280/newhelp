@@ -1,0 +1,83 @@
+{
+  "user_approved": true,
+  "formula": "window * (max_decisions + 1 + 2 * (3 + classifier_model_count))",
+  "explicit_operator_cap_precedes_formula": true,
+  "default_primary_ceiling": 1920000,
+  "demo_primary_ceiling": 252000,
+  "runtime_sha256": "027549e0118501af474059925aa3a1906a5bdb215932101574e1dcba9867560a",
+  "router_intent_binding_current": true,
+  "router_understanding_binding_current": true,
+  "unchanged_context_sources": [
+    {
+      "path": "src/mewhelp/ch07/__init__.py",
+      "sha256": "e3e367b041df0514b399fb6619a83dd19945c10bf9b98b4e1b50603d691b537d"
+    },
+    {
+      "path": "src/mewhelp/ch07/api.py",
+      "sha256": "750a08884e0c69b9eb03cf2f9caf1da8861341fb29ab4d4f5290da09c915fc01"
+    },
+    {
+      "path": "src/mewhelp/ch07/budget.py",
+      "sha256": "cc41a9424029e5e35a889ab1b598e701576ef18f318857fc8e1c1086335dfcd9"
+    },
+    {
+      "path": "src/mewhelp/ch07/config.py",
+      "sha256": "ec0441e3a30c48d1baa9d70ba53af7fc31cd0c9d25b71c429ecd646306570e92"
+    },
+    {
+      "path": "src/mewhelp/ch07/context.py",
+      "sha256": "a8debe345667667095db0215065eae0fe4b54cd87d0f20df7e180c57d9d48780"
+    },
+    {
+      "path": "src/mewhelp/ch07/evaluation.py",
+      "sha256": "6c3b0c1941c0ed2459550b4e2a4d44c18a7f49d4a85ad7d111a6341c5a72d7fc"
+    },
+    {
+      "path": "src/mewhelp/ch07/migration.py",
+      "sha256": "4765fce246cf4c2d1778bc332984c516765eebeac838e7e1e809deb0634975b0"
+    },
+    {
+      "path": "src/mewhelp/ch07/observability.py",
+      "sha256": "7ac26f8dcdf2ca0970da7805d90f14fe14ed8f073456085a778bde0ade07f8ab"
+    },
+    {
+      "path": "src/mewhelp/ch07/projection.py",
+      "sha256": "4a1ad721b7934557c5777be39b3ffc3807041156e1c3d1578f2db9f0a227b4f0"
+    },
+    {
+      "path": "src/mewhelp/ch07/prompts.py",
+      "sha256": "08ff98efda2760abd829483f0cfd590369511f1085db73f596b27d71c8512cdc"
+    },
+    {
+      "path": "src/mewhelp/ch07/provenance.py",
+      "sha256": "64b75d62a6f75939ebe38a3449966341d1c479fa6f6b061f59af31c84690ac2b"
+    },
+    {
+      "path": "src/mewhelp/ch07/schemas.py",
+      "sha256": "545996efc0b3f137efd94dcae37a6d1975590e1dc19a97b3287e9aa2540fc8dd"
+    },
+    {
+      "path": "src/mewhelp/ch07/store.py",
+      "sha256": "f818b0347faa4e9d839d2040c542ea038f3e9b1886451aac4191a0231e4a865e"
+    },
+    {
+      "path": "src/mewhelp/ch07/summary.py",
+      "sha256": "4d691b6d41c5d6f389bf51a4c2cfb903aa3aed799c33b410a8bc080e691522f5"
+    },
+    {
+      "path": "src/mewhelp/ch07/summary_model.py",
+      "sha256": "66ff2110cc0e8af591124ece391e4e699b042f3bb9ee04eb8d9e746c302ce79d"
+    },
+    {
+      "path": "src/mewhelp/ch07/tokens.py",
+      "sha256": "84b169c4c87fad31341336669ac5c50d7287f0e50dbd4bbb011b83b4b4311a5c"
+    },
+    {
+      "path": "src/mewhelp/ch07/types.py",
+      "sha256": "9ef06ee98f629fe3eda727cef58b0303f5b5f8dfd73d8a78d526e88e040e3076"
+    }
+  ],
+  "reuse": "Only runtime cumulative cost ceiling changed; prompts, request construction, token profile and frozen labels unchanged. Preserve valid demo22/summary12/reference8/token17 observations rather than repeat unaffected calls.",
+  "failure_preserved": "default-04/summary.json",
+  "fresh_default_acceptance": "default-05/summary.json"
+}

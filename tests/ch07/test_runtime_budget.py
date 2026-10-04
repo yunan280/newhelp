@@ -7,6 +7,46 @@ from mewhelp.ch05.service import run_turn
 from mewhelp.ch07.config import ContextSettings
 
 
+async def test_long_default_turn_can_reserve_next_decision_and_full_answer(
+        session_factory, checkpoint_settings, model_factory, router_settings):
+    from mewhelp.ch05.limits import reserve_call
+    async with open_runtime(session_factory, settings=checkpoint_settings,
+        model_factory=model_factory, router_settings=router_settings,
+        context_settings=ContextSettings(_env_file=None)) as runtime:
+        # Real default round22 had used40769 and still fit the128k request window.
+        reserve_call(40769, 24000, 256, 28000, runtime.context.limits)
+
+
+async def test_smaller_window_and_cascade_change_total_cost_ceiling(
+        session_factory, checkpoint_settings, model_factory, router_settings):
+    from mewhelp.ch06.config import Ch06Settings
+    settings = ContextSettings(model_context_window=18000, max_output_tokens=2000,
+        max_user_input_tokens=2000, max_agent_steps=3, tool_result_max_tokens=1200,
+        rerank_top_k=5, _env_file=None)
+    ceilings = []
+    for router in (router_settings, Ch06Settings(cascade_enabled=True,
+                    primary_model='primary', small_model='small', _env_file=None)):
+        async with open_runtime(session_factory, settings=checkpoint_settings,
+            model_factory=model_factory, router_settings=router,
+            context_settings=settings) as runtime:
+            ceilings.append(runtime.context.limits.total_model_tokens)
+    assert ceilings == [252000, 288000]
+
+
+async def test_explicit_operator_cost_cap_still_stops_large_turn(
+        session_factory, checkpoint_settings, model_factory, router_settings, monkeypatch):
+    from mewhelp.ch05.config import Ch05Settings
+    from mewhelp.ch05.limits import BudgetExceeded, reserve_call
+    monkeypatch.setenv('CH05_TOTAL_MODEL_TOKENS', '64000')
+    configured = Ch05Settings(checkpoint_path=checkpoint_settings.checkpoint_path)
+    async with open_runtime(session_factory, settings=configured,
+        model_factory=model_factory, router_settings=router_settings,
+        context_settings=ContextSettings(_env_file=None)) as runtime:
+        assert runtime.context.limits.total_model_tokens == 64000
+        with pytest.raises(BudgetExceeded):
+            reserve_call(40769, 24000, 256, 28000, runtime.context.limits)
+
+
 async def test_context_settings_bind_real_tool_steps_and_output_limit(
         session_factory, checkpoint_settings, model_factory, router_settings):
     settings = ContextSettings(model_context_window=18000, max_output_tokens=2000,

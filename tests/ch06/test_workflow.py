@@ -103,6 +103,8 @@ async def test_sql_commit_then_checkpoint_failure_is_retryable(core_runtime, cor
 
 async def test_observed_usage_exhaustion_stops_before_classifier(core_runtime):
     import json
+    # This tests an explicit operator cost cap, independent of ch07's default.
+    core_runtime.context.limits = replace(core_runtime.context.limits, total_model_tokens=64000)
     class LargeUsage:
         async def ainvoke(self, messages):
             payload = json.loads(messages[-1].content)

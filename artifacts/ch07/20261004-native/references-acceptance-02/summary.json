@@ -1,0 +1,40 @@
+{
+  "part": "references",
+  "phase": "acceptance",
+  "passed": 8,
+  "total": 8,
+  "complete": true,
+  "real_upstream": true,
+  "dataset": {
+    "version": 1,
+    "files": {
+      "references-acceptance.jsonl": {
+        "sha256": "efaa02993ca75d9a56f4a6cd6bd97b0adbf8dde9022c7e2c77e55849ccda7bb6",
+        "count": 8,
+        "split": "acceptance"
+      },
+      "references-calibration.jsonl": {
+        "sha256": "86c490366a8551d45777ce97a75211c203c645dc605158909e8a144a126f824a",
+        "count": 8,
+        "split": "calibration"
+      },
+      "summary-acceptance.jsonl": {
+        "sha256": "01c9ab03130ea349adf7ca39eff62ab1cc5981d6a4f9452466a8556ec3a61d8d",
+        "count": 12,
+        "split": "acceptance"
+      },
+      "summary-calibration.jsonl": {
+        "sha256": "f998750b5cfe2aa1727222272c20502a1155b590dc097a2f333b35abd240ae0d",
+        "count": 12,
+        "split": "calibration"
+      },
+      "tokens-calibration.jsonl": {
+        "sha256": "cf1b0f7e965a66984284cde08fd3d86132941748950ce1dfb081cf1bd0235896",
+        "count": 16,
+        "split": "calibration"
+      }
+    }
+  },
+  "code_hash": "6c3b0c1941c0ed2459550b4e2a4d44c18a7f49d4a85ad7d111a6341c5a72d7fc",
+  "profile_hash": "1f7769022b2f236009af8c60c59f100aaa9acdf65521ac15467422221cab3dbb"
+}

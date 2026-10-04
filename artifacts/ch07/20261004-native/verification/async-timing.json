@@ -1,0 +1,64 @@
+{
+  "real_upstream": true,
+  "profile": "demo",
+  "conversation_id": 104,
+  "summary_jobs": [
+    {
+      "coverage": "549..562",
+      "summary_start_utc": "2026-10-04T08:44:57.860000+00:00",
+      "summary_done_utc": "2026-10-04T08:44:58.712000+00:00",
+      "elapsed_ms": 852,
+      "model_requests_while_summary_running": [
+        {
+          "at_utc": "2026-10-04T08:44:57.900000+00:00",
+          "purpose": "understanding"
+        }
+      ],
+      "round": 11,
+      "foreground_start_utc": "2026-10-04T08:44:57.778749+00:00",
+      "foreground_first_token_utc": "2026-10-04T08:45:06.871749+00:00",
+      "foreground_done_utc": "2026-10-04T08:45:07.486850+00:00"
+    },
+    {
+      "coverage": "565..580",
+      "summary_start_utc": "2026-10-04T09:22:54.241000+00:00",
+      "summary_done_utc": "2026-10-04T09:22:55.498000+00:00",
+      "elapsed_ms": 1257,
+      "model_requests_while_summary_running": [
+        {
+          "at_utc": "2026-10-04T09:22:54.286000+00:00",
+          "purpose": "understanding"
+        }
+      ],
+      "round": 15,
+      "foreground_start_utc": "2026-10-04T09:22:54.163960+00:00",
+      "foreground_first_token_utc": "2026-10-04T09:23:00.193960+00:00",
+      "foreground_done_utc": "2026-10-04T09:23:01.008773+00:00"
+    },
+    {
+      "coverage": "583..598",
+      "summary_start_utc": "2026-10-04T09:23:20.744000+00:00",
+      "summary_done_utc": "2026-10-04T09:23:21.764000+00:00",
+      "elapsed_ms": 1020,
+      "model_requests_while_summary_running": [
+        {
+          "at_utc": "2026-10-04T09:23:20.791000+00:00",
+          "purpose": "understanding"
+        }
+      ],
+      "round": 19,
+      "foreground_start_utc": "2026-10-04T09:23:20.669909+00:00",
+      "foreground_first_token_utc": "2026-10-04T09:23:26.261909+00:00",
+      "foreground_done_utc": "2026-10-04T09:23:26.748298+00:00"
+    }
+  ],
+  "held_model_proof": [
+    {
+      "kind": "controlled held summary, separate from real-upstream dialogue",
+      "foreground_ms": 0.042,
+      "summary_blocked_until_after_reply": true,
+      "summary_complete_ms": 148.483
+    }
+  ],
+  "interpretation": "Real timestamps show foreground requests overlap asynchronous summary. The separately controlled held model proves the foreground does not wait; naturally fast real summaries alone cannot prove that."
+}

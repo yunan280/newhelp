@@ -1,0 +1,38 @@
+{
+  "profile": "demo",
+  "session_id": "ch07-native05-demo",
+  "user_id": "ch07-native-20261004",
+  "errors": [],
+  "raw_report_dir": "C:\\Users\\27497\\projects\\mewhelp-wt\\ch02-tools\\.cache\\ch07\\reports\\demo-03",
+  "conversation_id": 104,
+  "resumed_from": "C:\\Users\\27497\\projects\\mewhelp-wt\\ch02-tools\\.cache\\ch07\\reports\\demo-02\\http.json",
+  "prior_errors": [
+    "ValueError: missing done or SSE error"
+  ],
+  "turns_completed": 22,
+  "real_http_sse": true,
+  "real_usage": true,
+  "history_contexts": 23,
+  "model_contexts": 121,
+  "degrades": 15,
+  "summary_triggers": 3,
+  "summary_starts": 3,
+  "summary_segments": 3,
+  "mysql_visible_rows": 44,
+  "mysql_originals_match": true,
+  "immutable_segments": true,
+  "monotonic_anchors": true,
+  "window_violations": 0,
+  "first_order_reference_ok": true,
+  "first_summary_injected": true,
+  "nonblocking_timestamps": [
+    {
+      "kind": "controlled held summary, separate from real-upstream dialogue",
+      "foreground_ms": 0.042,
+      "summary_blocked_until_after_reply": true,
+      "summary_complete_ms": 148.483
+    }
+  ],
+  "validation_errors": [],
+  "complete": true
+}

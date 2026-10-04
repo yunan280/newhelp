@@ -1,8 +1,8 @@
 {
   "tests": {
-    "passed": 862,
+    "passed": 865,
     "deselected": 5,
-    "duration_s": 39.42
+    "duration_s": 41.73
   },
   "ruff": "passed",
   "frontend_js": [
@@ -15,19 +15,25 @@
     "current": true
   },
   "actual_references": {
-    "acceptance": "8/8 prior to reviewed provenance fix",
-    "current": false
+    "acceptance": "8/8",
+    "current": true,
+    "report": "references-acceptance-02/summary.json"
   },
   "actual_runtime": {
-    "default_committed_turns": 13,
+    "default_committed_turns": 22,
     "default_degrades": 0,
-    "demo_committed_turns": 12,
-    "demo_degrades": 6,
-    "demo_summary_segments": 1,
+    "default_summary_segments": 0,
+    "demo_committed_turns": 22,
+    "demo_degrades": 15,
+    "demo_summary_segments": 3,
     "window_violations": 0,
-    "complete": false,
-    "blocked_by": "upstream402 Insufficient Balance"
+    "complete": true,
+    "demo_resumed_after_external402": true,
+    "default_report": "default-05/summary.json",
+    "demo_report": "demo-03/summary.json"
   },
-  "router_refresh_pending": true,
-  "finish": false
+  "router_refresh_pending": false,
+  "finish": false,
+  "browser_complete": true,
+  "review_important_open": 0
 }

@@ -4,18 +4,19 @@
   "actual_new_session_query_1002": true,
   "two_sessions_retained": true,
   "switch_original_raw": true,
-  "actual_continued_old_session": "interrupted by upstream402; not passed",
+  "actual_continued_old_session": true,
   "read_only_qa": {
     "url": "http://127.0.0.1:9019/",
     "modifications": "only fixed synthetic evaluser_id, GET proxies liveMySQL; controlled pending and sidebar503 fixtures are separate",
     "real_summary_badge": true,
-    "summarized_conversation_raw_rows": 24,
+    "summarized_conversation_raw_rows": 44,
     "first_question_raw_full": true,
     "mobile_viewport": 390,
     "mobile_sidebar_width": 280,
     "document_scroll_width": 390,
     "sidebar503_send_enabled": true,
-    "sidebar503_no_disrupting_error": true
+    "sidebar503_no_disrupting_error": true,
+    "assistant_rows": 22
   },
   "controlled_pending": {
     "reload_then_actual_click": true,
@@ -23,9 +24,21 @@
     "real_model": false,
     "business_writes": false
   },
-  "native_model_acceptance": "pending credit recovery",
+  "native_model_acceptance": true,
   "screenshots": [
     "summary-session.jpg",
-    "mobile-sidebar.jpg"
-  ]
+    "mobile-sidebar.jpg",
+    "actual-continued-session.jpg",
+    "native-pending-after-restart.jpg",
+    "native-pending-resumed.jpg",
+    "summary-session-22-rounds.jpg"
+  ],
+  "native_pending": {
+    "real_model": true,
+    "server_restart_then_browser_reload": true,
+    "actual_order_click_1001": true,
+    "continued_policy_reply": true,
+    "refund_submitted": false,
+    "ticket_created": false
+  }
 }
