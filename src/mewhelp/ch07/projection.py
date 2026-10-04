@@ -154,6 +154,6 @@ def model_messages(history: HistoryContext, *, system: str, question: str,
                    background: dict, current_react: Sequence[AnyMessage] = ()) -> list[AnyMessage]:
     payload = {'summary': history.summary, 'summary_sources': [
         {'id': s.id, 'seq': s.seq, 'from_msg_id': s.from_msg_id, 'upto_msg_id': s.upto_msg_id,
-         'content': s.content} for s in history.summary_segments], **background}
+         } for s in history.summary_segments], **background}
     return [SystemMessage(system), *history.layer2, *history.layer1, HumanMessage(question),
             HumanMessage(json.dumps(payload, ensure_ascii=False, separators=(',', ':'))), *current_react]

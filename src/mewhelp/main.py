@@ -23,6 +23,8 @@ STATIC_DIR = Path(__file__).parent / "static"
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     from mewhelp.db.engine import SessionLocal
+    from mewhelp.ch07.observability import configure_context_logging
+    configure_context_logging(Path('log/app.log'))
 
     async with open_runtime(SessionLocal, settings=Ch05Settings()) as runtime:
         app.state.ch05_runtime = runtime

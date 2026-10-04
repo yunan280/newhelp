@@ -11,11 +11,13 @@ from pydantic import BaseModel, ValidationError
 from mewhelp.ch05.limits import (
     BudgetExceeded,
     TokenUsage,
-    estimate_call_tokens,
     observed_usage,
     reserve_call,
 )
 from mewhelp.ch05.state import WorkflowContext
+from mewhelp.ch07.budget import check_window
+from mewhelp.ch07.observability import log_model
+from mewhelp.ch07.tokens import estimate_request
 
 from .config import get_router_model
 
@@ -48,8 +50,9 @@ async def invoke_json(
     inputs = list(messages)
     result = StructuredCall(None, None, raw_responses, usage, calls)
     for attempt in range(2):
-        serialized = [{"role": message.type, "content": message.content} for message in inputs]
-        input_bound = estimate_call_tokens(serialized, [])
+        input_bound = estimate_request(inputs, [], profile=context.profile)
+        check_window(inputs, [], settings=context.settings, profile=context.profile,
+                     output_tokens=output_tokens, remaining_tool_calls=context.settings.max_agent_steps)
         try:
             reserve_call(
                 result.usage.total,
@@ -78,6 +81,8 @@ async def invoke_json(
             request_seconds=context.limits.request_seconds,
         )
         started = time.perf_counter()
+        log_model(inputs, [], state=state, purpose=purpose + ('_repair' if attempt else ''),
+                  model_name=model_name, profile=context.profile)
         # Provider exceptions are deliberately propagated, never disguised as a label.
         response = await asyncio.wait_for(
             model.ainvoke(inputs), timeout=min(remaining, context.limits.request_seconds)

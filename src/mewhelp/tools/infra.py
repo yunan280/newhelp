@@ -96,6 +96,7 @@ async def execute_tool(
     *,
     retryable: bool,
     timeout: float = TOOL_TIMEOUT_SECONDS,
+    preserve_raw: bool = False,
     sleep=asyncio.sleep,
 ) -> ToolResult:
     """跑一个工具,任何失败都翻成 ToolResult,不抛。
@@ -160,7 +161,7 @@ async def execute_tool(
             name=tool.name,
             args=args,
             ok=True,
-            content=content if artifact is not None else _truncate(content),
+            content=content if artifact is not None or preserve_raw else _truncate(content),
             error=None,
             elapsed_ms=int((time.monotonic() - started) * 1000),
             attempts=attempts,

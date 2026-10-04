@@ -19,6 +19,7 @@ class ToolSpec:
     # 写类工具设 False。没有幂等设施时重试会重复建单。
     retryable: bool = True
     timeout_seconds: float = TOOL_TIMEOUT_SECONDS
+    preserve_raw: bool = False
 
 
 class ToolRegistry:
@@ -56,7 +57,8 @@ class ToolRegistry:
                 attempts=0,
             )
         return await execute_tool(
-            spec.tool, args, retryable=spec.retryable, timeout=spec.timeout_seconds
+            spec.tool, args, retryable=spec.retryable, timeout=spec.timeout_seconds,
+            preserve_raw=spec.preserve_raw,
         )
 
     async def run_all(self, calls: Sequence[Mapping]) -> list[ToolResult]:

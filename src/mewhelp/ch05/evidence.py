@@ -33,6 +33,13 @@ class GateDecision(BaseModel):
     top_score: float | None
 
 
+def limit_evidence(evidence: EvidenceEnvelope, *, top_k: int) -> EvidenceEnvelope:
+    if top_k < 1:
+        raise ValueError('evidence top_k must be positive')
+    return evidence.model_copy(update={'sources': evidence.sources[:top_k],
+                                       'scores': evidence.scores[:top_k]})
+
+
 def policy_corpus_hash(session_factory) -> str:
     with session_factory() as session:
         chunks = [snapshot_chunk(row) for row in session.scalars(select(KnowledgeChunk)).all()

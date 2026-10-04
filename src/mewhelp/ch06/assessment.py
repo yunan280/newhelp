@@ -9,6 +9,9 @@ from mewhelp.ch05.agent import stopped
 from mewhelp.ch05.limits import BudgetExceeded
 from mewhelp.ch05.schemas import OrderAssessment, OrderDTO
 from mewhelp.config import get_settings
+from mewhelp.ch07.context import history_from_payload
+from mewhelp.ch07.projection import model_messages
+from mewhelp.ch07.budget import ContextBudgetError
 
 from .prompts import ASSESSMENT_SYSTEM
 from .structured import invoke_json
@@ -16,13 +19,17 @@ from .structured import invoke_json
 
 def assessment_messages(state):
     order = OrderDTO.model_validate(state["order"])
-    return [SystemMessage(content=ASSESSMENT_SYSTEM), HumanMessage(content=json.dumps({
+    background = {
         "original_question": state["question"], "question": state["resolved_question"],
         "intent": state["intent"], "order": state["order"],
         "user_facts": state.get("user_facts", {}),
         "elapsed_days_since_receipt": (order.as_of - order.received_at).days if order.received_at else None,
         "policy_sources": state["evidence"]["sources"],
-    }, ensure_ascii=False))]
+    }
+    if state.get('history_ctx'):
+        return model_messages(history_from_payload(state['history_ctx']), system=ASSESSMENT_SYSTEM,
+                              question=state['question'], background={'purpose': 'assessment', **background})
+    return [SystemMessage(content=ASSESSMENT_SYSTEM), HumanMessage(json.dumps(background, ensure_ascii=False))]
 
 
 async def assess_order(state, context) -> dict:
@@ -35,6 +42,8 @@ async def assess_order(state, context) -> dict:
         call = await invoke_json(context, state, purpose="assessment", schema=OrderAssessment,
             model_name=get_settings().llm_model, output_tokens=context.router_settings.assessment_max_tokens,
             messages=assessment_messages(state))
+    except ContextBudgetError as error:
+        return {**stopped('context_budget'), 'answer': f'上下文预算不足，请缩小问题范围。{error}'}
     except BudgetExceeded:
         return stopped("token_budget")
     assessment = call.parsed

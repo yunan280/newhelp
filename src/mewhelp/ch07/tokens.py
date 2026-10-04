@@ -16,7 +16,15 @@ def estimate_text(text: str, *, profile: BudgetProfile) -> int:
 
 
 def wire_messages(messages: Sequence[AnyMessage]) -> list[dict]:
-    return convert_to_openai_messages(list(messages), include_id=False)
+    rows = convert_to_openai_messages(list(messages), include_id=False)
+    # ChatOpenAI's chat-completions adapter normalizes tool-call content to null
+    # and sends only the three supported ToolMessage fields (verified by transport).
+    for row in rows:
+        if row['role'] == 'assistant' and row.get('tool_calls') and not row.get('content'):
+            row['content'] = None
+        if row['role'] == 'tool':
+            row.pop('name', None)
+    return rows
 
 
 def estimate_messages(messages: Sequence[AnyMessage], *, profile: BudgetProfile) -> int:

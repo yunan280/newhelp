@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 
-from sqlalchemy import select
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from mewhelp.db.models import Conversation, ConversationSummary, Message, MsgRole
@@ -53,7 +53,12 @@ def advance_layer1(session: Session, *, conversation_id: int,
     end = session.get(Message, new_layer1)
     if end is None or end.conversation_id != conversation_id or end.role is not MsgRole.assistant:
         raise ValueError('layer1 boundary must end a conversation-local visible turn')
-    conv.layer1_from_msg_id = new_layer1
+    claimed = session.execute(update(Conversation).where(Conversation.id == conversation_id,
+        func.coalesce(Conversation.layer1_from_msg_id, 0) == expected_layer1)
+        .values(layer1_from_msg_id=new_layer1).execution_options(synchronize_session=False))
+    if claimed.rowcount != 1:
+        return False
+    session.expire(conv)
     session.flush()
     return True
 
@@ -74,6 +79,14 @@ def append_summary(session: Session, *, job: SummaryJob, from_msg_id: int,
         or end.conversation_id != job.conversation_id or end.role is not MsgRole.assistant
         or not from_msg_id <= upto_msg_id <= job.layer1_snapshot_id <= (conv.layer1_from_msg_id or 0)):
         raise ValueError('summary range must cover the next complete local batch')
+    # Claim coverage atomically in the same transaction as the immutable row.
+    # This also protects backends that ignore SELECT FOR UPDATE.
+    claimed = session.execute(update(Conversation).where(Conversation.id == job.conversation_id,
+        func.coalesce(Conversation.summary_upto_msg_id, 0) == job.old_upto_msg_id)
+        .values(summary_upto_msg_id=upto_msg_id).execution_options(synchronize_session=False))
+    if claimed.rowcount != 1:
+        return None
+    session.expire(conv)
     previous = tuple(_segment(row) for row in session.scalars(select(ConversationSummary)
         .where(ConversationSummary.conversation_id == job.conversation_id)
         .order_by(ConversationSummary.seq)))
@@ -83,7 +96,6 @@ def append_summary(session: Session, *, job: SummaryJob, from_msg_id: int,
     session.add(row)
     session.flush()
     segment = _segment(row)
-    conv.summary_upto_msg_id = upto_msg_id
     conv.summary = '\n'.join(s.content for s in latest_segments((*previous, segment), profile=profile))
     session.flush()
     return segment

@@ -149,10 +149,33 @@ async def test_large_batch_appends_each_range_without_refeeding_new_summary(fact
     assert model.backgrounds == ['', '']
 
 
-async def test_competing_managers_cannot_duplicate_or_rewrite_segment(factory):
+async def test_competing_managers_cannot_duplicate_or_rewrite_segment(factory, monkeypatch):
+    import threading
+    from sqlalchemy.orm import Session
+    barrier = threading.Barrier(2)
+    committed = threading.Event()
+    local = threading.local()
+    class RacingSession(Session):
+        def scalar(self, statement, *args, **kwargs):
+            result = super().scalar(statement, *args, **kwargs)
+            if 'FROM conversations' in str(statement):
+                local.second = barrier.wait(timeout=3) == 0
+            return result
+        def scalars(self, statement, *args, **kwargs):
+            if 'FROM conversation_summaries' in str(statement) and getattr(local, 'second', False):
+                assert committed.wait(timeout=3)
+            return super().scalars(statement, *args, **kwargs)
+    racing_factory = sessionmaker(factory.kw['bind'], class_=RacingSession, expire_on_commit=False)
+    original = manager_type()._commit
+    def commit(manager, *args):
+        result = original(manager, *args)
+        if not local.second:
+            committed.set()
+        return result
+    monkeypatch.setattr(manager_type(), '_commit', commit)
     model = HeldModel()
     model.release.set()
-    managers = [manager_type()(factory, model, BudgetProfile()) for _ in range(2)]
+    managers = [manager_type()(racing_factory, model, BudgetProfile()) for _ in range(2)]
     for manager in managers:
         manager.schedule(job())
     await asyncio.gather(*(m.aclose() for m in managers))

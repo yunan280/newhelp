@@ -2,11 +2,13 @@
 
 import asyncio
 import hashlib
+import json
 import logging
 from pathlib import Path
 from uuid import uuid4
 
-from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
+from langchain_core.utils.function_calling import convert_to_openai_tool
 from langgraph.config import get_stream_writer
 from langgraph.graph import END, START, StateGraph
 from langgraph.runtime import Runtime
@@ -23,6 +25,10 @@ from mewhelp.knowledge.answering import REFUSAL_MESSAGE
 from mewhelp.knowledge.filters import SearchFilters
 from mewhelp.ch07.context import tag_message
 from mewhelp.ch07.store import find_ledger_ids
+from mewhelp.ch07.tokens import estimate_text, estimate_request
+from mewhelp.ch07.budget import ContextBudgetError
+from mewhelp.ch07.context import rebudget_history
+from .prompts import MAIN_SYSTEM
 
 from .agent import (
     decide_agent,
@@ -34,6 +40,7 @@ from .agent import (
 from .events import event
 from .evidence import (
     EvidenceEnvelope,
+    limit_evidence,
     evaluate_gate,
     persist_refusal,
     retrieve_knowledge,
@@ -49,7 +56,7 @@ logger = logging.getLogger(__name__)
 
 
 async def begin_turn(state, context, emit):
-    return {
+    update = {
         "messages": [tag_message(HumanMessage(state["question"], id=state["turn_id"] + "-user"),
                                   turn_id=state["turn_id"])],
         "resolved_question": "",
@@ -81,13 +88,22 @@ async def begin_turn(state, context, emit):
         "understanding": {}, "classification": {}, "expansion": {}, "queries": [],
         "assessment": None, "assessment_control": {}, "refund_offer": None, "user_facts": {},
     }
+    if estimate_text(state['question'], profile=context.profile) > context.settings.max_user_input_tokens:
+        update.update({'intent': '其他', 'route': 'other', 'stop_reason': 'input_limit',
+                       'answer': '输入超过本轮允许的额度，请缩短后重试。'})
+    return update
 
 
 async def resolve_node(state, context, emit):
+    if state.get('stop_reason'):
+        return {}
     try:
         result = await understand_query(state["question"], state.get("messages", []),
             state.get("trusted_entities", []), context=context, state=state)
         return result.patch()
+    except ContextBudgetError as error:
+        return {'resolved_question': state['question'], 'intent': '其他', 'route': 'other',
+                'stop_reason': 'context_budget', 'answer': f'上下文预算不足，请缩小问题范围。{error}'}
     except BudgetExceeded:
         return {"resolved_question": state["question"], "intent": "其他", "route": "other",
                 "stop_reason": "token_budget", "answer": "本次查询已达到处理限额，请缩小问题范围。"}
@@ -98,6 +114,9 @@ async def classify_node(state, context, emit):
         return {}
     try:
         result = await classify_intent(state["resolved_question"], context=context, state=state)
+    except ContextBudgetError as error:
+        return {'intent': '其他', 'intent_confidence': 0.0, 'stop_reason': 'context_budget',
+                'answer': f'上下文预算不足，请缩小问题范围。{error}'}
     except BudgetExceeded:
         return {"intent": "其他", "intent_confidence": 0.0, "stop_reason": "token_budget",
                 "answer": "本次查询已达到处理限额，请缩小问题范围。"}
@@ -178,7 +197,7 @@ async def policy_node(state, context, emit):
     evidence = await retrieve_policy(state["resolved_question"], OrderDTO.model_validate(state["order"]),
         state["queries"], rag=rag, filters=SearchFilters.model_validate(state["filters"]),
         calibration=load_policy_calibration(context))
-    return {"evidence": evidence.model_dump()}
+    return {"evidence": limit_evidence(evidence, top_k=context.settings.rerank_top_k).model_dump()}
 
 
 async def assessment_node(state, context, emit):
@@ -190,15 +209,32 @@ async def retrieve_node(state, context, emit):
     evidence = await retrieve_knowledge(
         state["resolved_question"], rag=rag, filters=SearchFilters.model_validate(state["filters"])
     )
-    return {"evidence": evidence.model_dump()}
+    return {"evidence": limit_evidence(evidence, top_k=context.settings.rerank_top_k).model_dump()}
 
 
 async def gate_node(state, context, emit):
+    from .agent import build_read_registry
+    prefix = estimate_request([SystemMessage(MAIN_SYSTEM)],
+        [convert_to_openai_tool(t) for t in build_read_registry().tools()], profile=context.profile)
+    actual_evidence = estimate_text(json.dumps(state['evidence']['sources'],
+        ensure_ascii=False), profile=context.profile)
+    try:
+        history_patch = await rebudget_history(context, state,
+                                               actual_fixed={'prefix': prefix, 'evidence': actual_evidence})
+        state = {**state, **history_patch}
+    except ContextBudgetError as error:
+        history_patch = {}
+        logger.error('上下文预算不足 conversation=%s error=%s', state['conversation_id'], error)
+        state = {**state, 'budget_gate_error': str(error)}
     evidence = EvidenceEnvelope.model_validate(state["evidence"])
-    messages = assessment_messages(state) if state["route"] == "aftersales" else prompt_messages(state)
-    prompt_bytes = sum(len(str(m.content).encode("utf-8")) for m in messages)
+    # RAG's byte ceiling protects evidence/reranker input. Model-window checks
+    # separately account for the full history and the fixed prefix.
+    prompt_bytes = len(json.dumps(state['evidence']['sources'], ensure_ascii=False).encode('utf-8'))
     gate = evaluate_gate(evidence, prompt_bytes=prompt_bytes)
-    result = {"gate": gate.model_dump()}
+    if state.get('budget_gate_error'):
+        gate = gate.model_copy(update={'passed': False, 'reason_code': 'unsupported_context_size',
+                                      'reason': '上下文预算不足：' + state['budget_gate_error']})
+    result = {**history_patch, "gate": gate.model_dump()}
     if gate.passed:
         emit(
             event(
