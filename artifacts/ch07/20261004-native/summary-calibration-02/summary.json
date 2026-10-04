@@ -1,0 +1,49 @@
+{
+  "part": "summary",
+  "phase": "calibration",
+  "passed": 10,
+  "total": 12,
+  "complete": true,
+  "real_upstream": true,
+  "dataset": {
+    "version": 1,
+    "files": {
+      "references-acceptance.jsonl": {
+        "sha256": "efaa02993ca75d9a56f4a6cd6bd97b0adbf8dde9022c7e2c77e55849ccda7bb6",
+        "count": 8,
+        "split": "acceptance"
+      },
+      "references-calibration.jsonl": {
+        "sha256": "86c490366a8551d45777ce97a75211c203c645dc605158909e8a144a126f824a",
+        "count": 8,
+        "split": "calibration"
+      },
+      "summary-acceptance.jsonl": {
+        "sha256": "01c9ab03130ea349adf7ca39eff62ab1cc5981d6a4f9452466a8556ec3a61d8d",
+        "count": 12,
+        "split": "acceptance"
+      },
+      "summary-calibration.jsonl": {
+        "sha256": "f998750b5cfe2aa1727222272c20502a1155b590dc097a2f333b35abd240ae0d",
+        "count": 12,
+        "split": "calibration"
+      },
+      "tokens-calibration.jsonl": {
+        "sha256": "cf1b0f7e965a66984284cde08fd3d86132941748950ce1dfb081cf1bd0235896",
+        "count": 16,
+        "split": "calibration"
+      }
+    }
+  },
+  "prompt_hash": "d785afd3d94054d9aaf6fd1c0107d4253ebd60198c7563ee5ebce6e26d6c9209",
+  "profile_hash": "275351b93098027cab40c798a5d8cbd50c4c94f1a3844fe8a0c55107ae283f70",
+  "settings": {
+    "model_context_window": 128000,
+    "max_output_tokens": 4096,
+    "max_user_input_tokens": 4096,
+    "max_agent_steps": 4,
+    "tool_result_max_tokens": 1200,
+    "rerank_top_k": 10,
+    "context_calibration_path": null
+  }
+}
