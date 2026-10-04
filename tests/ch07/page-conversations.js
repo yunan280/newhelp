@@ -11,6 +11,7 @@ const store = () => { const map = new Map(); return {getItem: k => map.get(k) ||
 const local = store(), session = store();
 local.setItem('mewhelp_user_id', 'alice');
 let resolveA, resolveB, failList = false, chatCalls = 0;
+let pendingSelection = null, restoredMessages = null, continuationCalls = 0;
 const items = [{id: 2, session_id:'B', first_question:'第二个会话', has_summary:false},
                {id: 1, session_id:'A', first_question:'订单1001', has_summary:true}];
 const response = value => ({ok:true, json:async () => value});
@@ -20,8 +21,9 @@ const fetch = async (url, options) => {
     return response({conversations:items});
   }
   if (url.startsWith('/api/conversations/1/')) return new Promise(r => {resolveA=r;});
-  if (url.startsWith('/api/conversations/2/')) return new Promise(r => {resolveB=r;});
-  if (url.includes('/pending?')) return response(null);
+  if (url.startsWith('/api/conversations/2/')) return restoredMessages ? response(restoredMessages) : new Promise(r => {resolveB=r;});
+  if (url.includes('/pending?')) return response(pendingSelection);
+  if (url === '/ch06/orders/selection/stream') continuationCalls++;
   chatCalls++;
   const data = new TextEncoder().encode('event: session\ndata: {"session_id":"fresh","resumed":false}\n\nevent: token\ndata: {"text":"客服回复"}\n\nevent: done\ndata: {"stop_reason":"completed"}\n\n');
   let done = false;
@@ -55,5 +57,23 @@ const api = new Function('document','localStorage','sessionStorage','fetch','win
   await api.submit('继续聊');
   assert.equal(chatCalls, 1);
   assert(nodes.log.textContent.includes('客服回复'));
+  restoredMessages = {id:2,session_id:'B',messages:[
+    {id:30,role:'user',content:'我想售后',citations:[]},
+    {id:31,role:'assistant',content:'请选择订单',citations:[]}]};
+  pendingSelection = {answer:'请选择订单',order_selection:{selection_id:'pick-B',orders:[
+    {order_id:'1001',product_name:'耳机',paid_amount:'100',status:'已签收'}]}};
+  const failures = [];
+  for (const cached of [false,true]) {
+    api.startNewConversation();
+    if (cached) local.setItem('mewhelp_ch07_history:alice:B',JSON.stringify({messages:[
+      {who:'ai',text:'请选择订单',complete:true,waiting:true,order_selection:pendingSelection.order_selection}]}));
+    else local.removeItem('mewhelp_ch07_history:alice:B');
+    await api.switchConversation(2);
+    assert.equal(api.state().history.filter(r=>r.who==='ai').length,1,'pending reply must not duplicate');
+    const before = continuationCalls;
+    await nodes.log.querySelector('.order-card').click();
+    if (continuationCalls !== before+1) failures.push(cached?'cached pending click blocked':'uncached pending click blocked');
+  }
+  assert.deepEqual(failures,[]);
   console.log('ALL OK: stale switch, full original, busy guard, retained sessions, silent list failure');
 })().catch(e => {console.error(e);process.exitCode=1;});

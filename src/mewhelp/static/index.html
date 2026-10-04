@@ -935,6 +935,11 @@ async function restorePending() {
         answer_id: freshAnswerId(), waiting: true};
       history.push(record); recordReplies.set(record, bubble('ai', record.text));
     }
+    record.complete = false;
+    record.waiting = true;
+    record.error = false;
+    record.truncated = false;
+    recordReplies.get(record)?.bubble.querySelector('.feedback')?.remove();
     attachOrderPicker(recordReplies.get(record), record, pending.order_selection);
     saveHistory();
   } catch (error) {

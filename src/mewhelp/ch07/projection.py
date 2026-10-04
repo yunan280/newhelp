@@ -60,7 +60,8 @@ def group_committed_turns(full: Sequence[AnyMessage], snapshot: ConversationSnap
     committed = []
     covered = set(excluded)
     for turn_id, messages in tagged.items():
-        metas = [_meta(m) for m in messages if _meta(m).get('committed')]
+        messages = [m for m in messages if _meta(m).get('committed')]
+        metas = [_meta(m) for m in messages]
         starts = [m.get('from_msg_id', 0) for m in metas if m.get('from_msg_id')]
         ends = [m.get('upto_msg_id', 0) for m in metas if m.get('upto_msg_id')]
         if not starts or not ends:

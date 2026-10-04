@@ -1,0 +1,33 @@
+{
+  "tests": {
+    "passed": 862,
+    "deselected": 5,
+    "duration_s": 39.42
+  },
+  "ruff": "passed",
+  "frontend_js": [
+    "page-conversations ALL OK",
+    "page-smoke ALL OK"
+  ],
+  "actual_summary": {
+    "calibration": "12/12",
+    "acceptance": "12/12",
+    "current": true
+  },
+  "actual_references": {
+    "acceptance": "8/8 prior to reviewed provenance fix",
+    "current": false
+  },
+  "actual_runtime": {
+    "default_committed_turns": 13,
+    "default_degrades": 0,
+    "demo_committed_turns": 12,
+    "demo_degrades": 6,
+    "demo_summary_segments": 1,
+    "window_violations": 0,
+    "complete": false,
+    "blocked_by": "upstream402 Insufficient Balance"
+  },
+  "router_refresh_pending": true,
+  "finish": false
+}

@@ -1,7 +1,7 @@
 param(
     [ValidateSet('default', 'demo')][string]$Profile = 'demo',
     [int]$Port = 9018,
-    [string]$RouterCalibration = 'artifacts/ch07/20261004-native/router-calibration-01/router.json',
+    [string]$RouterCalibration = 'artifacts/ch07/20261004-native/router-calibration-02/router.json',
     [string]$ContextCalibration = 'artifacts/ch07/20261004-native/tokens-calibration-03/context-profile.json',
     [string]$PolicyCalibration = 'artifacts/ch06/ch06_20261002_01/policy-calibration-02/policy.json',
     [string]$MilvusCollection = 'ch06_eval_mysql_20261002_01'

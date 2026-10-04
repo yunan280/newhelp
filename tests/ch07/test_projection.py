@@ -106,3 +106,19 @@ def test_legacy_ambiguous_checkpoint_falls_back_to_visible_mysql():
                                          current_turn_id='current')
     assert [t.from_msg_id for t in result] == [10, 23]
     assert [len(t.messages) for t in result] == [2, 2]
+
+
+def test_failed_resume_tools_do_not_join_committed_waiting_turn():
+    from mewhelp.ch07.context import tag_message
+    module = projection()
+    snapshot = ConversationSnapshot(1, 'waiting', 'alice', 0, 0, (
+        LedgerMessage(10, 'user', '想退货'), LedgerMessage(14, 'assistant', '请选择订单')), ())
+    waiting = [tag_message(m, turn_id='one', from_msg_id=10, upto_msg_id=14, committed=True)
+               for m in (HumanMessage('想退货'), AIMessage('请选择订单'))]
+    partial = [tag_message(m, turn_id='one') for m in (
+        AIMessage('', tool_calls=[{'id':'c','name':'load_order','args':{'order_id':'1001'},'type':'tool_call'}]),
+        ToolMessage('尚未提交的恢复结果', tool_call_id='c'))]
+    full = [*waiting, *partial]
+    result = module.group_committed_turns(full, snapshot, current_turn_id='next')
+    assert result[0].messages == tuple(waiting)
+    assert full[-1].content == '尚未提交的恢复结果'
