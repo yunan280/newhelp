@@ -39,6 +39,7 @@ def test_tables_are_created(engine):
 
     assert set(inspect(engine).get_table_names()) == {
         "conversations",
+        "conversation_summaries",
         "messages",
         "faq",
         "tickets",

@@ -14,7 +14,7 @@ import pytest
 from sqlalchemy.dialects import mysql
 from sqlalchemy.schema import CreateTable
 
-from mewhelp.db.models import Conversation, Faq, Message, RefundApplication, Ticket
+from mewhelp.db.models import Conversation, ConversationSummary, Faq, Message, RefundApplication, Ticket
 
 DDL_PATH = Path(__file__).resolve().parents[1] / "sql" / "ch02-ddl.sql"
 
@@ -23,7 +23,8 @@ DDL_PATH = Path(__file__).resolve().parents[1] / "sql" / "ch02-ddl.sql"
 def ddl_text() -> str:
     assert DDL_PATH.exists(), f"权威 DDL 不存在:{DDL_PATH}"
     return "\n".join(p.read_text(encoding="utf-8") for p in [DDL_PATH,
-        DDL_PATH.parent / "ch05-ddl.sql", DDL_PATH.parent / "ch06-ddl.sql"])
+        DDL_PATH.parent / "ch05-ddl.sql", DDL_PATH.parent / "ch06-ddl.sql",
+        DDL_PATH.parent / "ch07-ddl.sql", DDL_PATH.parent / "ch07-layers.sql"])
 
 
 @pytest.fixture(scope="module")
@@ -37,7 +38,7 @@ def compiled() -> dict[str, str]:
     dialect = mysql.dialect()
     return {
         t.__tablename__: str(CreateTable(t.__table__).compile(dialect=dialect))
-        for t in (Conversation, Message, Faq, Ticket, RefundApplication)
+        for t in (Conversation, Message, Faq, Ticket, RefundApplication, ConversationSummary)
     }
 
 

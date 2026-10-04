@@ -97,6 +97,12 @@ class Conversation(Base):
     status: Mapped[ConvStatus] = mapped_column(
         _chinese_enum(ConvStatus), nullable=False, server_default=text("'进行中'")
     )
+    summary: Mapped[str | None] = mapped_column(Text, nullable=True,
+        comment='最近几段梗概拼成的投影,拼装时跟证据一起挂在用户那句之后')
+    summary_upto_msg_id: Mapped[int | None] = mapped_column(BIGINT_PK, nullable=True,
+        comment='摘要已覆盖到哪条消息,滑窗从其后接原文')
+    layer1_from_msg_id: Mapped[int | None] = mapped_column(BIGINT_PK, nullable=True,
+        comment='层1(原文)起点;此 id 之后原样,之前渲染成半压形态')
     created_at: Mapped[dt.datetime] = mapped_column(
         DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP")
     )
@@ -108,6 +114,25 @@ class Conversation(Base):
     )
 
     messages: Mapped[list["Message"]] = relationship(back_populates="conversation")
+
+
+class ConversationSummary(Base):
+    __tablename__ = 'conversation_summaries'
+    __table_args__ = (
+        Index('uk_conv_seq', 'conversation_id', 'seq', unique=True),
+        Index('idx_conv_upto', 'conversation_id', 'upto_msg_id'),
+        {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8mb4',
+         'mysql_comment': '分段摘要,一段一行只追加'},
+    )
+    id: Mapped[int] = mapped_column(BIGINT_PK, primary_key=True, autoincrement=True)
+    conversation_id: Mapped[int] = mapped_column(BIGINT_PK, nullable=False)
+    seq: Mapped[int] = mapped_column(Integer, nullable=False, comment='第几段,从 1 开始')
+    from_msg_id: Mapped[int] = mapped_column(BIGINT_PK, nullable=False,
+                                           comment='这段覆盖的消息区间,闭区间')
+    upto_msg_id: Mapped[int] = mapped_column(BIGINT_PK, nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime, nullable=False,
+                                                  server_default=text('CURRENT_TIMESTAMP'))
 
 
 class Message(Base):
