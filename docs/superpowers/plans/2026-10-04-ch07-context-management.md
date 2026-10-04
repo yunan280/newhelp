@@ -8,7 +8,7 @@
 
 **Tech Stack:** LangGraph 1.2.12、checkpoint-sqlite 3.1.1、langchain-core 1.6.5、langchain-openai 1.6.6、FastAPI 0.141.1、SQLAlchemy 2.1.1 + PyMySQL、既有原生 HTML/CSS/JS。
 
-**Spec:** `docs/superpowers/specs/2026-10-04-ch07-context-management-design.md`，用户以「已确认」批准，设计提交 `1cad129`。本计划尚待用户评审与执行方式选择。
+**Spec:** `docs/superpowers/specs/2026-10-04-ch07-context-management-design.md`，用户以「已确认」批准，设计提交 `1cad129`。用户已审阅本计划并选择「Native」，按 executing-plans 顺序实施、末尾一次独立整体审查。
 
 ## Global Constraints
 
