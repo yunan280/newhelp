@@ -530,7 +530,7 @@ $env:CH06_SMALL_MODEL = 'deepseek-flash'
 
 完整原文由 LangGraph `messages/add_messages` 和 checkpoint 保留，MySQL `messages` 只记用户/客服原文。两个边界把历史分为原文、规则半压和追加摘要；模型每次使用独立投影，摘要与证据挂在当前用户句之后。后台摘要不等待当前回复。侧栏支持新会话、全文回载与继续聊，列表失败静默降级。
 
-用户批准的联合标定 v2：中文1.2 token/字、ASCII3字/token、工具模板208、固定前缀1700。演示六变量得到历史5300/原文层3709/半压层1590；默认历史目标42560。业务摘要30–200字。标定依据见 [token report](artifacts/ch07/20261004-native/tokens-calibration-03/summary.json)，冻结摘要验收12/12、指代8/8。
+用户批准的联合标定 v2：中文1.2 token/字、ASCII3字/token、工具模板208、固定前缀1700。演示六变量得到历史5300/原文层3709/半压层1590；默认历史目标42560。业务摘要30–200字。标定依据见 [token report](artifacts/ch07/20261004-native/tokens-calibration-03/summary.json)，冻结摘要验收12/12；指代此前8/8，review修复后8条重验待额度恢复。
 
 在仓库根运行（沿用 `.env` 的数据库/模型凭据，不覆盖它）：
 
@@ -553,7 +553,7 @@ node tests/page-smoke.js src/mewhelp/static/index.html
 
 MySQL两步DDL在 [ch07-ddl.sql](sql/ch07-ddl.sql) 与 [ch07-layers.sql](sql/ch07-layers.sql)，迁移脚本按现有结构检查，可重复运行。实际迁移已完成，两次检查无旧数据变动；原始全库备份留本地 `.cache/ch07/mysql-backup-20261004/`。
 
-当前真实验收**尚未完成**：默认13轮无降级/摘要，演示12轮出现6次降级、1段摘要，两组无过窗；上游402余额不足中断。详见 [default-03](artifacts/ch07/20261004-native/default-03/summary.json) / [demo-02](artifacts/ch07/20261004-native/demo-02/summary.json)，不把这些 incomplete 报告算二十二轮通过。路由源码经Ruff整理后须更新校准绑定，上述router-calibration-02也待额度恢复。旧完整22轮 default-01 的第22轮决策格式错误，已保存请求评估修正，仍保留失败报告。
+当前本地验证862 passed、5 deselected，Ruff和两个前端行为脚本通过；独立review的3项Important已按RED/GREEN修复，见[审查关闭记录](artifacts/ch07/20261004-native/review/resolution.md)。当前真实验收**尚未完成**：默认13轮无降级/摘要，演示12轮出现6次降级、1段摘要，两组无过窗；上游402余额不足中断。详见 [default-03](artifacts/ch07/20261004-native/default-03/summary.json) / [demo-02](artifacts/ch07/20261004-native/demo-02/summary.json)，不把这些 incomplete 报告算二十二轮通过。路由源码经Ruff整理后须更新校准绑定，上述router-calibration-02也待额度恢复。旧完整22轮 default-01 的第22轮决策格式错误，已保存请求评估修正，仍保留失败报告。
 
 恢复额度并完成路由校准、重新启动后，可续跑已核对的原文，不重复已成功轮次：
 
