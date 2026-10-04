@@ -8,9 +8,9 @@ from uuid import uuid4
 
 from langchain_core.messages import AIMessage, HumanMessage
 
+from mewhelp.ch07.context import prepare_request_context
 from mewhelp.db.models import MsgRole
 from mewhelp.db.repository import get_or_create_conversation, load_replay_messages
-from mewhelp.ch07.context import prepare_request_context
 
 from .events import event
 from .schemas import TurnResult

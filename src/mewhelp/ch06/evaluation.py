@@ -12,8 +12,8 @@ from pydantic import ValidationError
 from mewhelp.ch05.config import Ch05Settings
 from mewhelp.ch05.limits import TokenUsage
 from mewhelp.ch05.schemas import ExpansionOutput, IntentOutput, OrderAssessment, UnderstandingOutput
-from mewhelp.config import get_settings
 from mewhelp.ch07.config import ContextSettings, load_profile
+from mewhelp.config import get_settings
 
 from .config import Ch06Settings, RouterCalibration
 
@@ -476,6 +476,10 @@ async def calibrate_router(dataset: Path, outdir: Path) -> int:
     context = WorkflowContext(
         lambda: None, lambda: None, lambda: None, Ch05Settings().limits(), router_settings=settings
     )
+    from mewhelp.ch07.budget import compute_budget
+    from mewhelp.ch07.types import HistoryContext
+    empty_history = HistoryContext(0, 0, 0, '', (), (), (), (), {},
+                                   compute_budget(context.settings, context.profile))
     rows, errors = [], []
     for case in cases:
         row = {"case": case}
@@ -490,7 +494,8 @@ async def calibrate_router(dataset: Path, outdir: Path) -> int:
                     context,
                     {},
                     purpose="classifier",
-                    messages=classifier_messages(case["question"]),
+                    messages=classifier_messages(case["question"], history_ctx=empty_history,
+                                                 question=case["question"]),
                     schema=IntentOutput,
                     model_name=model,
                     output_tokens=context.limits.classifier_max_tokens,

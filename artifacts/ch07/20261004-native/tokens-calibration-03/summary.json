@@ -1,0 +1,106 @@
+{
+  "complete": true,
+  "real_upstream": true,
+  "measurements": 17,
+  "errors": [],
+  "profile": {
+    "prefix_reserve": 1700,
+    "evidence_per_chunk": 400,
+    "summary_reserve": 500,
+    "safety_reserve": 500,
+    "control_reserve": 400,
+    "desired_turns": 40,
+    "steady_user_tokens": 256,
+    "steady_answer_tokens": 512,
+    "steady_tool_tokens": 200,
+    "steady_structure_tokens": 96,
+    "cjk_tokens_per_char": 1.2,
+    "ascii_chars_per_token": 3,
+    "tool_template_tokens": 208,
+    "version": "ch07-v2"
+  },
+  "profile_hash": "1f7769022b2f236009af8c60c59f100aaa9acdf65521ac15467422221cab3dbb",
+  "dataset": {
+    "version": 1,
+    "files": {
+      "references-acceptance.jsonl": {
+        "sha256": "efaa02993ca75d9a56f4a6cd6bd97b0adbf8dde9022c7e2c77e55849ccda7bb6",
+        "count": 8,
+        "split": "acceptance"
+      },
+      "references-calibration.jsonl": {
+        "sha256": "86c490366a8551d45777ce97a75211c203c645dc605158909e8a144a126f824a",
+        "count": 8,
+        "split": "calibration"
+      },
+      "summary-acceptance.jsonl": {
+        "sha256": "01c9ab03130ea349adf7ca39eff62ab1cc5981d6a4f9452466a8556ec3a61d8d",
+        "count": 12,
+        "split": "acceptance"
+      },
+      "summary-calibration.jsonl": {
+        "sha256": "f998750b5cfe2aa1727222272c20502a1155b590dc097a2f333b35abd240ae0d",
+        "count": 12,
+        "split": "calibration"
+      },
+      "tokens-calibration.jsonl": {
+        "sha256": "cf1b0f7e965a66984284cde08fd3d86132941748950ce1dfb081cf1bd0235896",
+        "count": 16,
+        "split": "calibration"
+      }
+    }
+  },
+  "estimator_hash": "84b169c4c87fad31341336669ac5c50d7287f0e50dbd4bbb011b83b4b4311a5c",
+  "reuse_audit": {
+    "from": "artifacts\\ch07\\20261004-native\\tokens-calibration-01",
+    "raw_results_hash": "9aa663f5bc8a018e62468cc2aba1e6906d02fa91419519ec0eb417c7557db5ba",
+    "source_commit": "ed1a631",
+    "unchanged_request_sources": [
+      "src/mewhelp/tools/business.py"
+    ],
+    "production_prefix_remeasured": true,
+    "new_model_calls": 1,
+    "current_prompt_hash": "1dd7b20ce7874b479fc7784db1def68e5adbddbb9962ee71b35e5484b0d14686"
+  },
+  "budgets": {
+    "default": {
+      "fixed": 10796,
+      "peak": 9296,
+      "available": 107908,
+      "history": 42560,
+      "layer1": 29791,
+      "layer2": 12768,
+      "breakdown": {
+        "prefix": 1700,
+        "evidence": 4000,
+        "summary": 500,
+        "output": 4096,
+        "safety": 500,
+        "current_user": 4096,
+        "tool_peak": 4800,
+        "control": 400
+      },
+      "profile_hash": "1f7769022b2f236009af8c60c59f100aaa9acdf65521ac15467422221cab3dbb"
+    },
+    "demo": {
+      "fixed": 6700,
+      "peak": 6000,
+      "available": 5300,
+      "history": 5300,
+      "layer1": 3709,
+      "layer2": 1590,
+      "breakdown": {
+        "prefix": 1700,
+        "evidence": 2000,
+        "summary": 500,
+        "output": 2000,
+        "safety": 500,
+        "current_user": 2000,
+        "tool_peak": 3600,
+        "control": 400
+      },
+      "profile_hash": "1f7769022b2f236009af8c60c59f100aaa9acdf65521ac15467422221cab3dbb"
+    }
+  },
+  "method": "Joint unchanged engineering package check: every measured input <= estimator; production prefix <= reserve; Chinese/ASCII coefficients and all reserves bound to one fingerprint."
+}

@@ -526,6 +526,44 @@ $env:CH06_SMALL_MODEL = 'deepseek-flash'
 
 完整开发和返工记录见 [dev-notes/ch06.md](dev-notes/ch06.md)，设计/计划见 [spec](docs/superpowers/specs/2026-10-02-ch06-router-design.md) / [plan](docs/superpowers/plans/2026-10-02-ch06-router.md)。
 
+## Ch07 · 当前会话上下文与多会话页面
+
+完整原文由 LangGraph `messages/add_messages` 和 checkpoint 保留，MySQL `messages` 只记用户/客服原文。两个边界把历史分为原文、规则半压和追加摘要；模型每次使用独立投影，摘要与证据挂在当前用户句之后。后台摘要不等待当前回复。侧栏支持新会话、全文回载与继续聊，列表失败静默降级。
+
+用户批准的联合标定 v2：中文1.2 token/字、ASCII3字/token、工具模板208、固定前缀1700。演示六变量得到历史5300/原文层3709/半压层1590；默认历史目标42560。业务摘要30–200字。标定依据见 [token report](artifacts/ch07/20261004-native/tokens-calibration-03/summary.json)，冻结摘要验收12/12、指代8/8。
+
+在仓库根运行（沿用 `.env` 的数据库/模型凭据，不覆盖它）：
+
+```powershell
+$pyCh07 = '.venv-ch03/Scripts/python.exe'
+& $pyCh07 -X utf8 scripts/migrate_ch07_schema.py
+# 先完成当前代码的路由校准，需上游模型额度；冻结语料不改
+& $pyCh07 -X utf8 -m mewhelp.ch06.evaluation calibrate --dataset eval/ch06 --outdir artifacts/ch07/20261004-native/router-calibration-02
+# 两个终端分别启动，单worker、独立checkpoint
+./scripts/run_ch07.ps1 -Profile default -Port 9017 -RouterCalibration artifacts/ch07/20261004-native/router-calibration-02/router.json
+./scripts/run_ch07.ps1 -Profile demo -Port 9018 -RouterCalibration artifacts/ch07/20261004-native/router-calibration-02/router.json
+# demo已包含18000/2000/2000/3/1200/5六变量，以及本地校准和演示集合
+& $pyCh07 -X utf8 scripts/smoke_ch07_acceptance.py --base-url http://127.0.0.1:9018 --profile demo --report-dir artifacts/ch07/my-run/demo --user-id ch07-demo --session-prefix ch07-my-run --turns 22
+rg 'model_ctx|history_ctx|summary|层1 降级' log/app.log
+& $pyCh07 -X utf8 -m pytest -q
+& $pyCh07 -X utf8 -m ruff check src tests scripts
+node tests/ch07/page-conversations.js src/mewhelp/static/index.html
+node tests/page-smoke.js src/mewhelp/static/index.html
+```
+
+MySQL两步DDL在 [ch07-ddl.sql](sql/ch07-ddl.sql) 与 [ch07-layers.sql](sql/ch07-layers.sql)，迁移脚本按现有结构检查，可重复运行。实际迁移已完成，两次检查无旧数据变动；原始全库备份留本地 `.cache/ch07/mysql-backup-20261004/`。
+
+当前真实验收**尚未完成**：默认13轮无降级/摘要，演示12轮出现6次降级、1段摘要，两组无过窗；上游402余额不足中断。详见 [default-03](artifacts/ch07/20261004-native/default-03/summary.json) / [demo-02](artifacts/ch07/20261004-native/demo-02/summary.json)，不把这些 incomplete 报告算二十二轮通过。路由源码经Ruff整理后须更新校准绑定，上述router-calibration-02也待额度恢复。旧完整22轮 default-01 的第22轮决策格式错误，已保存请求评估修正，仍保留失败报告。
+
+恢复额度并完成路由校准、重新启动后，可续跑已核对的原文，不重复已成功轮次：
+
+```powershell
+& $pyCh07 -X utf8 scripts/smoke_ch07_acceptance.py --base-url http://127.0.0.1:9017 --profile default --report-dir artifacts/ch07/20261004-native/default-04 --user-id ch07-native-20261004 --session-prefix ch07-native04 --resume-report .cache/ch07/reports/default-03/http.json --turns 22
+& $pyCh07 -X utf8 scripts/smoke_ch07_acceptance.py --base-url http://127.0.0.1:9018 --profile demo --report-dir artifacts/ch07/20261004-native/demo-03 --user-id ch07-native-20261004 --session-prefix ch07-native05 --resume-report .cache/ch07/reports/demo-02/http.json --turns 22
+```
+
+原样HTTP、数据库与上下文证据在ignored的 `.cache/ch07/reports/`，每轮模型实际输入同时记在 `log/app.log`；只将统计、合成标注与审查结果提交仓库。开发过程见 [dev-notes/ch07.md](dev-notes/ch07.md)，设计/计划见 [spec](docs/superpowers/specs/2026-10-04-ch07-context-management-design.md) / [plan](docs/superpowers/plans/2026-10-04-ch07-context-management.md)。
+
 ## 目录结构
 
 ```

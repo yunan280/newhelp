@@ -1,0 +1,40 @@
+{
+  "profile": "default",
+  "session_id": "ch07-native01-default",
+  "user_id": "ch07-native-20261004",
+  "errors": [
+    "ValueError: unsafe or bounded turn: invalid_decision"
+  ],
+  "conversation_id": 99,
+  "turns_completed": 21,
+  "real_http_sse": false,
+  "real_usage": true,
+  "history_contexts": 22,
+  "model_contexts": 92,
+  "degrades": 0,
+  "summary_triggers": 0,
+  "summary_starts": 0,
+  "summary_segments": 0,
+  "mysql_visible_rows": 44,
+  "mysql_originals_match": false,
+  "immutable_segments": true,
+  "monotonic_anchors": true,
+  "window_violations": 0,
+  "first_order_reference_ok": false,
+  "first_summary_injected": false,
+  "nonblocking_timestamps": [
+    {
+      "kind": "controlled held summary, separate from real-upstream dialogue",
+      "foreground_ms": 0.068,
+      "summary_blocked_until_after_reply": true,
+      "summary_complete_ms": 16.416
+    }
+  ],
+  "validation_errors": [
+    "ValueError: unsafe or bounded turn: invalid_decision",
+    "missing evidence: real_http_sse",
+    "missing evidence: mysql_originals_match",
+    "fewer than 22 committed original turns"
+  ],
+  "complete": false
+}

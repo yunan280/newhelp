@@ -1,0 +1,41 @@
+{
+  "profile": "demo",
+  "session_id": "ch07-native05-demo",
+  "user_id": "ch07-native-20261004",
+  "errors": [
+    "ValueError: missing done or SSE error"
+  ],
+  "conversation_id": 104,
+  "turns_completed": 12,
+  "real_http_sse": false,
+  "real_usage": true,
+  "history_contexts": 13,
+  "model_contexts": 67,
+  "degrades": 6,
+  "summary_triggers": 1,
+  "summary_starts": 1,
+  "summary_segments": 1,
+  "mysql_visible_rows": 24,
+  "mysql_originals_match": true,
+  "immutable_segments": true,
+  "monotonic_anchors": true,
+  "window_violations": 0,
+  "first_order_reference_ok": false,
+  "first_summary_injected": true,
+  "nonblocking_timestamps": [
+    {
+      "kind": "controlled held summary, separate from real-upstream dialogue",
+      "foreground_ms": 0.025,
+      "summary_blocked_until_after_reply": true,
+      "summary_complete_ms": 16.835
+    }
+  ],
+  "validation_errors": [
+    "ValueError: missing done or SSE error",
+    "missing evidence: real_http_sse",
+    "fewer than 22 committed original turns",
+    "missing actual context logs",
+    "earliest order is not grounded in an injected summary"
+  ],
+  "complete": false
+}

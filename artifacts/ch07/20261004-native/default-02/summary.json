@@ -1,0 +1,23 @@
+{
+  "profile": "default",
+  "session_id": "ch07-native02-default",
+  "user_id": "ch07-native-20261004",
+  "errors": [
+    "ValueError: missing done or SSE error"
+  ],
+  "turns_completed": 0,
+  "real_http_sse": false,
+  "real_usage": false,
+  "validation_errors": [
+    "ValueError: missing done or SSE error",
+    "missing evidence: real_http_sse",
+    "missing evidence: real_usage",
+    "missing evidence: mysql_originals_match",
+    "missing evidence: immutable_segments",
+    "missing evidence: monotonic_anchors",
+    "fewer than 22 committed original turns",
+    "missing actual context logs",
+    "context window violation"
+  ],
+  "complete": false
+}

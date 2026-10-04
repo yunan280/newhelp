@@ -353,11 +353,36 @@
   .business-controls button:disabled { opacity: .6; cursor: default; }
   .refund-receipt { border-left: 3px solid #648b69; padding-left: 12px; }
   .refund-form [hidden] { display: none !important; }
+  .chat-layout { display:flex; flex:1; min-height:0; position:relative; }
+  .chat-main { display:flex; flex:1; min-width:0; flex-direction:column; }
+  .conversation-sidebar { width:240px; flex:none; padding:20px 12px; overflow-y:auto;
+    border-right:1px solid var(--line); background:var(--panel); }
+  .conversation-sidebar h2 { font-size:14px; margin:0 8px 12px; font-weight:650; }
+  #new-conversation, .sidebar-toggle { font:inherit; color:var(--brand-deep); background:var(--brand-soft);
+    border:1px solid var(--line-strong); border-radius:8px; padding:9px 12px; cursor:pointer; }
+  #new-conversation { width:100%; margin-bottom:16px; text-align:left; }
+  .conversation-item { display:block; width:100%; text-align:left; font:inherit;
+    border:0; border-left:3px solid transparent; background:transparent; color:var(--text);
+    border-radius:0 7px 7px 0; padding:10px; margin-bottom:4px; cursor:pointer; }
+  .conversation-item.active { border-left-color:var(--brand); background:var(--brand-soft); }
+  .conversation-item:hover { background:var(--brand-soft); }
+  .conversation-preview { display:block; font-size:13px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  .conversation-meta { display:block; margin-top:3px; font-size:11px; color:var(--muted); }
+  .conversation-item:disabled, #new-conversation:disabled { opacity:.5; cursor:default; }
+  .sidebar-toggle { display:none; }
+  button:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
+  @media (max-width:700px) {
+    .sidebar-toggle { display:block; }
+    .conversation-sidebar { display:none; }
+    .sidebar-open .conversation-sidebar { display:block; position:absolute; z-index:10;
+      top:0; bottom:0; left:0; width:min(280px,85vw); box-shadow:var(--shadow); }
+  }
 </style>
 </head>
 <body>
 
 <header>
+  <button id="sidebar-toggle" class="sidebar-toggle" type="button" aria-controls="conversation-sidebar" aria-expanded="false">会话</button>
   <div class="logo">🐱</div>
   <div class="titles">
     <h1>MewHelp 商城</h1>
@@ -366,6 +391,13 @@
   <button id="human" class="human" type="button">转人工</button>
 </header>
 
+<div id="chat-layout" class="chat-layout">
+<aside id="conversation-sidebar" class="conversation-sidebar" aria-label="我的会话">
+  <h2>我的会话</h2>
+  <button id="new-conversation" type="button">＋ 新对话</button>
+  <nav id="conversation-list" aria-label="历史会话"></nav>
+</aside>
+<main class="chat-main">
 <div id="log"><div class="hint">
   你好~ 我是 MewHelp 的智能客服。发货、售后、退换货都可以问我。<br>
   <span style="font-size:12px">回答里的引用可查看依据，也欢迎留下满意度反馈。</span>
@@ -382,6 +414,8 @@
   <input id="q" autocomplete="off" placeholder="说点什么…" autofocus>
   <button id="send" type="submit">发送</button>
 </form>
+</main>
+</div>
 
 <dialog id="source-dialog" aria-labelledby="source-title">
   <button class="close" id="source-close" type="button" aria-label="关闭来源">✕</button>
@@ -417,7 +451,7 @@ function readStoredSessionId() {
 }
 
 function storeSessionId(id) {
-  try { sessionStorage.setItem(SESSION_KEY, id); } catch (e) { /* 存不下不影响这一轮对话 */ }
+  try { sessionStorage.setItem(SESSION_KEY, id || ''); } catch (e) { /* 存不下不影响这一轮对话 */ }
 }
 
 let sessionId = readStoredSessionId();
@@ -452,7 +486,11 @@ function freshAnswerId() {
 }
 
 function saveHistory() {
-  try { localStorage.setItem(HISTORY_KEY, JSON.stringify({session_id: sessionId, messages: history.slice(-200)})); }
+  try {
+    const value = JSON.stringify({session_id: sessionId, messages: history.slice(-200)});
+    localStorage.setItem(HISTORY_KEY, value);
+    if (sessionId) localStorage.setItem('mewhelp_ch07_history:' + userId + ':' + sessionId, value);
+  }
   catch (e) { /* 存储不可用时，当前页面仍可聊天和锁定反馈。 */ }
 }
 
@@ -875,11 +913,13 @@ async function attachRefund(reply, record) {
 
 async function restorePending() {
   if (!sessionId || busy) return;
+  const targetSession = sessionId, epoch = conversationRequest;
   try {
-    const response = await fetch('/ch06/sessions/' + encodeURIComponent(sessionId)
+    const response = await fetch('/ch06/sessions/' + encodeURIComponent(targetSession)
       + '/pending?user_id=' + encodeURIComponent(userId));
     if (!response.ok) throw new Error('无法核对订单选择');
     const pending = await response.json();
+    if (targetSession !== sessionId || epoch !== conversationRequest || busy) return;
     expireCards();
     if (!pending?.order_selection) {
       for (const record of history.filter(item => item.waiting)) {
@@ -888,7 +928,8 @@ async function restorePending() {
       }
       saveHistory(); return;
     }
-    let record = history.find(item => item.order_selection?.selection_id === pending.order_selection.selection_id);
+    let record = history.find(item => item.order_selection?.selection_id === pending.order_selection.selection_id)
+      || [...history].reverse().find(item => item.who === 'ai' && item.text === pending.answer);
     if (!record) {
       record = {who: 'ai', text: pending.answer, session_id: sessionId, sources: [], complete: false,
         answer_id: freshAnswerId(), waiting: true};
@@ -896,7 +937,10 @@ async function restorePending() {
     }
     attachOrderPicker(recordReplies.get(record), record, pending.order_selection);
     saveHistory();
-  } catch (error) { note('订单卡片核对失败，请刷新后重试。'); }
+  } catch (error) {
+    if (targetSession === sessionId && epoch === conversationRequest && !busy)
+      note('订单卡片核对失败，请刷新后重试。');
+  }
 }
 
 async function send(text, continuation = null) {
@@ -1097,6 +1141,7 @@ async function send(text, continuation = null) {
     }
     if (record.error || !completed) record.text = reply.text.textContent;
     saveHistory();
+    loadConversationList();
   }
 }
 
@@ -1105,12 +1150,14 @@ async function send(text, continuation = null) {
 let busy = false;
 const allButtons = () => [sendBtn, humanBtn, ...chipsEl.querySelectorAll('button')];
 function setChatBusy(value) {
-  input.disabled = value;
-  allButtons().forEach(button => { button.disabled = value; });
+  input.disabled = value || conversationLoading;
+  allButtons().forEach(button => { button.disabled = value || conversationLoading; });
+  document.getElementById('new-conversation').disabled = value;
+  document.getElementById('conversation-list').querySelectorAll('button').forEach(b => { b.disabled = value; });
 }
 
 async function submit(text) {
-  if (busy || !text) return;
+  if (busy || conversationLoading || !text) return;
   busy = true;
   setChatBusy(true);
   try {
@@ -1137,6 +1184,110 @@ chipsEl.addEventListener('click', (e) => {
 
 humanBtn.addEventListener('click', () => simulateHandoff(null, humanBtn));
 
+// Only the selected session enters the chat. The sidebar is a read-only index.
+let conversationItems = [], conversationRequest = 0, conversationListRequest = 0;
+let conversationLoading = false;
+
+function renderConversationList(items) {
+  const list = document.getElementById('conversation-list');
+  list.replaceChildren();
+  for (const item of items) {
+    const button = document.createElement('button');
+    button.type = 'button'; button.className = 'conversation-item'; button.disabled = busy;
+    button.classList.toggle('active', item.session_id === sessionId);
+    button.setAttribute('aria-current', item.session_id === sessionId ? 'true' : 'false');
+    const preview = document.createElement('span'); preview.className = 'conversation-preview';
+    preview.textContent = item.first_question || '新对话'; button.append(preview);
+    const meta = document.createElement('span'); meta.className = 'conversation-meta';
+    const date = item.created_at ? new Date(item.created_at).toLocaleDateString('zh-CN') : '';
+    meta.textContent = [date, item.has_summary ? '已摘要' : ''].filter(Boolean).join(' · ');
+    button.append(meta); button.addEventListener('click', () => switchConversation(item.id));
+    list.append(button);
+  }
+}
+
+async function loadConversationList() {
+  const request = ++conversationListRequest;
+  try {
+    const response = await fetch('/api/conversations?user_id=' + encodeURIComponent(userId));
+    if (!response.ok) return false;
+    const data = await response.json();
+    if (request !== conversationListRequest || !Array.isArray(data.conversations)) return false;
+    conversationItems = data.conversations; renderConversationList(conversationItems);
+    return true;
+  } catch (error) { return false; }
+}
+
+function renderHistory() {
+  log.replaceChildren(); pendingCards.clear();
+  if (!history.length) {
+    const hint = document.createElement('div'); hint.className = 'hint';
+    hint.textContent = '你好~ 我是 MewHelp 的智能客服。发货、售后、退换货都可以问我。';
+    log.append(hint);
+  }
+  for (const record of history) {
+    const reply = bubble(record.who, record.text); recordReplies.set(record, reply);
+    if (record.who === 'ai') {
+      renderAnswer(reply.text, record.text, record.sources);
+      if (record.error) reply.bubble.classList.add('err');
+      attachFeedback(reply, record); attachActions(reply, record); attachRefund(reply, record);
+      if (record.waiting) businessNode(reply.bubble, 'div', '正在核对订单卡片…', 'business-status pending-check');
+    }
+  }
+}
+
+async function switchConversation(conversationId) {
+  if (busy) return false;
+  const request = ++conversationRequest;
+  conversationLoading = true; setChatBusy(false);
+  try {
+    const response = await fetch('/api/conversations/' + encodeURIComponent(conversationId)
+      + '/messages?user_id=' + encodeURIComponent(userId));
+    if (!response.ok) return false;
+    const data = await response.json();
+    if (request !== conversationRequest || busy || !Array.isArray(data.messages) || !data.session_id) return false;
+    let cached = [];
+    try { cached = JSON.parse(localStorage.getItem('mewhelp_ch07_history:' + userId + ':' + data.session_id) || 'null')?.messages || []; }
+    catch (error) { /* Raw server history remains usable without local metadata. */ }
+    saveHistory();
+    const used = new Set();
+    history = data.messages.map(message => {
+      const who = message.role === 'user' ? 'me' : 'ai';
+      const index = cached.findIndex((r, i) => !used.has(i) && r.who === who && r.text === message.content);
+      if (index >= 0) used.add(index);
+      return {...(index >= 0 ? cached[index] : {}), who, text:message.content, ledger_id:message.id,
+        session_id:data.session_id, sources:normalizeSources(message.citations), complete:true,
+        answer_id:index >= 0 ? cached[index].answer_id || freshAnswerId() : freshAnswerId()};
+    });
+    sessionId = data.session_id; storeSessionId(sessionId); saveHistory(); renderHistory();
+    renderConversationList(conversationItems); closeSidebar();
+    await restorePending();
+    return true;
+  } catch (error) { return false; }
+  finally {
+    if (request === conversationRequest) { conversationLoading = false; setChatBusy(busy); }
+  }
+}
+
+function startNewConversation() {
+  if (busy) return false;
+  ++conversationRequest; saveHistory(); conversationLoading = false;
+  sessionId = null; storeSessionId(null); history = []; input.value = '';
+  renderHistory(); renderConversationList(conversationItems); setChatBusy(false); closeSidebar(); input.focus();
+  return true;
+}
+
+function closeSidebar() {
+  document.getElementById('chat-layout').classList.remove('sidebar-open');
+  document.getElementById('sidebar-toggle').setAttribute('aria-expanded', 'false');
+}
+document.getElementById('new-conversation').addEventListener('click', startNewConversation);
+document.getElementById('sidebar-toggle').addEventListener('click', () => {
+  const layout = document.getElementById('chat-layout');
+  const open = !layout.classList.contains('sidebar-open'); layout.classList.toggle('sidebar-open', open);
+  document.getElementById('sidebar-toggle').setAttribute('aria-expanded', String(open));
+});
+
 // 兼容旧历史缺少 sources / answer_id / feedback 字段。
 try {
   const stored = JSON.parse(localStorage.getItem(HISTORY_KEY) || 'null');
@@ -1161,7 +1312,14 @@ try {
     }
   }
 } catch (e) { /* 损坏/不可用的存储不影响当前页面。 */ }
-restorePending();
+async function bootstrapConversations() {
+  const original = sessionId, epoch = conversationRequest;
+  await loadConversationList();
+  const item = conversationItems.find(item => item.session_id === original);
+  if (!busy && epoch === conversationRequest && original === sessionId && item) await switchConversation(item.id);
+  else if (!busy && epoch === conversationRequest) await restorePending();
+}
+bootstrapConversations();
 </script>
 </body>
 </html>

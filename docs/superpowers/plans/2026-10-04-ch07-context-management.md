@@ -17,7 +17,7 @@
 - 用户 DDL 两步均 apply；S/L 的定义为 `id<=S` 已摘要、`S<id<=L` Layer 2、`id>L` Layer 1。NULL 读取为逻辑 0；数据库字段仍可 NULL。
 - 摘要段只追加、不改写；summary 列只拼接最近连续段；原文不搬、不改、不删除。默认 Layer 2 客服前缀 60 字，用户原话不截断。
 - 工具原文不新写 messages 表；真实工具消息进入完整 State/checkpoint 并参与原文层计量；模型输入副本不回写完整消息。
-- 演示变量严格为 `MODEL_CONTEXT_WINDOW=18000 MAX_OUTPUT_TOKENS=2000 MAX_USER_INPUT_TOKENS=2000 MAX_AGENT_STEPS=3 TOOL_RESULT_MAX_TOKENS=1200 RERANK_TOP_K=5`，工程包推导 H/L1/L2=5650/3954/1695。
+- 演示变量严格为 `MODEL_CONTEXT_WINDOW=18000 MAX_OUTPUT_TOKENS=2000 MAX_USER_INPUT_TOKENS=2000 MAX_AGENT_STEPS=3 TOOL_RESULT_MAX_TOKENS=1200 RERANK_TOP_K=5`，初始工程包 H/L1/L2=5650/3954/1695；正式验收已由用户批准为5300/3709/1590（spec §15）。
 - 起始包：prefix 1350、证据每条 400、摘要 500、安全 500、控制结构 400；desired_turns 40，稳态 1064；CJK 1 token/字、ASCII 4 字符/token。真实校准与预算版本绑定，不能凑数伪造实测。
 - 默认软件窗口 128000；输出/用户/工具步数/单工具结果/TopK=4096/4096/4/1200/10；只有供应商实际能力支持该上限才启用。共享 .env 和 LLM_MODEL 不自动覆盖。
 - MAX_AGENT_STEPS 为整轮工具执行次数，批次内每个调用均占名额；收尾控制/回答另预留，原 max_tools=8 不能逃过额度。
@@ -193,7 +193,7 @@ DTO 不直接成为 checkpoint 的自定义序列化对象；`history_payload(ct
 **Interfaces:** 最终交付必须包含默认启动、6 变量演示启动、两步迁移命令、实际测试统计、日志查看、dev-notes 路径。报告对原请求的 7 项功能、5 项验收逐一给证据。
 
 - [ ] **Step 1:** Run 一次最终确定性套件 `& $pyCh07 -X utf8 -m pytest -q`、`& $pyCh07 -X utf8 -m ruff check src tests scripts`、两个 JS 行为脚本。汇总实际 passed/deselected/failures，不能从旧 Ch06 数字推断通过；已有有效真实 acceptance 不无原因重跑。
-- [ ] **Step 2:** 使用 requesting-code-review。Native 执行时派一位独立 reviewer 看实施起点到当前 HEAD 的完整 diff，对照 spec/plan/Review Focus（尤其预算、并发覆盖、中断恢复、原文/精简分离、真实日志与验收真实性）。Subagent-driven 则每任务先独立 review，再做一次整体接缝审查。本任务尚未选择方法，不现在派 reviewer。
+- [ ] **Step 2:** 使用 requesting-code-review。Native 执行时派一位独立 reviewer 看实施起点到当前 HEAD 的完整 diff，对照 spec/plan/Review Focus（尤其预算、并发覆盖、中断恢复、原文/精简分离、真实日志与验收真实性）。Subagent-driven 则每任务先独立 review，再做一次整体接缝审查。用户已选择 Native，仅一次整体 reviewer。
 - [ ] **Step 3:** 收到反馈先用 receiving-code-review 核对具体触发场景；确需修复则先写失败回归，再修改、再相关验证；新增代码/Prompt影响真实报告 hash 时按影响范围重跑。追记 code review 结论、取舍与返工，保留原报告。
 - [ ] **Step 4:** README 写真实可运行的 `$pyCh07`/迁移/默认/demo/smoke/`rg 'model_ctx|history_ctx|summary' log/app.log` 命令，引用已产生 report，不写假想成功数字。演示仅本地服务，保留模型/数据库/checkpoint 的当前有效路径。
 - [ ] **Step 5:** 使用 verification-before-completion 与 finishing-a-development-branch；按用户当前授权保留分支并交付，不默认 merge/push 或清理别人服务/目录。即时追记 Finish 四项，提交 `docs(ch07): deliver context management demo and verification`。只有功能、真实验收、审查与交付全部完成才标 finish。

@@ -9,16 +9,16 @@ from langchain_core.messages import ToolMessage
 from langchain_core.utils.function_calling import convert_to_openai_tool
 from pydantic import ValidationError
 
-from mewhelp.config import get_settings
-from mewhelp.tools.business import build_business_tools
-from mewhelp.tools.registry import ToolRegistry, ToolSpec
-from mewhelp.ch07.context import history_from_payload, tag_message
-from mewhelp.ch07.budget import ContextBudgetError, compute_budget, check_window
+from mewhelp.ch07.budget import ContextBudgetError, check_window, compute_budget
 from mewhelp.ch07.config import BudgetProfile, ContextSettings
+from mewhelp.ch07.context import history_from_payload, tag_message
 from mewhelp.ch07.observability import log_model
 from mewhelp.ch07.projection import model_messages
 from mewhelp.ch07.tokens import estimate_request, estimate_text
 from mewhelp.ch07.types import HistoryContext
+from mewhelp.config import get_settings
+from mewhelp.tools.business import build_business_tools
+from mewhelp.tools.registry import ToolRegistry, ToolSpec
 
 from .limits import (
     BOUNDED_REPLY,

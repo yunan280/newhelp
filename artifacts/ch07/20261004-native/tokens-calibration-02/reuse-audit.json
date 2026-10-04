@@ -1,0 +1,10 @@
+{
+  "from": "artifacts\\ch07\\20261004-native\\tokens-calibration-01",
+  "raw_results_hash": "9aa663f5bc8a018e62468cc2aba1e6906d02fa91419519ec0eb417c7557db5ba",
+  "source_commit": "ed1a631",
+  "unchanged_request_sources": [
+    "src/mewhelp/ch05/prompts.py",
+    "src/mewhelp/tools/business.py"
+  ],
+  "new_model_calls": 0
+}

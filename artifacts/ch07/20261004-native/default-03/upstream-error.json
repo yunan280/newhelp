@@ -1,0 +1,10 @@
+{
+  "type": "APIStatusError",
+  "status": 402,
+  "body": {
+    "message": "Insufficient Balance (request_id: 6eb2f24a-c404-4a5d-815d-fe52d137d7ac)",
+    "type": "unknown_error",
+    "param": null,
+    "code": "invalid_request_error"
+  }
+}

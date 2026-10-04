@@ -1,0 +1,53 @@
+{
+  "rows": [
+    {
+      "id": "first-order",
+      "expected": {
+        "query_logistics_order_id": "1001"
+      },
+      "tool_ok": true,
+      "content": "",
+      "tool_calls": [
+        {
+          "name": "query_logistics",
+          "args": {
+            "order_id": "1001"
+          },
+          "id": "call_00_GuTaUNQqaBV3v6IMt0gl8522",
+          "type": "tool_call"
+        }
+      ],
+      "usage": {
+        "input_tokens": 1087,
+        "output_tokens": 40,
+        "total_tokens": 1127,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "elapsed_ms": 1301
+    },
+    {
+      "id": "earliest-order",
+      "expected": {
+        "after_tool_control_json": true
+      },
+      "tool_ok": true,
+      "content": "{\"reply_mode\":\"answer\",\"suggested_actions\":[],\"ticket_type\":null}",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 5642,
+        "output_tokens": 20,
+        "total_tokens": 5662,
+        "input_token_details": {
+          "cache_read": 768
+        },
+        "output_token_details": {}
+      },
+      "elapsed_ms": 386
+    }
+  ],
+  "passed": 2,
+  "total": 2
+}

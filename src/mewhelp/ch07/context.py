@@ -6,10 +6,10 @@ from uuid import uuid4
 from langchain_core.messages import messages_from_dict, messages_to_dict
 
 from .budget import ContextBudget, compute_budget, measured_prefix
+from .observability import log_history
 from .projection import group_committed_turns, project_history
 from .store import advance_layer1, read_conversation
 from .types import HistoryContext, HistoryTurn, SummaryJob, SummarySegment
-from .observability import log_history
 
 logger = logging.getLogger(__name__)
 

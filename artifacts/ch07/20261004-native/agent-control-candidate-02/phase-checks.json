@@ -1,0 +1,16 @@
+[
+  {
+    "purpose": "repair",
+    "content": "{\"reply_mode\":\"answer\",\"suggested_actions\":[],\"ticket_type\":null}",
+    "usage": {
+      "input_tokens": 5288,
+      "output_tokens": 20,
+      "total_tokens": 5308,
+      "input_token_details": {
+        "cache_read": 384
+      },
+      "output_token_details": {}
+    },
+    "prompt_hash": "1dd7b20ce7874b479fc7784db1def68e5adbddbb9962ee71b35e5484b0d14686"
+  }
+]

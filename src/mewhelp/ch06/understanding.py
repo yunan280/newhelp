@@ -10,10 +10,10 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from mewhelp.ch05.limits import TokenUsage
 from mewhelp.ch05.schemas import QueryScope, UnderstandingOutput
 from mewhelp.ch05.state import WorkflowContext
-from mewhelp.knowledge.query import protected_fragments
 from mewhelp.ch07.context import history_from_payload
 from mewhelp.ch07.projection import model_messages
 from mewhelp.ch07.provenance import chronological_reference, reference_sources, verify_reference
+from mewhelp.knowledge.query import protected_fragments
 
 from .prompts import UNDERSTANDING_SYSTEM
 from .structured import StructuredCall, invoke_json

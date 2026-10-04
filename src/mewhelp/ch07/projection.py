@@ -3,7 +3,14 @@ import logging
 from collections import OrderedDict
 from collections.abc import Sequence
 
-from langchain_core.messages import AIMessage, AnyMessage, HumanMessage, SystemMessage, ToolMessage, trim_messages
+from langchain_core.messages import (
+    AIMessage,
+    AnyMessage,
+    HumanMessage,
+    SystemMessage,
+    ToolMessage,
+    trim_messages,
+)
 
 from .budget import ContextBudget
 from .config import BudgetProfile

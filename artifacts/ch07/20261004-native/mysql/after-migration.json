@@ -1,0 +1,76 @@
+{
+  "complete": true,
+  "existing_tables": {
+    "conversations": {
+      "count": 98,
+      "unchanged": true
+    },
+    "faq": {
+      "count": 12,
+      "unchanged": true
+    },
+    "knowledge_chunks": {
+      "count": 28,
+      "unchanged": true
+    },
+    "knowledge_chunks_draft_backup": {
+      "count": 14,
+      "unchanged": true
+    },
+    "knowledge_jobs_draft_backup": {
+      "count": 0,
+      "unchanged": true
+    },
+    "knowledge_qa_staging_draft_backup": {
+      "count": 0,
+      "unchanged": true
+    },
+    "low_confidence_questions": {
+      "count": 20,
+      "unchanged": true
+    },
+    "messages": {
+      "count": 493,
+      "unchanged": true
+    },
+    "qa_extraction_staging": {
+      "count": 8,
+      "unchanged": true
+    },
+    "refund_applications": {
+      "count": 6,
+      "unchanged": true
+    },
+    "tickets": {
+      "count": 7,
+      "unchanged": true
+    }
+  },
+  "columns": [
+    {
+      "name": "summary",
+      "type": "TEXT",
+      "default": null,
+      "comment": "最近几段梗概拼成的投影,拼装时跟证据一起挂在用户那句之后",
+      "nullable": true
+    },
+    {
+      "name": "summary_upto_msg_id",
+      "type": "BIGINT",
+      "default": null,
+      "comment": "摘要已覆盖到哪条消息,滑窗从其后接原文",
+      "nullable": true,
+      "autoincrement": false
+    },
+    {
+      "name": "layer1_from_msg_id",
+      "type": "BIGINT",
+      "default": null,
+      "comment": "层1(原文)起点;此 id 之后原样,之前渲染成半压形态",
+      "nullable": true,
+      "autoincrement": false
+    }
+  ],
+  "summary_ddl": "CREATE TABLE `conversation_summaries` (\n  `id` bigint unsigned NOT NULL AUTO_INCREMENT,\n  `conversation_id` bigint unsigned NOT NULL,\n  `seq` int NOT NULL COMMENT '第几段,从 1 开始',\n  `from_msg_id` bigint unsigned NOT NULL COMMENT '这段覆盖的消息区间,闭区间',\n  `upto_msg_id` bigint unsigned NOT NULL,\n  `content` text NOT NULL,\n  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `uk_conv_seq` (`conversation_id`,`seq`),\n  KEY `idx_conv_upto` (`conversation_id`,`upto_msg_id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='分段摘要,一段一行只追加'",
+  "repeat_migration_added": []
+}

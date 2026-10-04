@@ -1,0 +1,53 @@
+{
+  "rows": [
+    {
+      "id": "first-order",
+      "expected": {
+        "query_logistics_order_id": "1001"
+      },
+      "tool_ok": true,
+      "content": "",
+      "tool_calls": [
+        {
+          "name": "query_logistics",
+          "args": {
+            "order_id": "1001"
+          },
+          "id": "call_00_Ydo2xa7dAN0O1I6LaQ1D5273",
+          "type": "tool_call"
+        }
+      ],
+      "usage": {
+        "input_tokens": 1045,
+        "output_tokens": 40,
+        "total_tokens": 1085,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "elapsed_ms": 1100
+    },
+    {
+      "id": "earliest-order",
+      "expected": {
+        "after_tool_control_json": true
+      },
+      "tool_ok": false,
+      "content": "订单1001的查询结果如下：\n\n- 订单号：1001\n- 承运商：京东物流\n- 运单号：F678104970636\n- 当前状态：已签收\n- 最新位置：已由收件人签收（2026-09-29）\n- 运输轨迹：广州集散中心 → 杭州转运中心 → 上海分拨中心\n\n目前能确认的是：该订单已显示签收，现有轨迹中未显示还有在途运输节点。需要说明的是，“已签收”仅代表物流状态，并不等于您已经检查过商品。本次仅做查询，未申请退款，也未创建工单。",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 5600,
+        "output_tokens": 144,
+        "total_tokens": 5744,
+        "input_token_details": {
+          "cache_read": 768
+        },
+        "output_token_details": {}
+      },
+      "elapsed_ms": 975
+    }
+  ],
+  "passed": 1,
+  "total": 2
+}

@@ -22,6 +22,7 @@ async def test_history_ctx_is_logged_for_chitchat_without_main_agent(workflow_ru
 
 async def test_default_app_creates_log_without_extra_cli_flags(monkeypatch, tmp_path, workflow_runtime):
     from contextlib import asynccontextmanager
+
     from mewhelp import main
     @asynccontextmanager
     async def runtime(*args, **kwargs):
@@ -35,9 +36,9 @@ async def test_default_app_creates_log_without_extra_cli_flags(monkeypatch, tmp_
 
 
 async def test_summary_lifecycle_logs_boundaries_and_elapsed(tmp_path):
-    from tests.ch07.test_summary_jobs import factory, HeldModel, job, manager_type
     from mewhelp.ch07.config import BudgetProfile
     from mewhelp.ch07.observability import configure_context_logging
+    from tests.ch07.test_summary_jobs import HeldModel, factory, job, manager_type
     fixture = factory.__wrapped__(tmp_path)
     session_factory = next(fixture)
     try:

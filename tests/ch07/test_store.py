@@ -80,10 +80,9 @@ def test_stale_snapshot_skips_and_preserves_advanced_layer1(factory):
 
 def test_cannot_skip_unsummarized_range(factory):
     store, types = modules()
-    with factory.begin() as session:
-        with pytest.raises(ValueError, match='range'):
-            store.append_summary(session, job=job(types, upto=29, start=23),
-                from_msg_id=23, upto_msg_id=29, content='漏掉第一轮', profile=BudgetProfile())
+    with factory.begin() as session, pytest.raises(ValueError, match='range'):
+        store.append_summary(session, job=job(types, upto=29, start=23),
+            from_msg_id=23, upto_msg_id=29, content='漏掉第一轮', profile=BudgetProfile())
 
 
 def test_latest_projection_keeps_whole_segments(factory):

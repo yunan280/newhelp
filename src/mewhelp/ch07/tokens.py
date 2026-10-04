@@ -35,4 +35,5 @@ def estimate_messages(messages: Sequence[AnyMessage], *, profile: BudgetProfile)
 def estimate_request(messages: Sequence[AnyMessage], tools: Sequence[dict],
                      *, profile: BudgetProfile) -> int:
     schemas = json.dumps(list(tools), ensure_ascii=False, separators=(',', ':')) if tools else ''
-    return estimate_messages(messages, profile=profile) + estimate_text(schemas, profile=profile)
+    return (estimate_messages(messages, profile=profile) + estimate_text(schemas, profile=profile)
+            + (profile.tool_template_tokens if tools else 0))

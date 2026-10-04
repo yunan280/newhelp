@@ -1,0 +1,18 @@
+{
+  "isolation": "REPEATABLE READ consistent snapshot read only",
+  "path": ".cache\\ch07\\mysql-backup-20261004\\backup.json",
+  "sha256": "7c8c70db8cea8c404789e911a70b560778d1d903b9dfcc62c18994c6d3ad4f01",
+  "tables": {
+    "conversations": 98,
+    "faq": 12,
+    "knowledge_chunks": 28,
+    "knowledge_chunks_draft_backup": 14,
+    "knowledge_jobs_draft_backup": 0,
+    "knowledge_qa_staging_draft_backup": 0,
+    "low_confidence_questions": 20,
+    "messages": 493,
+    "qa_extraction_staging": 8,
+    "refund_applications": 6,
+    "tickets": 7
+  }
+}

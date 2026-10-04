@@ -151,6 +151,7 @@ async def test_large_batch_appends_each_range_without_refeeding_new_summary(fact
 
 async def test_competing_managers_cannot_duplicate_or_rewrite_segment(factory, monkeypatch):
     import threading
+
     from sqlalchemy.orm import Session
     barrier = threading.Barrier(2)
     committed = threading.Event()

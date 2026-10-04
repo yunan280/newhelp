@@ -10,8 +10,8 @@ from sqlalchemy import select
 
 from mewhelp.ch05.events import event
 from mewhelp.ch05.schemas import OrderSelection, TurnResult
-from mewhelp.db.models import Conversation
 from mewhelp.ch07.context import prepare_request_context
+from mewhelp.db.models import Conversation
 
 from .orders import list_demo_orders
 

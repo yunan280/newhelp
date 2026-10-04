@@ -105,3 +105,24 @@ def find_ledger_ids(session: Session, *, conversation_id: int,
                     event_keys: Sequence[str]) -> dict[str, int]:
     return dict(session.execute(select(Message.ch06_event_key, Message.id).where(
         Message.conversation_id == conversation_id, Message.ch06_event_key.in_(event_keys))).all())
+
+
+def list_user_conversations(session: Session, *, user_id: str):
+    from .schemas import ConversationItem
+    first = select(Message.content).where(Message.conversation_id == Conversation.id,
+        Message.role == MsgRole.user).order_by(Message.id).limit(1).correlate(Conversation).scalar_subquery()
+    count = select(func.count(ConversationSummary.id)).where(
+        ConversationSummary.conversation_id == Conversation.id).correlate(Conversation).scalar_subquery()
+    rows = session.execute(select(Conversation, first, count).where(Conversation.user_id == user_id)
+        .order_by(Conversation.created_at.desc(), Conversation.id.desc()))
+    return [ConversationItem(id=c.id, session_id=c.session_id, created_at=c.created_at,
+        updated_at=c.updated_at, first_question=(question or '')[:40],
+        has_summary=bool(n), summary_count=n) for c, question, n in rows]
+
+
+def read_visible_messages(session: Session, *, conversation_id: int, user_id: str):
+    from .schemas import ConversationMessages, VisibleMessage
+    snapshot = read_conversation(session, conversation_id=conversation_id, user_id=user_id)
+    return ConversationMessages(id=snapshot.conversation_id, session_id=snapshot.session_id,
+        messages=[VisibleMessage(id=m.id, role=m.role, content=m.content, citations=list(m.citations))
+                  for m in snapshot.messages])

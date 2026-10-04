@@ -21,7 +21,7 @@ class ContextSettings(BaseSettings):
 
 @dataclass(frozen=True)
 class BudgetProfile:
-    prefix_reserve: int = 1350
+    prefix_reserve: int = 1700
     evidence_per_chunk: int = 400
     summary_reserve: int = 500
     safety_reserve: int = 500
@@ -31,9 +31,10 @@ class BudgetProfile:
     steady_answer_tokens: int = 512
     steady_tool_tokens: int = 200
     steady_structure_tokens: int = 96
-    cjk_tokens_per_char: float = 1
-    ascii_chars_per_token: float = 4
-    version: str = 'ch07-v1'
+    cjk_tokens_per_char: float = 1.2
+    ascii_chars_per_token: float = 3
+    tool_template_tokens: int = 208
+    version: str = 'ch07-v2'
 
     def __post_init__(self):
         for key, value in asdict(self).items():

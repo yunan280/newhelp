@@ -108,6 +108,7 @@ const nodes = {
 };
 for (const id of ['source-dialog','source-close','source-title','source-path','source-meta',
                   'source-question','source-answer','source-status','source-link']) nodes[id] = new El('div');
+for (const match of html.matchAll(/id="([^"]+)"/g)) nodes[match[1]] ||= new El('div');
 const document = { createElement: (t) => new El(t), getElementById: (id) => nodes[id] || null,
   createTextNode: t => { const n = new El('#text'); n.textContent = t; return n; } };
 
@@ -160,6 +161,8 @@ function makeFetch(scene) {
   const chunks = scene.map(encode);
   let n = 0;
   return async (url, opts) => {
+    if (url.startsWith('/api/conversations')) return {ok:true,json:async()=>({conversations:[]})};
+    if (url.includes('/pending?')) return {ok:true,json:async()=>null};
     sentBody = JSON.parse(opts.body);
     snapshot = {};
     return {
@@ -216,6 +219,8 @@ function actionPage(saved, scene = SCENE_COMPLAINT, ticketResponder = null) {
   const local = saved?.local || makeStore(), session = saved?.session || makeStore();
   const calls = [];
   const fetch = async (url, options) => {
+    if (url.startsWith('/api/conversations')) return {ok:true,json:async()=>({conversations:[]})};
+    if (url.includes('/pending?')) return {ok:true,json:async()=>null};
     calls.push({url,body:JSON.parse(options.body)});
     if (url === '/ch05/tickets' && ticketResponder) return ticketResponder(JSON.parse(options.body));
     if (url === '/ch05/tickets') return {ok:true,status:200,

@@ -1,0 +1,40 @@
+{
+  "profile": "default",
+  "session_id": "ch07-native04-default",
+  "user_id": "ch07-native-20261004",
+  "errors": [
+    "ValueError: missing done or SSE error"
+  ],
+  "conversation_id": 103,
+  "turns_completed": 13,
+  "real_http_sse": false,
+  "real_usage": true,
+  "history_contexts": 14,
+  "model_contexts": 73,
+  "degrades": 0,
+  "summary_triggers": 0,
+  "summary_starts": 0,
+  "summary_segments": 0,
+  "mysql_visible_rows": 26,
+  "mysql_originals_match": true,
+  "immutable_segments": true,
+  "monotonic_anchors": true,
+  "window_violations": 0,
+  "first_order_reference_ok": false,
+  "first_summary_injected": false,
+  "nonblocking_timestamps": [
+    {
+      "kind": "controlled held summary, separate from real-upstream dialogue",
+      "foreground_ms": 0.052,
+      "summary_blocked_until_after_reply": true,
+      "summary_complete_ms": 28.76
+    }
+  ],
+  "validation_errors": [
+    "ValueError: missing done or SSE error",
+    "missing evidence: real_http_sse",
+    "fewer than 22 committed original turns",
+    "missing actual context logs"
+  ],
+  "complete": false
+}

@@ -14,7 +14,14 @@ import pytest
 from sqlalchemy.dialects import mysql
 from sqlalchemy.schema import CreateTable
 
-from mewhelp.db.models import Conversation, ConversationSummary, Faq, Message, RefundApplication, Ticket
+from mewhelp.db.models import (
+    Conversation,
+    ConversationSummary,
+    Faq,
+    Message,
+    RefundApplication,
+    Ticket,
+)
 
 DDL_PATH = Path(__file__).resolve().parents[1] / "sql" / "ch02-ddl.sql"
 

@@ -1,0 +1,207 @@
+{
+  "complete": false,
+  "real_upstream": true,
+  "measurements": 17,
+  "errors": [
+    {
+      "id": "tokens-calibration-03",
+      "estimated": 279,
+      "usage": {
+        "input_tokens": 297,
+        "output_tokens": 16,
+        "total_tokens": 313,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "response_model": "deepseek-flash",
+      "underestimate": 18,
+      "errors": []
+    },
+    {
+      "id": "tokens-calibration-05",
+      "estimated": 543,
+      "usage": {
+        "input_tokens": 612,
+        "output_tokens": 15,
+        "total_tokens": 627,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "response_model": "deepseek-flash",
+      "underestimate": 69,
+      "errors": []
+    },
+    {
+      "id": "tokens-calibration-09",
+      "estimated": 301,
+      "usage": {
+        "input_tokens": 378,
+        "output_tokens": 16,
+        "total_tokens": 394,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "response_model": "deepseek-flash",
+      "underestimate": 77,
+      "errors": []
+    },
+    {
+      "id": "tokens-calibration-10",
+      "estimated": 408,
+      "usage": {
+        "input_tokens": 429,
+        "output_tokens": 16,
+        "total_tokens": 445,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "response_model": "deepseek-flash",
+      "underestimate": 21,
+      "errors": []
+    },
+    {
+      "id": "tokens-calibration-11",
+      "estimated": 337,
+      "usage": {
+        "input_tokens": 563,
+        "output_tokens": 16,
+        "total_tokens": 579,
+        "input_token_details": {
+          "cache_read": 256
+        },
+        "output_token_details": {}
+      },
+      "response_model": "deepseek-flash",
+      "underestimate": 226,
+      "errors": []
+    },
+    {
+      "id": "tokens-calibration-12",
+      "estimated": 701,
+      "usage": {
+        "input_tokens": 838,
+        "output_tokens": 16,
+        "total_tokens": 854,
+        "input_token_details": {
+          "cache_read": 256
+        },
+        "output_token_details": {}
+      },
+      "response_model": "deepseek-flash",
+      "underestimate": 137,
+      "errors": []
+    },
+    {
+      "id": "tokens-calibration-13",
+      "estimated": 601,
+      "usage": {
+        "input_tokens": 878,
+        "output_tokens": 16,
+        "total_tokens": 894,
+        "input_token_details": {
+          "cache_read": 256
+        },
+        "output_token_details": {}
+      },
+      "response_model": "deepseek-flash",
+      "underestimate": 277,
+      "errors": []
+    }
+  ],
+  "profile": {
+    "prefix_reserve": 1350,
+    "evidence_per_chunk": 400,
+    "summary_reserve": 500,
+    "safety_reserve": 500,
+    "control_reserve": 400,
+    "desired_turns": 40,
+    "steady_user_tokens": 256,
+    "steady_answer_tokens": 512,
+    "steady_tool_tokens": 200,
+    "steady_structure_tokens": 96,
+    "cjk_tokens_per_char": 1,
+    "ascii_chars_per_token": 4,
+    "version": "ch07-v1"
+  },
+  "profile_hash": "275351b93098027cab40c798a5d8cbd50c4c94f1a3844fe8a0c55107ae283f70",
+  "dataset": {
+    "version": 1,
+    "files": {
+      "references-acceptance.jsonl": {
+        "sha256": "efaa02993ca75d9a56f4a6cd6bd97b0adbf8dde9022c7e2c77e55849ccda7bb6",
+        "count": 8,
+        "split": "acceptance"
+      },
+      "references-calibration.jsonl": {
+        "sha256": "86c490366a8551d45777ce97a75211c203c645dc605158909e8a144a126f824a",
+        "count": 8,
+        "split": "calibration"
+      },
+      "summary-acceptance.jsonl": {
+        "sha256": "01c9ab03130ea349adf7ca39eff62ab1cc5981d6a4f9452466a8556ec3a61d8d",
+        "count": 12,
+        "split": "acceptance"
+      },
+      "summary-calibration.jsonl": {
+        "sha256": "f998750b5cfe2aa1727222272c20502a1155b590dc097a2f333b35abd240ae0d",
+        "count": 12,
+        "split": "calibration"
+      },
+      "tokens-calibration.jsonl": {
+        "sha256": "cf1b0f7e965a66984284cde08fd3d86132941748950ce1dfb081cf1bd0235896",
+        "count": 16,
+        "split": "calibration"
+      }
+    }
+  },
+  "estimator_hash": "92a930eaf15abf9ab8a0c69658f30d9147951200597b5838018b7896c22c61a7",
+  "budgets": {
+    "default": {
+      "fixed": 10446,
+      "peak": 9296,
+      "available": 108258,
+      "history": 42560,
+      "layer1": 29791,
+      "layer2": 12768,
+      "breakdown": {
+        "prefix": 1350,
+        "evidence": 4000,
+        "summary": 500,
+        "output": 4096,
+        "safety": 500,
+        "current_user": 4096,
+        "tool_peak": 4800,
+        "control": 400
+      },
+      "profile_hash": "275351b93098027cab40c798a5d8cbd50c4c94f1a3844fe8a0c55107ae283f70"
+    },
+    "demo": {
+      "fixed": 6350,
+      "peak": 6000,
+      "available": 5650,
+      "history": 5650,
+      "layer1": 3954,
+      "layer2": 1695,
+      "breakdown": {
+        "prefix": 1350,
+        "evidence": 2000,
+        "summary": 500,
+        "output": 2000,
+        "safety": 500,
+        "current_user": 2000,
+        "tool_peak": 3600,
+        "control": 400
+      },
+      "profile_hash": "275351b93098027cab40c798a5d8cbd50c4c94f1a3844fe8a0c55107ae283f70"
+    }
+  },
+  "method": "Joint unchanged engineering package check: every measured input <= estimator; production prefix <= reserve; Chinese/ASCII coefficients and all reserves bound to one fingerprint."
+}

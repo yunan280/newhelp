@@ -12,9 +12,9 @@ def modules():
 
 
 def demo(config, **overrides):
-    values = dict(model_context_window=18000, max_output_tokens=2000,
-                  max_user_input_tokens=2000, max_agent_steps=3,
-                  tool_result_max_tokens=1200, rerank_top_k=5, _env_file=None)
+    values = {'model_context_window':18000, 'max_output_tokens':2000,
+              'max_user_input_tokens':2000, 'max_agent_steps':3,
+              'tool_result_max_tokens':1200, 'rerank_top_k':5, '_env_file':None}
     return config.ContextSettings(**{**values, **overrides})
 
 
@@ -22,9 +22,9 @@ def test_demo_budget_is_derived():
     config, budget = modules()
     result = budget.compute_budget(demo(config), config.BudgetProfile())
     assert (result.fixed, result.peak, result.history, result.layer1, result.layer2) == (
-        6350, 6000, 5650, 3954, 1695)
+        6700, 6000, 5300, 3709, 1590)
     assert budget.compute_budget(demo(config, model_context_window=19000),
-                                 config.BudgetProfile()).history == 6650
+                                 config.BudgetProfile()).history == 6300
 
 
 def test_default_budget_preserves_target_pool(monkeypatch):
@@ -34,7 +34,7 @@ def test_default_budget_preserves_target_pool(monkeypatch):
         monkeypatch.delenv(key, raising=False)
     result = budget.compute_budget(config.ContextSettings(_env_file=None), config.BudgetProfile())
     assert (result.available, result.history, result.layer1, result.layer2) == (
-        108258, 42560, 29791, 12768)
+        107908, 42560, 29791, 12768)
 
 
 def test_one_steady_turn_cannot_fit_raises():
@@ -47,13 +47,13 @@ def test_actual_evidence_over_reserve_reduces_history():
     config, budget = modules()
     result = budget.compute_budget(demo(config), config.BudgetProfile(),
                                    actual_fixed={'evidence': 3000})
-    assert result.history == 4650
+    assert result.history == 4300
 
 
 def test_remaining_parallel_calls_reserve_each_result():
     config, budget = modules()
     settings = demo(config, model_context_window=18000)
-    messages = [HumanMessage('中' * 13000)]
+    messages = [HumanMessage('中' * 11000)]
     budget.check_window(messages, [], settings=settings, profile=config.BudgetProfile(),
                         output_tokens=2000, remaining_tool_calls=1)
     with pytest.raises(budget.ContextBudgetError, match='上下文预算不足'):
@@ -72,6 +72,6 @@ def test_profile_counter_drift_is_rejected(tmp_path):
 
 
 def test_unprefixed_environment(monkeypatch):
-    config, budget = modules()
+    config, _budget = modules()
     monkeypatch.setenv('MODEL_CONTEXT_WINDOW', '19000')
     assert config.ContextSettings(_env_file=None).model_context_window == 19000

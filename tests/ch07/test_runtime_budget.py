@@ -27,8 +27,8 @@ async def test_oversized_chinese_input_is_explicit_and_sends_no_model(workflow_r
 
 
 async def test_real_request_preflights_remaining_peak_before_sending_model():
-    from tests.ch05.test_agent import ScriptedModel, context, decision, initial
     from mewhelp.ch05.agent import decide_agent
+    from tests.ch05.test_agent import ScriptedModel, context, decision, initial
     model = ScriptedModel([decision()])
     ctx = context(model)
     ctx.settings = ContextSettings(model_context_window=18000, max_output_tokens=2000,
@@ -52,9 +52,10 @@ async def test_three_tool_budget_rejects_entire_parallel_batch(workflow_runtime,
 
 async def test_tool_overflow_keeps_full_raw_but_prevents_next_model(monkeypatch):
     from langchain_core.tools import tool
-    from tests.ch05.test_agent import ScriptedModel, context, initial, tool_message
+
     from mewhelp.ch05 import agent
     from mewhelp.tools.registry import ToolRegistry, ToolSpec
+    from tests.ch05.test_agent import ScriptedModel, context, initial, tool_message
     @tool
     def query_order(order_id: str) -> str:
         """Return a full large order result."""
@@ -76,8 +77,9 @@ async def test_tool_overflow_keeps_full_raw_but_prevents_next_model(monkeypatch)
 
 async def test_repair_payload_also_preflighted(monkeypatch):
     from langchain_core.messages import AIMessage
-    from tests.ch05.test_agent import ScriptedModel, context, initial
+
     from mewhelp.ch05 import agent
+    from tests.ch05.test_agent import ScriptedModel, context, initial
     model = ScriptedModel([AIMessage('invalid')])
     ctx = context(model)
     ctx.settings = ContextSettings(model_context_window=18000, _env_file=None)
@@ -107,8 +109,8 @@ async def test_startup_measures_actual_prefix_before_installing_runtime(
 async def test_large_history_uses_model_window_not_reranker_evidence_ceiling(
         workflow_runtime, strong_evidence, session_factory):
     from mewhelp.ch05.workflow import gate_node
-    from tests.ch05.test_agent import initial
     from mewhelp.db.models import Conversation
+    from tests.ch05.test_agent import initial
     with session_factory.begin() as session:
         session.add(Conversation(id=1, session_id='evidence-ceiling', user_id='alice'))
     state = initial(conversation_id=1, route='knowledge', user_id='alice',
