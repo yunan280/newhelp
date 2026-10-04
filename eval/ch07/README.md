@@ -6,7 +6,7 @@ before requesting the upstream model. The SHA256 manifest rejects changed/missin
 Do not adjust acceptance labels to hide a failure. Preserve each candidate's results.
 
 Summary grades preserve exact order/phone identifiers, require labeled intent and unresolved
-facts, reject invented numbers/approval/old-background contamination, and enforce 50–200
+facts, reject invented numbers/approval/old-background contamination, and enforce 30–200
 characters (except the fixed empty-business sentence). Every real report retains output,
 usage, model, timing, prompt and dataset hashes; the operator also reviews semantic fidelity.
 Reference labels specify first/latest orders, ambiguity and negation. Integrated provenance

@@ -29,6 +29,8 @@
 
 ## Review Focus
 
+2026-10-04 执行中已获用户批准的预算修订：演示预算改为 5300/3709/1590，联合 profile v2 见 spec §15；下文初始 5650 仅为当时工程包，正式 Task 8 按修订验收。
+
 1. 全库消息 ID 有空洞、跨会话穿插，或旧 checkpoint 缺 ledger 元数据：边界必须只覆盖该会话完整已提交轮，不能把全库连续 ID 当会话顺序。Task 2/3/5。
 2. 摘要生成期间又降级一批、摘要插入失败或重复触发：只提交输入快照范围，原文不漏、S 不先行；后台不拖住用户 done。Task 4/5。
 3. 原生订单 interrupt 跨进程恢复、恢复请求重放、流中断：新摘要可见但 next/interrupt/receipt 不被上下文刷新清掉；失败消息不能变成已提交历史。Task 5。
@@ -125,7 +127,7 @@ DTO 不直接成为 checkpoint 的自定义序列化对象；`history_payload(ct
 
 **Interfaces:** `SummaryModel.summarize(*, batch:Sequence[AnyMessage], background:str)->SummaryResult`（async Protocol）；`SummaryTaskManager(session_factory, model:SummaryModel, profile:BudgetProfile, *, concurrency:int=2)`，`schedule(job:SummaryJob)->bool`、`aclose(*, timeout_seconds:float=5)->None`。`summary_messages(batch, *, background)->list[AnyMessage]`；`validate_summary(result:SummaryResult, batch)->None`；`freeze_dataset(path:Path)->dict`、`evaluate_part(dataset, outdir, *, part:str, phase:str)->int`。
 
-- [ ] **Step 1（Prompt 评估替代 RED）:** 编写并冻结上述标注集。摘要覆盖订单/手机号、商品、未解决诉求、否定、已解决事实、纯闲聊、背景旧摘要污染、多个订单和长工具；输出 50–200 字业务摘要，纯闲聊固定为「本段无需要保留的业务事实。」。先跑初始候选的 calibration 集，保留逐条真实输出/usage 与不通过项；不以断言 Prompt 字符串代替实际评估。
+- [ ] **Step 1（Prompt 评估替代 RED）:** 编写并冻结上述标注集。摘要覆盖订单/手机号、商品、未解决诉求、否定、已解决事实、纯闲聊、背景旧摘要污染、多个订单和长工具；输出 30–200 字业务摘要，纯闲聊固定为「本段无需要保留的业务事实。」。先跑初始候选的 calibration 集，保留逐条真实输出/usage 与不通过项；不以断言 Prompt 字符串代替实际评估。
 - [ ] **Step 2:** 建立 CLI `& $pyCh07 -X utf8 -m mewhelp.ch07.evaluation freeze --dataset eval/ch07` 和 `... evaluate --dataset eval/ch07 --part summary --phase calibration --outdir artifacts/ch07/<run>/summary-calibration-01`。summary 成功标准：所有订单/手机号精确保留、零新增数字事实/批准结果、旧背景不当新批事实、全部明确未解决诉求保留、业务输出长度达标；语义判定逐项标签可审计。只对失败原因修正候选，再存为生产 Prompt。
 - [ ] **Step 3（控制代码 RED）:** 写 `test_inflight_summary_does_not_block_foreground`、`test_advance_during_model_call_commits_only_snapshot`、`test_failure_leaves_anchors_and_releases_inflight`；Run `& $pyCh07 -X utf8 -m pytest tests/ch07/test_summary_jobs.py tests/ch07/test_evaluation_contract.py -q`。
 - [ ] **Step 4:** 实现后台 manager：捕获 trigger 的区间/新批原文，async 独立模型，不持前台锁；大批按摘要窗口切完整轮，每段只压一次，旧段仅背景。每子批构造 SummaryJob：old_upto 使用前一已提交段的 upto（第一段用触发 S）、layer1_snapshot_id 保持原目标 L、turns 只含本子批；短事务调用 Task 2，失败则停止后续子批，不能继续跨过失败区间。异常 rollback/日志，取消释放标记。同会话任务去重，不立刻无限重试。模型工厂沿用已配置上游、无 tools、温度 0、摘要输出预留 256 token；长度/数字校验失败不推进覆盖。

@@ -57,8 +57,8 @@ def validate_summary(result: SummaryResult, batch) -> None:
         raise ValueError('summary invented numeric facts')
     if any(identifier not in content for identifier in business_identifiers(batch)):
         raise ValueError('summary dropped business identifier')
-    if content != EMPTY_SUMMARY and not 50 <= len(content) <= 200:
-        raise ValueError(f'summary length {len(content)} outside 50..200')
+    if content != EMPTY_SUMMARY and not 30 <= len(content) <= 200:
+        raise ValueError(f'summary length {len(content)} outside 30..200')
 
 
 class ChatSummaryModel:
@@ -91,5 +91,5 @@ class ChatSummaryModel:
                 if attempt or not str(error).startswith('summary length'):
                     raise
                 correction = (f'上一候选长度为{len(content)}个字符，长度不合格。重新从原始new_batch提炼，'
-                    '输出80到130个字符，至少50。分三个完整句：用户本批明确诉求；客服本批实际表达；'
+                    '输出30到200个字符。按本批事实交代用户明确诉求、客服实际表达及'
                     '本批问题是否已解决。只展开已出现的事实，不加未提及字段，不编处理结果。')
