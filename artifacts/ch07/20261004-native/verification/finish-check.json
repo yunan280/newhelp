@@ -1,0 +1,28 @@
+{
+  "checked_date": "2026-10-05",
+  "product_commit": "5b931bc",
+  "product_tree_unchanged": true,
+  "router_binding_current": true,
+  "live_checks": [
+    {
+      "profile": "default",
+      "report": "default-05",
+      "originals_and_segments_unchanged": true,
+      "live_get_original_rows": 44,
+      "live_port": 9017
+    },
+    {
+      "profile": "demo",
+      "report": "demo-03",
+      "originals_and_segments_unchanged": true,
+      "live_get_original_rows": 44,
+      "live_port": 9018
+    }
+  ],
+  "latest_full_suite": {
+    "passed": 865,
+    "deselected": 5,
+    "date": "2026-10-04",
+    "same_product_tree": true
+  }
+}

@@ -14,4 +14,6 @@ Declined-to-judge rulings:
 - course user_id identity: retain approved scope with conversation ownership checks; no production login claim, cost if deployed as authentication is insufficient access control outside this course scope.
 - no reviewer full-suite/external reruns: author ran fresh862suite and JS; reviewer used read-only reproductions as intended. Cost: external environment still awaits runtime acceptance.
 
-Remaining external402 gate prevents finish/merge readiness. No merge/push or workspace deletion performed.
+At the original review close, external402 prevented runtime acceptance. This status is superseded by the final evidence below; original review range/findings remain unchanged.
+
+Final acceptance: references-acceptance-02 8/8 and current router-calibration-02 32 real responses. Actual browser restores the native pending across server restart/reload and continues after clicking1001. Default-05 fresh continuous22turns passes; demo-03 verified resume12→22 passes, both zero window violations. A separately discovered runtime cost-cap conflict was approved by the human and fixed via2RED→11GREEN plus865passed/5deselected41.73s; explicit64000 remains enforced. No prompts/context inputs changed, route hashes unchanged, valid unaffected evaluations retained with cost-revision-audit.json. No second reviewer, merge or push.

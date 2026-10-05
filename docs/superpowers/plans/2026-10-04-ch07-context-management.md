@@ -154,7 +154,7 @@ DTO 不直接成为 checkpoint 的自定义序列化对象；`history_payload(ct
 
 - [x] **Step 1:** 捕获 ChatOpenAI 的最终请求 JSON（本地测试 transport、只记录 messages/tools，不记录 header）写 `test_model_ctx_matches_outgoing_payload`、`test_no_variable_system_in_decide_repair_answer_or_assessment`、`test_history_ctx_exists_on_chitchat_turn`。Run `& $pyCh07 -X utf8 -m pytest tests/ch07/test_model_context.py tests/ch07/test_context_logging.py tests/ch07/test_runtime_budget.py -q` RED；新增 transport API 使用前补查 Context7 对应文档。
 - [x] **Step 2:** 主力请求调用 Task 3 构造器；固定规则合入稳定 system，决策/纠正/订单/证据放背景或控制数据。不同用途允许各自固定工具绑定策略，同用途跨轮稳定；最终正文/JSON纠正不执行新工具。实例化前绑定实际 tools 并用 Task 1 预检 input/output/remaining peak。
-- [x] **Step 3:** 新 6 个变量接到实际限制：max_tools=settings.max_agent_steps、max_decisions=max_agent_steps+2（最多一轮纠正与最终控制均计数）、final_max_tokens=settings.max_output_tokens；保留旧总成本/超时约束。整个并行批次先查剩余额度再执行；超限不执行部分批次。结果超过 TOOL_RESULT_MAX_TOKENS 保留 raw State/trace 并有界回复，不送截短结果冒充原文。RERANK_TOP_K 在证据构造时限制完整条目数量，actual evidence 实计；超长完整条款压缩历史，仍装不下则明确拒绝，不能截法规事实。
+- [x] **Step 3:** 新 6 个变量接到实际限制：max_tools=settings.max_agent_steps、max_decisions=max_agent_steps+2（最多一轮纠正与最终控制均计数）、final_max_tokens=settings.max_output_tokens；保留超时与累计成本保护；默认费用上限按用户批准的spec §17推导，显式成本上限优先。整个并行批次先查剩余额度再执行；超限不执行部分批次。结果超过 TOOL_RESULT_MAX_TOKENS 保留 raw State/trace 并有界回复，不送截短结果冒充原文。RERANK_TOP_K 在证据构造时限制完整条目数量，actual evidence 实计；超长完整条款压缩历史，仍装不下则明确拒绝，不能截法规事实。
 - [x] **Step 4:** lifespan 配置 log/app.log、做启动一轮自检、创建/关闭 summary manager；启动失败未安装半个 runtime。日志含全部摘要/消息/证据、S/L、条数、分项 token、触发范围、seq 和耗时。handler 幂等、UTF-8、覆盖 ch05/ch06/ch07，不靠 stderr 配置才有文件日志。
 - [x] **Step 5:** 补 `test_parallel_calls_cannot_bypass_three_tool_budget`、`test_tool_overflow_keeps_raw_but_prevents_next_model`、`test_oversized_chinese_input_is_explicit`、`test_repair_payload_also_preflighted`、`test_default_app_creates_log_without_extra_cli_flags`、`test_summary_lifecycle_logs_boundaries_and_elapsed`。Run Step 1 GREEN 与相关 `tests/ch05/test_agent.py tests/ch06/test_model_budget.py tests/ch06/test_model_requests.py`。追记 Task 6，提交 `feat(ch07): enforce model windows and log exact contexts`。
 
@@ -168,7 +168,7 @@ DTO 不直接成为 checkpoint 的自定义序列化对象；`history_payload(ct
 - [x] **Step 2:** 实现 DTO、两个 sync GET 与仓储查询，user_id 缺失沿用 demo-user 占位，拒绝空白；列表排序 created_at DESC/id DESC，has_summary 来自真实段表，不因仅有 L 降级就显示已摘要。Run GREEN。
 - [x] **Step 3:** 使用 frontend-design 技能复用现有页面风格，加入会话栏/新对话/移动端收起。先在 page-conversations.js 写拒绝迟到 A 覆盖当前 B、忙时禁切、列表异常仍可 send、原文全文渲染、新对话不删除 A 的行为断言，并跑 RED。
 - [x] **Step 4:** 实现 `loadConversationList()`、`switchConversation(conversationId)`、`startNewConversation()`、`renderConversationList(items)`；会话切换成功后统一设置 sessionId/history 并调用 restorePending；先拿到全文再替换当前 UI。请求序号/AbortController 防迟到覆盖，发送 busy 同时禁侧栏按钮。存储键按 user/session 隔离，旧用户级缓存只做兼容降级。
-- [ ] **Step 5:** Run `node tests/ch07/page-conversations.js src/mewhelp/static/index.html` 与 `node tests/page-smoke.js src/mewhelp/static/index.html` GREEN；使用 computer-use/CUA 真浏览器核对新建两会话、切回全文、继续、移动端、摘要标记和断网降级。浏览器可先用本地可控 API 场景，正式 MySQL/SSE 在 Task 8。追记 Task 7，提交 `feat(ch07): browse and resume separate conversations`。
+- [x] **Step 5:** Run `node tests/ch07/page-conversations.js src/mewhelp/static/index.html` 与 `node tests/page-smoke.js src/mewhelp/static/index.html` GREEN；使用 computer-use/CUA 真浏览器核对新建两会话、切回全文、继续、移动端、摘要标记和断网降级。浏览器可先用本地可控 API 场景，正式 MySQL/SSE 在 Task 8。追记 Task 7，提交 `feat(ch07): browse and resume separate conversations`。
 
 ### Task 8：联合标定、当前校准指纹及真实 22 轮验收
 
@@ -179,12 +179,12 @@ DTO 不直接成为 checkpoint 的自定义序列化对象；`history_payload(ct
 - [x] **Step 1:** 给验收脚本写 `test_report_cannot_pass_with_only_health_or_mock`、`test_default_report_rejects_any_compression`、`test_demo_requires_cascade_and_first_order`；Run `& $pyCh07 -X utf8 -m pytest tests/ch07/test_acceptance_contract.py -q` RED。成功必须有完整 HTTP/SSE 22 轮、实际 request usage、数据库段/边界和原样日志证据，缺一 complete=false。
 - [x] **Step 2:** 核对运行环境与当前供应商能力、模型是否接受原配置；用已有方式备份 conversations/messages/相关业务表到 ignored 的本地备份，记录数量/hash。执行 `& $pyCh07 -X utf8 scripts/migrate_ch07_schema.py`，检查两步列、段表与 utf8mb4 COMMENT，再执行一次证明重跑无新增破坏。保持其他服务进程，不覆盖原 .env。
 - [x] **Step 3:** 跑 tokens calibration：16 个冻结中文/混排/JSON/峰值样例，采真实 input usage；以最大低估比及结构差额确定保守边界，CJK 参数与 prefix/证据/summary/稳态/peak 同一 profile 版本验算。起始安全包可保持原参数但须有校验证据；不能单调系数。若需要提高预留导致演示不再是 5650/3954/1695，携报告停下问用户，不篡改真实 usage。
-- [ ] **Step 4:** 代码已冻结后，用当前上下文版本重新校准 Ch06 必要路由：`& $pyCh07 -X utf8 -m mewhelp.ch06.evaluation calibrate --dataset eval/ch06 --outdir artifacts/ch07/<run>/router-calibration`。接入共用历史时 calibration 样例必须走同一 classifier 构造/计量；生成新的 router.json，保留原 freeze.json。只有模型/语料/检索输入 hash 未变时复用政策校准；确实变动则对应重新校准，不绕校验。正式启动显式设置新路径。
-- [ ] **Step 5:** 跑 summary/references 的冻结 acceptance 各一次，报告按 Task 4/5 的准确率和零编造准则判定；不按失败重标标签。只有更改 Prompt/输入构造/模型等实际原因时重跑受影响部分并保留旧输出。
-- [ ] **Step 6:** 实现脚本并 Run Step 1 GREEN。准备默认/演示各一服务实例、独立 checkpoint 路径、相同已迁移 MySQL，单 worker；用 run 标记隔离会话，不改既有服务的配置。PowerShell demo 仅覆盖用户指定 6 个变量，另给校准路径；启动和 health 只作前置，不算验收。
-- [ ] **Step 7:** 分别运行 `& $pyCh07 -X utf8 scripts/smoke_ch07_acceptance.py --base-url http://127.0.0.1:<port> --profile <default|demo> --report-dir artifacts/ch07/<run>/<profile> --user-id <run-user> --session-prefix <profile-prefix> --turns 22`。用同一冻结对话脚本：首轮明确查订单 1001 与原诉求；中间含真实业务/工具和足够用户原话，末轮第 22 轮问「最开始那个订单后来怎么说」。真实填入的原话有业务含义，不用只堆随机字压预算。
-- [ ] **Step 8:** 默认 degrades=0、triggers=0、所有请求不过窗；demo 有全部降级/trigger/start/done链路，段表不可变且 S/L 单调，最早订单正确且其段当时实际被注入。保存 SSE 首 token/done 和摘要 start/end 的绝对/单调时间；另用 Task 4 可控慢模型证明不用等待摘要，不能只用偶然很快的摘要下结论。真浏览器打开同一用户默认/demo 会话，全文回载、继续聊、刷新 pending。
-- [ ] **Step 9:** 追记 Task 8 的实际结果、样例/模型/代码 hash、失败与必要返工；提交脚本/评估契约及脱敏统计 `test(ch07): verify context budgets and asynchronous memory end to end`。未满足实际验收的项明确保留未通过状态，不宣称 finish。
+- [x] **Step 4:** 代码已冻结后，用当前上下文版本重新校准 Ch06 必要路由：`& $pyCh07 -X utf8 -m mewhelp.ch06.evaluation calibrate --dataset eval/ch06 --outdir artifacts/ch07/<run>/router-calibration`。接入共用历史时 calibration 样例必须走同一 classifier 构造/计量；生成新的 router.json，保留原 freeze.json。只有模型/语料/检索输入 hash 未变时复用政策校准；确实变动则对应重新校准，不绕校验。正式启动显式设置新路径。
+- [x] **Step 5:** 跑 summary/references 的冻结 acceptance 各一次，报告按 Task 4/5 的准确率和零编造准则判定；不按失败重标标签。只有更改 Prompt/输入构造/模型等实际原因时重跑受影响部分并保留旧输出。
+- [x] **Step 6:** 实现脚本并 Run Step 1 GREEN。准备默认/演示各一服务实例、独立 checkpoint 路径、相同已迁移 MySQL，单 worker；用 run 标记隔离会话，不改既有服务的配置。PowerShell demo 仅覆盖用户指定 6 个变量，另给校准路径；启动和 health 只作前置，不算验收。
+- [x] **Step 7:** 分别运行 `& $pyCh07 -X utf8 scripts/smoke_ch07_acceptance.py --base-url http://127.0.0.1:<port> --profile <default|demo> --report-dir artifacts/ch07/<run>/<profile> --user-id <run-user> --session-prefix <profile-prefix> --turns 22`。用同一冻结对话脚本：首轮明确查订单 1001 与原诉求；中间含真实业务/工具和足够用户原话，末轮第 22 轮问「最开始那个订单后来怎么说」。真实填入的原话有业务含义，不用只堆随机字压预算。
+- [x] **Step 8:** 默认 degrades=0、triggers=0、所有请求不过窗；demo 有全部降级/trigger/start/done链路，段表不可变且 S/L 单调，最早订单正确且其段当时实际被注入。保存 SSE 首 token/done 和摘要 start/end 的绝对/单调时间；另用 Task 4 可控慢模型证明不用等待摘要，不能只用偶然很快的摘要下结论。真浏览器打开同一用户默认/demo 会话，全文回载、继续聊、刷新 pending。
+- [x] **Step 9:** 追记 Task 8 的实际结果、样例/模型/代码 hash、失败与必要返工；提交脚本/评估契约及脱敏统计 `test(ch07): verify context budgets and asynchronous memory end to end`。未满足实际验收的项明确保留未通过状态，不宣称 finish。
 
 ### Task 9：独立审查、必要修复和完结交付
 
@@ -194,9 +194,9 @@ DTO 不直接成为 checkpoint 的自定义序列化对象；`history_payload(ct
 
 - [x] **Step 1:** Run 一次最终确定性套件 `& $pyCh07 -X utf8 -m pytest -q`、`& $pyCh07 -X utf8 -m ruff check src tests scripts`、两个 JS 行为脚本。汇总实际 passed/deselected/failures，不能从旧 Ch06 数字推断通过；已有有效真实 acceptance 不无原因重跑。
 - [x] **Step 2:** 使用 requesting-code-review。Native 执行时派一位独立 reviewer 看实施起点到当前 HEAD 的完整 diff，对照 spec/plan/Review Focus（尤其预算、并发覆盖、中断恢复、原文/精简分离、真实日志与验收真实性）。Subagent-driven 则每任务先独立 review，再做一次整体接缝审查。用户已选择 Native，仅一次整体 reviewer。
-- [ ] **Step 3:** 收到反馈先用 receiving-code-review 核对具体触发场景；确需修复则先写失败回归，再修改、再相关验证；新增代码/Prompt影响真实报告 hash 时按影响范围重跑。追记 code review 结论、取舍与返工，保留原报告。
+- [x] **Step 3:** 收到反馈先用 receiving-code-review 核对具体触发场景；确需修复则先写失败回归，再修改、再相关验证；新增代码/Prompt影响真实报告 hash 时按影响范围重跑。追记 code review 结论、取舍与返工，保留原报告。
 - [x] **Step 4:** README 写真实可运行的 `$pyCh07`/迁移/默认/demo/smoke/`rg 'model_ctx|history_ctx|summary' log/app.log` 命令，引用已产生 report，不写假想成功数字。演示仅本地服务，保留模型/数据库/checkpoint 的当前有效路径。
-- [ ] **Step 5:** 使用 verification-before-completion 与 finishing-a-development-branch；按用户当前授权保留分支并交付，不默认 merge/push 或清理别人服务/目录。即时追记 Finish 四项，提交 `docs(ch07): deliver context management demo and verification`。只有功能、真实验收、审查与交付全部完成才标 finish。
+- [x] **Step 5:** 使用 verification-before-completion 与 finishing-a-development-branch；按用户当前授权保留分支并交付，不默认 merge/push 或清理别人服务/目录。即时追记 Finish 四项，提交 `docs(ch07): deliver context management demo and verification`。只有功能、真实验收、审查与交付全部完成才标 finish。
 
 ## 计划自审、覆盖与执行门槛
 
@@ -216,8 +216,8 @@ DTO 不直接成为 checkpoint 的自定义序列化对象；`history_payload(ct
 
 2026-10-04 计划自审完成：步骤都有断言或准确签名，接口/DTO 在引用前定义，5 个 Review Focus 有归属测试，预算数字与 approved spec 一致，锁/事务没有隐含等待模型，计划没有写成产品完整源码。修正了证据 TopK 接缝的文件清单、分批摘要 old_S 的顺序推进与失败止步、普通请求准备时新 turn_id 的覆盖。结构检查为 9 个连续任务、50 个可检查步骤，预算算式通过；这不是产品测试或用户计划评审通过。文件表中的批量花括号是路径清单表达，不是 PowerShell 命令。
 
-用户只批准了书面设计。计划保存与自审后，请用户审阅并选择：Native（主代理逐任务执行，末尾一次独立整体审查）或 Subagent-driven（每任务独立实施与审查，末尾整体审查）。本计划推荐 Native：9 项任务依赖同一消息 ID/State/中断接缝，顺序实施减少上下文重复，确定性测试与最后独立审查承担验证。选定后分别调用 executing-plans 或 subagent-driven-development；批准之前不开始实施。
+计划评审前的历史记录：当时用户仅批准书面设计，随后已审阅本计划并选择Native（见文件开头）。当时提供的选择为：Native（主代理逐任务执行，末尾一次独立整体审查）或 Subagent-driven（每任务独立实施与审查，末尾整体审查）。本计划推荐 Native：9 项任务依赖同一消息 ID/State/中断接缝，顺序实施减少上下文重复，确定性测试与最后独立审查承担验证。选定后分别调用 executing-plans 或 subagent-driven-development；批准之前不开始实施。
 
-## 当前执行状态（2026-10-04，b44babd后）
+## 当前执行状态（2026-10-05，产品提交5b931bc）
 
-Task1–6已实现并验证；Task7控制/真实只读浏览器通过，真实继续与native恢复仍受402阻塞；Task8新schema/token/摘要评估完成，路由32条刷新、受影响指代8条重验、默认13→22/demo12→22续跑待额度；Task9唯一独立review3Important全部RED/GREEN关闭，862passed5deselected，Ruff与2JS通过，README已给校准/启动/续跑命令。finish未勾选，未merge/push/删除计划workspace。用户明确选择恢复额度后继续。
+Task1–8已完成；default-05全新连续22轮、demo-03核对12轮并续到22轮通过，两组窗口违例0，默认降级/摘要0、演示降级15/摘要3。真实浏览器切回继续与跨进程刷新pending完成，路由32条与修复后指代8/8当前有效。Task9唯一整体review的3Important已按RED/GREEN关闭；另有用户批准的累计费用修订，新增回归和完整套件865passed/5deselected41.73s通过。README、交付核对及finish留痕已齐备，最终文档提交后交付。2026-10-05恢复原Docker容器后，两组44条原文/摘要与原报告完全一致，当前路由绑定有效；所有依赖healthy。保留ch02-tools分支/worktree、旧失败报告和checkpoint，不merge/push。计划workspace已移出.superpowers到ignored.cache/ch07/native-evidence-20261004，必要ledger/RED/GREEN/审查包归档至verification/native-evidence。

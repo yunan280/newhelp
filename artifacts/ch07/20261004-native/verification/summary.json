@@ -33,7 +33,21 @@
     "demo_report": "demo-03/summary.json"
   },
   "router_refresh_pending": false,
-  "finish": false,
+  "finish": true,
   "browser_complete": true,
-  "review_important_open": 0
+  "review_important_open": 0,
+  "finished_date": "2026-10-05",
+  "product_commit": "5b931bc",
+  "branch": "ch02-tools",
+  "worktree_preserved": true,
+  "merged": false,
+  "pushed": false,
+  "latest_full_suite_date": "2026-10-04",
+  "same_product_tree_verified_today": true,
+  "dependency_health": {
+    "mewhelp-mysql": "healthy",
+    "milvus-etcd": "healthy",
+    "milvus-minio": "healthy",
+    "milvus-standalone": "healthy"
+  }
 }

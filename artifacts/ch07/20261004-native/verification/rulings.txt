@@ -1,0 +1,11 @@
+Ruling: Git Bash lacks awk. Use plan-owned native-tasks.py for equivalent task briefs/BASE/test output/completion ledger; production implementation remains Python/PowerShell on the approved stack.
+Ruling: MAIN_SYSTEM mode ordering and explicit post-tool control rule — saved actual failing requests2/2 after fix plus repair/answer checks — cost if wrong: bounded format failure remains possible, must verify actual22-turn runs.
+Ruling: old fixtures in tests/ch05/test_agent.py, test_workflow.py and tests/ch06/test_workflow.py amended for new turn/ledger contracts — spec demands deltaState and2SQL visible rows — cost if wrong: older fixture regressions require correction.
+Ruling: ToolSpec preserve_raw for primaryAgent — checkpoint must retain whole tool outputs — cost if wrong: increased local checkpoint disk.
+Ruling: RAG byte ceiling covers complete evidence only, history checked by model window — prevents false default-window refusal — cost if wrong: each preflight must enforce remaining window.
+Ruling: page-smoke zero side effects means zero writes, new sidebar/pendingGET permitted — read APIs are user requirement — cost if wrong: separate read-failure tests must cover UX.
+Ruling: final code review runs while runtime402 blocked — no product edits inferred from runtime pass — cost if wrong: later code changes must be covered by failed-before/passed-after tests and impacted verification.
+Final: Ruling: external runtime gates retain incomplete — existing statistics do not prove22turns — cost if wrong: false acceptance.
+Final: Ruling: stale router binding regenerates once source frozen — no stale acceptance — cost:32 necessary calls after credit restoration.
+Final: Ruling: course user_id identity retained with owner scoped queries — approved current chapter scope — cost if used as production authentication: insufficient outside scope.
+Final: Ruling: author fresh suite replaces reviewer suite rerun — reviewer remainsread-only — cost: external runtime still not accepted.
