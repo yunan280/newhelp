@@ -57,6 +57,13 @@ class ToolExecutionEngine:
             else:
                 reason = permission_error(spec, args, context)
                 evidence = context.intent_evidence or {}
+                if spec.tool.name == 'create_ticket' and context.authorization is None and evidence.get('explicit_request') is True:
+                    from mewhelp.ch08.ticket_intent import validate_ticket_draft
+                    draft_errors = validate_ticket_draft(args, evidence)
+                    if draft_errors:
+                        result = await self._finish(self._result(snapshot, name, args, context,
+                            content='; '.join(draft_errors), error='invalid_args', status='校验拦下'), context)
+                        return replace(prepared, result=result)
                 if reason and spec.tool.name == 'create_ticket' and spec.permission == 'write' and spec.available and context.authorization is None and evidence.get('explicit_request') is True:
                     return replace(prepared, requires_confirmation=True)
                 if reason:

@@ -17,6 +17,7 @@ from mewhelp.db.repository import find_ticket_by_request_id, insert_ticket, next
 from .business import build_business_tools
 from .knowledge import build_knowledge_tools
 from .registry import ToolRegistry, ToolSpec
+from .contracts import ToolCallContext
 
 # 工单号撞主键后的递增重试上限。
 #
@@ -130,3 +131,14 @@ def build_registry(
         # 唯一的写操作:不重试,避免重复建单。
         specs[t.name] = ToolSpec(tool=t, retryable=False, permission='write')
     return ToolRegistry(specs)
+
+
+def build_ticket_spec(session_factory) -> ToolSpec:
+    """启动登记 Schema，执行时才绑定可信会话与确认幂等键。"""
+    template = build_ticket_tools(session_factory, 0)[0]
+    def factory(context: ToolCallContext):
+        if context.conversation_id is None or context.authorization is None:
+            raise ValueError('建单缺少可信确认上下文')
+        return build_ticket_tools(session_factory, context.conversation_id,
+                                  request_id=context.authorization.confirmation_id)[0]
+    return ToolSpec(template, retryable=False, permission='write', tool_factory=factory)
