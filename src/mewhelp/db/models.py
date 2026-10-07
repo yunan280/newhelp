@@ -237,3 +237,25 @@ class RefundApplication(Base):
     status: Mapped[str] = mapped_column(String(16), nullable=False, server_default=text("'pending'"))
     created_at: Mapped[dt.datetime] = mapped_column(DateTime, nullable=False,
                                                 server_default=text("CURRENT_TIMESTAMP"))
+
+
+class ToolAuditLog(Base):
+    __tablename__ = 'tool_audit_logs'
+    __table_args__ = (
+        Index('idx_conversation_id', 'conversation_id').ddl_if(dialect='mysql'),
+        Index('idx_tool_name', 'tool_name'), Index('idx_status', 'status'),
+        {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8mb4', 'comment': '工具调用审计留痕'},
+    )
+    id: Mapped[int] = mapped_column(BIGINT_PK, primary_key=True, autoincrement=True, comment='审计主键')
+    conversation_id: Mapped[int | None] = mapped_column(BIGINT_PK, nullable=True, comment='所属会话,无会话上下文的调用为 NULL')
+    tool_call_id: Mapped[str | None] = mapped_column(String(64), nullable=True, comment='模型申请单 id,可对回 messages 流水')
+    tool_name: Mapped[str] = mapped_column(String(128), nullable=False, comment='工具名')
+    tool_source: Mapped[str] = mapped_column(Enum('builtin', 'mcp', create_constraint=True), nullable=False, comment='工具来源:内置 / MCP 接入')
+    mcp_server: Mapped[str | None] = mapped_column(String(64), nullable=True, comment='来源 MCP Server 名,内置工具为 NULL')
+    arguments: Mapped[dict | None] = mapped_column(JSON_COLUMN, nullable=True, comment='调用参数')
+    result_summary: Mapped[str | None] = mapped_column(Text, nullable=True, comment='返回结果,过长截断存摘要')
+    status: Mapped[str] = mapped_column(Enum('成功', '失败', '超时', '校验拦下', '权限拒绝', create_constraint=True), nullable=False, comment='本次调用结局')
+    error_message: Mapped[str | None] = mapped_column(String(512), nullable=True, comment='失败 / 拦下时的原因说明')
+    retry_count: Mapped[int] = mapped_column(mysql.TINYINT(unsigned=True).with_variant(Integer, 'sqlite'), nullable=False, server_default=text('0'), comment='实际重试次数,写操作默认不重试恒为 0')
+    duration_ms: Mapped[int | None] = mapped_column(mysql.INTEGER(unsigned=True).with_variant(Integer, 'sqlite'), nullable=True, comment='耗时毫秒')
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime, nullable=False, server_default=text('CURRENT_TIMESTAMP'), comment='调用时间')
