@@ -7,7 +7,8 @@ from .test_ticket_graph import install_tools
 async def test_preview_pending_and_resume_stream_http(workflow_runtime, tmp_path, session_factory, model_factory):
     from mewhelp.ch05.api import router as chat_router
     from mewhelp.ch08.api import router
-    from .test_ticket_graph import ticket_call, CONTROL
+
+    from .test_ticket_graph import CONTROL, ticket_call
     await install_tools(workflow_runtime, tmp_path, session_factory)
     app = FastAPI()
     app.state.ch05_runtime = workflow_runtime

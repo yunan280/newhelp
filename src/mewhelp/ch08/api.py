@@ -7,7 +7,12 @@ from fastapi.sse import EventSourceResponse, ServerSentEvent
 from mewhelp.ch05.api import RuntimeDep
 from mewhelp.ch05.schemas import TurnResult
 
-from .confirmation import TicketConfirmationError, pending_ticket, resume_ticket, stream_ticket_resume
+from .confirmation import (
+    TicketConfirmationError,
+    pending_ticket,
+    resume_ticket,
+    stream_ticket_resume,
+)
 from .schemas import TicketResumeRequest
 
 router = APIRouter(prefix='/ch08', tags=['ch08'])
@@ -29,7 +34,7 @@ async def tickets_resume_stream(request: TicketResumeRequest, runtime: RuntimeDe
         async with aclosing(stream_ticket_resume(runtime, request)) as stream:
             async for item in stream:
                 yield ServerSentEvent(event=item['event'], data=item['data'])
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 — SSE必须把未知故障回传客户端
         yield ServerSentEvent(event='error', data={'code': 'ticket_confirmation_error', 'message': str(exc)})
 
 

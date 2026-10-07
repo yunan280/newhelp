@@ -1,15 +1,21 @@
 """JSON 预览与服务器侧授权验证；不接受前端改写工单参数。"""
-from copy import deepcopy
-from dataclasses import asdict, replace
-from uuid import uuid4
 import asyncio
 import time
 from contextlib import aclosing
+from copy import deepcopy
+from dataclasses import asdict, replace
+from uuid import uuid4
 
 from langchain_core.messages import ToolMessage
 from langgraph.types import Command, interrupt
 
-from mewhelp.tools.contracts import PreparedToolCall, ToolCallContext, ToolResult, ToolSnapshot, WriteAuthorization
+from mewhelp.tools.contracts import (
+    PreparedToolCall,
+    ToolCallContext,
+    ToolResult,
+    ToolSnapshot,
+    WriteAuthorization,
+)
 from mewhelp.tools.permissions import arguments_hash, permission_error
 
 from .schemas import TicketResumeRequest
@@ -85,8 +91,8 @@ def _observe(state, context, emit, call, result):
 async def prepare_ticket_node(state, context, emit):
     """一个节点完成一个调用，checkpoint 后才进入下一调用或等待。"""
     from mewhelp.ch05.agent import remaining, stopped, tool_call_context
-    from mewhelp.ch05.workflow import _committed_turn_messages, _write_ledger
     from mewhelp.ch05.events import event
+    from mewhelp.ch05.workflow import _committed_turn_messages, _write_ledger
     if remaining(state, context) <= 0:
         return stopped('deadline')
     queue = state.get('tool_queue') or state['pending_tool_calls']
@@ -125,7 +131,6 @@ async def await_ticket_node(state, context, emit):
 
 
 def _receipt(context, state, preview):
-    from sqlalchemy import select
     from mewhelp.db.models import Conversation
     from mewhelp.db.repository import find_ticket_by_request_id
     with context.session_factory() as db:
@@ -215,8 +220,8 @@ def active_ticket_preview(snapshot) -> dict | None:
 
 
 async def pending_ticket(runtime, session_id, user_id):
-    from mewhelp.ch06.selection import _check_owner
     from mewhelp.ch05.service import result_from_state
+    from mewhelp.ch06.selection import _check_owner
     async with runtime.locks.lock(session_id):
         if not await asyncio.to_thread(_check_owner, runtime.context, session_id, user_id):
             return None

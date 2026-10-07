@@ -150,7 +150,7 @@ async def test_gives_up_gracefully_and_rolls_back_when_the_number_keeps_collidin
     tool = build_ticket_tools(session_factory, conversation_id=1)[0]
     out = await tool.ainvoke({"description": "x", "ticket_type": "咨询"})
 
-    assert "失败" in out and "冲突" in out
+    assert out['outcome'] == 'error' and '失败' in out['message'] and '冲突' in out['message']
     with session_factory() as s:
         assert s.query(Ticket).count() == 2  # 没有多写一条
         assert s.scalars(select(Conversation)).one().status is ConvStatus.ongoing
@@ -159,12 +159,11 @@ async def test_gives_up_gracefully_and_rolls_back_when_the_number_keeps_collidin
 # ---------- build_registry ----------
 
 
-def test_registry_holds_all_five_tools(session_factory):
+def test_compatibility_registry_has_four_builtin_tools(session_factory):
     registry = build_registry(session_factory, conversation_id=1)
     assert set(registry.names()) == {
         "query_order",
         "query_product",
-        "query_logistics",
         "query_faq",
         "create_ticket",
     }
@@ -179,7 +178,7 @@ def test_create_ticket_is_marked_not_retryable(session_factory):
     registry = build_registry(session_factory, conversation_id=1)
 
     assert registry.get("create_ticket").retryable is False
-    for name in ("query_order", "query_product", "query_logistics"):
+    for name in ("query_order", "query_product"):
         assert registry.get(name).retryable is True
     assert registry.get("query_faq").retryable is False
     # 本机 Docker 与模型同时冷启动时 FAQ 曾耗时 58.6 秒，需留出明显余量。

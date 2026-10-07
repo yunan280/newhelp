@@ -7,7 +7,6 @@ from mewhelp.ch05.schemas import TurnRequest
 from mewhelp.ch05.service import run_turn
 from mewhelp.db.models import Ticket, ToolAuditLog
 
-
 CONTROL = AIMessage(content='{"reply_mode":"answer","suggested_actions":[],"ticket_type":null}')
 
 

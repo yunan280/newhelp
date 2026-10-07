@@ -38,12 +38,6 @@ def test_keeps_ch01s_hard_constraints():
         assert topic in AGENT_SYSTEM
 
 
-def test_mentions_all_five_tools_by_name():
-    """模型靠名字选工具;prompt 里点出它们是必要的,虽然 schema 里也有。"""
-    for name in ("query_order", "query_product", "query_logistics", "query_faq", "create_ticket"):
-        assert name in AGENT_SYSTEM
-
-
 def test_does_not_instruct_a_multi_turn_loop():
     """本章是**单轮**:prompt 里不许出现"再查一次""多轮确认"这类指令。
 

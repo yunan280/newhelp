@@ -30,7 +30,6 @@ from mewhelp.knowledge.filters import SearchFilters
 
 from .agent import (
     decide_agent,
-    execute_agent_tools,
     next_agent_step,
     stream_answer,
 )
@@ -171,10 +170,21 @@ async def prepare_selection_node(state, context, emit):
 
 
 async def load_order_node(state, context, emit):
-    order = load_demo_order(state["user_id"], state["selected_order_id"])
+    from mewhelp.tools.registry import ToolRegistry
+    from mewhelp.tools.workflow import build_load_order_spec
+
+    from .agent import registry_for_context, tool_call_context
+    registry = registry_for_context(context)
+    if registry.get('load_order') is None:
+        registry = ToolRegistry({'load_order': build_load_order_spec()}, engine=registry.engine)
+    result = await registry.run('load_order', {'order_id':state['selected_order_id']},
+        context=tool_call_context(state, context, tool_call_id=state['turn_id'] + '-order'))
+    if not result.ok:
+        return {'stop_reason':'order_lookup_failed', 'answer':result.content}
+    order = OrderDTO.model_validate_json(result.content)
     trace = {"call_id": state["turn_id"] + "-order", "round": 0, "name": "load_order",
              "args": {"order_id": order.order_id}, "ok": True,
-             "content": order.model_dump_json(), "error": None, "elapsed_ms": 0}
+             "content": result.content, "error": None, "elapsed_ms": result.elapsed_ms}
     call = AIMessage('', id=state['turn_id'] + '-order-call', tool_calls=[{
         'id': trace['call_id'], 'name': 'load_order', 'args': trace['args'], 'type': 'tool_call'}])
     observation = ToolMessage(trace['content'], tool_call_id=trace['call_id'], name='load_order',
@@ -332,19 +342,33 @@ def _event_key(turn_id, phase, position):
 def _write_ledger(context, state, *, phase="complete"):
     rows = [TurnMessage(role=MsgRole.user, content=state["question"],
                         ch06_event_key=_event_key(state["turn_id"], "user", 0))]
+    tool_keys = {}
+    for message in state.get('messages', []):
+        if message.additional_kwargs.get('ch07', {}).get('turn_id') != state['turn_id']:
+            continue
+        if isinstance(message, AIMessage) and message.tool_calls:
+            key = _event_key(state['turn_id'], 'tool_request', message.id)
+            rows.append(TurnMessage(role=MsgRole.assistant, content=None,
+                tool_calls=message.tool_calls, ch06_event_key=key))
+        elif isinstance(message, ToolMessage):
+            key = _event_key(state['turn_id'], 'tool_result', message.tool_call_id)
+            rows.append(TurnMessage(role=MsgRole.tool, content=message.content,
+                tool_call_id=message.tool_call_id, ch06_event_key=key))
+        else:
+            continue
+        tool_keys[message.id] = key
     sources = state["evidence"]["sources"] if state["evidence"] and not state["refused"] else []
     rows.append(
-        TurnMessage(role=MsgRole.assistant, content=state["answer"], citations=sources or None)
+        TurnMessage(role=MsgRole.assistant, content=state["answer"], citations=sources or None,
+                    ch06_event_key=_event_key(state['turn_id'], phase, 'answer'))
     )
-    from dataclasses import replace
-    rows = [rows[0], *[replace(row, ch06_event_key=_event_key(state["turn_id"], phase, i))
-                       for i, row in enumerate(rows[1:], 1)]]
     with context.session_factory() as db:
         append_messages_once(db, conversation_id=state["conversation_id"], rows=rows)
         ids = find_ledger_ids(db, conversation_id=state['conversation_id'],
                               event_keys=[row.ch06_event_key for row in rows])
         db.commit()
-        return {'user': ids[rows[0].ch06_event_key], 'answer': ids[rows[-1].ch06_event_key]}
+        return {'user': ids[rows[0].ch06_event_key], 'answer': ids[rows[-1].ch06_event_key],
+                'tools':{message_id:ids[key] for message_id,key in tool_keys.items()}}
 
 
 def _committed_turn_messages(state, ids, *, suffix='answer'):
@@ -361,6 +385,8 @@ def _committed_turn_messages(state, ids, *, suffix='answer'):
             ledger_id = ids.get('user')
         elif message.id == state['turn_id'] + '-' + suffix:
             ledger_id = ids.get('answer')
+        elif message.id in ids.get('tools', {}):
+            ledger_id = ids['tools'][message.id]
         annotated.append(tag_message(message, turn_id=state['turn_id'], ledger_id=ledger_id,
             from_msg_id=ids.get('user', 0), upto_msg_id=ids.get('answer', 0), committed=bool(ids)))
     return annotated
@@ -413,7 +439,11 @@ async def log_node(state, context, emit):
 
 
 def build_workflow(checkpointer):
-    from mewhelp.ch08.confirmation import prepare_ticket_node, await_ticket_node, execute_confirmed_ticket_node
+    from mewhelp.ch08.confirmation import (
+        await_ticket_node,
+        execute_confirmed_ticket_node,
+        prepare_ticket_node,
+    )
     graph = StateGraph(WorkflowState, context_schema=WorkflowContext)
     operations = {
         "begin_turn": begin_turn,
@@ -482,7 +512,7 @@ def build_workflow(checkpointer):
     graph.add_conditional_edges("ensure_order", lambda s: "load_order" if s.get("selected_order_id") else "prepare_order_selection")
     graph.add_edge("prepare_order_selection", "offer_order_selection")
     graph.add_conditional_edges("offer_order_selection", lambda s: "log_turn" if s.get("selection_status") == "cancelled" else "load_order")
-    graph.add_edge("load_order", "expand_queries")
+    graph.add_conditional_edges('load_order', lambda s: 'bounded_reply' if s.get('stop_reason') else 'expand_queries')
     graph.add_conditional_edges("expand_queries", lambda s: "bounded_reply" if s.get("stop_reason") else "retrieve_policy")
     graph.add_edge("retrieve_policy", "confidence_gate")
     graph.add_conditional_edges(

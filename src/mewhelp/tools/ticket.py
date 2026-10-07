@@ -15,9 +15,9 @@ from mewhelp.db.models import TicketType
 from mewhelp.db.repository import find_ticket_by_request_id, insert_ticket, next_ticket_no
 
 from .business import build_business_tools
+from .contracts import ToolCallContext
 from .knowledge import build_knowledge_tools
 from .registry import ToolRegistry, ToolSpec
-from .contracts import ToolCallContext
 
 # 工单号撞主键后的递增重试上限。
 #
@@ -45,7 +45,7 @@ def build_ticket_tools(
     def create_ticket(
         description: str,
         ticket_type: Literal["售后", "投诉", "咨询"],
-    ) -> str:
+    ) -> str | dict:
         """为用户创建人工工单。description 是问题描述,ticket_type 只能是售后/投诉/咨询。
 
         仅用于用户明确确认创建工单；不会转人工或修改会话状态。
@@ -94,16 +94,20 @@ def build_ticket_tools(
                     receipt = existing_receipt(session)
                     if receipt:
                         return receipt
+                    detail = str(exc.orig)
+                    if not ('UNIQUE constraint failed: tickets.ticket_no' in detail or
+                            getattr(exc.orig, 'args', (None,))[0] == 1062):
+                        raise
                     last_error = exc
                     continue
             return _TICKET_TEMPLATE.format(ticket_no=ticket_no, ticket_type=ticket_type)
 
         # 五次都撞上说明不是并发抖动。如实告诉模型失败,由它转告用户,
         # 而不是抛一个 500 出去 —— 那会让整轮对话断在这里。
-        return (
+        return {'outcome':'error', 'message': (
             f"创建工单失败(连续 {_MAX_TICKET_NO_ATTEMPTS} 次工单号冲突):{last_error}。"
             "请告知用户稍后重试,或建议其直接联系人工客服。"
-        )
+        )}
 
     return [create_ticket]
 
@@ -111,7 +115,7 @@ def build_ticket_tools(
 def build_registry(
     session_factory: Callable[[], Session], conversation_id: int, **knowledge_dependencies
 ) -> ToolRegistry:
-    """汇总五个工具。
+    """隔离调用的兼容注册表；生产通过共享 Ch08 runtime 热发现 MCP。
 
     收 **session 工厂**而不是 Session 实例:工具经 @tool 的 ainvoke 跑在线程池里
     (实测跑在 asyncio_0 线程),而 SQLAlchemy 的 Session 非线程安全。

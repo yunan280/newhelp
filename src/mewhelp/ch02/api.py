@@ -19,7 +19,7 @@
 from collections.abc import AsyncIterable, Callable
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.sse import EventSourceResponse, ServerSentEvent
 from sqlalchemy.orm import Session
 
@@ -49,6 +49,19 @@ def get_session_factory() -> Callable[[], Session]:
 # `Depends(...)` 写成**默认值**会被 ruff 的 B008 拦下(FastAPI 的经典误报)。
 # 用 `Annotated` 挂依赖是它的正解,顺带也不用在这一层挂抑制指令。
 SessionFactoryDep = Annotated[Callable[[], Session], Depends(get_session_factory)]
+
+
+def get_tool_runtime(request: Request):
+    from mewhelp.ch08.runtime import create_tool_runtime
+    # The application lifespan supplies this in production; router-only tests
+    # use their own session-factory dependency and get an isolated shared runtime.
+    if not hasattr(request.app.state, 'tool_runtime'):
+        factory = request.app.dependency_overrides.get(get_session_factory, get_session_factory)()
+        request.app.state.tool_runtime = create_tool_runtime(factory)
+    return request.app.state.tool_runtime
+
+
+ToolRuntimeDep = Annotated[object, Depends(get_tool_runtime)]
 
 
 def _frame(event) -> ServerSentEvent:
@@ -84,6 +97,7 @@ def _frame(event) -> ServerSentEvent:
 async def chat_stream(
     req: ChatRequest,
     session_factory: SessionFactoryDep,
+    tool_runtime: ToolRuntimeDep,
 ) -> AsyncIterable[ServerSentEvent]:
     """流式对话(带工具链)。
 
@@ -97,6 +111,7 @@ async def chat_stream(
             user_id=req.resolved_user_id,
             message=req.message,
             filters=req.filters,
+            tool_runtime=tool_runtime,
         ):
             yield _frame(event)
     except EmptyCompletionError as exc:
@@ -109,6 +124,7 @@ async def chat_stream(
 async def agent(
     req: AgentRequest,
     session_factory: SessionFactoryDep,
+    tool_runtime: ToolRuntimeDep,
 ) -> dict:
     """非流式出口 —— 一次性返回完整工具轨迹 + 答案。
 
@@ -126,6 +142,7 @@ async def agent(
             user_id=req.resolved_user_id,
             message=req.message,
             filters=req.filters,
+            tool_runtime=tool_runtime,
         )
     except EmptyCompletionError as exc:
         raise HTTPException(status_code=502, detail=f"模型没有产出任何内容:{exc}") from exc

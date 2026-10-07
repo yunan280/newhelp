@@ -1,6 +1,6 @@
-from dataclasses import replace
 import asyncio
 import time
+from dataclasses import replace
 from typing import Literal
 
 from langchain_core.messages import AIMessage
@@ -15,11 +15,12 @@ from .test_ticket_graph import CONTROL, install_tools, ticket_call
 
 
 async def test_write_timeout_replay_only_reads_late_receipt(workflow_runtime, tmp_path, session_factory, model_factory):
+    from sqlalchemy import select
+
     from mewhelp.ch08.confirmation import resume_ticket
     from mewhelp.ch08.schemas import TicketResumeRequest
+    from mewhelp.db.models import Ticket, ToolAuditLog
     from mewhelp.tools.registry import ToolRegistry
-    from mewhelp.db.models import ToolAuditLog, Ticket
-    from sqlalchemy import select
     tools = await install_tools(workflow_runtime, tmp_path, session_factory)
     original = tools.registry.get('create_ticket')
     calls = []

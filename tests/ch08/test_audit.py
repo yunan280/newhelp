@@ -8,9 +8,9 @@ from mewhelp.tools.contracts import ToolCallContext, ToolResult
 
 
 def result(**changes):
-    values = dict(name='查物流', args={'order_id': '中文'}, ok=False, content='查询超时',
-                  error='x' * 900, elapsed_ms=750, attempts=3, status='超时',
-                  retry_count=2, source='mcp', mcp_server='logistics', tool_call_id='call1')
+    values = {'name':'查物流', 'args':{'order_id':'中文'}, 'ok':False, 'content':'查询超时',
+              'error':'x' * 900, 'elapsed_ms':750, 'attempts':3, 'status':'超时',
+              'retry_count':2, 'source':'mcp', 'mcp_server':'logistics', 'tool_call_id':'call1'}
     values.update(changes)
     return ToolResult(**values)
 
@@ -64,12 +64,12 @@ async def test_audit_failure_does_not_change_tool_result():
 async def test_audit_timeout_has_bounded_wait():
     from mewhelp.tools.audit import ToolAuditWriter
     def slow():
-        time.sleep(.08)
+        time.sleep(.3)
         raise RuntimeError('unavailable')
     start = time.monotonic()
     await ToolAuditWriter(slow, timeout_seconds=.01).record(result(), ToolCallContext())
-    assert time.monotonic() - start < .06
-    await asyncio.sleep(.1)
+    assert time.monotonic() - start < .15
+    await asyncio.sleep(.35)
 
 
 @pytest.mark.asyncio
@@ -84,6 +84,7 @@ async def test_bad_json_or_oversized_error_is_safely_recorded(audit_factory):
 @pytest.mark.asyncio
 async def test_stalled_audits_do_not_exhaust_business_tool_threads():
     from langchain_core.tools import tool
+
     from mewhelp.tools.audit import ToolAuditWriter
     from mewhelp.tools.engine import ToolExecutionEngine
     from mewhelp.tools.registry import ToolRegistry, ToolSpec

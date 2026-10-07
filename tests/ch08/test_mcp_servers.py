@@ -2,8 +2,8 @@ from mewhelp.tools.business import build_business_tools
 
 
 async def test_server_mock_tools_and_schema_are_independent():
-    from mewhelp.ch08.mcp_servers.logistics import build_server
     from mewhelp.ch08.mcp_servers.aftersales import build_server as aftersales
+    from mewhelp.ch08.mcp_servers.logistics import build_server
     logistics = build_server(port=9021)
     tools = await logistics.list_tools()
     assert [t.name for t in tools] == ['query_logistics']
@@ -13,7 +13,7 @@ async def test_server_mock_tools_and_schema_are_independent():
 
 
 def test_mock_data_aligns_with_demo_and_is_reproducible():
-    from mewhelp.ch08.mcp_servers.mock_data import logistics_data, warranty_data, return_data
+    from mewhelp.ch08.mcp_servers.mock_data import logistics_data, return_data, warranty_data
     assert logistics_data('1001') == logistics_data('1001')
     assert logistics_data('1001')['data']['status'] == 'SIGNED'
     assert logistics_data('1003')['data']['status'] == 'UNSHIPPED'

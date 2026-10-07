@@ -529,9 +529,9 @@ async def test_tool_start_frame_arrives_before_the_tool_finishes(session_factory
         registry = real_build(session_factory, conversation_id, **knowledge_dependencies)
         original = registry.run_all
 
-        async def slow_run_all(calls):
+        async def slow_run_all(calls, **kwargs):
             await asyncio.sleep(0.3)
-            return await original(calls)
+            return await original(calls, **kwargs)
 
         registry.run_all = slow_run_all
         return registry

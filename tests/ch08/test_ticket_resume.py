@@ -1,4 +1,3 @@
-from dataclasses import replace
 
 import pytest
 from sqlalchemy import select
@@ -35,10 +34,11 @@ async def test_receipt_survives_final_model_failure(workflow_runtime, tmp_path, 
 
 
 async def test_one_explicit_request_cannot_be_reissued_by_model_after_confirmation(workflow_runtime, tmp_path, session_factory, model_factory):
+    from sqlalchemy import func
+
     from mewhelp.ch08.confirmation import resume_ticket
     from mewhelp.ch08.schemas import TicketResumeRequest
     from mewhelp.db.models import Ticket
-    from sqlalchemy import func
     await install_tools(workflow_runtime, tmp_path, session_factory)
     waiting = await preview(workflow_runtime, model_factory)
     model_factory.decisions = [ticket_call('键盘坏了，帮我建售后工单', call_id='model-repeat'), CONTROL]

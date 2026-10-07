@@ -13,9 +13,9 @@ from mewhelp.tools.registry import ToolRegistry
 @pytest.mark.asyncio
 @pytest.mark.parametrize('failure,attempts,status', [('timeout', 3, '超时'), ('value', 1, '失败'), ('empty', 1, '失败'), ('network', 3, '成功')])
 async def test_engine_failure_triage_and_one_audit(audit_factory, failure, attempts, status):
+    from mewhelp.db.models import ToolAuditLog
     from mewhelp.tools.audit import ToolAuditWriter
     from mewhelp.tools.engine import ToolExecutionEngine
-    from mewhelp.db.models import ToolAuditLog
     calls = []
     @tool
     async def query(limit: int) -> dict:

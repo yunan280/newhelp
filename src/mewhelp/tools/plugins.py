@@ -34,11 +34,11 @@ class PluginLoader:
                     staged = ToolRegistry()
                     module = ModuleType(f'mewhelp_plugin_{name}')
                     module.__file__ = str(path)
-                    exec(compile(source, str(path), 'exec'), module.__dict__)
+                    exec(compile(source, str(path), 'exec'), module.__dict__)  # noqa: S102 — 运维授权的本地Python插件
                     module.register(staged)
                     registry.replace_source(f'plugin:{name}', list(staged.snapshot().specs.values()))
                     self._digests[name] = digest
                     report['loaded'].append(name)
-                except Exception as exc:
+                except Exception as exc:  # noqa: BLE001 — 半加载失败不能污染登记表
                     report['errors'][name] = f'{type(exc).__name__}: {exc}'
         return report

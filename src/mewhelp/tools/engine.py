@@ -116,7 +116,7 @@ class ToolExecutionEngine:
                     elapsed_ms=int((time.monotonic() - started) * 1000))
                 await asyncio.shield(self._finish(result, context))
                 raise
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001 — 工具异常统一分诊并回灌
                 status, transient = classify_failure(exc)
                 error = type(exc).__name__
                 content = f'调用 {name} {"超时" if status == "超时" else "失败"}：{type(exc).__name__}: {exc}'

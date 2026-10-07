@@ -2,13 +2,15 @@
 
 import asyncio
 import logging
+import time
 
 from mewhelp.db.models import Conversation
 from mewhelp.db.repository import find_ticket_by_request_id
-from mewhelp.tools.registry import ToolRegistry, ToolSpec
-from mewhelp.tools.ticket import build_ticket_tools
+from mewhelp.tools.contracts import ToolCallContext, WriteAuthorization
+from mewhelp.tools.permissions import arguments_hash
+from mewhelp.tools.ticket import build_ticket_spec
 
-from .schemas import TicketReceipt
+from .schemas import TicketReceipt, TicketRequest
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +45,7 @@ def _verified_receipt(context, request, conversation_id):
 
 
 async def create_confirmed_ticket(runtime, request) -> TicketReceipt:
+    request = TicketRequest.model_validate(request.model_dump())
     config = {"configurable": {"thread_id": request.session_id}}
     async with runtime.locks.lock(request.session_id):
         snapshot = await runtime.graph.aget_state(config)
@@ -56,14 +59,25 @@ async def create_confirmed_ticket(runtime, request) -> TicketReceipt:
             _verified_receipt, runtime.context, request, state["conversation_id"]
         )
         if receipt is None:
-            tool = build_ticket_tools(
-                runtime.context.session_factory,
-                state["conversation_id"],
-                request_id=request.offer_id,
-            )[0]
-            result = await ToolRegistry({tool.name: ToolSpec(tool, retryable=False)}).run(
-                tool.name, {"description": request.description, "ticket_type": request.ticket_type}
-            )
+            auth = legacy_button_authorization(state, request)
+            args = {'description': request.description, 'ticket_type': request.ticket_type}
+            tools = runtime.context.tool_runtime
+            if tools is not None:
+                catalog, engine = await tools.refresh(), tools.engine
+            else:
+                from mewhelp.tools.audit import ToolAuditWriter
+                from mewhelp.tools.engine import ToolExecutionEngine
+                from mewhelp.tools.registry import ToolRegistry
+                engine = ToolExecutionEngine(ToolAuditWriter(runtime.context.session_factory))
+                catalog = ToolRegistry({'create_ticket': build_ticket_spec(runtime.context.session_factory)}).snapshot()
+            try:
+                result = await engine.execute(catalog, 'create_ticket', args, ToolCallContext(
+                    state['conversation_id'], request.session_id, request.resolved_user_id,
+                    tool_call_id=request.offer_id, authorization=auth,
+                    deadline_monotonic=time.monotonic() + runtime.context.limits.turn_seconds))
+            finally:
+                if tools is None:
+                    engine.audit.close()
             receipt = await asyncio.to_thread(
                 _verified_receipt, runtime.context, request, state["conversation_id"]
             )
@@ -72,6 +86,11 @@ async def create_confirmed_ticket(runtime, request) -> TicketReceipt:
                     f"工单尚未确认写入，请稍后重试：{result.error or 'write_failed'}", 502
                 )
             receipt = receipt.model_copy(update={"replayed": False})
+        else:
+            # Business receipt is authoritative; never overwrite a newer interrupt.
+            return receipt
+        if snapshot.next:
+            return receipt
         receipts = {**state.get("ticket_receipts", {}), request.offer_id: receipt.model_dump()}
         try:
             await runtime.graph.aupdate_state(
@@ -83,3 +102,15 @@ async def create_confirmed_ticket(runtime, request) -> TicketReceipt:
             )
             raise
         return receipt
+
+
+def legacy_button_authorization(state: dict, request: TicketRequest) -> WriteAuthorization:
+    request = TicketRequest.model_validate(request.model_dump())
+    offer = state.get('offers', {}).get(request.offer_id)
+    if not offer or 'create_ticket' not in offer['actions']:
+        raise ActionError('没有可确认的建工单建议', 404)
+    if state.get('session_id') != request.session_id or state.get('user_id') != request.resolved_user_id:
+        raise ActionError('会话归属不匹配', 403)
+    return WriteAuthorization('legacy_button', request.offer_id, state['conversation_id'],
+        request.session_id, request.resolved_user_id, 'create_ticket',
+        arguments_hash({'description':request.description, 'ticket_type':request.ticket_type}))

@@ -16,7 +16,7 @@ def test_mcp_artifact_projection_and_enum_translation():
     from mewhelp.tools.formatting import format_result
     spec = ToolSpec(query, source='mcp', mcp_server='logistics', result_fields=('status', 'tracking'), enum_labels={'SIGNED': '已签收'})
     raw = ToolMessage(content=[{'type': 'text', 'text': 'raw internal data'}], tool_call_id='1', artifact={'structured_content': {'outcome': 'success', 'data': {'status': 'SIGNED', 'tracking': '上海', 'internal': 'secret'}}})
-    ok, content, error, artifact = format_result(spec, raw)
+    ok, content, error, _artifact = format_result(spec, raw)
     assert ok and error is None
     assert json.loads(content) == {'status': '已签收', 'tracking': '上海'}
     assert '\\u' not in content

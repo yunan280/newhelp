@@ -2,7 +2,10 @@
 from datetime import timedelta
 
 from mewhelp.tools.business_data import (
-    CARRIERS, CITIES, get_demo_order_record, seeded_rng,
+    CARRIERS,
+    CITIES,
+    get_demo_order_record,
+    seeded_rng,
 )
 
 

@@ -18,7 +18,7 @@ def read_tool_config(path: Path) -> dict:
     except (OSError, ValueError) as exc:
         raise ValueError('工具配置读取失败，外部权限关闭') from exc
     if not isinstance(config, dict) or not isinstance(config.get('servers'), dict) or not isinstance(config.get('permissions'), dict):
-        raise ValueError('工具配置必须含 servers/permissions 对象')
+        raise ValueError('工具配置必须含 servers/permissions 对象')  # noqa: TRY004 — 统一配置错误合同
     connections = {}
     builtin = config.get('builtin_permissions', {})
     if not isinstance(builtin, dict) or any(k != 'create_ticket' or v not in ('write', 'deny') for k, v in builtin.items()):

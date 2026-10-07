@@ -88,6 +88,7 @@ def create_tool_runtime(session_factory, *, settings: ToolSystemSettings | None 
     from mewhelp.tools.engine import ToolExecutionEngine
     from mewhelp.tools.knowledge import build_knowledge_tools
     from mewhelp.tools.ticket import build_ticket_spec
+    from mewhelp.tools.workflow import build_load_order_spec
     engine = ToolExecutionEngine(ToolAuditWriter(session_factory))
     registry = ToolRegistry(engine=engine)
     for tool in build_business_tools():
@@ -96,4 +97,5 @@ def create_tool_runtime(session_factory, *, settings: ToolSystemSettings | None 
     registry.register(ToolSpec(template, retryable=False, timeout_seconds=120,
         preserve_raw=True, tool_factory=lambda context: build_knowledge_tools(session_factory)[0]))
     registry.register(build_ticket_spec(session_factory))
+    registry.register(build_load_order_spec())
     return Ch08ToolRuntime(registry, engine, settings or ToolSystemSettings(), session_factory)

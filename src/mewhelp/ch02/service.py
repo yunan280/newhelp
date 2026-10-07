@@ -11,9 +11,8 @@
 
 import asyncio
 import logging
-import time
 from collections.abc import AsyncIterator, Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from uuid import uuid4
 
 from langchain_core.messages import (
@@ -46,6 +45,7 @@ from mewhelp.knowledge.filters import SearchFilters
 from mewhelp.knowledge.query import QueryUnderstanding, requires_knowledge, understand_query
 from mewhelp.llm import get_chat_model
 from mewhelp.memory import store, trim_history
+from mewhelp.tools.contracts import ToolCallContext
 from mewhelp.tools.infra import ToolResult
 from mewhelp.tools.registry import ToolRegistry
 from mewhelp.tools.ticket import build_registry
@@ -80,12 +80,14 @@ class PreparedTurn:
     query: QueryUnderstanding | None = None
     filters: SearchFilters | None = None
     entry_point: str = "agent"
+    call_context: ToolCallContext | None = None
 
     @property
     def tool_messages(self) -> list[ToolMessage]:
         """把工具结果翻成回灌用的 ToolMessage,tool_call_id 与申请单对号入座。"""
         return [
-            ToolMessage(content=result.content, tool_call_id=call["id"])
+            ToolMessage(content=result.content, tool_call_id=call["id"], name=result.name,
+                        status='success' if result.ok else 'error')
             for call, result in zip(self.ai.tool_calls, self.tool_results, strict=True)
         ]
 
@@ -135,6 +137,7 @@ async def _prepare_turn_events(
     sink: _Sink,
     filters: SearchFilters | None = None,
     entry_point: str = "agent",
+    tool_runtime=None,
 ) -> AsyncIterator[AgentEvent]:
     """先提交会话身份，再仅按当前问题路由。
 
@@ -161,6 +164,25 @@ async def _prepare_turn_events(
 
     query = await understand_query(message)
     trusted_filters = filters or SearchFilters()
+    if tool_runtime is None:
+        registry = build_registry(session_factory, conversation_id,
+            context=QuestionContext(message, conversation_id, entry_point),
+            filters=trusted_filters, query=query)
+        from mewhelp.tools.audit import ToolAuditWriter
+        from mewhelp.tools.engine import ToolExecutionEngine
+        registry.engine = ToolExecutionEngine(ToolAuditWriter(session_factory))
+    else:
+        snapshot = await tool_runtime.refresh()
+        specs = dict(snapshot.specs)
+        # Bind the original trusted query/filters to FAQ, rather than a model
+        # rewriting the query or weakening metadata filters.
+        from mewhelp.tools.knowledge import build_knowledge_tools
+        faq = build_knowledge_tools(session_factory,
+            context=QuestionContext(message, conversation_id, entry_point),
+            filters=trusted_filters, query=query)[0]
+        specs['query_faq'] = replace(specs['query_faq'], tool_factory=lambda context:faq)
+        registry = ToolRegistry(specs, engine=tool_runtime.engine)
+    call_context = ToolCallContext(conversation_id, session_id, user_id)
     if query.route == "knowledge":
         # No ordinary model can produce a factual preamble on this path.
         ai = AIMessage(
@@ -180,20 +202,14 @@ async def _prepare_turn_events(
             resumed,
             messages,
             ai,
-            ToolRegistry({}),
+            registry,
             [],
             query,
             trusted_filters,
             entry_point,
+            call_context,
         )
         return
-    registry = build_registry(
-        session_factory,
-        conversation_id,
-        context=QuestionContext(message, conversation_id, entry_point),
-        filters=trusted_filters,
-        query=query,
-    )
 
     # turn1 走 astream 而不是 ainvoke:模型既可能只吐工具调用,也可能先说一句
     # 前言再调工具。若走 ainvoke,"不需要工具"的那些轮次就再也流不了式了 ——
@@ -219,7 +235,7 @@ async def _prepare_turn_events(
 
         # 用 asyncio.gather 并发跑:一轮里多个工具是相互独立的读,没有先后依赖。
         # 结果顺序与 tool_calls 一致,靠的是 run_all 内部的 gather 保序。
-        results = await registry.run_all(ai.tool_calls)
+        results = await registry.run_all(ai.tool_calls, context=call_context)
 
         for result in results:
             yield tool_event_from(result, phase="end")
@@ -235,6 +251,7 @@ async def _prepare_turn_events(
         query=query,
         filters=trusted_filters,
         entry_point=entry_point,
+        call_context=call_context,
     )
 
 
@@ -245,6 +262,7 @@ async def _prepare_turn(
     user_id: str,
     message: str,
     filters: SearchFilters | None = None,
+    tool_runtime=None,
 ) -> PreparedTurn:
     """turn1:会话身份 → 组装上下文 → 定工具 → 执行工具。
 
@@ -272,6 +290,7 @@ async def _prepare_turn(
         message=message,
         sink=sink,
         filters=filters,
+        tool_runtime=tool_runtime,
     ):
         pass
     if sink.prepared is None:  # pragma: no cover —— 生成器必然在耗尽前写入
@@ -336,7 +355,7 @@ def _needs_knowledge(prepared: PreparedTurn) -> bool:
         call["name"] == "query_faq" for call in prepared.ai.tool_calls
     ):
         return True
-    business_names = {"query_order", "query_product", "query_logistics", "create_ticket"}
+    business_names = set(prepared.registry.names()) - {'query_faq', 'load_order'}
     # A structured failure is trustworthy evidence that the business operation failed.
     return prepared.query.route == "business" and not any(
         result.name in business_names for result in prepared.tool_results
@@ -355,11 +374,19 @@ async def _answer_knowledge(
     runtime = await asyncio.to_thread(get_rag_runtime, session_factory, calibration_path=path)
     evidence = None
     faq_results = [result for result in prepared.tool_results if result.name == "query_faq"]
+    if not faq_results:
+        call = next((c for c in prepared.ai.tool_calls if c['name'] == 'query_faq'), None)
+        if call is None:
+            call = {'name':'query_faq', 'args':{'keyword':query.original}, 'id':uuid4().hex, 'type':'tool_call'}
+            prepared.ai.tool_calls.append(call)
+        observation = await prepared.registry.run('query_faq', call['args'],
+            context=replace(prepared.call_context or ToolCallContext(conversation_id=prepared.conversation_id), tool_call_id=call['id']))
+        prepared.tool_results.append(observation)
+        faq_results = [observation]
     if faq_results:
         if any(not item.ok or item.artifact is None for item in faq_results):
             raise RuntimeError("knowledge retrieval failed; no verified artifact available")
         evidence = faq_results[0].artifact
-    started = time.monotonic()
     result = await answer_question(
         runtime,
         query,
@@ -367,28 +394,6 @@ async def _answer_knowledge(
         context=QuestionContext(query.original, prepared.conversation_id, prepared.entry_point),
         evidence=evidence,
     )
-    if not faq_results:
-        if len(prepared.ai.tool_calls) == len(prepared.tool_results):
-            prepared.ai.tool_calls.append(
-                {
-                    "name": "query_faq",
-                    "args": {"keyword": query.original},
-                    "id": uuid4().hex,
-                    "type": "tool_call",
-                }
-            )
-        prepared.tool_results.append(
-            ToolResult(
-                "query_faq",
-                {"keyword": query.original},
-                True,
-                f"已复核 {len(result.retrieval.candidates)} 条候选证据",
-                None,
-                int((time.monotonic() - started) * 1000),
-                1,
-                result.retrieval,
-            )
-        )
     return result
 
 
@@ -399,6 +404,7 @@ async def stream_agent_turn(
     user_id: str,
     message: str,
     filters: SearchFilters | None = None,
+    tool_runtime=None,
 ) -> AsyncIterator[AgentEvent]:
     """锁覆盖整轮；知识答案校验后以 sources → token → done 交付。
 
@@ -418,6 +424,7 @@ async def stream_agent_turn(
             sink=sink,
             filters=filters,
             entry_point="chat_stream",
+            tool_runtime=tool_runtime,
         ):
             yield event
 
@@ -493,6 +500,7 @@ async def run_agent_turn(
     user_id: str,
     message: str,
     filters: SearchFilters | None = None,
+    tool_runtime=None,
 ) -> AgentTurnResult:
     """跑一轮,一次性返回完整轨迹 + 答案。
 
@@ -507,7 +515,8 @@ async def run_agent_turn(
 
     async with store.lock(resolved):
         prepared = await _prepare_turn(
-            session_factory, session_id=resolved, user_id=user_id, message=message, filters=filters
+            session_factory, session_id=resolved, user_id=user_id, message=message, filters=filters,
+            tool_runtime=tool_runtime
         )
 
         if _needs_knowledge(prepared):
