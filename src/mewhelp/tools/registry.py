@@ -1,77 +1,101 @@
-"""工具注册表 —— 按名查、批量跑。
-
-注册表持有的是 `ToolSpec` 而不是裸 `BaseTool`,因为"要不要重试"是**工具级**
-的策略(写类工具不重试),不是执行时的临时判断。
-"""
-
+"""统一注册与原子快照。工具发现不授予外部工具权限。"""
 import asyncio
+import hashlib
+import json
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from copy import deepcopy
+from dataclasses import replace
+from threading import RLock
+from types import MappingProxyType
 
 from langchain_core.tools import BaseTool
 
-from .infra import TOOL_TIMEOUT_SECONDS, ToolResult, execute_tool
-
-
-@dataclass(frozen=True)
-class ToolSpec:
-    tool: BaseTool
-    # 写类工具设 False。没有幂等设施时重试会重复建单。
-    retryable: bool = True
-    timeout_seconds: float = TOOL_TIMEOUT_SECONDS
-    preserve_raw: bool = False
+from .contracts import ToolCallContext, ToolResult, ToolSnapshot, ToolSpec
+from .validation import normalize_schema
 
 
 class ToolRegistry:
-    def __init__(self, specs: Mapping[str, ToolSpec]) -> None:
-        self._specs = dict(specs)
+    def __init__(self, specs: Mapping[str, ToolSpec] | None = None, *, engine=None):
+        self._lock = RLock()
+        self._specs: dict[str, ToolSpec] = {}
+        self._owners: dict[str, str] = {}
+        self.engine = engine
+        for name, spec in (specs or {}).items():
+            if name != spec.tool.name:
+                raise ValueError('注册名必须与工具名一致')
+            self.register(spec)
+
+    @staticmethod
+    def _normalize(spec: ToolSpec) -> ToolSpec:
+        if not spec.tool.name.strip() or not spec.tool.description.strip():
+            raise ValueError('工具必须有名称和用途描述')
+        if spec.source not in ('builtin', 'mcp') or spec.permission not in ('readonly', 'write', 'deny'):
+            raise ValueError('工具来源或本地权限不合法')
+        if spec.source == 'mcp' and not spec.mcp_server:
+            raise ValueError('MCP 工具必须声明来源 Server')
+        if spec.tool.name == 'create_ticket' and (spec.source != 'builtin' or spec.permission != 'write'):
+            raise ValueError('create_ticket 是受保护的内置写工具')
+        schema = normalize_schema(spec.tool, spec.input_schema, forbid_extra=True)
+        if spec.timeout_seconds <= 0:
+            raise ValueError('超时必须大于零')
+        return replace(spec, input_schema=schema)
+
+    def register(self, spec: ToolSpec) -> None:
+        spec = self._normalize(spec)
+        with self._lock:
+            if spec.tool.name in self._specs:
+                raise ValueError(f'工具重名: {spec.tool.name}')
+            self._specs[spec.tool.name] = spec
+            self._owners[spec.tool.name] = 'builtin'
+
+    def replace_source(self, source: str, specs: Sequence[ToolSpec]) -> None:
+        normalized = [self._normalize(s) for s in specs]
+        names = [s.tool.name for s in normalized]
+        if len(names) != len(set(names)):
+            raise ValueError('同一来源工具重名')
+        with self._lock:
+            for name in names:
+                if name == 'create_ticket' or (name in self._specs and self._owners[name] != source):
+                    raise ValueError(f'来源不可覆盖工具: {name}')
+            new = {n: s for n, s in self._specs.items() if self._owners[n] != source}
+            owners = {n: o for n, o in self._owners.items() if o != source}
+            new.update({s.tool.name: s for s in normalized})
+            owners.update({n: source for n in names})
+            self._specs, self._owners = new, owners
+
+    def snapshot(self) -> ToolSnapshot:
+        with self._lock:
+            specs = {n: replace(s, input_schema=deepcopy(s.input_schema),
+                                enum_labels=deepcopy(s.enum_labels)) for n, s in self._specs.items()}
+        identity = [{'name': n, 'schema': s.input_schema, 'description': s.tool.description,
+                     'source': s.source, 'server': s.mcp_server, 'permission': s.permission,
+                     'available': s.available, 'visible': s.model_visible}
+                    for n, s in sorted(specs.items())]
+        digest = hashlib.sha256(json.dumps(identity, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
+        return ToolSnapshot(MappingProxyType(specs), digest)
 
     def names(self) -> list[str]:
-        return list(self._specs)
+        return list(self.snapshot().specs)
 
     def tools(self) -> list[BaseTool]:
-        """给 `bind_tools` 用的列表。"""
-        return [spec.tool for spec in self._specs.values()]
+        return self.snapshot().tools()
 
     def get(self, name: str) -> ToolSpec | None:
-        return self._specs.get(name)
+        return self.snapshot().get(name)
 
-    async def run(self, name: str, args: dict) -> ToolResult:
-        """跑单个工具。未知工具名是一条**结构化失败**,不是异常。
-
-        模型编了个不存在的工具名是常见事,它只要被告知"没这个工具"就能自己改口;
-        抛出去的话整轮就断了,用户什么都看不到。
-        """
-        spec = self._specs.get(name)
+    async def run(self, name: str, args: dict, *, context: ToolCallContext | None = None) -> ToolResult:
+        if self.engine is not None:
+            return await self.engine.execute(self.snapshot(), name, args, context or ToolCallContext())
+        from .infra import execute_tool
+        spec = self.get(name)
         if spec is None:
-            return ToolResult(
-                name=name,
-                args=args,
-                ok=False,
-                content=(
-                    f"没有名为 {name} 的工具。可用的工具有:{', '.join(self.names())}。"
-                    "请改用其中之一,或直接回答用户。"
-                ),
-                error="unknown_tool",
-                elapsed_ms=0,
-                attempts=0,
-            )
-        return await execute_tool(
-            spec.tool, args, retryable=spec.retryable, timeout=spec.timeout_seconds,
-            preserve_raw=spec.preserve_raw,
-        )
+            return ToolResult(name, args, False,
+                              f"没有名为 {name} 的工具。可用的工具有:{', '.join(self.names())}。",
+                              'unknown_tool', 0, 0)
+        return await execute_tool(spec.tool, args, retryable=spec.retryable,
+                                  timeout=spec.timeout_seconds, preserve_raw=spec.preserve_raw)
 
-    async def run_all(self, calls: Sequence[Mapping]) -> list[ToolResult]:
-        """一轮里的所有 tool_calls **全部执行**,并发跑,结果顺序与入参一致。
-
-        不因为"只允许调一次"就丢掉第二个 —— 那等于模型说的话被静默截断了。
-        也不做"执行完第一个发现够了就跳过其余"—— 那需要一个判断"够了"的规则,
-        而那个规则本身就是 Agent Loop 的雏形。
-        """
-        if not calls:
-            return []
-        return list(
-            await asyncio.gather(
-                *(self.run(call["name"], dict(call["args"])) for call in calls)
-            )
-        )
+    async def run_all(self, calls: Sequence[Mapping], *, context: ToolCallContext | None = None) -> list[ToolResult]:
+        return list(await asyncio.gather(*(self.run(c['name'], dict(c['args']),
+                    context=replace(context or ToolCallContext(), tool_call_id=c.get('id')))
+                    for c in calls)))

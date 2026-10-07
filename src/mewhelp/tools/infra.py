@@ -11,7 +11,7 @@
 import asyncio
 import json
 import time
-from dataclasses import dataclass
+from .contracts import ToolResult
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
@@ -34,24 +34,6 @@ BACKOFF_SECONDS = (0.2, 0.4)
 # 整个上下文预算(HISTORY_TOKEN_BUDGET = 2048),把真正的对话挤出去。
 # 2000 字符对本章所有工具都绰绰有余(FAQ 单条百来字,工单回执更短)。
 TOOL_RESULT_MAX_CHARS = 2000
-
-
-@dataclass(frozen=True)
-class ToolResult:
-    """一次工具执行的结果。字段刻意做全,因为它是 eval 与徽章的唯一数据源。
-
-    `ok=False` 时 `content` **同样**回灌给模型 —— 这是"执行错误处理"这条需求的
-    落点:工具坏了,模型该知道,并据此告诉用户。
-    """
-
-    name: str
-    args: dict
-    ok: bool
-    content: str
-    error: str | None
-    elapsed_ms: int
-    attempts: int
-    artifact: "RetrievalResult | None" = None
 
 
 def _truncate(text: str) -> str:

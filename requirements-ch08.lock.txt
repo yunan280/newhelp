@@ -1,0 +1,15 @@
+attrs==26.1.0
+cffi==2.1.1
+cryptography==50.0.2
+httpx-sse==0.4.3
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+langchain-mcp-adapters==0.3.2
+mcp==1.30.0
+pycparser==3.0
+pyjwt==2.15.1
+python-multipart==0.0.32
+pywin32==312
+referencing==0.37.0
+rpds-py==2026.9.1
+sse-starlette==3.5.0

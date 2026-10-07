@@ -17,6 +17,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+tools = [
+    "mcp==1.30.0",
+    "langchain-mcp-adapters==0.3.2",
+    "jsonschema==4.26.0",
+]
 # 按章节逐步启用,学一章装一章
 agent = [
     "langgraph==1.2.12",

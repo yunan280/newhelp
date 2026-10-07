@@ -128,5 +128,5 @@ def build_registry(
     )
     for t in build_ticket_tools(session_factory, conversation_id):
         # 唯一的写操作:不重试,避免重复建单。
-        specs[t.name] = ToolSpec(tool=t, retryable=False)
+        specs[t.name] = ToolSpec(tool=t, retryable=False, permission='write')
     return ToolRegistry(specs)
