@@ -53,6 +53,7 @@ logger = logging.getLogger(__name__)
 
 
 async def begin_turn(state, context, emit):
+    from mewhelp.ch08.ticket_intent import ticket_request_patch
     update = {
         "messages": [tag_message(HumanMessage(state["question"], id=state["turn_id"] + "-user"),
                                   turn_id=state["turn_id"])],
@@ -84,6 +85,12 @@ async def begin_turn(state, context, emit):
         "scope": "general", "intent_confidence": None, "trusted_order_id": None,
         "understanding": {}, "classification": {}, "expansion": {}, "queries": [],
         "assessment": None, "assessment_control": {}, "refund_offer": None, "user_facts": {},
+        'matched_tool': None,
+        'tool_catalog': context.tool_snapshot.catalog() if context.tool_snapshot is not None else [],
+        'tool_catalog_hash': context.tool_snapshot.fingerprint if context.tool_snapshot is not None else '',
+        'ticket_request': ticket_request_patch(state['question'], state['turn_id'] + '-user', state.get('ticket_request')),
+        'tool_queue': [], 'tool_cursor': 0, 'tool_results': [],
+        'ticket_preview': None, 'ticket_status': None,
     }
     if estimate_text(state['question'], profile=context.profile) > context.settings.max_user_input_tokens:
         update.update({'intent': '其他', 'route': 'other', 'stop_reason': 'input_limit',
@@ -121,7 +128,10 @@ async def classify_node(state, context, emit):
 
 
 async def route_node(state, context, emit):
-    return {"route": route_intent(state["intent"], state.get("scope", "general"))}
+    if state.get('ticket_request', {}).get('explicit_request'):
+        return {'route': 'business'}
+    return {"route": route_intent(state["intent"], state.get("scope", "general"),
+                                  matched_tool=state.get('matched_tool'), snapshot=context.tool_snapshot)}
 
 
 async def other_node(state, context, emit):
@@ -210,9 +220,9 @@ async def retrieve_node(state, context, emit):
 
 
 async def gate_node(state, context, emit):
-    from .agent import build_read_registry
+    from .agent import registry_for_context
     prefix = estimate_request([SystemMessage(MAIN_SYSTEM)],
-        [convert_to_openai_tool(t) for t in build_read_registry().tools()], profile=context.profile)
+        [convert_to_openai_tool(t) for t in registry_for_context(context).tools()], profile=context.profile)
     actual_evidence = estimate_text(json.dumps(state['evidence']['sources'],
         ensure_ascii=False), profile=context.profile)
     try:

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "files": {
+    "intents.jsonl": {
+      "sha256": "878e5cd7aec2f5ff1e9632cc6f1ebbd33d8c4f91937a5c3fc8c97bf00d1438ab",
+      "count": 12,
+      "split": "acceptance"
+    },
+    "calibration.jsonl": {
+      "sha256": "6f787499d93ba14488e0e924c88fadaa78376a6e8a88792075f1cd6359f8e40a",
+      "count": 16,
+      "split": "calibration"
+    }
+  },
+  "dataset_hash": "a5d5349e564366f7fc727660c0be4bff3de0df76268aa92ed678ebb7f8a1bf4d"
+}

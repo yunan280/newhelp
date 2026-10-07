@@ -68,6 +68,16 @@ class WorkflowState(TypedDict, total=False):
     refund_offer: dict | None
     refund_offers: dict[str, dict]
     refund_receipts: dict[str, dict]
+    matched_tool: str | None
+    tool_catalog: list[dict]
+    tool_catalog_hash: str
+    ticket_request: dict
+    tool_queue: list[dict]
+    tool_cursor: int
+    tool_results: list[dict]
+    ticket_preview: dict | None
+    ticket_status: str | None
+    ticket_confirmation_receipts: dict[str, dict]
 
 
 @dataclass
@@ -83,3 +93,5 @@ class WorkflowContext:
     summary_manager: object | None = field(default=None, kw_only=True)
     request_epoch: str | None = field(default=None, kw_only=True)
     request_history: dict | None = field(default=None, kw_only=True)
+    tool_runtime: object | None = field(default=None, kw_only=True)
+    tool_snapshot: object | None = field(default=None, kw_only=True)

@@ -1,5 +1,6 @@
 import re
 from pathlib import Path
+import json
 from typing import Literal
 
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -42,10 +43,12 @@ class ClassificationResult(StrictDTO):
     raw: str = ""
     raw_responses: list[dict] = Field(default_factory=list)
     response_model: str | None = None
+    matched_tool: str | None = None
 
     def patch(self):
         return {
             "intent": self.intent,
+            "matched_tool": self.matched_tool,
             "intent_confidence": self.confidence,
             "classification": self.evaluation_result(),
             "usage": self.usage.model_dump(),
@@ -69,7 +72,10 @@ def resolve_reference(text: str) -> str:
     return text
 
 
-def route_intent(intent: Intent, scope: QueryScope = "general") -> Route:
+def route_intent(intent: Intent, scope: QueryScope = "general", *, matched_tool=None, snapshot=None) -> Route:
+    spec = snapshot.get(matched_tool) if snapshot is not None and matched_tool else None
+    if spec and spec.model_visible and spec.available and spec.permission != 'deny' and matched_tool != 'query_faq':
+        return 'business'
     if intent in {"退款退货", "售后"} and scope == "order_specific":
         return "aftersales"
     return ROUTES[intent]
@@ -87,11 +93,15 @@ def match_chitchat(text: str) -> bool:
     )
 
 
-def classifier_messages(text: str, *, history_ctx=None, question=None) -> list:
+def classifier_messages(text: str, *, history_ctx=None, question=None, catalog=None) -> list:
     if history_ctx is not None:
         return model_messages(history_ctx, system=INTENT_SYSTEM, question=question or text,
-            background={'purpose': 'classifier', 'resolved_question': text})
-    return [SystemMessage(content=INTENT_SYSTEM), HumanMessage(content=text)]
+            background={'purpose': 'classifier', 'resolved_question': text,
+                        'tool_catalog': catalog or []})
+    messages = [SystemMessage(content=INTENT_SYSTEM), HumanMessage(content=text)]
+    if catalog is not None:
+        messages.append(HumanMessage(content=json.dumps({'purpose': 'classifier', 'tool_catalog': catalog}, ensure_ascii=False)))
+    return messages
 
 
 def load_router_calibration(context: WorkflowContext) -> RouterCalibration:
@@ -104,7 +114,7 @@ def load_router_calibration(context: WorkflowContext) -> RouterCalibration:
         calibration = RouterCalibration.model_validate_json(
             settings.calibration_path.read_text(encoding="utf-8")
         )
-        dataset = verify_dataset(Path(__file__).parents[3] / "eval/ch06")
+        dataset = verify_dataset(settings.router_dataset_path)
     except (OSError, ValueError) as error:
         raise ClassificationError("invalid CH06 calibration") from error
     if (
@@ -127,7 +137,8 @@ async def classify_intent(
     origin = "cascade" if settings.cascade_enabled else "llm"
     messages = classifier_messages(text,
         history_ctx=history_from_payload(state['history_ctx']) if state.get('history_ctx') else None,
-        question=state.get('question'))
+        question=state.get('question'),
+        catalog=context.tool_snapshot.catalog() if context.tool_snapshot is not None else None)
     call = await invoke_json(
         context,
         state,
@@ -163,6 +174,9 @@ async def classify_intent(
     )
     return ClassificationResult(
         intent=category,
+        matched_tool=(parsed.matched_tool if parsed and parsed.confidence >= calibration.intent_min_confidence
+                      and context.tool_snapshot is not None
+                      and parsed.matched_tool in {t.name for t in context.tool_snapshot.tools()} else None),
         confidence=parsed.confidence if parsed else 0.0,
         usage=call.usage,
         calls=call.calls,

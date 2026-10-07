@@ -38,7 +38,7 @@ def migrate_ch08(engine: Engine) -> dict:
             raise RuntimeError(f'Incompatible audit comment {col.name}')
     indexes = {i['name']: i for i in inspector.get_indexes(table.name)}
     expected = {i.name: [c.name for c in i.columns] for i in table.indexes
-                if engine.dialect.name == 'mysql' or i.name != 'idx_conversation_id'}
+                if engine.dialect.name == 'mysql' or i.name not in {'idx_conversation_id', 'idx_status'}}
     if set(indexes) != set(expected) or any(indexes[n]['column_names'] != cols or indexes[n]['unique'] for n, cols in expected.items()):
         raise RuntimeError('Incompatible audit indexes')
     if engine.dialect.name == 'mysql':

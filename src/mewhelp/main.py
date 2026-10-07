@@ -2,6 +2,7 @@
 
 from contextlib import asynccontextmanager
 from pathlib import Path
+import os
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
@@ -26,13 +27,20 @@ async def lifespan(app: FastAPI):
     from mewhelp.ch07.observability import configure_context_logging
     from mewhelp.db.engine import SessionLocal
     configure_context_logging(Path('log/app.log'))
-
-    async with open_runtime(SessionLocal, settings=Ch05Settings()) as runtime:
+    from mewhelp.ch08.config import ToolSystemSettings
+    from mewhelp.ch08.runtime import create_tool_runtime
+    tools = create_tool_runtime(SessionLocal, settings=ToolSystemSettings(
+        Path(os.environ.get('CH08_TOOL_CONFIG', 'config/ch08-tools.json')),
+        Path(os.environ.get('CH08_PLUGIN_DIR', 'tool_plugins'))))
+    async with open_runtime(SessionLocal, settings=Ch05Settings(), tool_runtime=tools) as runtime:
         app.state.ch05_runtime = runtime
+        app.state.tool_runtime = tools
         try:
             yield
         finally:
             del app.state.ch05_runtime
+            del app.state.tool_runtime
+            await tools.aclose()
 
 
 app = FastAPI(title="MewHelp", version="0.1.0", lifespan=lifespan)

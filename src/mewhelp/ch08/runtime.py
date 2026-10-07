@@ -74,3 +74,22 @@ class Ch08ToolRuntime:
     async def aclose(self) -> None:
         # Adapters creates/closes sessions per discovery/call; no persistent client session.
         self.provider = None
+
+
+def create_tool_runtime(session_factory, *, settings: ToolSystemSettings | None = None):
+    """启动登记内置工具，handler 每次调用再绑定可信上下文。"""
+    from mewhelp.tools.audit import ToolAuditWriter
+    from mewhelp.tools.business import build_business_tools
+    from mewhelp.tools.contracts import ToolSpec
+    from mewhelp.tools.engine import ToolExecutionEngine
+    from mewhelp.tools.knowledge import build_knowledge_tools
+    from mewhelp.tools.ticket import build_ticket_spec
+    engine = ToolExecutionEngine(ToolAuditWriter(session_factory))
+    registry = ToolRegistry(engine=engine)
+    for tool in build_business_tools():
+        registry.register(ToolSpec(tool))
+    template = build_knowledge_tools(session_factory)[0]
+    registry.register(ToolSpec(template, retryable=False, timeout_seconds=120,
+        preserve_raw=True, tool_factory=lambda context: build_knowledge_tools(session_factory)[0]))
+    registry.register(build_ticket_spec(session_factory))
+    return Ch08ToolRuntime(registry, engine, settings or ToolSystemSettings(), session_factory)

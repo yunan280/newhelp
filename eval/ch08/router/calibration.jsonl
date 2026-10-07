@@ -1,0 +1,16 @@
+{"id":"ch08-cal-01","split":"calibration","question":"订单1002的快递到哪里了","history":[],"expected":{"intent":"物流","matched_tool":"query_logistics"}}
+{"id":"ch08-cal-02","split":"calibration","question":"帮我看订单1002是否还在保修期","history":[],"expected":{"intent":"售后","matched_tool":"query_warranty"}}
+{"id":"ch08-cal-03","split":"calibration","question":"R2002退货单现在是什么处理状态","history":[],"expected":{"intent":"退款退货","matched_tool":"query_return_progress"}}
+{"id":"ch08-cal-04","split":"calibration","question":"退货运费通常谁承担","history":[],"expected":{"intent":"退款退货","matched_tool":null}}
+{"id":"ch08-cal-05","split":"calibration","question":"保修政策覆盖哪些故障","history":[],"expected":{"intent":"售后","matched_tool":null}}
+{"id":"ch08-cal-06","split":"calibration","question":"我买的耳机有问题，想换一个","history":[],"expected":{"intent":"售后","matched_tool":null}}
+{"id":"ch08-cal-07","split":"calibration","question":"我要举报你们客服辱骂客户","history":[],"expected":{"intent":"投诉","matched_tool":null}}
+{"id":"ch08-cal-08","split":"calibration","question":"保温杯什么价格","history":[],"expected":{"intent":"商品咨询","matched_tool":"query_product"}}
+{"id":"ch08-cal-09","split":"calibration","question":"查1003订单详情","history":[],"expected":{"intent":"订单","matched_tool":"query_order"}}
+{"id":"ch08-cal-10","split":"calibration","question":"谢谢你","history":[],"expected":{"intent":"闲聊","matched_tool":null}}
+{"id":"ch08-cal-11","split":"calibration","question":"帮我设计一个火箭","history":[],"expected":{"intent":"其他","matched_tool":null}}
+{"id":"ch08-cal-12","split":"calibration","question":"紫色公式走进猫耳朵","history":[],"expected":{"intent":"其他","matched_tool":null}}
+{"id":"ch08-cal-13","split":"calibration","question":"请给我建个投诉工单，客服态度很差","history":[],"expected":{"intent":"投诉","matched_tool":"create_ticket"}}
+{"id":"ch08-cal-14","split":"calibration","question":"我要建售后工单，杯子漏水了","history":[],"expected":{"intent":"售后","matched_tool":"create_ticket"}}
+{"id":"ch08-cal-15","split":"calibration","question":"刚才想退货，现在不退了，查包裹位置","history":[],"expected":{"intent":"物流","matched_tool":"query_logistics"}}
+{"id":"ch08-cal-16","split":"calibration","question":"你们能修理电脑吗","history":[],"expected":{"intent":"售后","matched_tool":null}}

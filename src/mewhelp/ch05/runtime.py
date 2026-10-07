@@ -37,6 +37,7 @@ async def open_runtime(
     router_model_factory=None,
     context_settings=None,
     context_profile=None,
+    tool_runtime=None,
 ):
     @lru_cache(maxsize=1)
     def default_rag_factory():
@@ -78,6 +79,7 @@ async def open_runtime(
             router_settings=router_settings,
             router_model_factory=router_model_factory,
             settings=context_settings, profile=profile, summary_manager=manager,
+            tool_runtime=tool_runtime,
         )
         try:
             yield WorkflowRuntime(build_workflow(saver), context, SessionStore())

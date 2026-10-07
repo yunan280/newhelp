@@ -1,0 +1,6 @@
+{"id":"ch08-tool-01","split":"acceptance","question":"先查订单1001，再查物流，比较状态","history":[],"expected":{"calls":["query_order","query_logistics"],"ordered":true}}
+{"id":"ch08-tool-02","split":"acceptance","question":"查一下物流","history":[],"expected":{"clarify":true,"calls":[]}}
+{"id":"ch08-tool-03","split":"acceptance","question":"帮我建个工单","history":[],"expected":{"clarify":true,"preview":false,"tickets_delta":0}}
+{"id":"ch08-tool-04","split":"acceptance","question":"键盘坏了，帮我建售后工单","history":[],"expected":{"preview":true,"tickets_delta_before_confirm":0}}
+{"id":"ch08-tool-05","split":"acceptance","question":"键盘坏了，太生气了","history":[],"expected":{"preview":false,"tickets_delta":0}}
+{"id":"ch08-tool-06","split":"acceptance","question":"工具失败了还说查询成功是不对的","history":[],"expected":{"failure_honest":true}}

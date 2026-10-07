@@ -243,7 +243,7 @@ class ToolAuditLog(Base):
     __tablename__ = 'tool_audit_logs'
     __table_args__ = (
         Index('idx_conversation_id', 'conversation_id').ddl_if(dialect='mysql'),
-        Index('idx_tool_name', 'tool_name'), Index('idx_status', 'status'),
+        Index('idx_tool_name', 'tool_name'), Index('idx_status', 'status').ddl_if(dialect='mysql'),
         {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8mb4', 'comment': '工具调用审计留痕'},
     )
     id: Mapped[int] = mapped_column(BIGINT_PK, primary_key=True, autoincrement=True, comment='审计主键')

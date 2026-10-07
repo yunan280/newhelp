@@ -27,6 +27,7 @@ class StrictDTO(BaseModel):
 class IntentOutput(StrictDTO):
     intent: Intent
     confidence: Confidence
+    matched_tool: str | None = Field(default=None, max_length=128)
 
 
 class UnderstandingOutput(StrictDTO):

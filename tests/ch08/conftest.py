@@ -4,6 +4,10 @@ from sqlalchemy.orm import sessionmaker
 
 from mewhelp.db.base import Base
 from mewhelp.db import models  # noqa: F401 — populate metadata before fixtures create tables
+from tests.ch05.conftest import (  # noqa: F401 — real SQLite/graph, scripted external model only
+    checkpoint_settings, model_factory, router_settings, session_factory,
+    strong_evidence, workflow_runtime,
+)
 
 
 @pytest.fixture

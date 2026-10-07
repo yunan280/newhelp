@@ -1,0 +1,12 @@
+{"id":"ch08-intent-01","split":"acceptance","question":"订单1001的物流轨迹到了哪里？","history":[],"expected":{"intent":"物流","matched_tool":"query_logistics"}}
+{"id":"ch08-intent-02","split":"acceptance","question":"查询订单1001机械键盘是否在保","history":[],"expected":{"intent":"售后","matched_tool":"query_warranty"}}
+{"id":"ch08-intent-03","split":"acceptance","question":"退货单R1001入库了吗，退款到哪一步了？","history":[],"expected":{"intent":"退款退货","matched_tool":"query_return_progress"}}
+{"id":"ch08-intent-04","split":"acceptance","question":"七天无理由退货怎么算起始日期？","history":[],"expected":{"intent":"退款退货","matched_tool":null}}
+{"id":"ch08-intent-05","split":"acceptance","question":"我想退订单1001的键盘，可以吗？","history":[],"expected":{"intent":"退款退货","matched_tool":null}}
+{"id":"ch08-intent-06","split":"acceptance","question":"客服态度太差，我要投诉","history":[],"expected":{"intent":"投诉","matched_tool":null}}
+{"id":"ch08-intent-07","split":"acceptance","question":"键盘坏了，帮我建售后工单","history":[],"expected":{"intent":"售后","matched_tool":"create_ticket"}}
+{"id":"ch08-intent-08","split":"acceptance","question":"你好","history":[],"expected":{"intent":"闲聊","matched_tool":null}}
+{"id":"ch08-intent-09","split":"acceptance","question":"太阳明天会炸吗","history":[],"expected":{"intent":"其他","matched_tool":null}}
+{"id":"ch08-intent-10","split":"acceptance","question":"鼠标的价格和库存是什么","history":[],"expected":{"intent":"商品咨询","matched_tool":"query_product"}}
+{"id":"ch08-intent-11","split":"acceptance","question":"查订单1001的金额和下单日期","history":[],"expected":{"intent":"订单","matched_tool":"query_order"}}
+{"id":"ch08-intent-12","split":"acceptance","question":"维修一般需要多久","history":[],"expected":{"intent":"售后","matched_tool":null}}

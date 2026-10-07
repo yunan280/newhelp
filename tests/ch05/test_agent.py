@@ -76,11 +76,21 @@ class FinalModel:
 
 
 def context(model, limits=None):
+    from langchain_core.tools import tool
+    from mewhelp.ch08.mcp_servers.mock_data import logistics_data
+    from mewhelp.tools.registry import ToolSpec
+    @tool
+    def query_logistics(order_id: str) -> dict:
+        """离线物流 Server 处理器，模拟外部传输后的结构化响应。"""
+        return logistics_data(order_id)
+    registry = module().build_read_registry()
+    registry.register(ToolSpec(query_logistics, source='mcp', mcp_server='logistics', permission='readonly'))
     return WorkflowContext(
         lambda: None,
         lambda *a, **kw: FinalModel() if kw.get("streaming") else model,
         lambda: None,
         limits or AgentLimits(),
+        tool_snapshot=registry.snapshot(),
     )
 
 
@@ -98,7 +108,7 @@ async def drive(state, ctx, events):
 
 def test_agent_cannot_execute_ticket_writes():
     registry = module().build_read_registry()
-    assert set(registry.names()) == {"query_order", "query_product", "query_logistics"}
+    assert set(registry.names()) == {"query_order", "query_product"}
     assert registry.get("create_ticket") is None
 
 
@@ -113,6 +123,7 @@ async def test_dependent_rounds_then_stream_without_private_decisions():
         ("query_logistics", 2),
     ]
     assert isinstance(model.requests[1][-1], ToolMessage)
+    assert all(t['ok'] for t in state['tool_trace'])
     assert model.requests[1][-1].tool_call_id == "order-1"
     assert "订单 1001" in model.requests[1][-1].content
     tokens = [e["data"]["text"] for e in events if e["event"] == "token"]

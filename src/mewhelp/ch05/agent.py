@@ -19,6 +19,7 @@ from mewhelp.ch07.types import HistoryContext
 from mewhelp.config import get_settings
 from mewhelp.tools.business import build_business_tools
 from mewhelp.tools.registry import ToolRegistry, ToolSpec
+from mewhelp.tools.contracts import ToolCallContext
 
 from .limits import (
     BOUNDED_REPLY,
@@ -37,6 +38,21 @@ def build_read_registry() -> ToolRegistry:
     return ToolRegistry({t.name: ToolSpec(t, preserve_raw=True) for t in build_business_tools()})
 
 
+def registry_for_context(context) -> ToolRegistry:
+    if context.tool_snapshot is None:
+        return build_read_registry()
+    return ToolRegistry(context.tool_snapshot.specs,
+                        engine=context.tool_runtime.engine if context.tool_runtime else None)
+
+
+def tool_call_context(state, context, *, tool_call_id=None):
+    return ToolCallContext(conversation_id=state.get('conversation_id'),
+        session_id=state.get('session_id'), user_id=state.get('user_id'),
+        turn_id=state.get('turn_id'), tool_call_id=tool_call_id,
+        intent_evidence=state.get('ticket_request'),
+        deadline_monotonic=time.monotonic() + max(0, remaining(state, context)))
+
+
 def prompt_messages(state: dict, *, phase='decide', correction=None) -> list:
     evidence = state.get("evidence")
     sources = evidence["sources"] if evidence else []
@@ -47,7 +63,9 @@ def prompt_messages(state: dict, *, phase='decide', correction=None) -> list:
         history = HistoryContext(state.get('conversation_id', 0), 0, 0, '', (), (),
             tuple(state.get('messages', [])), (), {}, compute_budget(ContextSettings(), profile))
     background = {'phase': phase, 'resolved_question': state.get('resolved_question') or state['question'],
-                  'evidence': sources}
+                  'evidence': sources, 'ticket_request': state.get('ticket_request', {}),
+                  'ticket_status': state.get('ticket_status'),
+                  'ticket_receipts': state.get('ticket_confirmation_receipts', {})}
     if phase == 'answer':
         background['decision'] = state.get('decision')
         if state.get('route') == 'aftersales':
@@ -106,7 +124,7 @@ async def decide_agent(state, context) -> dict:
         return stopped("deadline")
     if state["decision_count"] >= limits.max_decisions:
         return stopped("decision_limit")
-    registry = build_read_registry()
+    registry = registry_for_context(context)
     messages = prompt_messages(state)
     usage = TokenUsage.model_validate(state["usage"])
     schemas = [convert_to_openai_tool(tool) for tool in registry.tools()]
@@ -231,7 +249,7 @@ async def execute_agent_tools(state, context, emit) -> dict:
             }
         )
     results = await asyncio.wait_for(
-        build_read_registry().run_all(calls), remaining(state, context)
+        registry_for_context(context).run_all(calls, context=tool_call_context(state, context)), remaining(state, context)
     )
     messages, trace = list(state["agent_messages"]), list(state["tool_trace"])
     raw_messages = []

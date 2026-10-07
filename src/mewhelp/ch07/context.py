@@ -51,8 +51,11 @@ def _advance(context, snapshot, history):
 async def prepare_history(context, state: dict) -> HistoryContext:
     snapshot = await asyncio.to_thread(_snapshot, context, state)
     turns = group_committed_turns(state.get('messages', []), snapshot, current_turn_id=state['turn_id'])
+    from langchain_core.utils.function_calling import convert_to_openai_tool
+    schemas = ([convert_to_openai_tool(t) for t in context.tool_snapshot.tools()]
+               if context.tool_snapshot is not None else None)
     budget = compute_budget(context.settings, context.profile,
-                            actual_fixed={'prefix': measured_prefix(context.profile)})
+                            actual_fixed={'prefix': measured_prefix(context.profile, schemas)})
     history = project_history(turns, snapshot, budget, profile=context.profile)
     if history.layer1_from_msg_id > snapshot.layer1_from_msg_id:
         advanced = await asyncio.to_thread(_advance, context, snapshot, history)
@@ -74,6 +77,8 @@ async def prepare_history(context, state: dict) -> HistoryContext:
 
 
 async def prepare_request_context(context, state: dict):
+    if context.tool_runtime is not None:
+        context = replace(context, tool_snapshot=await context.tool_runtime.refresh())
     history = await prepare_history(context, state)
     payload = history_payload(history)
     epoch = uuid4().hex

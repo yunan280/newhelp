@@ -8,14 +8,14 @@ class ContextBudgetError(ValueError):
     pass
 
 
-def measured_prefix(profile: BudgetProfile) -> int:
+def measured_prefix(profile: BudgetProfile, tools=None) -> int:
     from langchain_core.messages import SystemMessage
     from langchain_core.utils.function_calling import convert_to_openai_tool
 
     from mewhelp.ch05.agent import build_read_registry
     from mewhelp.ch05.prompts import MAIN_SYSTEM
-    return estimate_request([SystemMessage(MAIN_SYSTEM)],
-        [convert_to_openai_tool(t) for t in build_read_registry().tools()], profile=profile)
+    schemas = tools if tools is not None else [convert_to_openai_tool(t) for t in build_read_registry().tools()]
+    return estimate_request([SystemMessage(MAIN_SYSTEM)], schemas, profile=profile)
 
 
 @dataclass(frozen=True)
