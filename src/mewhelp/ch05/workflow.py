@@ -91,6 +91,7 @@ async def begin_turn(state, context, emit):
         'ticket_request': ticket_request_patch(state['question'], state['turn_id'] + '-user', state.get('ticket_request')),
         'tool_queue': [], 'tool_cursor': 0, 'tool_results': [],
         'ticket_preview': None, 'ticket_status': None,
+        'ticket_prepared': None, 'ticket_resume': None, 'ticket_receipt': None,
     }
     if estimate_text(state['question'], profile=context.profile) > context.settings.max_user_input_tokens:
         update.update({'intent': '其他', 'route': 'other', 'stop_reason': 'input_limit',
@@ -292,11 +293,32 @@ async def bounded_node(state, context, emit):
 
 
 async def decide_node(state, context, emit):
-    return await decide_agent(state, context)
+    try:
+        return await decide_agent(state, context)
+    except Exception:
+        if not state.get('ticket_receipt'):
+            raise
+        return {'stop_reason': 'ticket_created', 'pending_tool_calls': [],
+                'answer': f"工单已提交，工单号 {state['ticket_receipt']['ticket_no']}。"}
 
 
 async def answer_node(state, context, emit):
-    result = await stream_answer(state, context, emit)
+    try:
+        result = await stream_answer(state, context, emit)
+    except Exception:
+        if not state.get('ticket_receipt'):
+            raise
+        return await fixed_reply(state, context, emit,
+            answer=f"工单已提交，工单号 {state['ticket_receipt']['ticket_no']}。", stop_reason='ticket_created')
+    receipt = state.get('ticket_receipt')
+    if receipt and receipt['ticket_no'] not in result['answer']:
+        notice = f"\n工单已提交，工单号 {receipt['ticket_no']}。"
+        emit(event('token', text=notice))
+        result['answer'] += notice
+    if state.get('ticket_status') == 'cancelled' and '取消' not in result['answer']:
+        notice = '\n本次工单已取消，未提交。'
+        emit(event('token', text=notice))
+        result['answer'] += notice
     if "calls" not in result:
         # Final preflight may stop after tool usage grew; deliver the fixed reply.
         emit(event("token", text=result["answer"]))
@@ -391,6 +413,7 @@ async def log_node(state, context, emit):
 
 
 def build_workflow(checkpointer):
+    from mewhelp.ch08.confirmation import prepare_ticket_node, await_ticket_node, execute_confirmed_ticket_node
     graph = StateGraph(WorkflowState, context_schema=WorkflowContext)
     operations = {
         "begin_turn": begin_turn,
@@ -411,7 +434,9 @@ def build_workflow(checkpointer):
         "retrieve_policy": policy_node,
         "assess_order": assessment_node,
         "agent_decide": decide_node,
-        "execute_tools": execute_agent_tools,
+        "execute_tools": prepare_ticket_node,
+        'await_ticket': await_ticket_node,
+        'execute_confirmed_ticket': execute_confirmed_ticket_node,
         "stream_answer": answer_node,
         "bounded_reply": bounded_node,
         "log_turn": log_node,
@@ -474,7 +499,17 @@ def build_workflow(checkpointer):
             "bounded_reply": "bounded_reply",
         },
     )
-    graph.add_edge("execute_tools", "agent_decide")
+    def after_tool(state):
+        if state.get('ticket_status') == 'pending':
+            return 'await_ticket'
+        if state.get('stop_reason'):
+            return 'bounded_reply'
+        return 'execute_tools' if state.get('pending_tool_calls') else 'agent_decide'
+    graph.add_conditional_edges('execute_tools', after_tool,
+        {n: n for n in ('await_ticket', 'bounded_reply', 'execute_tools', 'agent_decide')})
+    graph.add_edge('await_ticket', 'execute_confirmed_ticket')
+    graph.add_conditional_edges('execute_confirmed_ticket', after_tool,
+        {n: n for n in ('await_ticket', 'bounded_reply', 'execute_tools', 'agent_decide')})
     for name in [
         "stream_answer",
         "bounded_reply",

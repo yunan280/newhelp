@@ -33,7 +33,7 @@ class ToolRegistry:
             raise ValueError('工具来源或本地权限不合法')
         if spec.source == 'mcp' and not spec.mcp_server:
             raise ValueError('MCP 工具必须声明来源 Server')
-        if spec.tool.name == 'create_ticket' and (spec.source != 'builtin' or spec.permission != 'write'):
+        if spec.tool.name == 'create_ticket' and (spec.source != 'builtin' or spec.permission not in ('write', 'deny')):
             raise ValueError('create_ticket 是受保护的内置写工具')
         schema = normalize_schema(spec.tool, spec.input_schema, forbid_extra=True)
         if spec.timeout_seconds <= 0:
@@ -73,6 +73,14 @@ class ToolRegistry:
                     for n, s in sorted(specs.items())]
         digest = hashlib.sha256(json.dumps(identity, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
         return ToolSnapshot(MappingProxyType(specs), digest)
+
+    def set_builtin_ticket_permission(self, permission: str):
+        if permission not in ('write', 'deny'):
+            raise ValueError('建单本地权限只能 write/deny')
+        with self._lock:
+            spec = self._specs.get('create_ticket')
+            if spec and self._owners.get('create_ticket') == 'builtin':
+                self._specs['create_ticket'] = replace(spec, permission=permission)
 
     def names(self) -> list[str]:
         return list(self.snapshot().specs)

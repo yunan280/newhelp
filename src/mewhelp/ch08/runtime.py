@@ -30,12 +30,14 @@ class Ch08ToolRuntime:
             try:
                 config = read_tool_config(self.settings.config_path)
             except ValueError as exc:
+                self.registry.set_builtin_ticket_permission('deny')
                 report['config_error'] = str(exc)
                 for server, specs in self._known.items():
                     self.registry.replace_source(f'mcp:{server}', [replace(s, permission='deny') for s in specs])
                 self.last_refresh = report
                 return self.registry.snapshot()
             connections = config['servers']
+            self.registry.set_builtin_ticket_permission(config.get('builtin_permissions', {}).get('create_ticket', 'write'))
             if connections != self._connections:
                 self.provider = MCPToolProvider(MultiServerMCPClient(connections, handle_tool_errors=False), discovery_timeout_seconds=config.get('discovery_timeout_seconds', 3.0))
                 self._connections = connections
@@ -74,6 +76,8 @@ class Ch08ToolRuntime:
     async def aclose(self) -> None:
         # Adapters creates/closes sessions per discovery/call; no persistent client session.
         self.provider = None
+        if self.engine.audit is not None:
+            self.engine.audit.close()
 
 
 def create_tool_runtime(session_factory, *, settings: ToolSystemSettings | None = None):

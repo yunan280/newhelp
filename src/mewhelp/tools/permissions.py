@@ -23,6 +23,8 @@ def permission_error(spec: ToolSpec, args: dict, context: ToolCallContext) -> st
         return '本系统仅授权 create_ticket 写操作。'
     auth = context.authorization
     if auth is None:
+        if (context.intent_evidence or {}).get('request_completed'):
+            return '本轮建单请求已处理；再次建单需要用户提出新的请求。'
         return '建工单尚未收到用户的前端确认。'
     if (auth.method not in ('preview', 'legacy_button') or not auth.confirmation_id
         or auth.tool_name != spec.tool.name or auth.args_hash != arguments_hash(args)

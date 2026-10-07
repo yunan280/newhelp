@@ -44,6 +44,7 @@ def result_from_state(state: dict) -> TurnResult:
 
 async def stream_turn(runtime, request, *, entry_point):
     from mewhelp.ch06.selection import active_selection, cancel_pending_locked
+    from mewhelp.ch08.confirmation import active_ticket_preview, cancel_ticket_locked
     session_id = request.session_id or uuid4().hex
     config = {"configurable": {"thread_id": session_id}, "recursion_limit": 40}
     async with runtime.locks.lock(session_id):
@@ -52,6 +53,7 @@ async def stream_turn(runtime, request, *, entry_point):
             _identity, runtime.context, request, session_id, bootstrap=not previous.values
         )
         await cancel_pending_locked(runtime, config)
+        await cancel_ticket_locked(runtime, config, '用户发送了新消息，本次工单预览已取消。')
         previous = await runtime.graph.aget_state(config)
         resumed = bool(previous.values.get("messages") or history)
         incoming = {
@@ -85,6 +87,11 @@ async def stream_turn(runtime, request, *, entry_point):
             snapshot = await runtime.graph.aget_state(config)
             result = result_from_state(snapshot.values)
             selection = active_selection(snapshot)
+            preview = active_ticket_preview(snapshot)
+            if preview:
+                yield event('ticket_preview', **preview)
+                yield event('waiting_for_ticket', **result.model_dump(mode='json'))
+                return
             if selection:
                 yield event("order_selection", **selection)
                 yield event("waiting_for_order", **result.model_dump(mode="json"))
@@ -102,7 +109,7 @@ async def stream_turn(runtime, request, *, entry_point):
 async def run_turn(runtime, request) -> TurnResult:
     async with aclosing(stream_turn(runtime, request, entry_point="agent")) as stream:
         async for item in stream:
-            if item["event"] in {"done", "waiting_for_order"}:
+            if item["event"] in {"done", "waiting_for_order", "waiting_for_ticket"}:
                 fields = dict(item["data"])
                 fields.pop("finish_reason", None)
                 return TurnResult.model_validate(fields)

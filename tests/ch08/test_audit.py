@@ -79,3 +79,37 @@ async def test_bad_json_or_oversized_error_is_safely_recorded(audit_factory):
     await ToolAuditWriter(audit_factory).record(result(args={'value': object()}), ToolCallContext())
     with audit_factory() as db:
         assert isinstance(db.scalar(select(ToolAuditLog)).arguments['value'], str)
+
+
+@pytest.mark.asyncio
+async def test_stalled_audits_do_not_exhaust_business_tool_threads():
+    from langchain_core.tools import tool
+    from mewhelp.tools.audit import ToolAuditWriter
+    from mewhelp.tools.engine import ToolExecutionEngine
+    from mewhelp.tools.registry import ToolRegistry, ToolSpec
+    def stalled():
+        time.sleep(.3)
+        raise RuntimeError('audit db stalled')
+    writer = ToolAuditWriter(stalled, timeout_seconds=.005)
+    await asyncio.gather(*(writer.record(result(tool_call_id=None), ToolCallContext()) for _ in range(70)))
+    @tool
+    def business_query() -> str:
+        """普通同步业务查询。"""
+        return '业务查询成功'
+    engine = ToolExecutionEngine(writer)
+    snapshot = ToolRegistry({'business_query': ToolSpec(business_query, retryable=False, timeout_seconds=.08)}).snapshot()
+    observed = await engine.execute(snapshot, 'business_query', {}, ToolCallContext())
+    assert observed.ok
+    await asyncio.sleep(.7)
+
+
+@pytest.mark.asyncio
+async def test_healthy_concurrent_calls_each_have_an_audit(audit_factory):
+    from mewhelp.db.models import ToolAuditLog
+    from mewhelp.tools.audit import ToolAuditWriter
+    writer = ToolAuditWriter(audit_factory)
+    await asyncio.gather(*(writer.record(result(tool_call_id=f'parallel-{i}'),
+                          ToolCallContext()) for i in range(20)))
+    with audit_factory() as db:
+        assert len(db.scalars(select(ToolAuditLog)).all()) == 20
+    writer.close()

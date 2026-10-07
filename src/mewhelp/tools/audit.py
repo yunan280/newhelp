@@ -2,6 +2,8 @@
 import asyncio
 import json
 import logging
+from concurrent.futures import ThreadPoolExecutor
+from threading import Lock
 
 from sqlalchemy import select
 
@@ -16,6 +18,8 @@ class ToolAuditWriter:
     def __init__(self, session_factory, *, timeout_seconds: float = 1.0):
         self.session_factory = session_factory
         self.timeout_seconds = timeout_seconds
+        self._executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='tool-audit')
+        self._busy = Lock()
 
     def existing_call(self, conversation_id: int | None, tool_call_id: str | None) -> bool:
         if not tool_call_id:
@@ -39,8 +43,34 @@ class ToolAuditWriter:
             db.commit()
 
     async def record(self, result: ToolResult, context: ToolCallContext) -> None:
+        # Timeout cannot stop a running database thread. Do not queue unbounded
+        # writes or consume the default executor used by business handlers.
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + self.timeout_seconds
+        while not self._busy.acquire(blocking=False):
+            if loop.time() >= deadline:
+                logger.warning('工具审计线程等待超时；业务结果保持原样')
+                return
+            await asyncio.sleep(min(.001, max(0, deadline - loop.time())))
         try:
-            await asyncio.wait_for(asyncio.to_thread(self._record, result, context),
-                                   self.timeout_seconds)
+            future = loop.run_in_executor(
+                self._executor, self._guarded_record, result, context)
+        except Exception:
+            self._busy.release()
+            logger.warning('工具审计提交失败；业务结果保持原样', exc_info=True)
+            return
+        try:
+            await asyncio.wait_for(asyncio.shield(future), max(0, deadline - loop.time()))
         except Exception:
             logger.warning('工具审计写入失败；业务结果保持原样', exc_info=True)
+
+    def _guarded_record(self, result, context):
+        try:
+            self._record(result, context)
+        except Exception:
+            logger.warning('工具审计数据库写入失败；业务结果保持原样', exc_info=True)
+        finally:
+            self._busy.release()
+
+    def close(self):
+        self._executor.shutdown(wait=False)

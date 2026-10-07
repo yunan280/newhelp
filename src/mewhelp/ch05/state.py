@@ -78,6 +78,9 @@ class WorkflowState(TypedDict, total=False):
     ticket_preview: dict | None
     ticket_status: str | None
     ticket_confirmation_receipts: dict[str, dict]
+    ticket_prepared: dict | None
+    ticket_resume: dict | None
+    ticket_receipt: dict | None
 
 
 @dataclass

@@ -20,6 +20,9 @@ def read_tool_config(path: Path) -> dict:
     if not isinstance(config, dict) or not isinstance(config.get('servers'), dict) or not isinstance(config.get('permissions'), dict):
         raise ValueError('工具配置必须含 servers/permissions 对象')
     connections = {}
+    builtin = config.get('builtin_permissions', {})
+    if not isinstance(builtin, dict) or any(k != 'create_ticket' or v not in ('write', 'deny') for k, v in builtin.items()):
+        raise ValueError('内置写工具本地权限不合法')
     for name, connection in config['servers'].items():
         if not re.fullmatch(r'[A-Za-z0-9_.-]{1,64}', name) or not isinstance(connection, dict):
             raise ValueError('Server 名称或连接不合法')

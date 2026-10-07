@@ -182,7 +182,9 @@ class TurnResult(StrictDTO):
     calls: dict[str, int]
     stop_reason: str
     ledger_error: str | None = None
-    status: Literal["completed", "waiting_for_order"] = "completed"
+    status: Literal["completed", "waiting_for_order", "waiting_for_ticket"] = "completed"
+    ticket_preview: dict | None = None
+    ticket_receipt: dict | None = None
     resolved_question: str = ""
     intent_confidence: Confidence | None = None
     order_selection: OrderSelection | None = None

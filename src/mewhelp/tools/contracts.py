@@ -55,6 +55,8 @@ class PreparedToolCall:
     schema_hash: str
     requires_confirmation: bool
     result: ToolResult | None = None
+    source: Literal['builtin', 'mcp'] = 'builtin'
+    mcp_server: str | None = None
 
 
 @dataclass(frozen=True)

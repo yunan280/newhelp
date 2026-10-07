@@ -46,10 +46,13 @@ def registry_for_context(context) -> ToolRegistry:
 
 
 def tool_call_context(state, context, *, tool_call_id=None):
+    evidence = dict(state.get('ticket_request') or {})
+    if state.get('ticket_status') in ('submitted', 'unknown', 'cancelled', 'denied', 'failed'):
+        evidence['request_completed'] = True
     return ToolCallContext(conversation_id=state.get('conversation_id'),
         session_id=state.get('session_id'), user_id=state.get('user_id'),
         turn_id=state.get('turn_id'), tool_call_id=tool_call_id,
-        intent_evidence=state.get('ticket_request'),
+        intent_evidence=evidence,
         deadline_monotonic=time.monotonic() + max(0, remaining(state, context)))
 
 
@@ -65,7 +68,7 @@ def prompt_messages(state: dict, *, phase='decide', correction=None) -> list:
     background = {'phase': phase, 'resolved_question': state.get('resolved_question') or state['question'],
                   'evidence': sources, 'ticket_request': state.get('ticket_request', {}),
                   'ticket_status': state.get('ticket_status'),
-                  'ticket_receipts': state.get('ticket_confirmation_receipts', {})}
+                  'ticket_receipt': state.get('ticket_receipt')}
     if phase == 'answer':
         background['decision'] = state.get('decision')
         if state.get('route') == 'aftersales':
@@ -171,6 +174,7 @@ async def decide_agent(state, context) -> dict:
         raw = response.model_copy(update={'id': state['turn_id'] + f'-call-{count}'})
         raw = tag_message(raw, turn_id=state['turn_id'])
         return {**update, "agent_messages": [*state.get('agent_messages', []), response], "pending_tool_calls": tool_calls,
+                'tool_queue': tool_calls, 'tool_cursor': 0, 'tool_results': [],
                 'messages': [raw]}
     try:
         decision = AgentDecision.model_validate_json(response.content)

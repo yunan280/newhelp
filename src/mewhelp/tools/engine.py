@@ -44,7 +44,9 @@ class ToolExecutionEngine:
         spec = snapshot.get(name)
         schema_hash = arguments_hash(spec.input_schema) if spec else ''
         prepared = PreparedToolCall(name, args.copy(), context.tool_call_id,
-                                    arguments_hash(args), schema_hash, False)
+                                    arguments_hash(args), schema_hash, False,
+                                    source=spec.source if spec else 'builtin',
+                                    mcp_server=spec.mcp_server if spec else None)
         error, content, status = None, '', ''
         if spec is None:
             error, status = 'unknown_tool', '失败'
@@ -64,7 +66,7 @@ class ToolExecutionEngine:
                         result = await self._finish(self._result(snapshot, name, args, context,
                             content='; '.join(draft_errors), error='invalid_args', status='校验拦下'), context)
                         return replace(prepared, result=result)
-                if reason and spec.tool.name == 'create_ticket' and spec.permission == 'write' and spec.available and context.authorization is None and evidence.get('explicit_request') is True:
+                if reason and spec.tool.name == 'create_ticket' and spec.permission == 'write' and spec.available and context.authorization is None and evidence.get('explicit_request') is True and not evidence.get('request_completed'):
                     return replace(prepared, requires_confirmation=True)
                 if reason:
                     error, content, status = 'permission_denied', reason, '权限拒绝'
@@ -78,7 +80,8 @@ class ToolExecutionEngine:
         if prepared.result is not None:
             return prepared.result
         result = ToolResult(prepared.name, prepared.args, False, reason, 'permission_denied',
-                            0, 0, status='权限拒绝', tool_call_id=prepared.tool_call_id)
+                            0, 0, status='权限拒绝', tool_call_id=prepared.tool_call_id,
+                            source=prepared.source, mcp_server=prepared.mcp_server)
         return await self._finish(result, context)
 
     async def execute(self, snapshot: ToolSnapshot, name: str, args: dict,
