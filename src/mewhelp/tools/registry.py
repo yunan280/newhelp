@@ -84,16 +84,9 @@ class ToolRegistry:
         return self.snapshot().get(name)
 
     async def run(self, name: str, args: dict, *, context: ToolCallContext | None = None) -> ToolResult:
-        if self.engine is not None:
-            return await self.engine.execute(self.snapshot(), name, args, context or ToolCallContext())
-        from .infra import execute_tool
-        spec = self.get(name)
-        if spec is None:
-            return ToolResult(name, args, False,
-                              f"没有名为 {name} 的工具。可用的工具有:{', '.join(self.names())}。",
-                              'unknown_tool', 0, 0)
-        return await execute_tool(spec.tool, args, retryable=spec.retryable,
-                                  timeout=spec.timeout_seconds, preserve_raw=spec.preserve_raw)
+        from .engine import ToolExecutionEngine
+        engine = self.engine or ToolExecutionEngine()
+        return await engine.execute(self.snapshot(), name, args, context or ToolCallContext())
 
     async def run_all(self, calls: Sequence[Mapping], *, context: ToolCallContext | None = None) -> list[ToolResult]:
         return list(await asyncio.gather(*(self.run(c['name'], dict(c['args']),

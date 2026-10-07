@@ -102,21 +102,15 @@ async def test_invalid_args_are_never_retried():
     assert result.elapsed_ms < 100  # 没有真的试三次
 
 
-async def test_extra_argument_keys_are_silently_dropped():
-    """Review Focus #4:**钉住**这个行为 —— pydantic 默认 extra='ignore'。
-
-    实测 args_schema.model_validate 接受多出来的键并丢掉它。这是可接受的,
-    但它必须是被测试钉住的行为:将来有人加了 extra="forbid" 或换了校验方式,
-    没有这条的话**没有任何用例会响**,而模型多给键是很常见的。
-
-    断言的是"工具拿到了干净的 args",不是"报错了"。
-    """
+async def test_extra_argument_keys_are_rejected():
+    """额外参数不静默丢弃，严格校验后回灌错误。"""
     result = await execute_tool(
         echo, {"text": "hi", "unexpected": 1}, retryable=True, sleep=no_sleep
     )
-    assert result.ok is True
-    assert result.content == "echo:hi"
-    assert result.args == {"text": "hi"}  # 多出来的键没进工具
+    assert result.ok is False
+    assert result.status == '校验拦下'
+    assert result.attempts == 0
+    assert 'unexpected' in result.content
 
 
 # ---------- 重试 ----------

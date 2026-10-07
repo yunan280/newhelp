@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from mewhelp.db.base import Base
+from mewhelp.db import models  # noqa: F401 — populate metadata before fixtures create tables
 
 
 @pytest.fixture

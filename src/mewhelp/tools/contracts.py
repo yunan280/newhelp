@@ -84,7 +84,8 @@ class ToolSnapshot:
         return self.specs.get(name)
 
     def tools(self) -> list[BaseTool]:
-        return [s.tool for s in self.specs.values()
+        from copy import deepcopy
+        return [s.tool.model_copy(update={'args_schema': deepcopy(s.input_schema)}) for s in self.specs.values()
                 if s.model_visible and s.available and s.permission != 'deny']
 
     def catalog(self) -> list[dict]:

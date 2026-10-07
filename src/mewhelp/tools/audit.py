@@ -34,7 +34,7 @@ class ToolAuditWriter:
                 tool_call_id=result.tool_call_id, tool_name=result.name, tool_source=result.source,
                 mcp_server=result.mcp_server, arguments=args, result_summary=result.content[:4000],
                 status=result.status or ('成功' if result.ok else '失败'),
-                error_message=(result.error[:512] if result.error else None),
+                error_message=(f'{result.error}: {result.content}'[:512] if result.error else None),
                 retry_count=min(255, max(0, result.retry_count)), duration_ms=max(0, result.elapsed_ms)))
             db.commit()
 
