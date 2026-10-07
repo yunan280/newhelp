@@ -1,0 +1,20 @@
+{
+  "servers": {
+    "logistics": {"url": "http://127.0.0.1:9021/mcp", "transport": "streamable_http"},
+    "aftersales": {"url": "http://127.0.0.1:9022/mcp", "transport": "streamable_http"}
+  },
+  "permissions": {
+    "logistics": {
+      "query_logistics": {
+        "mode": "readonly", "result_fields": ["order_id", "status", "carrier", "waybill", "latest_location", "latest_at", "tracking", "description"],
+        "enum_labels": {"SIGNED": "已签收", "UNSHIPPED": "待发货", "SHIPPING": "运输中"}
+      }
+    },
+    "aftersales": {
+      "query_warranty": {"mode": "readonly", "result_fields": ["order_id", "product_name", "status", "expires_at"], "enum_labels": {"IN_WARRANTY": "在保", "OUT_OF_WARRANTY": "已过保"}},
+      "query_return_progress": {"mode": "readonly", "result_fields": ["return_id", "status", "updated_at", "description"], "enum_labels": {"APPLIED": "申请已收到", "RECEIVED": "退货已入库", "REFUNDED": "退款已完成"}}
+    }
+  },
+  "discovery_timeout_seconds": 3.0,
+  "execution_timeout_seconds": 3.0
+}

@@ -9,17 +9,24 @@ import re
 
 import pytest
 from langchain_core.utils.function_calling import convert_to_openai_tool
+from langchain_core.tools import tool
 
 from mewhelp.tools.business import build_business_tools
 
 
 @pytest.fixture
 def tools() -> dict:
-    return {t.name: t for t in build_business_tools()}
+    # 保留业务事实回归；物流处理器已移到独立 MCP，非内置回退路径。
+    from mewhelp.ch08.mcp_servers.mock_data import logistics_data
+    @tool
+    def query_logistics(order_id: str) -> str:
+        """物流 MCP mock 的事实投影，测试中离线核对时间线。"""
+        return logistics_data(order_id)['data']['description']
+    return {t.name: t for t in [*build_business_tools(), query_logistics]}
 
 
-def test_builds_the_three_business_tools(tools):
-    assert set(tools) == {"query_order", "query_product", "query_logistics"}
+def test_builds_only_the_two_builtin_business_tools(tools):
+    assert {t.name for t in build_business_tools()} == {"query_order", "query_product"}
 
 
 @pytest.mark.parametrize(
