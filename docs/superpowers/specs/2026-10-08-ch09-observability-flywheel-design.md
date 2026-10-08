@@ -1,6 +1,6 @@
 # Ch09 · 可观测性与数据飞轮设计
 
-日期：2026-10-08，时区 Asia/Shanghai。状态：用户已批准后端总体方案；本书面设计待用户审阅。尚未开始实施计划、产品代码、依赖安装或数据库迁移。
+日期：2026-10-08，时区 Asia/Shanghai。状态：用户已分别批准后端总体方案与本书面设计；实施计划已编写并待审。尚未开始产品代码、依赖安装或数据库迁移。
 
 ## 1. 目标与已确认约束
 
@@ -110,9 +110,9 @@ GET /api/ch09/token-costs 接收 from/to 时间窗口，按 [from,to) 查询，�
 
 chunks 默认保存实际精排 Top5的完整原文，不为快照再次查询当前知识库。每条有 rank、chunk_id（十进制字符串）、text、questions、answer、section_path、content_hash、relevance_score。分数直接来自本轮精排；旧引用能回捞原文而无评分时标 legacy_partial、score=null，不重跑检索伪造“当时”的分数。来源展示顺序和 prompt 重排不得改变真实 rank。
 
-messages.retrieval_snapshot 的 envelope 还保存 turn_id、原用户消息的幂等 event_key/持久ID、intent、retrieval_performed、retrieval events、当前池事件ID、trace_id及 feedback_lcq_id。业务/闲聊可存 envelope，但其中 retrieved_chunks=null、retrieval_performed=false；这样仍能关联原问题并记录一次反馈。
+messages.retrieval_snapshot 的 envelope 还保存 turn_id、原用户消息的幂等 event_key/持久ID、intent、retrieval_performed、retrieval events、当前池事件ID、trace_id、answer_status及 feedback_lcq_id。answer_status标识完成、等待或错误，防止历史预览卡被误当最终回答。业务/闲聊可存 envelope，但其中 retrieved_chunks=null、retrieval_performed=false；这样仍能关联原问题并记录一次反馈。
 
-不可变证据与身份随本轮消息事务提交；feedback_lcq_id 是后续可变标记。消息幂等比较只比较不可变部分，反馈后重放原回答不能误报内容冲突或覆盖反馈。普通 JSON 字段整对象赋值保存更新，不依赖未跟踪的原地修改。
+不可变证据与身份随本轮消息事务提交；feedback_lcq_id 是后续可变标记。消息幂等比较只比较不可变部分，反馈后重放原回答不能误报内容冲突或覆盖反馈。请求trace_id变化也不构成回答内容冲突：保留首次成功写入的消息溯源，新重放trace用origin/replayed关联。普通 JSON 字段整对象赋值保存更新，不依赖未跟踪的原地修改。
 
 ## 6. 正式置信检查
 
@@ -228,4 +228,4 @@ Prompt/数据冻结标注样例覆盖忠实标准化、否定/型号/数字区�
 - [SQLAlchemy事务](https://docs.sqlalchemy.org/en/20/orm/session_transaction.html)、[SELECT行锁](https://docs.sqlalchemy.org/en/20/core/selectable.html)、[JSON可变性](https://docs.sqlalchemy.org/en/20/orm/extensions/mutable.html)：不跨模型请求持有事务，显式保存JSON更新。
 - [PyMilvus官方API源](https://github.com/milvus-io/pymilvus)：AnnSearchRequest过滤互斥、原生BM25/索引和隔离集合；复用项目当前2.6实现。
 
-实施计划仍须对实际安装版本检查精确接口与依赖兼容，未核对的具体调用先查 Context7 再写。本文自查通过后交用户审阅；书面 spec批准后才进入 writing-plans，计划审批与执行方式选择后才开始实现。
+实施计划仍须对实际安装版本检查精确接口与依赖兼容，未核对的具体调用先查 Context7 再写。本文已自查并获用户确认；实施计划编写后待用户审阅，沿用此前明确选择的Native，批准计划后才开始实现。
