@@ -163,5 +163,13 @@ def model_messages(history: HistoryContext, *, system: str, question: str,
     payload = {'summary': history.summary, 'summary_sources': [
         {'id': s.id, 'seq': s.seq, 'from_msg_id': s.from_msg_id, 'upto_msg_id': s.upto_msg_id,
          } for s in history.summary_segments], **background}
-    return [SystemMessage(system), *history.layer2, *history.layer1, HumanMessage(question),
+    past = [*history.layer2, *history.layer1]
+    completed_ticket_turns = {_meta(message).get('turn_id') for message in past
+                              if isinstance(message, ToolMessage) and message.name == 'create_ticket'}
+    # Preview narration stays in the ledger/checkpoint for the UI. Once the real
+    # result exists, omit it from model input so calls and results stay adjacent.
+    past = [message for message in past if not (
+        isinstance(message, AIMessage) and _meta(message).get('turn_id') in completed_ticket_turns
+        and message.id == f"{_meta(message).get('turn_id')}-waiting-ticket")]
+    return [SystemMessage(system), *past, HumanMessage(question),
             HumanMessage(json.dumps(payload, ensure_ascii=False, separators=(',', ':'))), *current_react]

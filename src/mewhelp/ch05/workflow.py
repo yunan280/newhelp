@@ -53,6 +53,8 @@ logger = logging.getLogger(__name__)
 
 async def begin_turn(state, context, emit):
     from mewhelp.ch08.ticket_intent import ticket_request_patch
+    previous_ticket_request = (None if state.get('ticket_status') in
+        ('submitted', 'unknown', 'cancelled', 'denied', 'failed') else state.get('ticket_request'))
     update = {
         "messages": [tag_message(HumanMessage(state["question"], id=state["turn_id"] + "-user"),
                                   turn_id=state["turn_id"])],
@@ -87,7 +89,7 @@ async def begin_turn(state, context, emit):
         'matched_tool': None,
         'tool_catalog': context.tool_snapshot.catalog() if context.tool_snapshot is not None else [],
         'tool_catalog_hash': context.tool_snapshot.fingerprint if context.tool_snapshot is not None else '',
-        'ticket_request': ticket_request_patch(state['question'], state['turn_id'] + '-user', state.get('ticket_request')),
+        'ticket_request': ticket_request_patch(state['question'], state['turn_id'] + '-user', previous_ticket_request),
         'tool_queue': [], 'tool_cursor': 0, 'tool_results': [],
         'ticket_preview': None, 'ticket_status': None,
         'ticket_prepared': None, 'ticket_resume': None, 'ticket_receipt': None,

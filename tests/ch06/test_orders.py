@@ -23,7 +23,8 @@ async def test_card_and_query_order_share_facts():
     tools = {tool.name: tool for tool in build_business_tools()}
     text = await tools["query_order"].ainvoke({"order_id": "1001"})
     assert all(value in text for value in ["机械键盘", "199.00", "2026-09-27", "已签收"])
-    logistics = await tools["query_logistics"].ainvoke({"order_id": "1001"})
+    from mewhelp.ch08.mcp_servers.mock_data import logistics_data
+    logistics = logistics_data('1001')['data']['description']
     assert "2026-09-29" in logistics and "已签收" in logistics
 
 
@@ -49,8 +50,8 @@ async def test_unshipped_order_has_no_invented_delivery_or_condition():
     order = orders_module().load_demo_order("alice", "1003")
     assert order.status == "待发货" and order.received_at is None and order.condition == "unknown"
     assert order.as_of == date(2026, 10, 2)
-    tools = {tool.name: tool for tool in build_business_tools()}
-    logistics = await tools["query_logistics"].ainvoke({"order_id": "1003"})
+    from mewhelp.ch08.mcp_servers.mock_data import logistics_data
+    logistics = logistics_data('1003')['data']['description']
     assert "未发货" in logistics and "已签收" not in logistics and "运单号" not in logistics
 
 

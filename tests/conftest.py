@@ -4,6 +4,26 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def isolated_ch02_mcp(request, monkeypatch, tmp_path):
+    if request.path.name == 'test_bare.py' or (request.path.name == 'test_workflow.py' and request.path.parent.name == 'ch06'):
+        from langchain_core.tools import tool
+
+        from mewhelp.ch05 import agent
+        from mewhelp.ch08.mcp_servers.mock_data import logistics_data
+        from mewhelp.tools.contracts import ToolSpec
+        @tool
+        def query_logistics(order_id: str) -> str:
+            """离线物流MCP事实处理器，旧章节编排回归使用。"""
+            return logistics_data(order_id)['data']['description']
+        spec = ToolSpec(query_logistics, source='mcp', mcp_server='logistics', remote_name='query_logistics')
+        if request.path.name == 'test_bare.py':
+            request.getfixturevalue('read_registry').register(spec)
+        else:
+            original = agent.build_read_registry
+            def build_read_registry():
+                registry = original(); registry.register(spec); return registry
+            monkeypatch.setattr(agent, 'build_read_registry', build_read_registry)
+        yield
+        return
     if request.path.name not in {
         'test_ch02_service_prepare.py', 'test_ch02_service_run.py', 'test_ch02_service_stream.py',
         'test_ch02_api_agent.py', 'test_ch02_api_chat.py',

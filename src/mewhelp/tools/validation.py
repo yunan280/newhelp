@@ -14,21 +14,27 @@ def normalize_schema(tool: BaseTool, schema: dict | None = None,
     schema = deepcopy(schema)
     if not isinstance(schema, dict) or schema.get('type') != 'object':
         raise ValueError('工具参数必须是 object JSON Schema')
+    nodes = []
+    def resolve(ref):
+        target = schema
+        try:
+            for part in ref[2:].split('/') if ref != '#' else []:
+                key = part.replace('~1', '/').replace('~0', '~')
+                target = target[int(key)] if isinstance(target, list) else target[key]
+        except (KeyError, IndexError, ValueError, TypeError) as exc:
+            raise ValueError('Schema 本地引用不存在') from exc
+        return target
+
     def check(value):
         if isinstance(value, dict):
+            nodes.append(value)
             if '$id' in value or '$dynamicRef' in value:
                 raise ValueError('Schema 只允许本地静态引用')
             if '$ref' in value:
                 ref = value['$ref']
                 if not isinstance(ref, str) or not (ref == '#' or ref.startswith('#/')):
                     raise ValueError('Schema 只允许本地引用')
-                target = schema
-                try:
-                    for part in ref[2:].split('/') if ref != '#' else []:
-                        key = part.replace('~1', '/').replace('~0', '~')
-                        target = target[int(key)] if isinstance(target, list) else target[key]
-                except (KeyError, IndexError, ValueError, TypeError) as exc:
-                    raise ValueError('Schema 本地引用不存在') from exc
+                resolve(ref)
             for nested in value.values():
                 check(nested)
         elif isinstance(value, list):
@@ -38,6 +44,29 @@ def normalize_schema(tool: BaseTool, schema: dict | None = None,
     if forbid_extra:
         schema['additionalProperties'] = False
     Draft202012Validator.check_schema(schema)
+    # Only edges validating the same instance can recurse without consuming data.
+    # properties/items refs recurse into children and remain valid for finite trees.
+    active, complete = set(), set()
+    def check_cycle(node):
+        if not isinstance(node, dict) or id(node) in complete:
+            return
+        identity = id(node)
+        if identity in active:
+            raise ValueError('Schema 存在不消耗参数层级的引用循环')
+        active.add(identity)
+        if '$ref' in node:
+            check_cycle(resolve(node['$ref']))
+        for key in ('allOf', 'anyOf', 'oneOf'):
+            for child in node.get(key, []):
+                check_cycle(child)
+        for key in ('not', 'if', 'then', 'else'):
+            check_cycle(node.get(key))
+        for child in node.get('dependentSchemas', {}).values():
+            check_cycle(child)
+        active.remove(identity)
+        complete.add(identity)
+    for node in nodes:
+        check_cycle(node)
     return schema
 
 

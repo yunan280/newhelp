@@ -15,7 +15,7 @@ def context_module():
         pytest.fail('Ch07 must carry a separate projected snapshot through the full State')
 
 
-async def test_full_tool_history_survives_but_tools_are_not_written_to_mysql(
+async def test_full_tool_history_is_auditable_but_hidden_from_visible_history(
         workflow_runtime, model_factory, session_factory):
     model_factory.intents = ['物流']
     model_factory.decisions = [AIMessage('', tool_calls=[{'id': 'raw-call',
@@ -26,8 +26,11 @@ async def test_full_tool_history_survives_but_tools_are_not_written_to_mysql(
     assert sum(m.type == 'human' and m.content == '订单1001物流' for m in snapshot.values['messages']) == 1
     with session_factory() as session:
         rows = session.query(Message).filter_by(conversation_id=result.conversation_id).all()
-        assert [r.role for r in rows] == [MsgRole.user, MsgRole.assistant]
-        assert all(not r.tool_calls for r in rows)
+        assert [r.role for r in rows] == [MsgRole.user, MsgRole.assistant, MsgRole.tool, MsgRole.assistant]
+        assert rows[1].tool_calls[0]['id'] == rows[2].tool_call_id == 'raw-call'
+        from mewhelp.ch07.store import read_visible_messages
+        visible = read_visible_messages(session, conversation_id=result.conversation_id, user_id='demo-user')
+        assert [r.role for r in visible.messages] == ['user','assistant']
 
 
 async def test_failed_turn_retained_for_diagnostics_not_replayed(workflow_runtime, model_factory):

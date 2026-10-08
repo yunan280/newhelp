@@ -26,7 +26,10 @@ def read_tool_config(path: Path) -> dict:
     for name, connection in config['servers'].items():
         if not re.fullmatch(r'[A-Za-z0-9_.-]{1,64}', name) or not isinstance(connection, dict):
             raise ValueError('Server 名称或连接不合法')
-        url = urlparse(connection.get('url', ''))
+        url_value = connection.get('url', '')
+        if not isinstance(url_value, str):
+            raise ValueError('Server URL 必须是字符串')  # noqa: TRY004 — runtime按统一配置错误失败关闭
+        url = urlparse(url_value)
         if url.scheme not in ('http', 'https') or not url.hostname or connection.get('transport', 'streamable_http') != 'streamable_http':
             raise ValueError('仅支持 Streamable HTTP Server')
         connections[name] = {'url': connection['url'], 'transport': 'streamable_http'}

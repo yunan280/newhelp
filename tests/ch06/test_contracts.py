@@ -22,7 +22,7 @@ def test_intent_rejects_non_numeric_or_unbounded_confidence(confidence):
 
 def test_intent_has_only_two_fields_and_other_fallback():
     output = contract("IntentOutput")(intent="其他", confidence=0.9)
-    assert output.model_dump() == {"intent": "其他", "confidence": 0.9}
+    assert output.model_dump() == {"intent": "其他", "confidence": 0.9, "matched_tool":None}
     with pytest.raises(ValidationError):
         contract("IntentOutput")(intent="退款退货", confidence=0.9, order_id="1001")
 

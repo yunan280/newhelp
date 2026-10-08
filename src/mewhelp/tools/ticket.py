@@ -140,6 +140,11 @@ def build_registry(
 def build_ticket_spec(session_factory) -> ToolSpec:
     """启动登记 Schema，执行时才绑定可信会话与确认幂等键。"""
     template = build_ticket_tools(session_factory, 0)[0]
+    template = template.model_copy(update={'description':
+        '申请工单预览，尚不创建工单；前端确认后引擎才写库。用户明确要求建单且提供实际问题时调用。'
+        'description必须逐字复制相关用户原文的问题片段，禁止添加“需要售后处理”等用户没说的措辞；'
+        '例如用户说“键盘坏了，帮我建售后工单”，参数为description="键盘坏了",ticket_type="售后"。'
+        'ticket_type仅售后/投诉/咨询，依据用户明确类型或实际问题，缺必填信息先追问。'})
     def factory(context: ToolCallContext):
         if context.conversation_id is None or context.authorization is None:
             raise ValueError('建单缺少可信确认上下文')

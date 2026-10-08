@@ -74,3 +74,30 @@ async def test_read_before_interrupt_not_replayed_after_reopening_saver(workflow
         assert pending.ticket_preview == waiting.ticket_preview
         await resume_ticket(reopened, TicketResumeRequest(session_id=waiting.session_id, confirmation_id=waiting.ticket_preview['confirmation_id'], action='confirm'))
     assert read_calls == ['1001']
+
+
+async def test_resume_received_confirmation_checkpoint_without_second_interrupt(workflow_runtime, tmp_path, session_factory, model_factory):
+    from langgraph.types import Command
+    from sqlalchemy import func, select
+
+    from mewhelp.ch07.context import prepare_request_context
+    from mewhelp.ch08.confirmation import resume_ticket
+    from mewhelp.ch08.schemas import TicketResumeRequest
+    from mewhelp.db.models import Ticket
+
+    from .test_ticket_graph import preview
+    await install_tools(workflow_runtime, tmp_path, session_factory)
+    waiting = await preview(workflow_runtime, model_factory, session='received-restart')
+    config = {'configurable': {'thread_id': waiting.session_id}}
+    state = await workflow_runtime.graph.aget_state(config)
+    context = await prepare_request_context(workflow_runtime.context, state.values)
+    nonce = waiting.ticket_preview['confirmation_id']
+    await workflow_runtime.graph.ainvoke(Command(resume={'action':'confirm', 'confirmation_id':nonce}),
+        config, context=context, interrupt_before=['execute_confirmed_ticket'], durability='sync')
+    saved = await workflow_runtime.graph.aget_state(config)
+    assert saved.values['ticket_status'] == 'received'
+    assert saved.next == ('execute_confirmed_ticket',)
+    result = await resume_ticket(workflow_runtime, TicketResumeRequest(session_id=waiting.session_id, confirmation_id=nonce, action='confirm'))
+    assert result.ticket_receipt['ticket_no'] in result.answer
+    with session_factory() as db:
+        assert db.scalar(select(func.count()).select_from(Ticket)) == 1

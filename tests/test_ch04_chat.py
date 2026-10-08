@@ -185,8 +185,8 @@ async def test_invalid_citation_cannot_emit_model_answer(chat_runtime):
 async def test_service_failure_does_not_enter_pool(chat_runtime):
     factory, _, state, _ = chat_runtime
     state["error"] = ConnectionError("Milvus unavailable")
-    with pytest.raises(ConnectionError):
-        await service.run_agent_turn(factory, session_id="error", user_id="u", message="参数？")
+    result = await service.run_agent_turn(factory, session_id="error", user_id="u", message="参数？")
+    assert not result.tool_results[0].ok and 'Milvus unavailable' in result.answer
     with factory() as session:
         assert session.scalar(select(LowConfidenceQuestion)) is None
 

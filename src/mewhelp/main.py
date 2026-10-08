@@ -1,8 +1,8 @@
 """FastAPI 应用入口。"""
 
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
-import os
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse

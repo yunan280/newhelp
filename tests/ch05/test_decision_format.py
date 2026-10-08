@@ -107,7 +107,6 @@ async def test_invalid_control_wire_repairs_once_without_tools_then_streams_text
     assert {t["function"]["name"] for t in requests[0]["tools"]} == {
         "query_order",
         "query_product",
-        "query_logistics",
     }
     assert requests[0]["max_tokens"] == 256
     assert requests[1]["response_format"] == {"type": "json_object"}

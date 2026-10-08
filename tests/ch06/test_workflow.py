@@ -32,7 +32,7 @@ async def test_wait_resume_writes_original_user_once(core_runtime, core_factory,
     with session_factory() as db:
         rows = db.scalars(select(Message).where(Message.conversation_id == before.conversation_id)).all()
         assert len([r for r in rows if r.role == MsgRole.user and r.content == "这个能退吗"]) == 1
-        assert len([r for r in rows if r.role == MsgRole.assistant]) == 2
+        assert len([r for r in rows if r.role == MsgRole.assistant and not r.tool_calls]) == 2
 
 
 async def test_faq_skips_order_and_expansion(core_runtime):
@@ -98,7 +98,7 @@ async def test_sql_commit_then_checkpoint_failure_is_retryable(core_runtime, cor
     with session_factory() as db:
         rows = db.scalars(select(Message).where(Message.conversation_id == after.conversation_id)).all()
         assert len([r for r in rows if r.role == MsgRole.user]) == 1
-        assert len([r for r in rows if r.role == MsgRole.assistant]) == 2
+        assert len([r for r in rows if r.role == MsgRole.assistant and not r.tool_calls]) == 2
 
 
 async def test_observed_usage_exhaustion_stops_before_classifier(core_runtime):

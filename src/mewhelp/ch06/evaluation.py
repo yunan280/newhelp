@@ -462,7 +462,7 @@ def default_evaluator(part):
     return run
 
 
-async def calibrate_router(dataset: Path, outdir: Path) -> int:
+async def calibrate_router(dataset: Path, outdir: Path, *, tool_catalog: list[dict] | None = None) -> int:
     """Run the separate split; choose conservative thresholds, never tune on acceptance."""
     from mewhelp.ch05.intent import classifier_messages
     from mewhelp.ch05.state import WorkflowContext
@@ -473,8 +473,10 @@ async def calibrate_router(dataset: Path, outdir: Path) -> int:
     manifest = verify_dataset(dataset)
     cases = _read_cases(dataset / "calibration.jsonl")
     settings = Ch06Settings()
+    context_settings = ContextSettings()
     context = WorkflowContext(
-        lambda: None, lambda: None, lambda: None, Ch05Settings().limits(), router_settings=settings
+        lambda: None, lambda: None, lambda: None, Ch05Settings().limits(), router_settings=settings,
+        settings=context_settings, profile=load_profile(context_settings.context_calibration_path)
     )
     from mewhelp.ch07.budget import compute_budget
     from mewhelp.ch07.types import HistoryContext
@@ -495,7 +497,7 @@ async def calibrate_router(dataset: Path, outdir: Path) -> int:
                     {},
                     purpose="classifier",
                     messages=classifier_messages(case["question"], history_ctx=empty_history,
-                                                 question=case["question"]),
+                                                 question=case["question"], catalog=tool_catalog),
                     schema=IntentOutput,
                     model_name=model,
                     output_tokens=context.limits.classifier_max_tokens,

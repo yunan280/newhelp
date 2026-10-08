@@ -35,7 +35,7 @@ class ToolRegistry:
             raise ValueError('MCP 工具必须声明来源 Server')
         if spec.tool.name == 'create_ticket' and (spec.source != 'builtin' or spec.permission not in ('write', 'deny')):
             raise ValueError('create_ticket 是受保护的内置写工具')
-        schema = normalize_schema(spec.tool, spec.input_schema, forbid_extra=True)
+        schema = normalize_schema(spec.tool, spec.input_schema, forbid_extra=spec.source == 'builtin')
         if spec.timeout_seconds <= 0:
             raise ValueError('超时必须大于零')
         return replace(spec, input_schema=schema)

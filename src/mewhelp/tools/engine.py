@@ -52,7 +52,13 @@ class ToolExecutionEngine:
             error, status = 'unknown_tool', '失败'
             content = f"没有名为 {name} 的工具。可用的工具有:{', '.join(s.tool.name for s in snapshot.specs.values() if s.permission != 'deny' and s.available)}。"
         else:
-            errors = validate_arguments(spec.input_schema, args)
+            try:
+                errors = validate_arguments(spec.input_schema, args)
+            except Exception as exc:  # noqa: BLE001 — 校验器故障也须回灌并审计
+                result = await self._finish(self._result(snapshot, name, args, context,
+                    content=f'工具参数校验器故障：{type(exc).__name__}: {exc}',
+                    error=type(exc).__name__, status='失败'), context)
+                return replace(prepared, result=result)
             if errors:
                 error, status = 'invalid_args', '校验拦下'
                 content = '参数不合法，请补齐或修改后重新调用：' + '; '.join(f"{e['path']}: {e['message']}" for e in errors)
@@ -96,39 +102,42 @@ class ToolExecutionEngine:
         spec = snapshot.get(name)
         limit = MAX_ATTEMPTS if spec.retryable and spec.permission == 'readonly' else 1
         attempts, artifact, status, content, error = 0, None, '失败', '', None
-        while attempts < limit:
-            remaining = context.deadline_monotonic - time.monotonic() if context.deadline_monotonic else spec.timeout_seconds
-            if remaining <= 0:
-                status, error, content = '超时', 'TimeoutError', '工具执行总时限已到。'
-                break
-            attempts += 1
-            try:
-                target = spec.tool_factory(context) if spec.tool_factory else spec.tool
-                invocation = ({'name': name, 'args': args, 'id': context.tool_call_id, 'type': 'tool_call'}
-                              if target.response_format == 'content_and_artifact' else args)
-                raw = await asyncio.wait_for(target.ainvoke(invocation), min(spec.timeout_seconds, remaining))
-                ok, content, error, artifact = format_result(spec, raw)
-                status = '成功' if ok else '失败'
-                break
-            except (asyncio.CancelledError, GraphInterrupt):
-                result = self._result(snapshot, name, args, context, content='工具调用被中断。',
-                    error='interrupted', status='失败', attempts=attempts,
-                    elapsed_ms=int((time.monotonic() - started) * 1000))
-                await asyncio.shield(self._finish(result, context))
-                raise
-            except Exception as exc:  # noqa: BLE001 — 工具异常统一分诊并回灌
-                status, transient = classify_failure(exc)
-                error = type(exc).__name__
-                content = f'调用 {name} {"超时" if status == "超时" else "失败"}：{type(exc).__name__}: {exc}'
-                if spec.permission == 'write' and status == '超时':
-                    content += '。写操作可能已执行，结果未知；不会自动重试，请先核对回执。'
-                if not transient or attempts >= limit:
+        try:
+            while attempts < limit:
+                remaining = context.deadline_monotonic - time.monotonic() if context.deadline_monotonic else spec.timeout_seconds
+                if remaining <= 0:
+                    status, error, content = '超时', 'TimeoutError', '工具执行总时限已到。'
                     break
-                delay = BACKOFF_SECONDS[attempts - 1]
-                if context.deadline_monotonic and time.monotonic() + delay >= context.deadline_monotonic:
-                    status, error = '超时', 'TimeoutError'
+                attempts += 1
+                try:
+                    target = spec.tool_factory(context) if spec.tool_factory else spec.tool
+                    invocation = ({'name': name, 'args': args, 'id': context.tool_call_id, 'type': 'tool_call'}
+                                  if target.response_format == 'content_and_artifact' else args)
+                    raw = await asyncio.wait_for(target.ainvoke(invocation), min(spec.timeout_seconds, remaining))
+                    ok, content, error, artifact = format_result(spec, raw)
+                    status = '成功' if ok else '失败'
                     break
-                await self.sleep(delay)
+                except GraphInterrupt:
+                    raise
+                except Exception as exc:  # noqa: BLE001 — 工具异常统一分诊并回灌
+                    status, transient = classify_failure(exc)
+                    error = type(exc).__name__
+                    content = f'调用 {name} {"超时" if status == "超时" else "失败"}：{type(exc).__name__}: {exc}'
+                    if spec.permission == 'write' and status == '超时':
+                        content += '。写操作可能已执行，结果未知；不会自动重试，请先核对回执。'
+                    if not transient or attempts >= limit:
+                        break
+                    delay = BACKOFF_SECONDS[attempts - 1]
+                    if context.deadline_monotonic and time.monotonic() + delay >= context.deadline_monotonic:
+                        status, error = '超时', 'TimeoutError'
+                        break
+                    await self.sleep(delay)
+        except (asyncio.CancelledError, GraphInterrupt):
+            result = self._result(snapshot, name, args, context, content='工具调用被中断。',
+                error='interrupted', status='失败', attempts=attempts,
+                elapsed_ms=int((time.monotonic() - started) * 1000))
+            await asyncio.shield(self._finish(result, context))
+            raise
         return await self._finish(self._result(snapshot, name, args, context,
             content=content, error=error, status=status, attempts=attempts, artifact=artifact,
             elapsed_ms=int((time.monotonic() - started) * 1000)), context)

@@ -162,27 +162,17 @@ async def execute_confirmed_ticket_node(state, context, emit):
         result = await engine.reject(prepared, call_context, resumed.get('reason') or '用户取消了本次工单提交。')
         status = 'cancelled'
     else:
-        request = TicketResumeRequest(session_id=state['session_id'], user_id=state['user_id'],
-                                      confirmation_id=preview['confirmation_id'], action='confirm')
-        try:
-            auth = verify_ticket_confirmation({**state, 'ticket_status': 'pending'}, request, snapshot)
-        except ValueError as exc:
-            result = await engine.reject(prepared, call_context, str(exc))
-            status = 'denied'
+        # A committed receipt is historical fact; current rules only gate new writes.
+        receipt = await asyncio.to_thread(_receipt, context, state, preview)
+        if receipt:
+            result = ToolResult('create_ticket', prepared.args, True,
+                f"工单已提交，工单号 {receipt['ticket_no']}。", None, 0, 0,
+                status='成功', tool_call_id=prepared.tool_call_id)
+            await engine._finish(result, call_context)
+            status = 'submitted'
         else:
-            receipt = await asyncio.to_thread(_receipt, context, state, preview)
-            # Existing business receipt recovers a crash after commit without reissuing the write.
-            if receipt:
-                result = ToolResult('create_ticket', prepared.args, True,
-                    f"工单已提交，工单号 {receipt['ticket_no']}。", None, 0, 0,
-                    status='成功', tool_call_id=prepared.tool_call_id)
-                await engine._finish(result, call_context)
-            else:
-                result = await engine.execute(snapshot, 'create_ticket', prepared.args,
-                                             replace(call_context, authorization=auth))
-                if result.ok:
-                    receipt = await asyncio.to_thread(_receipt, context, state, preview)
-            status = 'submitted' if receipt else 'unknown' if result.status == '超时' else 'failed'
+            result, status, receipt = await _execute_new_ticket(
+                state, context, preview, prepared, engine, snapshot, call_context)
     update = {**_observe(state, context, emit, call, result),
               'ticket_status': status, 'ticket_receipt': receipt, 'ticket_preview': None,
               'ticket_prepared': None, 'ticket_resume': None}
@@ -203,6 +193,21 @@ async def execute_confirmed_ticket_node(state, context, emit):
             await engine.reject(pending, queued_context, '待确认批次已结束，本次调用不执行。')
         update.update({'pending_tool_calls': [], 'stop_reason': public.stop_reason, 'answer': stable})
     return update
+
+
+async def _execute_new_ticket(state, context, preview, prepared, engine, snapshot, call_context):
+    request = TicketResumeRequest(session_id=state['session_id'], user_id=state['user_id'],
+                                  confirmation_id=preview['confirmation_id'], action='confirm')
+    try:
+        auth = verify_ticket_confirmation({**state, 'ticket_status': 'pending'}, request, snapshot)
+    except ValueError as exc:
+        result = await engine.reject(prepared, call_context, str(exc))
+        return result, 'denied', None
+    result = await engine.execute(snapshot, 'create_ticket', prepared.args,
+                                 replace(call_context, authorization=auth))
+    receipt = await asyncio.to_thread(_receipt, context, state, preview) if result.ok else None
+    status = 'submitted' if receipt else 'unknown' if result.status == '超时' else 'failed'
+    return result, status, receipt
 
 
 def active_ticket_preview(snapshot) -> dict | None:
@@ -227,6 +232,27 @@ async def pending_ticket(runtime, session_id, user_id):
             return None
         snapshot = await runtime.graph.aget_state({'configurable': {'thread_id': session_id}})
         return result_from_state(snapshot.values) if active_ticket_preview(snapshot) else None
+
+
+async def readonly_ticket_receipt(runtime, session_id, user_id, confirmation_id):
+    """刷新仅读取已处理回执，绝不恢复图或再次执行写操作。"""
+    from mewhelp.ch05.schemas import TurnResult
+    from mewhelp.ch06.selection import _check_owner
+    async with runtime.locks.lock(session_id):
+        if not await asyncio.to_thread(_check_owner, runtime.context, session_id, user_id):
+            return None
+        snapshot = await runtime.graph.aget_state({'configurable': {'thread_id': session_id}})
+        state = snapshot.values
+        remembered = state.get('ticket_confirmation_receipts', {}).get(confirmation_id)
+        if not remembered:
+            return None
+        result = TurnResult.model_validate(remembered['result'])
+        if remembered['status'] == 'unknown':
+            receipt = await asyncio.to_thread(_receipt, runtime.context, state, remembered['preview'])
+            if receipt:
+                result = result.model_copy(update={'ticket_receipt': receipt,
+                    'answer': f"工单已提交，工单号 {receipt['ticket_no']}。", 'stop_reason': 'ticket_created'})
+        return result
 
 
 async def cancel_ticket_locked(runtime, config, reason):
@@ -273,6 +299,13 @@ async def stream_ticket_resume(runtime, request):
             yield event('done', **result.model_dump(mode='json'), finish_reason=result.stop_reason)
             return
         preview = active_ticket_preview(snapshot)
+        recovery = (state.get('ticket_status') == 'received'
+                    and snapshot.next == ('execute_confirmed_ticket',))
+        if recovery:
+            resumed = state.get('ticket_resume') or {}
+            if resumed.get('confirmation_id') != request.confirmation_id or resumed.get('action') != request.action:
+                raise TicketConfirmationError('已接收的确认不能更换操作')
+            preview = state.get('ticket_preview')
         if preview is None or preview['confirmation_id'] != request.confirmation_id:
             raise TicketConfirmationError('工单卡片已失效')
         context = await prepare_request_context(runtime.context, state)
@@ -286,8 +319,11 @@ async def stream_ticket_resume(runtime, request):
                     'confirmation_id': request.confirmation_id}
         if reason:
             incoming['reason'] = reason
+        if recovery:
+            await runtime.graph.aupdate_state(config, {'started_at': time.time()}, as_node='await_ticket')
+        graph_input = None if recovery else Command(resume=incoming)
         async with asyncio.timeout(runtime.context.limits.turn_seconds):
-            async with aclosing(runtime.graph.astream(Command(resume=incoming), config,
+            async with aclosing(runtime.graph.astream(graph_input, config,
                 context=context, stream_mode='custom', durability='sync')) as stream:
                 async for item in stream:
                     yield item

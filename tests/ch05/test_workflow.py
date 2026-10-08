@@ -226,8 +226,8 @@ async def test_tool_ledger_pairs_calls_and_results(
             .where(Message.conversation_id == result.conversation_id)
             .order_by(Message.id)
         ).all()
-        assert [r.role for r in rows] == [MsgRole.user, MsgRole.assistant]
-        assert all(not r.tool_calls and not r.tool_call_id for r in rows)
+        assert [r.role for r in rows] == [MsgRole.user, MsgRole.assistant, MsgRole.tool, MsgRole.assistant]
+        assert rows[1].tool_calls[0]['id'] == rows[2].tool_call_id == 'order-1'
     snapshot = await workflow_runtime.graph.aget_state(
         {'configurable': {'thread_id': result.session_id}})
     raw = snapshot.values['messages']

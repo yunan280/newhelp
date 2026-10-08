@@ -375,6 +375,13 @@ async def _answer_knowledge(
     evidence = None
     faq_results = [result for result in prepared.tool_results if result.name == "query_faq"]
     if not faq_results:
+        from mewhelp.tools.knowledge import build_knowledge_tools
+        faq = build_knowledge_tools(session_factory, query=query, rag_runtime=runtime,
+            context=QuestionContext(query.original, prepared.conversation_id, prepared.entry_point),
+            filters=prepared.filters or SearchFilters())[0]
+        specs = dict(prepared.registry.snapshot().specs)
+        specs['query_faq'] = replace(specs['query_faq'], tool_factory=lambda context:faq)
+        prepared.registry = ToolRegistry(specs, engine=prepared.registry.engine)
         call = next((c for c in prepared.ai.tool_calls if c['name'] == 'query_faq'), None)
         if call is None:
             call = {'name':'query_faq', 'args':{'keyword':query.original}, 'id':uuid4().hex, 'type':'tool_call'}
@@ -385,7 +392,8 @@ async def _answer_knowledge(
         faq_results = [observation]
     if faq_results:
         if any(not item.ok or item.artifact is None for item in faq_results):
-            raise RuntimeError("knowledge retrieval failed; no verified artifact available")
+            from mewhelp.knowledge.retrieval import RetrievalResult
+            return AnswerResult(faq_results[0].content, [], False, None, RetrievalResult([], []))
         evidence = faq_results[0].artifact
     result = await answer_question(
         runtime,

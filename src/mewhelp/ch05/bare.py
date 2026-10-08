@@ -8,6 +8,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 import httpx
+from langchain_core.utils.function_calling import convert_to_openai_tool
 
 from mewhelp.config import get_settings
 from mewhelp.tools.business import build_business_tools
@@ -34,17 +35,7 @@ class BareResult:
 
 
 def tool_schemas(registry: ToolRegistry) -> list[dict]:
-    return [
-        {
-            "type": "function",
-            "function": {
-                "name": t.name,
-                "description": t.description,
-                "parameters": t.args_schema.model_json_schema(),
-            },
-        }
-        for t in registry.tools()
-    ]
+    return [convert_to_openai_tool(t) for t in registry.tools()]
 
 
 async def complete_http(

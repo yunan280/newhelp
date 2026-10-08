@@ -86,3 +86,8 @@ desktop.ini
 # Recoverable Superpowers scratch archives
 .superpowers/archives/
 .superpowers/sdd/
+
+# Ch08 real-provider raw reports, local model prompts, process logs and demo plugins
+artifacts/ch08/
+tool_plugins/_demo*.py
+tool_plugins/demo_ch08_*.py

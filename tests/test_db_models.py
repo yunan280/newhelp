@@ -47,6 +47,7 @@ def test_tables_are_created(engine):
         "qa_extraction_staging",
         "low_confidence_questions",
         "refund_applications",
+        "tool_audit_logs",
     }
 
 

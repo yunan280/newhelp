@@ -38,7 +38,7 @@ def validate_ticket_draft(args: dict, evidence: dict) -> list[str]:
     if not isinstance(description, str) or not description.strip():
         errors.append('请追问实际问题描述。')
     elif not any(description.strip() in text for text in utterances):
-        errors.append('问题描述必须取自相关用户原话，不得编造，请追问补齐。')
+        errors.append('问题描述必须取自相关用户原话，不得编造。原话已有实际问题时，直接复制该问题片段重新调用，不增加措辞，也不要重复追问；确实没有问题描述才追问补齐。')
     elif not PROBLEM.search(COMMAND.sub('', description)):
         errors.append('创建工单的要求不能充当实际问题描述，请追问具体问题。')
     kind = args.get('ticket_type')

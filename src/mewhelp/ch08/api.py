@@ -10,6 +10,7 @@ from mewhelp.ch05.schemas import TurnResult
 from .confirmation import (
     TicketConfirmationError,
     pending_ticket,
+    readonly_ticket_receipt,
     resume_ticket,
     stream_ticket_resume,
 )
@@ -35,12 +36,22 @@ async def tickets_resume_stream(request: TicketResumeRequest, runtime: RuntimeDe
             async for item in stream:
                 yield ServerSentEvent(event=item['event'], data=item['data'])
     except Exception as exc:  # noqa: BLE001 — SSE必须把未知故障回传客户端
-        yield ServerSentEvent(event='error', data={'code': 'ticket_confirmation_error', 'message': str(exc)})
+        yield ServerSentEvent(event='error', data={'code': 'ticket_confirmation_error', 'message': str(exc),
+            'status': getattr(exc, 'status_code', 409 if isinstance(exc, ValueError) else 500)})
 
 
 @router.get('/sessions/{session_id}/pending')
 async def tickets_pending(session_id: str, runtime: RuntimeDep, user_id: str = 'demo-user') -> TurnResult | None:
     try:
         return await pending_ticket(runtime, session_id, user_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+
+
+@router.get('/sessions/{session_id}/receipts/{confirmation_id}')
+async def tickets_receipt(session_id: str, confirmation_id: str, runtime: RuntimeDep,
+                          user_id: str = 'demo-user') -> TurnResult | None:
+    try:
+        return await readonly_ticket_receipt(runtime, session_id, user_id, confirmation_id)
     except ValueError as exc:
         raise HTTPException(status_code=403, detail=str(exc)) from exc

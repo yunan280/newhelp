@@ -12,7 +12,7 @@ class Ch06Settings(BaseSettings):
     cascade_enabled: bool = False
     small_model: str | None = None
     calibration_path: Path | None = None
-    router_dataset_path: Path = Path('eval/ch06')
+    router_dataset_path: Path = Path(__file__).resolve().parents[3] / 'eval/ch06'
     policy_calibration_path: Path | None = None
     understanding_max_tokens: int = Field(default=512, ge=128, le=4096)
     expansion_max_tokens: int = Field(default=512, ge=128, le=4096)

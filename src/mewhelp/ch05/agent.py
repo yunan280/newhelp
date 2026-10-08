@@ -5,7 +5,7 @@ import json
 import logging
 import time
 
-from langchain_core.messages import ToolMessage
+from langchain_core.messages import HumanMessage, ToolMessage
 from langchain_core.utils.function_calling import convert_to_openai_tool
 from pydantic import ValidationError
 
@@ -77,9 +77,12 @@ def prompt_messages(state: dict, *, phase='decide', correction=None) -> list:
                                'answer_control': '按已确定的verdict回答，不改变资格，不宣称批准或到账。'})
     if correction:
         background['correction'] = correction
-    return model_messages(history, system=MAIN_SYSTEM,
+    messages = model_messages(history, system=MAIN_SYSTEM,
         question=state.get('question') or state['resolved_question'], background=background,
         current_react=state.get('agent_messages', []))
+    if phase == 'answer' and state.get('agent_messages'):
+        messages.append(HumanMessage(json.dumps(background, ensure_ascii=False)))
+    return messages
 
 
 def input_bound(messages: list, tools: list[dict] | None = None, *, profile=None) -> int:
