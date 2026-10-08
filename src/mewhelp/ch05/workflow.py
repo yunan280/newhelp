@@ -65,6 +65,7 @@ async def begin_turn(state, context, emit):
         "evidence": None,
         "gate": None,
         'retrieved_chunks': None, 'retrieval_performed': False, 'retrieval_events': [],
+        'knowledge_tool_gate_pending': False,
         'answer_message_id': None, 'feedback_status': 'none',
         'knowledge_raw_usage': None, 'knowledge_assessment': None,
         "agent_messages": [],
@@ -281,6 +282,7 @@ async def gate_node(state, context, emit):
         gate = gate.model_copy(update={'passed': False, 'reason_code': 'unsupported_context_size',
                                       'reason': '上下文预算不足：' + state['budget_gate_error']})
     result = {**history_patch, "gate": gate.model_dump(), 'evidence':evidence.model_dump(),
+              'knowledge_tool_gate_pending': False,
               'retrieved_chunks':evidence.retrieved_chunks}
     if gate.passed:
         emit(
@@ -298,6 +300,11 @@ async def gate_node(state, context, emit):
 
 
 async def fixed_reply(state, context, emit, *, answer, **updates):
+    receipt = state.get('ticket_receipt')
+    if receipt and receipt['ticket_no'] not in answer:
+        answer += f"\n工单已提交，工单号 {receipt['ticket_no']}。"
+    if state.get('ticket_status') == 'cancelled' and '取消' not in answer:
+        answer += '\n本次工单已取消，未提交。'
     emit(event("token", text=answer))
     return {"answer": answer, "stop_reason": "completed", **updates}
 
@@ -332,6 +339,10 @@ async def bounded_node(state, context, emit):
 
 
 async def decide_node(state, context, emit):
+    if (state.get('route') == 'knowledge' and context.confidence_profile is not None
+            and state.get('gate', {}).get('passed')):
+        return {'pending_tool_calls': [], 'decision': {'reply_mode':'answer',
+                'suggested_actions':[], 'ticket_type':None}}
     try:
         return await decide_agent(state, context)
     except Exception:
@@ -582,12 +593,14 @@ def build_workflow(checkpointer, *, callbacks=()):
             return 'await_ticket'
         if state.get('stop_reason'):
             return 'bounded_reply'
-        return 'execute_tools' if state.get('pending_tool_calls') else 'agent_decide'
+        if state.get('pending_tool_calls'):
+            return 'execute_tools'
+        return 'confidence_gate' if state.get('knowledge_tool_gate_pending') else 'agent_decide'
     graph.add_conditional_edges('execute_tools', after_tool,
-        {n: n for n in ('await_ticket', 'bounded_reply', 'execute_tools', 'agent_decide')})
+        {n: n for n in ('await_ticket', 'bounded_reply', 'execute_tools', 'agent_decide', 'confidence_gate')})
     graph.add_edge('await_ticket', 'execute_confirmed_ticket')
     graph.add_conditional_edges('execute_confirmed_ticket', after_tool,
-        {n: n for n in ('await_ticket', 'bounded_reply', 'execute_tools', 'agent_decide')})
+        {n: n for n in ('await_ticket', 'bounded_reply', 'execute_tools', 'agent_decide', 'confidence_gate')})
     for name in [
         "stream_answer",
         "bounded_reply",

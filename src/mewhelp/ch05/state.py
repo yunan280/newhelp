@@ -31,6 +31,7 @@ class WorkflowState(TypedDict, total=False):
     retrieved_chunks: dict | None
     retrieval_performed: bool
     retrieval_events: list[dict]
+    knowledge_tool_gate_pending: bool
     answer_message_id: str | None
     feedback_status: str
     knowledge_raw_usage: dict | None

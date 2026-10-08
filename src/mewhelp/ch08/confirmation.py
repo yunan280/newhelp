@@ -99,6 +99,8 @@ async def prepare_ticket_node(state, context, emit):
     queue = state.get('tool_queue') or state['pending_tool_calls']
     call = queue[state.get('tool_cursor', 0)]
     engine, snapshot = _execution(context)
+    from mewhelp.ch09.knowledge_tool import bind_knowledge_tool, knowledge_result_patch
+    snapshot = bind_knowledge_tool(snapshot, state, context)
     call_context = tool_call_context(state, context, tool_call_id=call['id'])
     emit({'event': 'tool', 'data': {'phase': 'start', 'call_id': call['id'],
          'round': state['decision_count'], 'name': call['name'], 'args': call['args']}})
@@ -114,6 +116,7 @@ async def prepare_ticket_node(state, context, emit):
         return update
     result = prepared.result or await engine.execute(snapshot, call['name'], call['args'], call_context)
     update = _observe(state, context, emit, call, result)
+    update.update(knowledge_result_patch(snapshot, result, state, context))
     from mewhelp.ch07.tokens import estimate_text
     if estimate_text(result.content, profile=context.profile) > context.settings.tool_result_max_tokens:
         update.update({**stopped('tool_result_limit'), 'answer': '查询结果超过本轮处理容量，请缩小范围或联系人工。'})
