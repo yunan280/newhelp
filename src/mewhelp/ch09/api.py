@@ -7,6 +7,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from mewhelp.ch05.api import RuntimeDep
 from mewhelp.knowledge.refusals import PoolCommitError
 
+from .evaluation_jobs import EvaluationJob, EvaluationRequest
 from .feedback import (
     FeedbackReceipt,
     FeedbackRequest,
@@ -172,3 +173,60 @@ def review_publish(review_id: ReviewId, runtime: RuntimeDep):
         publish=publish,
         verify_published=verify,
     )
+
+
+def evaluation_manager(request):
+    ch09 = getattr(request.app.state, "ch09_runtime", None)
+    if not ch09 or not ch09.eval_jobs:
+        raise HTTPException(status_code=503, detail="评估工作器尚未启用")
+    return ch09.eval_jobs
+
+
+@router.post("/evaluations", status_code=202)
+async def evaluation_submit(body: EvaluationRequest, request: Request):
+    try:
+        job = await evaluation_manager(request).submit(body)
+    except (ValueError, RuntimeError) as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return {**job.model_dump(), "status_url": "/api/ch09/evaluations/" + job.run_id}
+
+
+@router.get("/evaluations/{run_id}", response_model=EvaluationJob)
+async def evaluation_read(run_id: str, request: Request):
+    try:
+        return await asyncio.to_thread(evaluation_manager(request).get, run_id)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.get("/eval-runs")
+def eval_runs(runtime: RuntimeDep, page: Page = 1, page_size: PageSize = 20):
+    from sqlalchemy import func, select
+
+    from mewhelp.db.models import EvalRun
+
+    with runtime.context.session_factory() as db:
+        total = db.scalar(select(func.count()).select_from(EvalRun))
+        rows = db.scalars(
+            select(EvalRun)
+            .order_by(EvalRun.created_at.desc(), EvalRun.id.desc())
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+        )
+        return {
+            "items": [
+                {
+                    "id": str(r.id),
+                    "triggered_by": r.triggered_by,
+                    "dataset_size": r.dataset_size,
+                    "metrics": r.metrics,
+                    "created_at": r.created_at.isoformat() + "Z",
+                }
+                for r in rows
+            ],
+            "total": total,
+            "page": page,
+            "page_size": page_size,
+        }

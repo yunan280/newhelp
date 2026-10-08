@@ -257,7 +257,7 @@ assert retried.knowledge_id == failed_publication.knowledge_id
 - `EvalJobManager.submit(request: EvaluationRequest) -> EvaluationJob`（async）、`get(run_id: str) -> EvaluationJob`、`aclose() -> Awaitable[None]`；`persist_eval_run(factory, *, request: EvaluationRequest, summary: dict, engine: Engine) -> str`。
 - `POST /api/ch09/evaluations` 返回202和状态URL；`GET /api/ch09/evaluations/{run_id}`；`GET /api/ch09/eval-runs?page=&page_size=`按created_at/id排序。metrics保留 `candidate_recall50/candidate_mrr50/final_recall5/final_recall10/final_mrr10/faithfulness`、各 `*_N`、覆盖率/错误和 `_meta`，前端不得换名丢口径。
 
-- [ ] **1. 写失败测试。** `test_production_collection_and_path_escape_rejected`；`test_eval_uses_raw_question_gate_and_generation_top5` 断言共享原问题接口、原Top10算指标/Top5生成、正式闸实际生效、record_pool=False；NA不是1、无GT和未召回0不同、judge失败计错误；`test_partial_run_has_no_eval_row`；`test_repeated_completion_returns_same_row`；`test_resume_rejects_model_or_prompt_drift`。
+- [x] **1. 写失败测试。** `test_production_collection_and_path_escape_rejected`；`test_eval_uses_raw_question_gate_and_generation_top5` 断言共享原问题接口、原Top10算指标/Top5生成、正式闸实际生效、record_pool=False；NA不是1、无GT和未召回0不同、judge失败计错误；`test_partial_run_has_no_eval_row`；`test_repeated_completion_returns_same_row`；`test_resume_rejects_model_or_prompt_drift`。
 
 ```python
 assert partial_processed == 39 and completed_eval_rows == 0
@@ -265,11 +265,11 @@ assert first_eval_id == repeated_completion_id
 assert summary['dataset_size'] == 40
 assert summary['faithfulness'] is None  # 拒答/无声明的NA样例
 ```
-- [ ] **2. 验证红。** `python -m pytest tests/ch09/test_evaluation.py tests/ch09/test_eval_jobs.py -q`。假模型只用于运行控制/指标边界，不能充当两轮真实评估。
-- [ ] **3. 实现隔离runner。** 冻结hash验证、独立DB/集合、全部40题逐题终态保存；调用Task 3原检索，使用Task 4同一知识生成合同，构造隔离WorkflowContext/预算与state，不运行工具/不写线上池。reuse BGE/精排模型实例及原文编码缓存，不复用新run的检索/生成/judge答案。保留原Ch04指标定义/GT和逐声明判定。
-- [ ] **4. 实现任务恢复/持久登记。** `manifest.json`/`cases.jsonl`原子更新，记录dataset/model/prompt/profile/config hash、开始/结束/错误及resume；全局评估命名锁限制只有一模型任务。每个run收尾另用不同scope的按run命名锁短事务查JSON `_meta.run_id` 防重，避免在持全局锁时再次争用同名锁。全部40题处理完（含错误终态）才建一行；有错误/全部NA状态明确且客户端非零，未完成不建行。回收只限本次任务资源，不清空生产集合。
-- [ ] **5. 验证绿与真实登记并发。** 重跑第2步；`python -m pytest tests/ch09/test_mysql_eval_runs.py -m mysql -q`：独立连接重复收尾只有1行，metrics中文/NA保留、不同run各自独立；任务中止后同配置显式resume可恢复，变更配置拒绝。真实40题两轮统一留Task 11，不提前重复跑。
-- [ ] **6. 记录与提交。** 记隔离边界/同轮防重及未完成状态；`git commit -m 'feat(ch09): persist isolated production-path evaluations'`。
+- [x] **2. 验证红。** `python -m pytest tests/ch09/test_evaluation.py tests/ch09/test_eval_jobs.py -q`。假模型只用于运行控制/指标边界，不能充当两轮真实评估。
+- [x] **3. 实现隔离runner。** 冻结hash验证、独立DB/集合、全部40题逐题终态保存；调用Task 3原检索，使用Task 4同一知识生成合同，构造隔离WorkflowContext/预算与state，不运行工具/不写线上池。reuse BGE/精排模型实例及原文编码缓存，不复用新run的检索/生成/judge答案。保留原Ch04指标定义/GT和逐声明判定。
+- [x] **4. 实现任务恢复/持久登记。** `manifest.json`/`cases.jsonl`原子更新，记录dataset/model/prompt/profile/config hash、开始/结束/错误及resume；全局评估命名锁限制只有一模型任务。每个run收尾另用不同scope的按run命名锁短事务查JSON `_meta.run_id` 防重，避免在持全局锁时再次争用同名锁。全部40题处理完（含错误终态）才建一行；有错误/全部NA状态明确且客户端非零，未完成不建行。回收只限本次任务资源，不清空生产集合。
+- [x] **5. 验证绿与真实登记并发。** 重跑第2步；`python -m pytest tests/ch09/test_mysql_eval_runs.py -m mysql -q`：独立连接重复收尾只有1行，metrics中文/NA保留、不同run各自独立；任务中止后同配置显式resume可恢复，变更配置拒绝。真实40题两轮统一留Task 11，不提前重复跑。
+- [x] **6. 记录与提交。** 记隔离边界/同轮防重及未完成状态；`git commit -m 'feat(ch09): persist isolated production-path evaluations'`。
 
 ### Task 9: 意图token汇总、趋势和定时命令
 

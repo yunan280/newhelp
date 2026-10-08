@@ -43,8 +43,22 @@ class Ch09Runtime:
                 observations=self.observation_runtime,
             )
             self.flywheel.start()
+            from pathlib import Path
+
+            from .evaluation_jobs import EvalJobManager
+
+            self.eval_jobs = EvalJobManager(
+                self.session_factory,
+                dataset=Path("eval/ch04"),
+                artifact_dir=self.settings.artifact_dir / "evaluations",
+                profile=runtime.context.confidence_profile,
+                workflow=runtime.context,
+                observations=self.observation_runtime,
+            )
 
     async def aclose_workers(self):
+        if self.eval_jobs:
+            await self.eval_jobs.aclose()
         if self.flywheel:
             await self.flywheel.aclose()
 
