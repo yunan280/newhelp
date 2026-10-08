@@ -32,6 +32,7 @@ BIGINT_PK: TypeEngine = mysql.BIGINT(unsigned=True).with_variant(Integer, "sqlit
 # MySQL 是原生 JSON,SQLite 落成 TEXT。语义差异见 spec §16 风险 7:
 # 本章只做整体读写、不做 JSON 路径查询,所以差异不显现。
 JSON_COLUMN = JSON().with_variant(mysql.JSON(), "mysql")
+SNAPSHOT_JSON_COLUMN = JSON(none_as_null=True).with_variant(mysql.JSON(none_as_null=True), 'mysql')
 
 
 def _chinese_enum(enum_cls) -> Enum:
@@ -155,6 +156,8 @@ class Message(Base):
     tool_calls: Mapped[list | None] = mapped_column(JSON_COLUMN, nullable=True)
     tool_call_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     citations: Mapped[list[dict] | None] = mapped_column(JSON_COLUMN, nullable=True)
+    retrieval_snapshot: Mapped[dict | None] = mapped_column(SNAPSHOT_JSON_COLUMN, nullable=True,
+        comment='Ch09同轮检索快照、原话身份与反馈标记')
     ch06_event_key: Mapped[str | None] = mapped_column(String(64), nullable=True)
     created_at: Mapped[dt.datetime] = mapped_column(
         DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP")
@@ -259,3 +262,47 @@ class ToolAuditLog(Base):
     retry_count: Mapped[int] = mapped_column(mysql.TINYINT(unsigned=True).with_variant(Integer, 'sqlite'), nullable=False, server_default=text('0'), comment='实际重试次数,写操作默认不重试恒为 0')
     duration_ms: Mapped[int | None] = mapped_column(mysql.INTEGER(unsigned=True).with_variant(Integer, 'sqlite'), nullable=True, comment='耗时毫秒')
     created_at: Mapped[dt.datetime] = mapped_column(DateTime, nullable=False, server_default=text('CURRENT_TIMESTAMP'), comment='调用时间')
+
+
+class ReviewQueue(Base):
+    __tablename__ = 'review_queue'
+    __table_args__ = (
+        Index('idx_review_status', 'review_status'),
+        {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8mb4', 'comment': '飞轮待审队列'},
+    )
+    id: Mapped[int] = mapped_column(BIGINT_PK, primary_key=True, autoincrement=True,
+                                  comment='缺口主键,也是查重命中要返回的 matched_question_id')
+    normalized_question: Mapped[str] = mapped_column(String(512), nullable=False,
+                                                     comment='标准化后的 FAQ 式问题')
+    ai_suggested_answer: Mapped[str | None] = mapped_column(Text, nullable=True,
+                                                        comment='模型生成的示例答案,备查')
+    occurrence_count: Mapped[int] = mapped_column(mysql.INTEGER(unsigned=True).with_variant(Integer, 'sqlite'),
+        nullable=False, server_default=text('1'), comment='出现次数,查重命中累加,越高越该优先补')
+    review_status: Mapped[str] = mapped_column(Enum('待审', '通过', '驳回', create_constraint=True,
+        validate_strings=True), nullable=False, server_default=text("'待审'"), comment='人工审核状态')
+    approved_answer: Mapped[str | None] = mapped_column(Text, nullable=True,
+        comment='审核通过时补的核准答案,走 ch03 落库流程写回知识库')
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime, nullable=False,
+        server_default=text('CURRENT_TIMESTAMP'), comment='首次入队时间')
+    updated_at: Mapped[dt.datetime] = mapped_column(DateTime, nullable=False,
+        server_default=text('CURRENT_TIMESTAMP'), onupdate=lambda: dt.datetime.now(dt.UTC).replace(tzinfo=None),
+        comment='更新时间')
+
+
+class EvalRun(Base):
+    __tablename__ = 'eval_runs'
+    __table_args__ = (
+        Index('idx_created_at', 'created_at'),
+        {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8mb4', 'comment': '自动化评估流水线轮次结果'},
+    )
+    id: Mapped[int] = mapped_column(BIGINT_PK, primary_key=True, autoincrement=True,
+                                  comment='评估轮次主键')
+    triggered_by: Mapped[str] = mapped_column(Enum('定时', '手动', create_constraint=True,
+        validate_strings=True), nullable=False, server_default=text("'定时'"),
+        comment='这轮怎么起的:定时任务,或某次改动后手动跑')
+    dataset_size: Mapped[int] = mapped_column(mysql.INTEGER(unsigned=True).with_variant(Integer, 'sqlite'),
+        nullable=False, comment='这轮跑的评估集条数')
+    metrics: Mapped[dict] = mapped_column(JSON_COLUMN, nullable=False,
+        comment='各指标分数,如 {"recall_at_k":0.82,"mrr":0.71,"faithfulness":0.90}')
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime, nullable=False,
+        server_default=text('CURRENT_TIMESTAMP'), comment='跑完落表时间')

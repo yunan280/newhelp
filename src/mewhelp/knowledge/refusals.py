@@ -9,18 +9,20 @@ from sqlalchemy import DateTime, Enum, ForeignKey, Index, String, Text, text
 from sqlalchemy.orm import Mapped, Session, mapped_column
 
 from mewhelp.db.base import Base
-from mewhelp.db.models import BIGINT_PK
+from mewhelp.db.models import BIGINT_PK, SNAPSHOT_JSON_COLUMN
 
 ReasonCode = Literal[
     "no_evidence", "low_relevance", "insufficient_evidence", "invalid_generation",
     "invalid_citation", "unsupported_context_size",
+    "user_feedback",
 ]
 REASON_CODES = (
     "no_evidence", "low_relevance", "insufficient_evidence", "invalid_generation",
     "invalid_citation", "unsupported_context_size",
+    "user_feedback",
 )
-ENTRY_POINTS = ("chat_stream", "agent", "cli")
-TRIGGER_STAGES = ("retrieval", "generation")
+ENTRY_POINTS = ("chat_stream", "agent", "cli", "feedback")
+TRIGGER_STAGES = ("retrieval", "generation", "feedback")
 
 
 def utc_now() -> dt.datetime:
@@ -33,6 +35,7 @@ class LowConfidenceQuestion(Base):
     __table_args__ = (
         Index("idx_low_confidence_conversation", "source_conversation_id"),
         Index("idx_low_confidence_created_at", "created_at"),
+        Index('idx_matched_review_id', 'matched_review_id'),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
     )
 
@@ -51,6 +54,11 @@ class LowConfidenceQuestion(Base):
     )
     reason_code: Mapped[str] = mapped_column(String(64), nullable=False)
     reason: Mapped[str] = mapped_column(Text, nullable=False)
+    retrieved_chunks: Mapped[dict | None] = mapped_column(SNAPSHOT_JSON_COLUMN, nullable=True,
+        comment='落池时的召回片段快照:Top 几条的原文与得分,审核页展示用;没走检索为 NULL')
+    matched_review_id: Mapped[int | None] = mapped_column(BIGINT_PK,
+        ForeignKey('review_queue.id', name='fk_lcq_review', ondelete='SET NULL'), nullable=True,
+        comment='查重后归并到的缺口,指向 review_queue.id')
     created_at: Mapped[dt.datetime] = mapped_column(
         DateTime, nullable=False, default=utc_now, server_default=text("CURRENT_TIMESTAMP"),
     )
@@ -60,10 +68,11 @@ class LowConfidenceQuestion(Base):
 class RefusalInput:
     original_question: str
     source_conversation_id: int | None
-    entry_point: Literal["chat_stream", "agent", "cli"]
-    trigger_stage: Literal["retrieval", "generation"]
+    entry_point: Literal["chat_stream", "agent", "cli", "feedback"]
+    trigger_stage: Literal["retrieval", "generation", "feedback"]
     reason_code: ReasonCode
     reason: str
+    retrieved_chunks: dict | None = None
 
 
 class PoolCommitError(RuntimeError):
@@ -86,6 +95,7 @@ def record_refusal(session_factory: Callable[[], Session], item: RefusalInput) -
                 source_conversation_id=item.source_conversation_id,
                 entry_point=item.entry_point, trigger_stage=item.trigger_stage,
                 reason_code=item.reason_code, reason=item.reason, created_at=utc_now(),
+                retrieved_chunks=item.retrieved_chunks,
             )
             session.add(row)
             session.flush()

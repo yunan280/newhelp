@@ -99,18 +99,18 @@ assert callback_factory.call_count == 1
 - `snapshot_result(result: RetrievalResult, *, query: str, filters: SearchFilters, top_k: int=5, confidence: dict|None=None) -> EvidenceSnapshot`；`immutable_message_snapshot(snapshot: dict|None) -> dict|None`用于重放比较，排除feedback_lcq_id与请求trace_id，但包含原话身份、完成状态和证据。trace_id保持首次成功写入值，重放新请求通过root origin/replayed元数据关联，不覆盖原消息溯源。
 - `RefusalInput`追加默认 `retrieved_chunks: dict|None=None`；旧调用不改签名位置。独立record_refusal提交JSON并返回原str ID。
 
-- [ ] **1. 写失败测试。** 原DDL逐列核验与重复迁移；同名不兼容ENUM/长度/外键必须报错。`test_feedback_mutation_does_not_break_ledger_replay`：保存快照→加feedback_lcq_id→从新trace重放原消息，assert只一条、feedback和首次trace仍在；修改immutable chunk则冲突。`test_snapshot_preserves_original_rank_text_score`：Top5完整中文原文/分数/hash，JSON中文不转义。`test_legacy_null_is_not_no_retrieval`区分旧值与确知未检索。
+- [x] **1. 写失败测试。** 原DDL逐列核验与重复迁移；同名不兼容ENUM/长度/外键必须报错。`test_feedback_mutation_does_not_break_ledger_replay`：保存快照→加feedback_lcq_id→从新trace重放原消息，assert只一条、feedback和首次trace仍在；修改immutable chunk则冲突。`test_snapshot_preserves_original_rank_text_score`：Top5完整中文原文/分数/hash，JSON中文不转义。`test_legacy_null_is_not_no_retrieval`区分旧值与确知未检索。
 
 ```python
 assert replayed.id == original.id
 assert replayed.retrieval_snapshot['feedback_lcq_id'] == '9'
 assert answer_row_count == 1
 ```
-- [ ] **2. 验证红。** `python -X utf8 -m pytest tests/ch09/test_migration.py tests/ch09/test_snapshots.py tests/ch09/test_ledger_snapshot.py -q`（下文python均指 `.venv-ch09/Scripts/python.exe`）。
-- [ ] **3. 实现DDL和快照。** sql/ch09.sql保留用户DDL/注释，加已批准补充；迁移检查实际结构、SET NAMES及UTC连接时间。ORM与MySQL无符号/JSON/中文ENUM一致，旧enum值保留；全JSON对象赋值。只比较immutable快照，反馈更新不被原TurnMessage覆盖；新增池字段失败继续遵守PoolCommitError。
-- [ ] **4. 真实MySQL验证。** 测试专用数据库名必须以 `mewhelp_ch09_test_` 开头，不指向客服库；fixture使用忽略配置，不打印URL。`python -m pytest tests/ch09/test_mysql_schema.py -m mysql -q`：SHOW CREATE、默认值/索引、中文值实存读取、删除review后matched_review_id为NULL、两次迁移不丢数据；缺真实DB时此专门命令失败而非跳过伪通过。
-- [ ] **5. 验证绿与迁移应用。** 重跑第2步和第4步；备份本次目标结构证据后 `python -X utf8 scripts/migrate_ch09_schema.py --report artifacts/ch09/<run>/schema.json`。仅兼容增量变更，不删除旧数据或重建现有表。
-- [ ] **6. 记录与提交。** 即时追记字段边界、MySQL证据和重放结果；`git commit -m 'feat(ch09): persist evidence and flywheel schema'`。
+- [x] **2. 验证红。** `python -X utf8 -m pytest tests/ch09/test_migration.py tests/ch09/test_snapshots.py tests/ch09/test_ledger_snapshot.py -q`（下文python均指 `.venv-ch09/Scripts/python.exe`）。
+- [x] **3. 实现DDL和快照。** sql/ch09.sql保留用户DDL/注释，加已批准补充；迁移检查实际结构、SET NAMES及UTC连接时间。ORM与MySQL无符号/JSON/中文ENUM一致，旧enum值保留；全JSON对象赋值。只比较immutable快照，反馈更新不被原TurnMessage覆盖；新增池字段失败继续遵守PoolCommitError。
+- [x] **4. 真实MySQL验证。** 测试专用数据库名必须以 `mewhelp_ch09_test_` 开头，不指向客服库；fixture使用忽略配置，不打印URL。`python -m pytest tests/ch09/test_mysql_schema.py -m mysql -q`：SHOW CREATE、默认值/索引、中文值实存读取、删除review后matched_review_id为NULL、两次迁移不丢数据；缺真实DB时此专门命令失败而非跳过伪通过。
+- [x] **5. 验证绿与迁移应用。** 重跑第2步和第4步；备份本次目标结构证据后 `python -X utf8 scripts/migrate_ch09_schema.py --report artifacts/ch09/<run>/schema.json`。仅兼容增量变更，不删除旧数据或重建现有表。
+- [x] **6. 记录与提交。** 即时追记字段边界、MySQL证据和重放结果；`git commit -m 'feat(ch09): persist evidence and flywheel schema'`。
 
 ### Task 3: 正式置信公式与20题冻结校准
 

@@ -55,6 +55,7 @@ class TurnMessage:
     tool_call_id: str | None = None
     citations: list[dict] | None = None
     ch06_event_key: str | None = None
+    retrieval_snapshot: dict | None = None
 
 
 def append_messages_once(session: Session, *, conversation_id: int, rows: list[TurnMessage]) -> None:
@@ -66,6 +67,7 @@ def append_messages_once(session: Session, *, conversation_id: int, rows: list[T
         values = {"conversation_id": conversation_id, "role": row.role, "content": row.content,
                   "tool_calls": row.tool_calls, "tool_call_id": row.tool_call_id,
                   "citations": row.citations, "ch06_event_key": row.ch06_event_key}
+        values['retrieval_snapshot'] = row.retrieval_snapshot
         dialect = session.get_bind().dialect.name
         if dialect == "sqlite":
             statement = sqlite_insert(Message).values(**values).on_conflict_do_nothing(
@@ -78,10 +80,12 @@ def append_messages_once(session: Session, *, conversation_id: int, rows: list[T
         session.execute(statement)
         saved = session.scalar(select(Message).where(Message.ch06_event_key == row.ch06_event_key)
                                .with_for_update().execution_options(populate_existing=True))
+        from mewhelp.ch09.snapshots import immutable_message_snapshot
         if saved is not None and any([
             saved.conversation_id != conversation_id, saved.role != row.role,
             saved.content != row.content, saved.tool_calls != row.tool_calls,
             saved.tool_call_id != row.tool_call_id, saved.citations != row.citations,
+            immutable_message_snapshot(saved.retrieval_snapshot) != immutable_message_snapshot(row.retrieval_snapshot),
         ]):
             raise ValueError("message idempotency key reused with different content")
 
@@ -139,6 +143,7 @@ def append_messages(session: Session, *, conversation_id: int, rows: list[TurnMe
                 tool_calls=row.tool_calls,
                 tool_call_id=row.tool_call_id,
                 citations=row.citations,
+                retrieval_snapshot=row.retrieval_snapshot,
             )
         )
 

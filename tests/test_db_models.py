@@ -48,6 +48,8 @@ def test_tables_are_created(engine):
         "low_confidence_questions",
         "refund_applications",
         "tool_audit_logs",
+        "review_queue",
+        "eval_runs",
     }
 
 

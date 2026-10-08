@@ -57,7 +57,8 @@ target-version = "py311"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
-addopts = "-m 'not eval'"
+addopts = "-m 'not eval and not mysql'"
 markers = [
     "eval: 需要真实调用上游模型的评估,默认不跑,用 pytest -m eval 手动触发",
+    "mysql: 独立真实MySQL测试库，显式-m mysql运行，缺连接时失败而非skip",
 ]

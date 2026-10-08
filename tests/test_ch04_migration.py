@@ -76,9 +76,16 @@ def test_ch04_mysql_schema_matches_delta_and_foreign_key():
     assert set(LowConfidenceQuestion.__table__.columns.keys()) == {
         "id", "original_question", "source_conversation_id", "entry_point", "trigger_stage",
         "reason_code", "reason", "created_at",
+        "retrieved_chunks", "matched_review_id",
     }
     assert "BIGINT UNSIGNED" in compiled
     assert "fk_low_confidence_conversation" in compiled and "fk_low_confidence_conversation" in ddl
     assert KnowledgeChunk.__table__.c.product_category.type.length == 128
     assert Message.__table__.c.citations.nullable
     assert "ALTER TABLE knowledge_chunks" in ddl and "ALTER TABLE messages" in ddl
+    ch09_ddl = (Path(__file__).parents[1] / 'sql/ch09.sql').read_text(encoding='utf-8')
+    assert 'ADD COLUMN retrieved_chunks' in ch09_ddl
+    assert 'ADD COLUMN matched_review_id' in ch09_ddl
+    assert 'fk_lcq_review' in compiled and 'fk_lcq_review' in ch09_ddl
+    assert LowConfidenceQuestion.__table__.c.entry_point.type.enums == ['chat_stream', 'agent', 'cli', 'feedback']
+    assert LowConfidenceQuestion.__table__.c.trigger_stage.type.enums == ['retrieval', 'generation', 'feedback']
