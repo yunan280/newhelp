@@ -231,7 +231,7 @@ assert replay_target.occurrence_count == target.occurrence_count
 - `approve_review(factory: SessionFactory, review_id: int, request: ApproveReviewRequest, *, publish: Callable[[list[int]],None], verify_published: Callable[[int],bool]) -> ReviewPublication`；`reject_review(factory, review_id: int) -> ReviewPublication`；`retry_publication(factory, review_id: int, *, publish, verify_published) -> ReviewPublication`。
 - `GET /api/ch09/reviews?status=&page=&page_size=&sort=`，默认待审、次数降序+id稳定排序；列表及详情返回 `{items,total,page,page_size}`；详情原话独立分页。`GET /api/ch09/reviews/{id}`、`POST .../{id}/approve|reject|publish`；来源知识键固定 `ch09-review:<id>`。
 
-- [ ] **1. 写失败测试。** approved_answer空/仅空格422；同参数确认两次KnowledgeChunk1条，同ID；变更已核准答案409；驳回不建知识。`test_vector_failure_preserves_approval_and_pending` 断言review通过且原文保留、publication pending、sync_error非空；重试published无需再建知识。不同category/product参数同样是冲突边界；详情列出全部原话/入口/评分/恢复状态，不只显示最近一个。
+- [x] **1. 写失败测试。** approved_answer空/仅空格422；同参数确认两次KnowledgeChunk1条，同ID；变更已核准答案409；驳回不建知识。`test_vector_failure_preserves_approval_and_pending` 断言review通过且原文保留、publication pending、sync_error非空；重试published无需再建知识。不同category/product参数同样是冲突边界；详情列出全部原话/入口/评分/恢复状态，不只显示最近一个。
 
 ```python
 assert failed_publication.review_status == '通过'
@@ -239,11 +239,11 @@ assert failed_publication.publication_status == 'pending'
 assert failed_publication.sync_error
 assert retried.knowledge_id == failed_publication.knowledge_id
 ```
-- [ ] **2. 验证红。** `python -m pytest tests/ch09/test_reviews.py tests/ch09/test_review_publication.py -q`。
-- [ ] **3. 实现审核。** 事务锁review；待审时用KnowledgeDraft稳定source_key、content_type=faq写原文和核准答案，原子提交后sync_pending。核准后答案/分类必须与原知识一致才能幂等；驳回终态不可反转。发布验证MySQL done和当前Milvus可见，失败如实pending，retry只发布该row_id；不新增Agent工具或修改政策hash。
-- [ ] **4. 真实并发与接口验证。** `python -m pytest tests/ch09/test_mysql_reviews.py -m mysql -q`：同时审批只一知识、worker不归并通过行；同问检索到该知识ID为发布成功的真实证据。API/DB验证不记作点击页面验收。
-- [ ] **5. 验证绿。** 重跑第2/4步；`python -m pytest tests/test_knowledge_store.py tests/test_knowledge_sync.py -q`，原入库/补偿路径保持兼容。
-- [ ] **6. 记录与提交。** 记审批/发布两阶段实际状态；`git commit -m 'feat(ch09): publish approved review answers safely'`。
+- [x] **2. 验证红。** `python -m pytest tests/ch09/test_reviews.py tests/ch09/test_review_publication.py -q`。
+- [x] **3. 实现审核。** 事务锁review；待审时用KnowledgeDraft稳定source_key、content_type=faq写原文和核准答案，原子提交后sync_pending。核准后答案/分类必须与原知识一致才能幂等；驳回终态不可反转。发布验证MySQL done和当前Milvus可见，失败如实pending，retry只发布该row_id；不新增Agent工具或修改政策hash。
+- [x] **4. 真实并发与接口验证。** `python -m pytest tests/ch09/test_mysql_reviews.py -m mysql -q`：同时审批只一知识、worker不归并通过行；同问检索到该知识ID为发布成功的真实证据。API/DB验证不记作点击页面验收。
+- [x] **5. 验证绿。** 重跑第2/4步；`python -m pytest tests/test_knowledge_store.py tests/test_knowledge_sync.py -q`，原入库/补偿路径保持兼容。
+- [x] **6. 记录与提交。** 记审批/发布两阶段实际状态；`git commit -m 'feat(ch09): publish approved review answers safely'`。
 
 ### Task 8: 当前正式路径的隔离评估与 eval_runs
 

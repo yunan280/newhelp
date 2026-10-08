@@ -1,6 +1,8 @@
 import asyncio
+from typing import Annotated, Literal
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Path, Query, Request
+from sqlalchemy.exc import SQLAlchemyError
 
 from mewhelp.ch05.api import RuntimeDep
 from mewhelp.knowledge.refusals import PoolCommitError
@@ -11,6 +13,7 @@ from .feedback import (
     recover_answer_snapshot,
     submit_negative_feedback,
 )
+from .reviews import ApproveReviewRequest, ReviewPublication
 
 router = APIRouter(prefix="/api/ch09", tags=["ch09"])
 
@@ -71,3 +74,101 @@ async def flywheel_retry(pool_id: int, request: Request):
         return {"pool_id": str(pool_id), "review_id": str(matched), "scheduled": False}
     worker.retry(pool_id)
     return {"pool_id": str(pool_id), "scheduled": True}
+
+
+ReviewId = Annotated[int, Path(gt=0, lt=2**64)]
+Page = Annotated[int, Query(ge=1)]
+PageSize = Annotated[int, Query(ge=1, le=100)]
+
+
+def review_boundary(function, *args, **kwargs):
+    try:
+        return function(*args, **kwargs)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except SQLAlchemyError as exc:
+        raise HTTPException(status_code=503, detail="数据库暂不可用，请重试") from exc
+
+
+def publication_callbacks(runtime):
+    from mewhelp.knowledge.sync import sync_pending
+
+    from .reviews import verify_chunk_visible
+
+    # Milvus/model setup runs only after the approval transaction commits.
+    def publish(ids):
+        retrieval = runtime.context.rag_factory().retrieval
+        sync_pending(runtime.context.session_factory, retrieval.embed, retrieval.index, row_ids=ids)
+
+    def verify(row_id):
+        retrieval = runtime.context.rag_factory().retrieval
+        return verify_chunk_visible(runtime.context.session_factory, retrieval.index, row_id)
+
+    return publish, verify
+
+
+@router.get("/reviews")
+def reviews(
+    runtime: RuntimeDep,
+    status: Literal["待审", "通过", "驳回", "全部"] = "待审",
+    page: Page = 1,
+    page_size: PageSize = 20,
+    sort: Literal["occurrence", "created"] = "occurrence",
+):
+    from .reviews import list_reviews
+
+    return review_boundary(
+        list_reviews,
+        runtime.context.session_factory,
+        status=status,
+        page=page,
+        page_size=page_size,
+        sort=sort,
+    )
+
+
+@router.get("/reviews/{review_id}")
+def review_read(review_id: ReviewId, runtime: RuntimeDep, page: Page = 1, page_size: PageSize = 20):
+    from .reviews import review_detail
+
+    return review_boundary(
+        review_detail, runtime.context.session_factory, review_id, page=page, page_size=page_size
+    )
+
+
+@router.post("/reviews/{review_id}/approve", response_model=ReviewPublication)
+def review_approve(review_id: ReviewId, body: ApproveReviewRequest, runtime: RuntimeDep):
+    from .reviews import approve_review
+
+    publish, verify = publication_callbacks(runtime)
+    return review_boundary(
+        approve_review,
+        runtime.context.session_factory,
+        review_id,
+        body,
+        publish=publish,
+        verify_published=verify,
+    )
+
+
+@router.post("/reviews/{review_id}/reject", response_model=ReviewPublication)
+def review_reject(review_id: ReviewId, runtime: RuntimeDep):
+    from .reviews import reject_review
+
+    return review_boundary(reject_review, runtime.context.session_factory, review_id)
+
+
+@router.post("/reviews/{review_id}/publish", response_model=ReviewPublication)
+def review_publish(review_id: ReviewId, runtime: RuntimeDep):
+    from .reviews import retry_publication
+
+    publish, verify = publication_callbacks(runtime)
+    return review_boundary(
+        retry_publication,
+        runtime.context.session_factory,
+        review_id,
+        publish=publish,
+        verify_published=verify,
+    )

@@ -71,10 +71,12 @@ def ch09_mysql():
             connection.exec_driver_sql('SET NAMES utf8mb4')
             for table, filename in (('conversations', 'ch02-ddl.sql'),
                                     ('messages', 'ch02-ddl.sql'),
+                                    ('knowledge_chunks', 'ch03-ddl.sql'),
                                     ('low_confidence_questions', 'ch04-ddl.sql')):
                 ddl = (sql_root / filename).read_text(encoding='utf-8')
                 start = ddl.index(f'CREATE TABLE {table} (')
                 connection.exec_driver_sql(ddl[start:ddl.index(';', start)])
+            connection.exec_driver_sql('ALTER TABLE knowledge_chunks ADD COLUMN product_category VARCHAR(128) NULL')
             connection.exec_driver_sql('ALTER TABLE messages ADD COLUMN citations JSON NULL, '
                 'ADD COLUMN ch06_event_key VARCHAR(64) NULL, '
                 'ADD UNIQUE KEY uk_messages_ch06_event_key (ch06_event_key)')
