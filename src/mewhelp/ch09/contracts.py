@@ -69,7 +69,7 @@ class MessageSnapshot(BaseModel):
     source_user_event_key: str
     source_user_message_id: str | None = Field(default=None, pattern=r'^[1-9][0-9]*$')
     intent: str
-    retrieval_performed: bool
+    retrieval_performed: bool | None
     retrieval_events: list[dict] = Field(default_factory=list)
     pool_id: str | None = None
     trace_id: str | None = None

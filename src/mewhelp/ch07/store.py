@@ -123,6 +123,13 @@ def list_user_conversations(session: Session, *, user_id: str):
 def read_visible_messages(session: Session, *, conversation_id: int, user_id: str):
     from .schemas import ConversationMessages, VisibleMessage
     snapshot = read_conversation(session, conversation_id=conversation_id, user_id=user_id)
+    rows={r.id:r for r in session.scalars(select(Message).where(Message.conversation_id==conversation_id))}
+    def feedback_fields(message):
+        row=rows[message.id]
+        saved=row.retrieval_snapshot or {}
+        eligible=message.role=='assistant' and saved.get('answer_status','completed')=='completed'
+        return {'answer_message_id':str(message.id) if eligible else None,
+                'feedback_status':'down' if saved.get('feedback_lcq_id') else 'none'}
     return ConversationMessages(id=snapshot.conversation_id, session_id=snapshot.session_id,
-        messages=[VisibleMessage(id=m.id, role=m.role, content=m.content, citations=list(m.citations))
+        messages=[VisibleMessage(id=m.id, role=m.role, content=m.content, citations=list(m.citations),**feedback_fields(m))
                   for m in snapshot.messages])

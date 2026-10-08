@@ -23,6 +23,8 @@ class VisibleMessage(BaseModel):
     role: Literal['user', 'assistant']
     content: str
     citations: list[dict] = Field(default_factory=list)
+    answer_message_id: str | None = None
+    feedback_status: Literal['none','down'] = 'none'
 
 
 class ConversationMessages(BaseModel):

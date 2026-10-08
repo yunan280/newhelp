@@ -16,6 +16,7 @@ from mewhelp.ch05.runtime import open_runtime
 from mewhelp.ch06.api import router as ch06_router
 from mewhelp.ch07.api import router as ch07_router
 from mewhelp.ch08.api import router as ch08_router
+from mewhelp.ch09.api import router as ch09_router
 from mewhelp.knowledge.api import RuntimeDep
 from mewhelp.knowledge.api import router as kb_router
 from mewhelp.knowledge.sources import read_published_chunk
@@ -59,6 +60,7 @@ app.include_router(ch05_router)
 app.include_router(ch06_router)
 app.include_router(ch07_router)
 app.include_router(ch08_router)
+app.include_router(ch09_router)
 app.include_router(kb_router)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 

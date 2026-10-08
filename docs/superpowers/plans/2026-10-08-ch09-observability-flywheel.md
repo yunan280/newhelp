@@ -178,7 +178,7 @@ assert '未经验证的草稿' not in emitted_text
 - `submit_negative_feedback(factory: SessionFactory, request: FeedbackRequest, *, recover: Callable) -> FeedbackReceipt`（async）；`recover_answer_snapshot(message_id: int, *, factory: SessionFactory, checkpoint_reader: Callable) -> MessageSnapshot`（async）。checkpoint异步读取留在原事件循环；旧轮恢复先完成再进入短反馈事务，锁行后重查归属/最终状态。必须对应明确turn/ledger绑定，无依据标unavailable；确认为旧waiting则拒绝反馈。
 - `POST /api/ch09/feedback`；VisibleMessage增加同名answer_message_id/feedback_status；历史ID不截断为JS浮点，旧客户端新增字段不破坏原响应。
 
-- [ ] **1. 写失败测试。** `test_old_answer_bigint_and_repeated_question_find_exact_user` 使用大于2**53的字符串ID及同一会话两次同问，断言反馈原问题/快照指向指定回答；跨用户/跨session/工具消息/preview拒绝；`test_retry_returns_same_pool_id`重复和失败重试只一条；事务任一步失败同时回滚。老snapshot只从同轮历史回捞，旧引用无分为legacy_partial，检索空/未检索/未知四态区分，不查询现在线上知识。
+- [x] **1. 写失败测试。** `test_old_answer_bigint_and_repeated_question_find_exact_user` 使用大于2**53的字符串ID及同一会话两次同问，断言反馈原问题/快照指向指定回答；跨用户/跨session/工具消息/preview拒绝；`test_retry_returns_same_pool_id`重复和失败重试只一条；事务任一步失败同时回滚。老snapshot只从同轮历史回捞，旧引用无分为legacy_partial，检索空/未检索/未知四态区分，不查询现在线上知识。
 
 ```python
 assert retry.pool_id == first.pool_id
@@ -186,11 +186,11 @@ assert retry.replayed is True
 assert feedback_pool_count == 1
 assert saved.original_question == selected_turn_question
 ```
-- [ ] **2. 验证红。** `python -m pytest tests/ch09/test_feedback.py tests/ch09/test_legacy_snapshot.py -q`。
-- [ ] **3. 实现反馈与恢复。** 校验归属后锁最终assistant行，查绑定user消息，创建feedback池和整对象反馈标记同事务；reason_code=user_feedback、entry/stage=feedback。已有池ID直接返回；恢复明确引用/评分不可用时如实标部分/不可恢复，不猜“最近用户消息”。GET历史带持久ID/已反馈状态，不能泄露另一会话快照。
-- [ ] **4. 真实并发验证。** `python -m pytest tests/ch09/test_mysql_feedback.py -m mysql -q`：独立连接同时点同一回答，assert pool1条/同ID，反馈后账本重放不清标记。用Task 2专用DB；专门命令缺DB即失败。
-- [ ] **5. 验证绿。** 重跑第2/4步及 `tests/ch07/test_conversation_api.py`。本阶段只验证API/DB，页面点击在Task 10/11。
-- [ ] **6. 记录与提交。** 记旧轮恢复边界/缺分状态及ID证据；`git commit -m 'feat(ch09): persist idempotent negative feedback'`。
+- [x] **2. 验证红。** `python -m pytest tests/ch09/test_feedback.py tests/ch09/test_legacy_snapshot.py -q`。
+- [x] **3. 实现反馈与恢复。** 校验归属后锁最终assistant行，查绑定user消息，创建feedback池和整对象反馈标记同事务；reason_code=user_feedback、entry/stage=feedback。已有池ID直接返回；恢复明确引用/评分不可用时如实标部分/不可恢复，不猜“最近用户消息”。GET历史带持久ID/已反馈状态，不能泄露另一会话快照。
+- [x] **4. 真实并发验证。** `python -m pytest tests/ch09/test_mysql_feedback.py -m mysql -q`：独立连接同时点同一回答，assert pool1条/同ID，反馈后账本重放不清标记。用Task 2专用DB；专门命令缺DB即失败。
+- [x] **5. 验证绿。** 重跑第2/4步及 `tests/ch07/test_conversation_api.py`。本阶段只验证API/DB，页面点击在Task 10/11。
+- [x] **6. 记录与提交。** 记旧轮恢复边界/缺分状态及ID证据；`git commit -m 'feat(ch09): persist idempotent negative feedback'`。
 
 ### Task 6: 标准化、分页语义归并与恢复工作器
 
