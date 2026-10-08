@@ -19,6 +19,7 @@ from mewhelp.tools.contracts import (
 from mewhelp.tools.permissions import arguments_hash, permission_error
 
 from .schemas import TicketResumeRequest
+from mewhelp.ch09.observability import current_request, trace_graph_stream
 
 
 def make_ticket_preview(prepared: PreparedToolCall, context: ToolCallContext) -> dict:
@@ -267,6 +268,7 @@ async def cancel_ticket_locked(runtime, config, reason):
             context=context, durability='sync')
 
 
+@trace_graph_stream('ticket_resume')
 async def stream_ticket_resume(runtime, request):
     from mewhelp.ch05.events import event
     from mewhelp.ch05.schemas import TurnResult
@@ -279,6 +281,11 @@ async def stream_ticket_resume(runtime, request):
             raise TicketConfirmationError('会话不存在', 404)
         snapshot = await runtime.graph.aget_state(config)
         state = snapshot.values
+        root = current_request()
+        if root:
+            root.bind(turn_id=state.get('turn_id'), origin_trace_id=state.get('trace_id'),
+                      conversation_id=state.get('conversation_id'))
+            root.set_intent(state.get('intent', '其他'))
         if state.get('user_id') != request.resolved_user_id:
             raise TicketConfirmationError('会话属于其他用户', 403)
         remembered = state.get('ticket_confirmation_receipts', {}).get(request.confirmation_id)

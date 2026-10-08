@@ -37,6 +37,11 @@ def get_structured_model(schema, *, include_raw: bool = False, **kwargs):
     `parsed` 是 None,`raw` 里的原始输出是唯一能说明"它到底说了什么"的东西。
     `method` 只在这里钉一次,别在调用方再写第二遍。
     """
-    return get_chat_model(temperature=0.0, **kwargs).with_structured_output(
+    result = get_chat_model(temperature=0.0, **kwargs).with_structured_output(
         schema, method="function_calling", include_raw=include_raw
     )
+    from mewhelp.ch09.observability import current_request, with_callbacks
+    root = current_request()
+    if root and not root.metadata.get('graph_bound'):
+        return with_callbacks(result)
+    return result

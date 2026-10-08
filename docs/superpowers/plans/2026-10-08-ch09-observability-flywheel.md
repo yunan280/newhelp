@@ -72,8 +72,8 @@
 - `build_workflow(checkpointer, *, callbacks=())` 编译后只固定一次 callbacks；`open_runtime(..., observation_runtime=None)` 传入同一实例。图外模型显式复用该回调；图内模型继承，不能二次挂造成双计。
 - `Ch09Runtime`持有observation_runtime以及后续可选flywheel/eval_jobs；`open_ch09_runtime(factory: SessionFactory, *, settings: Ch09Settings) -> AsyncContextManager[Ch09Runtime]`。`attach_workflow(runtime: WorkflowRuntime) -> Awaitable[None]`在主图可用后启动需要其模型/检索资源的工作器；初始化阶段不存在的功能保持None，不提前加载未完成模块。
 
-- [ ] **1. 接口与兼容检查。** 使用已有Context7库ID `/langfuse/langfuse-python`、`/langfuse/langfuse-docs` 核对4.17.0的上下文、CallbackHandler和v2 cursor读取；保存官方出处及精确签名到 `docs/ch09-sdk-reference.md`。以UTF-8保存原venv依赖清单、剔除指向旧树的editable条目，以当前新树安装mewhelp；完整约束下安装锁定4.17.0并 `python -m pip check`。若需变化的旧依赖与固定栈冲突，先出解析证据问用户，不用未锁的 `pip install .[observability]` 升级整个框架。
-- [ ] **2. 写失败测试。** 测试 `test_enabled_cloud_url_is_rejected`；`test_one_callback_parallel_roots_and_late_intent` 断言两会话trace_id不同、最终intent各自正确、handler只初始化一次；`test_background_trace_is_detached`；`test_disconnect_and_resume_close_distinct_roots` 断言waiting和resume不同trace_id、同turn/origin关联；`test_tool_denial_and_timeout_are_observed` 断言prepare拒绝/execute超时都有参数、status、retry_count和耗时，业务结果不因观测异常变化。
+- [x] **1. 接口与兼容检查。** 使用已有Context7库ID `/langfuse/langfuse-python`、`/langfuse/langfuse-docs` 核对4.17.0的上下文、CallbackHandler和v2 cursor读取；保存官方出处及精确签名到 `docs/ch09-sdk-reference.md`。以UTF-8保存原venv依赖清单、剔除指向旧树的editable条目，以当前新树安装mewhelp；完整约束下安装锁定4.17.0并 `python -m pip check`。若需变化的旧依赖与固定栈冲突，先出解析证据问用户，不用未锁的 `pip install .[observability]` 升级整个框架。
+- [x] **2. 写失败测试。** 测试 `test_enabled_cloud_url_is_rejected`；`test_one_callback_parallel_roots_and_late_intent` 断言两会话trace_id不同、最终intent各自正确、handler只初始化一次；`test_background_trace_is_detached`；`test_disconnect_and_resume_close_distinct_roots` 断言waiting和resume不同trace_id、同turn/origin关联；`test_tool_denial_and_timeout_are_observed` 断言prepare拒绝/execute超时都有参数、status、retry_count和耗时，业务结果不因观测异常变化。
 
 ```python
 with pytest.raises(ValueError):
@@ -81,10 +81,10 @@ with pytest.raises(ValueError):
 assert left.trace_id != right.trace_id
 assert callback_factory.call_count == 1
 ```
-- [ ] **3. 验证红。** `& ./.venv-ch09/Scripts/python.exe -X utf8 -m pytest tests/ch09/test_config.py tests/ch09/test_observability.py tests/ch09/test_tool_observations.py -q`；预期新接口不存在或合同断言失败，排除无关导入/环境错误。
-- [ ] **4. 实现观测边界与部署。** 用已核对的 `start_as_current_observation`、`propagate_attributes` 和请求自己的root handle，分类后更新root metadata；所有node/工具子观测保留真实输入输出，不依赖共享last_trace_id。临时导出故障记录后继续客服。SSE和resume在请求上下文内消费完生成器并收尾；旧回执重放创建只读请求观测，不触发写工具。后台根上下文与客服分离。生成初始化私有文件 `.env.ch09.langfuse`，不打印密钥；Compose锁定web/worker版本及所有依赖digest，6服务与3039回环。
-- [ ] **5. 验证绿与真实部署。** 重跑第3步；执行 `powershell -NoProfile -File scripts/start_ch09_langfuse.ps1`，保存docker compose健康/实际image版本/本地项目API可读证据。依赖共存资源检查不足则如实阻塞，不换云端；本任务不宣称已通过完整链路验收。
-- [ ] **6. 记录与提交。** 生成 `requirements-ch09.lock.txt`（无密钥），追记Task 1结果；`git commit -m 'feat(ch09): add self-hosted request observability'`，提交范围仅本任务及笔记。
+- [x] **3. 验证红。** `& ./.venv-ch09/Scripts/python.exe -X utf8 -m pytest tests/ch09/test_config.py tests/ch09/test_observability.py tests/ch09/test_tool_observations.py -q`；预期新接口不存在或合同断言失败，排除无关导入/环境错误。
+- [x] **4. 实现观测边界与部署。** 用已核对的 `start_as_current_observation`、`propagate_attributes` 和请求自己的root handle，分类后更新root metadata；所有node/工具子观测保留真实输入输出，不依赖共享last_trace_id。临时导出故障记录后继续客服。SSE和resume在请求上下文内消费完生成器并收尾；旧回执重放创建只读请求观测，不触发写工具。后台根上下文与客服分离。生成初始化私有文件 `.env.ch09.langfuse`，不打印密钥；Compose锁定web/worker版本及所有依赖digest，6服务与3039回环。
+- [x] **5. 验证绿与真实部署。** 重跑第3步；执行 `powershell -NoProfile -File scripts/start_ch09_langfuse.ps1`，保存docker compose健康/实际image版本/本地项目API可读证据。依赖共存资源检查不足则如实阻塞，不换云端；本任务不宣称已通过完整链路验收。
+- [x] **6. 记录与提交。** 生成 `requirements-ch09.lock.txt`（无密钥），追记Task 1结果；`git commit -m 'feat(ch09): add self-hosted request observability'`，提交范围仅本任务及笔记。
 
 ### Task 2: 权威迁移、问题池扩展和不可变快照
 

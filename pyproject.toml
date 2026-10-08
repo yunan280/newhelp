@@ -33,7 +33,8 @@ rag = [
     "sentencepiece>=0.2",
 ]
 observability = [
-    "langfuse>=2.50",
+    "langfuse==4.17.0",
+    "langchain==1.4.3",
 ]
 dev = [
     "pytest>=8.0",

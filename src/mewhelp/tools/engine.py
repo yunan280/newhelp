@@ -2,7 +2,7 @@
 import asyncio
 import logging
 import time
-from dataclasses import replace
+from dataclasses import asdict, replace
 from uuid import uuid4
 
 from langgraph.errors import GraphInterrupt
@@ -19,8 +19,31 @@ BACKOFF_SECONDS = (.2, .4)
 
 
 class ToolExecutionEngine:
-    def __init__(self, audit=None, *, sleep=asyncio.sleep):
+    def __init__(self, audit=None, *, sleep=asyncio.sleep, observation_runtime=None):
         self.audit, self.sleep = audit, sleep
+        self.observation_runtime = observation_runtime
+
+    async def _observed(self, operation, snapshot, name, args, context):
+        from mewhelp.ch09.observability import get_observation_runtime
+        observations = self.observation_runtime or get_observation_runtime()
+        spec = snapshot.get(name)
+        with observations.observe('tool.' + name, kind='tool', input={
+            'arguments': args, 'tool_call_id': context.tool_call_id,
+            'source': spec.source if spec else 'builtin',
+            'mcp_server': spec.mcp_server if spec else None}) as span:
+            result = await operation(snapshot, name, args, context)
+            final = result.result if isinstance(result, PreparedToolCall) else result
+            span.update(output=asdict(final) if final is not None else {
+                'status': 'waiting_for_confirmation', 'tool_call_id': result.tool_call_id})
+            return result
+
+    async def prepare(self, snapshot, name, args, context):
+        context = replace(context, tool_call_id=context.tool_call_id or uuid4().hex)
+        return await self._observed(self._prepare, snapshot, name, args, context)
+
+    async def execute(self, snapshot, name, args, context):
+        context = replace(context, tool_call_id=context.tool_call_id or uuid4().hex)
+        return await self._observed(self._execute, snapshot, name, args, context)
 
     async def _finish(self, result, context):
         if self.audit is not None:
@@ -38,7 +61,7 @@ class ToolExecutionEngine:
                           spec.source if spec else 'builtin', spec.mcp_server if spec else None,
                           context.tool_call_id)
 
-    async def prepare(self, snapshot: ToolSnapshot, name: str, args: dict,
+    async def _prepare(self, snapshot: ToolSnapshot, name: str, args: dict,
                       context: ToolCallContext) -> PreparedToolCall:
         context = replace(context, tool_call_id=context.tool_call_id or uuid4().hex)
         spec = snapshot.get(name)
@@ -83,6 +106,16 @@ class ToolExecutionEngine:
         return prepared
 
     async def reject(self, prepared: PreparedToolCall, context: ToolCallContext, reason: str) -> ToolResult:
+        from mewhelp.ch09.observability import get_observation_runtime
+        observations = self.observation_runtime or get_observation_runtime()
+        with observations.observe('tool.' + prepared.name, kind='tool', input={
+            'arguments': prepared.args, 'tool_call_id': prepared.tool_call_id,
+            'source': prepared.source, 'mcp_server': prepared.mcp_server}) as span:
+            result = await self._reject(prepared, context, reason)
+            span.update(output=asdict(result))
+            return result
+
+    async def _reject(self, prepared: PreparedToolCall, context: ToolCallContext, reason: str) -> ToolResult:
         if prepared.result is not None:
             return prepared.result
         result = ToolResult(prepared.name, prepared.args, False, reason, 'permission_denied',
@@ -90,15 +123,15 @@ class ToolExecutionEngine:
                             source=prepared.source, mcp_server=prepared.mcp_server)
         return await self._finish(result, context)
 
-    async def execute(self, snapshot: ToolSnapshot, name: str, args: dict,
+    async def _execute(self, snapshot: ToolSnapshot, name: str, args: dict,
                       context: ToolCallContext) -> ToolResult:
         started = time.monotonic()
-        prepared = await self.prepare(snapshot, name, args, context)
+        prepared = await self._prepare(snapshot, name, args, context)
         context = replace(context, tool_call_id=prepared.tool_call_id)
         if prepared.result is not None:
             return prepared.result
         if prepared.requires_confirmation:
-            return await self.reject(prepared, context, '建工单尚未收到用户的前端确认。')
+            return await self._reject(prepared, context, '建工单尚未收到用户的前端确认。')
         spec = snapshot.get(name)
         limit = MAX_ATTEMPTS if spec.retryable and spec.permission == 'readonly' else 1
         attempts, artifact, status, content, error = 0, None, '失败', '', None

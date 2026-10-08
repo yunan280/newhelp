@@ -11,6 +11,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 from mewhelp.ch07.context import prepare_request_context
 from mewhelp.db.models import MsgRole
 from mewhelp.db.repository import get_or_create_conversation, load_replay_messages
+from mewhelp.ch09.observability import current_request, trace_graph_stream
 
 from .events import event
 from .schemas import TurnResult
@@ -42,6 +43,7 @@ def result_from_state(state: dict) -> TurnResult:
     return TurnResult.model_validate(fields)
 
 
+@trace_graph_stream('agent')
 async def stream_turn(runtime, request, *, entry_point):
     from mewhelp.ch06.selection import active_selection, cancel_pending_locked
     from mewhelp.ch08.confirmation import active_ticket_preview, cancel_ticket_locked
@@ -56,19 +58,24 @@ async def stream_turn(runtime, request, *, entry_point):
         await cancel_ticket_locked(runtime, config, '用户发送了新消息，本次工单预览已取消。')
         previous = await runtime.graph.aget_state(config)
         resumed = bool(previous.values.get("messages") or history)
+        root = current_request()
         incoming = {
             "question": request.message,
             "session_id": session_id,
             "user_id": request.resolved_user_id,
             "conversation_id": cid,
             "resumed": resumed,
-            "turn_id": uuid4().hex,
+            "turn_id": root.metadata['turn_id'] if root else uuid4().hex,
+            "trace_id": root.trace_id if root else None,
+            "origin_trace_id": None,
             "filters": request.filters.model_dump() if request.filters else {},
             "entry_point": entry_point,
             "started_at": time.time(),
         }
         if history:
             incoming["messages"] = history
+        if root:
+            root.bind(entry_point=entry_point, session_id=session_id, conversation_id=cid)
         yield event("session", session_id=session_id, conversation_id=cid, resumed=resumed)
         try:
             request_context = await prepare_request_context(runtime.context, {**previous.values, **incoming})

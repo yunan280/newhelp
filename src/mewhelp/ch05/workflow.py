@@ -440,7 +440,7 @@ async def log_node(state, context, emit):
     }
 
 
-def build_workflow(checkpointer):
+def build_workflow(checkpointer, *, callbacks=()):
     from mewhelp.ch08.confirmation import (
         await_ticket_node,
         execute_confirmed_ticket_node,
@@ -487,6 +487,10 @@ def build_workflow(checkpointer):
                 "Ch05 node=%s session=%s turn=%s", name, state["session_id"], state["turn_id"]
             )
             update = await operation(state, runtime.context, writer)
+            from mewhelp.ch09.observability import current_request
+            root = current_request()
+            if root is not None and update.get('intent'):
+                root.set_intent(update['intent'])
             trace = [] if name == "begin_turn" else state.get("node_trace", [])
             return {**context_patch, **update, "node_trace": [*trace, name]}
 
@@ -552,4 +556,5 @@ def build_workflow(checkpointer):
     ]:
         graph.add_edge(name, "log_turn")
     graph.add_edge("log_turn", END)
-    return graph.compile(checkpointer=checkpointer)
+    compiled = graph.compile(checkpointer=checkpointer)
+    return compiled.with_config(callbacks=list(callbacks)) if callbacks else compiled

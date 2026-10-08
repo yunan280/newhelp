@@ -22,6 +22,8 @@ class WorkflowState(TypedDict, total=False):
     conversation_id: int
     resumed: bool
     turn_id: str
+    trace_id: str | None
+    origin_trace_id: str | None
     intent: str
     route: str
     evidence: dict | None
@@ -98,3 +100,4 @@ class WorkflowContext:
     request_history: dict | None = field(default=None, kw_only=True)
     tool_runtime: object | None = field(default=None, kw_only=True)
     tool_snapshot: object | None = field(default=None, kw_only=True)
+    observation_runtime: object | None = field(default=None, kw_only=True)

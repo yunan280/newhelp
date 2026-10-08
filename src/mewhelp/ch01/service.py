@@ -11,6 +11,7 @@ from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
 from mewhelp.config import HISTORY_TOKEN_BUDGET
 from mewhelp.llm import get_chat_model, get_structured_model
 from mewhelp.memory import store, trim_history
+from mewhelp.ch09.observability import model_kwargs, trace_legacy
 
 from .prompts import CHAT_PROMPT, EXTRACT_PROMPT
 from .schemas import AfterSalesTicket
@@ -25,6 +26,7 @@ class EmptyCompletionError(RuntimeError):
     """
 
 
+@trace_legacy('ch01_chat', stream=True)
 async def stream_chat(session_id: str, message: str) -> AsyncIterator[str]:
     """跑一轮对话,逐段产出回复文本。
 
@@ -40,7 +42,7 @@ async def stream_chat(session_id: str, message: str) -> AsyncIterator[str]:
         messages = CHAT_PROMPT.format_messages(history=trimmed) + [human]
 
         collected: AIMessageChunk | None = None
-        async for chunk in get_chat_model().astream(messages):
+        async for chunk in get_chat_model().astream(messages, **model_kwargs()):
             if chunk.text:
                 yield chunk.text
             collected = chunk if collected is None else collected + chunk
@@ -91,6 +93,7 @@ def _raw_text(raw: AIMessage, parsing_error: BaseException | None) -> str:
     return schema_note or "模型这一轮没有输出任何文本,也没有调用工具"
 
 
+@trace_legacy('ch01_extract')
 async def extract_ticket(description: str) -> ExtractionResult:
     """从一段售后描述里抽取工单要素。
 
@@ -99,5 +102,5 @@ async def extract_ticket(description: str) -> ExtractionResult:
     这里不重试:重试策略等评估跑出数据再定。
     """
     messages = EXTRACT_PROMPT.format_messages(description=description)
-    out = await get_structured_model(AfterSalesTicket, include_raw=True).ainvoke(messages)
+    out = await get_structured_model(AfterSalesTicket, include_raw=True).ainvoke(messages, **model_kwargs())
     return ExtractionResult(ticket=out["parsed"], raw=_raw_text(out["raw"], out["parsing_error"]))

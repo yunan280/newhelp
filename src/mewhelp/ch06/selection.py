@@ -12,6 +12,7 @@ from mewhelp.ch05.events import event
 from mewhelp.ch05.schemas import OrderSelection, TurnResult
 from mewhelp.ch07.context import prepare_request_context
 from mewhelp.db.models import Conversation
+from mewhelp.ch09.observability import current_request, trace_graph_stream
 
 from .orders import list_demo_orders
 
@@ -102,6 +103,7 @@ async def _remember_result(runtime, config, request, result):
     await runtime.graph.aupdate_state(config, {"selection_receipts": receipts})
 
 
+@trace_graph_stream('order_resume')
 async def stream_order_resume(runtime, request):
     from mewhelp.ch05.service import result_from_state
     config = {"configurable": {"thread_id": request.session_id}, "recursion_limit": 40}
@@ -112,6 +114,11 @@ async def stream_order_resume(runtime, request):
             raise SelectionError("会话或订单选择不存在")
         snapshot = await runtime.graph.aget_state(config)
         state = snapshot.values
+        root = current_request()
+        if root:
+            root.bind(turn_id=state.get('turn_id'), origin_trace_id=state.get('trace_id'),
+                      conversation_id=state.get('conversation_id'))
+            root.set_intent(state.get('intent', '其他'))
         if state.get("user_id") != request.resolved_user_id:
             raise SelectionError("会话属于其他用户", 403)
         receipt = state.get("selection_receipts", {}).get(request.selection_id)

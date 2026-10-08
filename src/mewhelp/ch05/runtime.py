@@ -38,6 +38,7 @@ async def open_runtime(
     context_settings=None,
     context_profile=None,
     tool_runtime=None,
+    observation_runtime=None,
 ):
     @lru_cache(maxsize=1)
     def default_rag_factory():
@@ -80,8 +81,10 @@ async def open_runtime(
             router_model_factory=router_model_factory,
             settings=context_settings, profile=profile, summary_manager=manager,
             tool_runtime=tool_runtime,
+            observation_runtime=observation_runtime,
         )
         try:
-            yield WorkflowRuntime(build_workflow(saver), context, SessionStore())
+            callbacks = observation_runtime.callbacks if observation_runtime else ()
+            yield WorkflowRuntime(build_workflow(saver, callbacks=callbacks), context, SessionStore())
         finally:
             await manager.aclose()

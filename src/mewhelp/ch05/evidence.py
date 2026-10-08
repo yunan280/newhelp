@@ -16,6 +16,7 @@ from mewhelp.knowledge.refusals import RefusalInput, record_refusal
 from mewhelp.knowledge.reranking import UnsupportedContextError, reranker_metadata
 from mewhelp.knowledge.retrieval import retrieve_evidence, retrieve_multi_evidence
 from mewhelp.knowledge.store import KnowledgeChunk, snapshot_chunk
+from mewhelp.ch09.observability import observed_sync_call
 
 
 class EvidenceEnvelope(BaseModel):
@@ -90,8 +91,10 @@ async def retrieve_policy(question, order, queries, *, rag, filters, calibration
         order.model_dump(mode="json"), ensure_ascii=False,
     )
     try:
-        result = await asyncio.to_thread(retrieve_multi_evidence, rag.retrieval, understood,
-                                         forced, rerank_question=rerank_question)
+        result = await asyncio.to_thread(observed_sync_call, 'retrieval.policy_hybrid_rerank',
+            {'question': question, 'queries': texts, 'filters': forced.model_dump(),
+             'rerank_question': rerank_question}, retrieve_multi_evidence,
+             rag.retrieval, understood, forced, rerank_question=rerank_question)
     except UnsupportedContextError as exc:
         return EvidenceEnvelope(sources=[], scores=[],
                                 threshold=calibration.policy_rerank_threshold,
@@ -107,7 +110,9 @@ async def retrieve_policy(question, order, queries, *, rag, filters, calibration
 async def retrieve_knowledge(question: str, *, rag, filters: SearchFilters) -> EvidenceEnvelope:
     query = QueryUnderstanding(question, question, question, "knowledge", ["ch05_passthrough"])
     try:
-        result = await asyncio.to_thread(retrieve_evidence, rag.retrieval, query, filters)
+        result = await asyncio.to_thread(observed_sync_call, 'retrieval.hybrid_rerank',
+            {'question': question, 'filters': filters.model_dump()},
+            retrieve_evidence, rag.retrieval, query, filters)
     except UnsupportedContextError as exc:
         return EvidenceEnvelope(
             sources=[],

@@ -33,15 +33,22 @@ async def lifespan(app: FastAPI):
     tools = create_tool_runtime(SessionLocal, settings=ToolSystemSettings(
         Path(os.environ.get('CH08_TOOL_CONFIG', 'config/ch08-tools.json')),
         Path(os.environ.get('CH08_PLUGIN_DIR', 'tool_plugins'))))
-    async with open_runtime(SessionLocal, settings=Ch05Settings(), tool_runtime=tools) as runtime:
-        app.state.ch05_runtime = runtime
-        app.state.tool_runtime = tools
-        try:
-            yield
-        finally:
-            del app.state.ch05_runtime
-            del app.state.tool_runtime
-            await tools.aclose()
+    from mewhelp.ch09.config import Ch09Settings
+    from mewhelp.ch09.runtime import open_ch09_runtime
+    async with open_ch09_runtime(SessionLocal, settings=Ch09Settings()) as ch09:
+        async with open_runtime(SessionLocal, settings=Ch05Settings(), tool_runtime=tools,
+                                observation_runtime=ch09.observation_runtime) as runtime:
+            app.state.ch05_runtime = runtime
+            app.state.tool_runtime = tools
+            app.state.ch09_runtime = ch09
+            await ch09.attach_workflow(runtime)
+            try:
+                yield
+            finally:
+                del app.state.ch05_runtime
+                del app.state.tool_runtime
+                del app.state.ch09_runtime
+                await tools.aclose()
 
 
 app = FastAPI(title="MewHelp", version="0.1.0", lifespan=lifespan)

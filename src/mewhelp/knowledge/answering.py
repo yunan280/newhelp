@@ -21,6 +21,7 @@ from .reranking import UnsupportedContextError
 from .retrieval import RankedChunk, RetrievalResult, RetrievalRuntime, retrieve_evidence
 from .store import KnowledgeChunk, snapshot_chunk
 from .vectors import Strategy
+from mewhelp.ch09.observability import observed_sync_call, trace_knowledge
 
 REFUSAL_MESSAGE = (
     "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。"
@@ -213,6 +214,7 @@ def _citations_valid(assessment: AnswerAssessment, sources: list[SourceDTO]) -> 
     return all(re.search(r"\[\d+\]", item) for item in sentences)
 
 
+@trace_knowledge
 async def answer_question(
     runtime: RagRuntime,
     query: QueryUnderstanding,
@@ -252,6 +254,8 @@ async def answer_question(
     if evidence is None:
         try:
             result = await asyncio.to_thread(
+                observed_sync_call, 'retrieval.legacy_hybrid_rerank',
+                {'question': query.original, 'filters': filters.model_dump()},
                 retrieve_evidence, runtime.retrieval, query, filters, strategy=strategy
             )
         except UnsupportedContextError as exc:

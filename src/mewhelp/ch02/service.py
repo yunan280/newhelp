@@ -45,6 +45,7 @@ from mewhelp.knowledge.filters import SearchFilters
 from mewhelp.knowledge.query import QueryUnderstanding, requires_knowledge, understand_query
 from mewhelp.llm import get_chat_model
 from mewhelp.memory import store, trim_history
+from mewhelp.ch09.observability import current_request, model_kwargs, trace_legacy
 from mewhelp.tools.contracts import ToolCallContext
 from mewhelp.tools.infra import ToolResult
 from mewhelp.tools.registry import ToolRegistry
@@ -163,6 +164,9 @@ async def _prepare_turn_events(
     ]
 
     query = await understand_query(message)
+    root = current_request()
+    if root:
+        root.set_intent(query.route)
     trusted_filters = filters or SearchFilters()
     if tool_runtime is None:
         registry = build_registry(session_factory, conversation_id,
@@ -216,7 +220,7 @@ async def _prepare_turn_events(
     # 而那是**多数**轮次,ch01 的流式会白做(spec §11 的方案 (c))。
     # 分片的 tool_call_chunks 靠 AIMessageChunk 相加拼回完整 tool_calls(已实测)。
     collected: AIMessageChunk | None = None
-    async for chunk in get_chat_model().bind_tools(registry.tools()).astream(messages):
+    async for chunk in get_chat_model().bind_tools(registry.tools()).astream(messages, **model_kwargs()):
         if chunk.text and query.route == "greeting":
             yield TokenEvent(text=chunk.text)
         collected = chunk if collected is None else collected + chunk
@@ -405,6 +409,7 @@ async def _answer_knowledge(
     return result
 
 
+@trace_legacy('ch02_stream', stream=True)
 async def stream_agent_turn(
     session_factory: SessionFactory,
     *,
@@ -463,7 +468,7 @@ async def stream_agent_turn(
             # 是靠它调不到 —— 这是"只做单轮"的结构性保证。
             convergence_messages = [*prepared.messages, prepared.ai, *prepared.tool_messages]
             collected: AIMessageChunk | None = None
-            async for chunk in get_chat_model().astream(convergence_messages):
+            async for chunk in get_chat_model().astream(convergence_messages, **model_kwargs()):
                 if chunk.text:
                     yield TokenEvent(text=chunk.text)
                 collected = chunk if collected is None else collected + chunk
@@ -501,6 +506,7 @@ class AgentTurnResult:
     low_confidence_question_id: str | None = None
 
 
+@trace_legacy('ch02_agent')
 async def run_agent_turn(
     session_factory: SessionFactory,
     *,
@@ -549,7 +555,7 @@ async def run_agent_turn(
         if prepared.ai.tool_calls:
             # 收敛:同样**不 bind_tools**。单轮是两个出口共同的硬约束。
             convergence_messages = [*prepared.messages, prepared.ai, *prepared.tool_messages]
-            ai = await get_chat_model().ainvoke(convergence_messages)
+            ai = await get_chat_model().ainvoke(convergence_messages, **model_kwargs())
             answer = ai.content if isinstance(ai.content, str) else str(ai.content)
         else:
             answer = prepared.ai.content if isinstance(prepared.ai.content, str) else ""
