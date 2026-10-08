@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import APIRouter, HTTPException, Request
 
 from mewhelp.ch05.api import RuntimeDep
@@ -40,3 +42,32 @@ async def feedback(body: FeedbackRequest, runtime: RuntimeDep, request: Request)
     if ch09 and ch09.flywheel:
         ch09.flywheel.wake()
     return receipt
+
+
+def flywheel_for(request):
+    ch09 = getattr(request.app.state, "ch09_runtime", None)
+    if not ch09 or not ch09.flywheel:
+        raise HTTPException(status_code=503, detail="飞轮工作器尚未启用")
+    return ch09.flywheel
+
+
+@router.get("/flywheel/status")
+async def flywheel_status(request: Request):
+    return await asyncio.to_thread(flywheel_for(request).status)
+
+
+@router.post("/flywheel/retry/{pool_id}")
+async def flywheel_retry(pool_id: int, request: Request):
+    from .flywheel import read_gap
+
+    if not 0 < pool_id < 2**64:
+        raise HTTPException(status_code=422, detail="问题池ID无效")
+    worker = flywheel_for(request)
+    try:
+        _, _, matched = await asyncio.to_thread(read_gap, worker.factory, pool_id)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    if matched:
+        return {"pool_id": str(pool_id), "review_id": str(matched), "scheduled": False}
+    worker.retry(pool_id)
+    return {"pool_id": str(pool_id), "scheduled": True}

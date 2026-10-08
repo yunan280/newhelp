@@ -47,6 +47,7 @@ async def lifespan(app: FastAPI):
             try:
                 yield
             finally:
+                await ch09.aclose_workers()
                 del app.state.ch05_runtime
                 del app.state.tool_runtime
                 del app.state.ch09_runtime

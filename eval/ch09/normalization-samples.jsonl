@@ -1,0 +1,12 @@
+{"id":"n01","original":"M1这东西拆封了还能退不？","must_include":["M1","拆","退"],"snapshot":null,"label_basis":"标准FAQ保留原话的型号、数值、否定及适用条件；无召回证据只能待人工补充"}
+{"id":"n02","original":"M2买了7天坏掉能换吗","must_include":["M2","7","换"],"snapshot":null,"label_basis":"标准FAQ保留原话的型号、数值、否定及适用条件；无召回证据只能待人工补充"}
+{"id":"n03","original":"我不是要退货，我是问M1保修多久","must_include":["M1","保修"],"snapshot":null,"label_basis":"标准FAQ保留原话的型号、数值、否定及适用条件；无召回证据只能待人工补充"}
+{"id":"n04","original":"物流48小时没变过了该怎么办啊","must_include":["48","物流"],"snapshot":null,"label_basis":"标准FAQ保留原话的型号、数值、否定及适用条件；无召回证据只能待人工补充"}
+{"id":"n05","original":"订单42能不能改收货地址","must_include":["42","地址"],"snapshot":null,"label_basis":"标准FAQ保留原话的型号、数值、否定及适用条件；无召回证据只能待人工补充"}
+{"id":"n06","original":"M1不联网还能使用吗","must_include":["M1","不","使用"],"snapshot":null,"label_basis":"标准FAQ保留原话的型号、数值、否定及适用条件；无召回证据只能待人工补充"}
+{"id":"n07","original":"M1已经过保了能免费维修不","must_include":["M1","过保","免费"],"snapshot":null,"label_basis":"标准FAQ保留原话的型号、数值、否定及适用条件；无召回证据只能待人工补充"}
+{"id":"n08","original":"M1在保修期内但进水了可以修吗","must_include":["M1","保修","进水"],"snapshot":null,"label_basis":"标准FAQ保留原话的型号、数值、否定及适用条件；无召回证据只能待人工补充"}
+{"id":"n09","original":"我M1电池用了1个月续航就没了咋办","must_include":["M1","1","电池"],"snapshot":null,"label_basis":"标准FAQ保留原话的型号、数值、否定及适用条件；无召回证据只能待人工补充"}
+{"id":"n10","original":"A2的配件可以装在A1上面吗","must_include":["A2","A1","配件"],"snapshot":null,"label_basis":"标准FAQ保留原话的型号、数值、否定及适用条件；无召回证据只能待人工补充"}
+{"id":"n11","original":"退货寄出去已经10天还没退钱怎么办","must_include":["10","退"],"snapshot":null,"label_basis":"标准FAQ保留原话的型号、数值、否定及适用条件；无召回证据只能待人工补充"}
+{"id":"n12","original":"我们M3有企业批量采购折扣吗","must_include":["M3","企业","折扣"],"snapshot":null,"label_basis":"标准FAQ保留原话的型号、数值、否定及适用条件；无召回证据只能待人工补充"}

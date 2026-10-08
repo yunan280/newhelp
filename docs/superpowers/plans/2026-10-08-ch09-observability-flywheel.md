@@ -205,7 +205,7 @@ assert saved.original_question == selected_turn_question
 - `process_gap(pool_id: int, *, factory: SessionFactory, engine: Engine, normalize: Callable, dedup: Callable) -> str`（async，返回review ID）；`FlywheelWorker.start() -> None`, `wake() -> None`, `retry(pool_id: int) -> None`, `status() -> dict`, `aclose() -> Awaitable[None]`。
 - 管理诊断 `GET /api/ch09/flywheel/status`（持久待处理数+本次尝试状态）；`POST /api/ch09/flywheel/retry/{pool_id}` 只重新安排原行，不新增池事件。
 
-- [ ] **1. 写失败测试。** `test_match_in_second_page_and_smallest_id`：候选>8，第二页才有同义，选择最早匹配ID；`test_invalid_id_never_updates_queue`；`test_poison_row_does_not_starve_next_gap`；3次自动尝试后停、人工retry可恢复；`test_replay_does_not_increment`；`test_review_becomes_terminal_during_dedup`重新查重而非累加终态；shutdown取消模型等待不丢原话。
+- [x] **1. 写失败测试。** `test_match_in_second_page_and_smallest_id`：候选>8，第二页才有同义，选择最早匹配ID；`test_invalid_id_never_updates_queue`；`test_poison_row_does_not_starve_next_gap`；3次自动尝试后停、人工retry可恢复；`test_replay_does_not_increment`；`test_review_becomes_terminal_during_dedup`重新查重而非累加终态；shutdown取消模型等待不丢原话。
 
 候选ID同时包含字符串'9'和'10'时，最早ID是9，不能按字符串字典序误选10；SQLite测试注入假的连接锁，真正锁竞争只由MySQL测试证明。
 
@@ -214,11 +214,11 @@ assert returned_review_id == second_page_oldest_match_id
 assert target.occurrence_count == 2  # 两个不同入口事件，每个只归并一次
 assert replay_target.occurrence_count == target.occurrence_count
 ```
-- [ ] **2. 验证红。** `python -m pytest tests/ch09/test_flywheel.py -q`。
-- [ ] **3. 实现处理与恢复。** 名称锁控制多进程；短Session读取原话和全部待审分页，模型调用时无长事务。页大小≤8且预算不足缩小，所有页都比较；匹配取最早ID。短事务锁池/目标重查状态，再insert或atomic increment+matched_review_id同提交。临时失败退避最多3次/服务运行，schema/越界保留未处理等人工重试；状态诊断不冒称持久任务历史。lifespan扫描历史积压并唤醒新事件，后台独立root记录prompt/理由/消耗。
-- [ ] **4. Prompt标注验证。** 至少12条标准化、16对语义查重样例，含型号/数字/否定/条件变化、跨页同义、无法确定不合并，草稿无证据明确待补；`python -m mewhelp.ch09.prompt_eval --suite flywheel --samples eval/ch09 --output artifacts/ch09/<run>/flywheel-prompts.jsonl`，要求逐条期望合同满足，保存真实输出/错误。候选答案不进入提示以免误把答案相似当问题同义。
-- [ ] **5. 真实事务与绿。** `python -m pytest tests/ch09/test_mysql_flywheel.py -m mysql -q`：两个独立worker/连接同义输入只一review且count2；在归并与审核竞争时不写终态；故障注入事务回滚后重跑只增一次。重跑第2步，服务重启未匹配行仍能处理；未处理/失败从诊断API可见。
-- [ ] **6. 记录与提交。** 记录样例、真实计数及恢复；`git commit -m 'feat(ch09): normalize and merge durable knowledge gaps'`。
+- [x] **2. 验证红。** `python -m pytest tests/ch09/test_flywheel.py -q`。
+- [x] **3. 实现处理与恢复。** 名称锁控制多进程；短Session读取原话和全部待审分页，模型调用时无长事务。页大小≤8且预算不足缩小，所有页都比较；匹配取最早ID。短事务锁池/目标重查状态，再insert或atomic increment+matched_review_id同提交。临时失败退避最多3次/服务运行，schema/越界保留未处理等人工重试；状态诊断不冒称持久任务历史。lifespan扫描历史积压并唤醒新事件，后台独立root记录prompt/理由/消耗。
+- [x] **4. Prompt标注验证。** 至少12条标准化、16对语义查重样例，含型号/数字/否定/条件变化、跨页同义、无法确定不合并，草稿无证据明确待补；`python -m mewhelp.ch09.prompt_eval --suite flywheel --samples eval/ch09 --output artifacts/ch09/<run>/flywheel-prompts.jsonl`，要求逐条期望合同满足，保存真实输出/错误。候选答案不进入提示以免误把答案相似当问题同义。
+- [x] **5. 真实事务与绿。** `python -m pytest tests/ch09/test_mysql_flywheel.py -m mysql -q`：两个独立worker/连接同义输入只一review且count2；在归并与审核竞争时不写终态；故障注入事务回滚后重跑只增一次。重跑第2步，服务重启未匹配行仍能处理；未处理/失败从诊断API可见。
+- [x] **6. 记录与提交。** 记录样例、真实计数及恢复；`git commit -m 'feat(ch09): normalize and merge durable knowledge gaps'`。
 
 ### Task 7: 人工审核、幂等知识写入与发布重试
 

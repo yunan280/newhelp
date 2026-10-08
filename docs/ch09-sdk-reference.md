@@ -41,3 +41,5 @@ OTel metadata实际展开为`langfuse.observation.metadata.<key>`/`langfuse.trac
 官方镜像Next服务绑定容器HOSTNAME，容器内localhost/127.0.0.1健康探针实测ECONNREFUSED，但宿主API可读；healthcheck采用实际HOSTNAME:3000，不能据假探针故障换镜像。Compose只发布回环3039，全部6镜像已锁实际RepoDigest；关闭遥测，私有凭据不进Git/产物。
 
 官方出处：[Python API](https://github.com/langfuse/langfuse-python/tree/main/_autodocs/api-reference)、[OTel属性](https://langfuse.com/integrations/native/opentelemetry)、[LangGraph回调](https://langfuse.com/integrations/frameworks/langgraph)、[4.54.0 Compose](https://github.com/langfuse/langfuse/blob/v4.54.0/docker-compose.yml)、[LangChain with_config](https://reference.langchain.com/python/langchain-core/runnables/base/Runnable/with_config)。
+
+Task6 Context7再次核对 /websites/sqlalchemy_en_20：专用engine.connect().execution_options(isolation_level="AUTOCOMMIT")、with_for_update/populate_existing与UPDATE count=count+1。GET_LOCK/RELEASE_LOCK连接级、提交回滚不释放、64字符上限另核对[MySQL8官方手册](https://dev.mysql.com/doc/refman/8.0/en/locking-functions.html)。实际独立连接竞争及释放已测，不以SQLite模拟声称MySQL验证。

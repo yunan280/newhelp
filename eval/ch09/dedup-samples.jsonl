@@ -1,0 +1,16 @@
+{"id":"d01","question":"M1拆封后可以退货吗？","candidates":[["9","M1打开包装后还能退吗？"]],"expected_ids":["9"],"label_basis":"主体、条件及问题目的相同；等价时间单位允许换算"}
+{"id":"d02","question":"M1的保修期多长？","candidates":[["9","M1产品能保修多久？"]],"expected_ids":["9"],"label_basis":"主体、条件及问题目的相同；等价时间单位允许换算"}
+{"id":"d03","question":"M1过保后可以免费维修吗？","candidates":[["9","M1在保修期内可以免费维修吗？"]],"expected_ids":[],"label_basis":"型号、主体、数值、否定、条件或目的不同；必须不合并"}
+{"id":"d04","question":"M1保修多久？","candidates":[["9","M2保修多久？"]],"expected_ids":[],"label_basis":"型号、主体、数值、否定、条件或目的不同；必须不合并"}
+{"id":"d05","question":"订单42如何修改地址？","candidates":[["9","订单43如何修改地址？"]],"expected_ids":[],"label_basis":"型号、主体、数值、否定、条件或目的不同；必须不合并"}
+{"id":"d06","question":"超过7天能退吗？","candidates":[["9","超过14天能退吗？"]],"expected_ids":[],"label_basis":"型号、主体、数值、否定、条件或目的不同；必须不合并"}
+{"id":"d07","question":"没有联网能使用M1吗？","candidates":[["9","联网后能使用M1吗？"]],"expected_ids":[],"label_basis":"型号、主体、数值、否定、条件或目的不同；必须不合并"}
+{"id":"d08","question":"M1进水了是否在保修范围？","candidates":[["9","M1摔坏了是否在保修范围？"]],"expected_ids":[],"label_basis":"型号、主体、数值、否定、条件或目的不同；必须不合并"}
+{"id":"d09","question":"退货寄回10天未退款怎么办？","candidates":[["9","退货寄出10天还没收到退款怎么办？"]],"expected_ids":["9"],"label_basis":"主体、条件及问题目的相同；等价时间单位允许换算"}
+{"id":"d10","question":"物流48小时没更新怎么办？","candidates":[["9","物流两天没更新怎么办？"]],"expected_ids":["9"],"label_basis":"主体、条件及问题目的相同；等价时间单位允许换算"}
+{"id":"d11","question":"M3企业采购有折扣吗？","candidates":[["9","M3给公司批量购买是否优惠？"]],"expected_ids":["9"],"label_basis":"主体、条件及问题目的相同；等价时间单位允许换算"}
+{"id":"d12","question":"M1的电池能换吗？","candidates":[["9","M1是否提供电池更换服务？"]],"expected_ids":["9"],"label_basis":"主体、条件及问题目的相同；等价时间单位允许换算"}
+{"id":"d13","question":"M1如何退款？","candidates":[["9","M1如何维修？"]],"expected_ids":[],"label_basis":"型号、主体、数值、否定、条件或目的不同；必须不合并"}
+{"id":"d14","question":"M1能用A2配件吗？","candidates":[["9","A2能用M1配件吗？"]],"expected_ids":[],"label_basis":"型号、主体、数值、否定、条件或目的不同；必须不合并"}
+{"id":"d15","question":"M1多久能送达？","candidates":[["9","M1的续航多久？"]],"expected_ids":[],"label_basis":"型号、主体、数值、否定、条件或目的不同；必须不合并"}
+{"id":"d16","question":"M1取消订单后何时退款？","candidates":[["9","M1退货成功后何时退款？"]],"expected_ids":[],"label_basis":"型号、主体、数值、否定、条件或目的不同；必须不合并"}
