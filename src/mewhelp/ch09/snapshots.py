@@ -10,7 +10,9 @@ def snapshot_result(result, *, query, filters, top_k=5, confidence=None):
     chunks = [RetrievedChunk(rank=rank, chunk_id=str(item.chunk.id), text=item.chunk.text,
                 questions=item.chunk.questions, answer=item.chunk.answer,
                 section_path=item.chunk.section_path, content_hash=item.chunk.content_hash,
-                relevance_score=item.score)
+                relevance_score=item.score, category=item.chunk.category,
+                product_category=item.chunk.product_category, content_type=item.chunk.content_type,
+                is_key_clause=item.chunk.is_key_clause)
               for rank, item in enumerate(result.final[:top_k], start=1)]
     state = 'empty' if not chunks else ('legacy_partial' if any(
         c.relevance_score is None for c in chunks) else 'captured')

@@ -28,6 +28,13 @@ class WorkflowState(TypedDict, total=False):
     route: str
     evidence: dict | None
     gate: dict | None
+    retrieved_chunks: dict | None
+    retrieval_performed: bool
+    retrieval_events: list[dict]
+    answer_message_id: str | None
+    feedback_status: str
+    knowledge_raw_usage: dict | None
+    knowledge_assessment: dict | None
     agent_messages: list[AnyMessage]
     pending_tool_calls: list[dict]
     tool_trace: list[dict]

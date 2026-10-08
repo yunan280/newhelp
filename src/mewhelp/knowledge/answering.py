@@ -225,6 +225,8 @@ async def answer_question(
     apply_relevance_gate: bool = True,
     record_pool: bool = True,
     evidence: RetrievalResult | None = None,
+    generation_messages: list[BaseMessage] | None = None,
+    refusal_snapshot: dict | None = None,
 ) -> AnswerResult:
     if context.original_question != query.original:
         raise ValueError("question context does not match this turn")
@@ -247,6 +249,7 @@ async def answer_question(
                     stage,
                     code,
                     reason,
+                    retrieved_chunks=refusal_snapshot if refusal_snapshot is not None else _refusal_snapshot(result, query, filters),
                 ),
             )
         return AnswerResult(REFUSAL_MESSAGE, [], True, pool_id, result)
@@ -277,7 +280,7 @@ async def answer_question(
         if max(scores) < runtime.relevance_threshold:
             return await refuse("retrieval", "low_relevance", "最高重排分数低于校准阈值")
     sources = source_dtos(result)
-    messages = answering_messages(query, sources)
+    messages = generation_messages if generation_messages is not None else answering_messages(query, sources)
     if _budget_upper_bound(messages) > runtime.context_budget:
         return await refuse(
             "generation",
@@ -296,6 +299,11 @@ async def answer_question(
             "generation", "invalid_citation", "引用缺失、越界、声明不一致或存在未引用语句"
         )
     return AnswerResult(assessment.answer.strip(), sources, False, None, result)
+
+
+def _refusal_snapshot(result, query, filters):
+    from mewhelp.ch09.snapshots import snapshot_result
+    return snapshot_result(result, query=query.canonical, filters=filters).model_dump(mode='json')
 
 
 async def check_answer_samples(path: Path) -> int:

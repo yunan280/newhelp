@@ -14,7 +14,7 @@ from mewhelp.knowledge.filters import SearchFilters
 from mewhelp.knowledge.query import QueryUnderstanding
 from mewhelp.knowledge.refusals import RefusalInput, record_refusal
 from mewhelp.knowledge.reranking import UnsupportedContextError, reranker_metadata
-from mewhelp.knowledge.retrieval import retrieve_evidence, retrieve_multi_evidence
+from mewhelp.knowledge.retrieval import RetrievalResult, retrieve_evidence, retrieve_multi_evidence
 from mewhelp.knowledge.store import KnowledgeChunk, snapshot_chunk
 from mewhelp.ch09.observability import observed_sync_call
 
@@ -33,6 +33,7 @@ class GateDecision(BaseModel):
     reason_code: str | None
     reason: str
     top_score: float | None
+    evidence_confidence: dict | None = None
 
 
 def limit_evidence(evidence: EvidenceEnvelope, *, top_k: int) -> EvidenceEnvelope:
@@ -99,13 +100,15 @@ async def retrieve_policy(question, order, queries, *, rag, filters, calibration
     except UnsupportedContextError as exc:
         return EvidenceEnvelope(sources=[], scores=[],
                                 threshold=calibration.policy_rerank_threshold,
-                                context_budget=rag.context_budget, unsupported_reason=str(exc))
+                                context_budget=rag.context_budget, unsupported_reason=str(exc),
+                                retrieved_chunks=_raw_snapshot(RetrievalResult([], []), question, forced))
     sources = source_dtos(result)
     scores = {str(r.chunk.id): r.score for r in result.final}
     return EvidenceEnvelope(sources=sources, scores=[scores[s.chunk_id] for s in sources],
                             threshold=calibration.policy_rerank_threshold,
                             context_budget=rag.context_budget,
-                            unsupported_reason=result.unsupported_context_reason)
+                            unsupported_reason=result.unsupported_context_reason,
+                            retrieved_chunks=_raw_snapshot(result, question, forced))
 
 
 async def retrieve_knowledge(question: str, *, rag, filters: SearchFilters) -> EvidenceEnvelope:
@@ -120,6 +123,7 @@ async def retrieve_knowledge(question: str, *, rag, filters: SearchFilters) -> E
             threshold=rag.relevance_threshold,
             context_budget=rag.context_budget,
             unsupported_reason=str(exc),
+            retrieved_chunks=_raw_snapshot(RetrievalResult([], []), question, filters),
         )
     sources = source_dtos(result)
     scores = {str(r.chunk.id): r.score for r in result.final}
@@ -180,5 +184,6 @@ async def persist_refusal(context, state: dict, gate: GateDecision) -> str:
             trigger_stage="retrieval",
             reason_code=gate.reason_code,
             reason=gate.reason,
+            retrieved_chunks=state.get('retrieved_chunks') or (state.get('evidence') or {}).get('retrieved_chunks'),
         ),
     )

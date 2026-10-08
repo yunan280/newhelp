@@ -53,6 +53,8 @@ async def open_runtime(
     if confidence_profile is None:
         from mewhelp.ch09.confidence import load_workflow_confidence
         confidence_profile = load_workflow_confidence(ch09_settings)
+    if confidence_profile is not None and context_settings.rerank_top_k != confidence_profile.top_k:
+        raise ValueError('workflow TopK does not match calibrated confidence profile')
     router_settings = router_settings or Ch06Settings()
     profile = context_profile or load_profile(context_settings.context_calibration_path)
     try:

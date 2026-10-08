@@ -4,6 +4,7 @@ import asyncio
 import hashlib
 import json
 import logging
+from dataclasses import asdict, replace
 from pathlib import Path
 from uuid import uuid4
 
@@ -63,6 +64,9 @@ async def begin_turn(state, context, emit):
         "route": "",
         "evidence": None,
         "gate": None,
+        'retrieved_chunks': None, 'retrieval_performed': False, 'retrieval_events': [],
+        'answer_message_id': None, 'feedback_status': 'none',
+        'knowledge_raw_usage': None, 'knowledge_assessment': None,
         "agent_messages": [],
         "pending_tool_calls": [],
         "tool_trace": [],
@@ -217,7 +221,7 @@ async def policy_node(state, context, emit):
     evidence = await retrieve_policy(state["resolved_question"], OrderDTO.model_validate(state["order"]),
         state["queries"], rag=rag, filters=SearchFilters.model_validate(state["filters"]),
         calibration=load_policy_calibration(context))
-    return {"evidence": limit_evidence(evidence, top_k=context.settings.rerank_top_k).model_dump()}
+    return retrieval_patch(state, evidence, context, kind='policy')
 
 
 async def assessment_node(state, context, emit):
@@ -229,7 +233,16 @@ async def retrieve_node(state, context, emit):
     evidence = await retrieve_knowledge(
         state["resolved_question"], rag=rag, filters=SearchFilters.model_validate(state["filters"])
     )
-    return {"evidence": limit_evidence(evidence, top_k=context.settings.rerank_top_k).model_dump()}
+    return retrieval_patch(state, evidence, context, kind='knowledge')
+
+
+def retrieval_patch(state, evidence, context, *, kind):
+    evidence = limit_evidence(evidence, top_k=context.settings.rerank_top_k)
+    return {'evidence':evidence.model_dump(), 'retrieval_performed':True,
+            'retrieved_chunks':evidence.retrieved_chunks,
+            'retrieval_events':[*state.get('retrieval_events', []),
+                               {'kind':kind, 'query':state['resolved_question'],
+                                'retrieved_chunks':evidence.retrieved_chunks}]}
 
 
 async def gate_node(state, context, emit):
@@ -250,11 +263,25 @@ async def gate_node(state, context, emit):
     # RAG's byte ceiling protects evidence/reranker input. Model-window checks
     # separately account for the full history and the fixed prefix.
     prompt_bytes = len(json.dumps(state['evidence']['sources'], ensure_ascii=False).encode('utf-8'))
-    gate = evaluate_gate(evidence, prompt_bytes=prompt_bytes)
+    formal = context.confidence_profile if state.get('route') == 'knowledge' else None
+    gate = evaluate_gate(evidence.model_copy(update={'threshold':0.}) if formal else evidence,
+                         prompt_bytes=prompt_bytes)
+    if formal:
+        from mewhelp.ch09.confidence import score_evidence
+        confidence = asdict(score_evidence(evidence.scores, profile=formal))
+        if gate.passed:
+            gate = gate.model_copy(update={'passed':confidence['passed'],
+                'reason_code':confidence['reason_code'], 'reason':confidence['reason']})
+        gate = gate.model_copy(update={'evidence_confidence':confidence})
+        if evidence.retrieved_chunks is not None:
+            snapshot = {**evidence.retrieved_chunks, 'confidence':confidence}
+            evidence = evidence.model_copy(update={'retrieved_chunks':snapshot})
+            state = {**state, 'retrieved_chunks':snapshot, 'evidence':evidence.model_dump()}
     if state.get('budget_gate_error'):
         gate = gate.model_copy(update={'passed': False, 'reason_code': 'unsupported_context_size',
                                       'reason': '上下文预算不足：' + state['budget_gate_error']})
-    result = {**history_patch, "gate": gate.model_dump()}
+    result = {**history_patch, "gate": gate.model_dump(), 'evidence':evidence.model_dump(),
+              'retrieved_chunks':evidence.retrieved_chunks}
     if gate.passed:
         emit(
             event(
@@ -365,7 +392,20 @@ def _write_ledger(context, state, *, phase="complete"):
                     ch06_event_key=_event_key(state['turn_id'], phase, 'answer'))
     )
     with context.session_factory() as db:
-        append_messages_once(db, conversation_id=state["conversation_id"], rows=rows)
+        append_messages_once(db, conversation_id=state['conversation_id'], rows=rows[:-1])
+        user_ids = find_ledger_ids(db, conversation_id=state['conversation_id'],
+                                  event_keys=[rows[0].ch06_event_key])
+        from mewhelp.ch09.contracts import MessageSnapshot
+        snapshot = MessageSnapshot(
+            turn_id=state['turn_id'], source_user_event_key=rows[0].ch06_event_key,
+            source_user_message_id=str(user_ids[rows[0].ch06_event_key]), intent=state.get('intent',''),
+            retrieval_performed=state.get('retrieval_performed', bool(state.get('evidence'))),
+            retrieved_chunks=state.get('retrieved_chunks') or (state.get('evidence') or {}).get('retrieved_chunks'),
+            retrieval_events=state.get('retrieval_events', []),
+            pool_id=state.get('low_confidence_question_id'), trace_id=state.get('trace_id'),
+            answer_status='waiting' if phase.startswith('waiting') else 'error' if state.get('status') == 'error' else 'completed')
+        rows[-1] = replace(rows[-1], retrieval_snapshot=snapshot.model_dump(mode='json'))
+        append_messages_once(db, conversation_id=state['conversation_id'], rows=rows[-1:])
         ids = find_ledger_ids(db, conversation_id=state['conversation_id'],
                               event_keys=[row.ch06_event_key for row in rows])
         db.commit()
@@ -434,6 +474,8 @@ async def log_node(state, context, emit):
         "refund_offers": refund_offers,
         "trusted_entities": entities,
         "ledger_error": ledger_error,
+        'answer_message_id':str(ids['answer']) if ids and state.get('status','completed') == 'completed' else None,
+        'feedback_status':'none',
         "offers": offers,
         "offer": offer.model_dump() if offer else None,
         "messages": _committed_turn_messages(state, ids),

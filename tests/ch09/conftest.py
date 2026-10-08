@@ -89,3 +89,24 @@ def ch09_mysql():
             with admin.begin() as connection:
                 connection.exec_driver_sql(f'DROP DATABASE `{database}`')
         admin.dispose()
+@pytest.fixture
+def generation_context(tmp_path):
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+
+    from mewhelp.ch05.limits import AgentLimits
+    from mewhelp.ch05.state import WorkflowContext
+    from mewhelp.db.base import Base
+    from mewhelp.db.models import Conversation
+
+    engine = create_engine('sqlite:///' + str(tmp_path / 'generation.sqlite3'))
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(engine, expire_on_commit=False)
+    with factory() as db:
+        conversation = Conversation(session_id='s', user_id='u')
+        db.add(conversation)
+        db.commit()
+        cid = conversation.id
+    yield WorkflowContext(factory, None, None, AgentLimits()), cid
+    engine.dispose()
+

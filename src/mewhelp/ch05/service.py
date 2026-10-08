@@ -40,6 +40,8 @@ def result_from_state(state: dict) -> TurnResult:
     fields["sources"] = (
         state["evidence"]["sources"] if state["evidence"] and not state["refused"] else []
     )
+    if state.get('status', 'completed') != 'completed' or state.get('ledger_error'):
+        fields['answer_message_id'] = None
     return TurnResult.model_validate(fields)
 
 

@@ -152,7 +152,7 @@ assert score_evidence([], profile=profile).passed is False
 - 所有线上路径把实际retrieval snapshot传入拒答；知识生成复用AnswerAssessment充分性/引用检查，已经formal_gate通过的evidence只禁用旧阈值，不能重新检索。评估复用同一充分性执行函数，使用 `record_pool=False`。
 - `TurnResult`增加 `answer_message_id: str|None`、`feedback_status: Literal['none','down']`；最终账本提交成功才赋ID，waiting/失败默认None；开始新轮重置快照、pool、trace关联但不删历史。
 
-- [ ] **1. 写失败测试。** 知识闸拦下不调用Agent、pool含当轮Top5；formal通过但旧阈值更高不得二次拦截；模型answerable=False先提交generation池再兜底，错误引用拒答且未发正文；知识充分性只调用一次模型并计真实usage；闲聊/订单后继轮retrieval_performed=False不带旧片段；ledger失败/preview无可反馈ID；相同旧回执重放tickets数不变。
+- [x] **1. 写失败测试。** 知识闸拦下不调用Agent、pool含当轮Top5；formal通过但旧阈值更高不得二次拦截；模型answerable=False先提交generation池再兜底，错误引用拒答且未发正文；知识充分性只调用一次模型并计真实usage；闲聊/订单后继轮retrieval_performed=False不带旧片段；ledger失败/preview无可反馈ID；相同旧回执重放tickets数不变。
 
 ```python
 assert actual['refused'] is True
@@ -160,12 +160,12 @@ assert actual['answer'] == REFUSAL_MESSAGE
 assert actual['low_confidence_question_id'] == str(generation_pool.id)
 assert '未经验证的草稿' not in emitted_text
 ```
-- [ ] **2. 验证红。** `python -m pytest tests/ch09/test_workflow_confidence.py tests/ch09/test_generation_boundary.py tests/ch09/test_turn_snapshot.py -q`。
-- [ ] **3. 实现工作流。** begin_turn清新轮检索；retrieve/policy分别采事件快照；gate保留预算检查后用正式profile；知识最终一次结构生成后校验引用再发token，业务/追问仍原合同。保留Ch07完整历史/模型投影和Ch08ToolMessage成对；不可变snapshot在消息事务中随最终回答提交，log_node从真实ids返回answer_message_id。模型预算包含schema和真实提示，不把估算当Langfuse用量。
-- [ ] **4. 真实标注验证。** 冻结至少12条充分/不充分/引用错误及型号、否定、数值条件样例，expected来自原文而非模型输出；`python -m mewhelp.ch09.prompt_eval --suite generation --samples eval/ch09/generation-samples.jsonl --output artifacts/ch09/<run>/generation.jsonl`。保留实际模型、prompt、raw输出和断言；数据问题先修标注明确留痕，不能看结果改正确答案。前端正文形态仍按Vibe实现。
-- [ ] **5. 验证绿及受影响回归。** 重跑第2步；`python -m pytest tests/ch05 tests/ch06 tests/ch07 tests/ch08/test_ticket_history.py tests/ch08/test_ticket_resume.py tests/ch08/test_ticket_restart.py -q`。确认新结构化生成不会损坏已确认的上下文/权限/只读回执。
-- [ ] **5a. 核对并更新必要路由校准。** `ch06.evaluation.runtime_hash`包含整个ch05/schemas.py，新响应字段会使旧router产物失效。所有受指纹覆盖的代码改动完成后，`python -m mewhelp.ch08.evaluation calibrate-router --dataset eval/ch08 --outdir artifacts/ch09/<run>/router` 实际跑16条独立calibration，验证新hash并保存原产物；不手改成功产物hash。后续若修改覆盖文件，只对确实失效的校准重做并记录原因，不能重复旧26条验收充数；启动用该新路径。
-- [ ] **6. 记录与提交。** 记检索/生成拒答和ID合同证据；`git commit -m 'feat(ch09): connect main workflow to evidence flywheel'`。
+- [x] **2. 验证红。** `python -m pytest tests/ch09/test_workflow_confidence.py tests/ch09/test_generation_boundary.py tests/ch09/test_turn_snapshot.py -q`。
+- [x] **3. 实现工作流。** begin_turn清新轮检索；retrieve/policy分别采事件快照；gate保留预算检查后用正式profile；知识最终一次结构生成后校验引用再发token，业务/追问仍原合同。保留Ch07完整历史/模型投影和Ch08ToolMessage成对；不可变snapshot在消息事务中随最终回答提交，log_node从真实ids返回answer_message_id。模型预算包含schema和真实提示，不把估算当Langfuse用量。
+- [x] **4. 真实标注验证。** 冻结至少12条充分/不充分/引用错误及型号、否定、数值条件样例，expected来自原文而非模型输出；`python -m mewhelp.ch09.prompt_eval --suite generation --samples eval/ch09/generation-samples.jsonl --output artifacts/ch09/<run>/generation.jsonl`。保留实际模型、prompt、raw输出和断言；数据问题先修标注明确留痕，不能看结果改正确答案。前端正文形态仍按Vibe实现。
+- [x] **5. 验证绿及受影响回归。** 重跑第2步；`python -m pytest tests/ch05 tests/ch06 tests/ch07 tests/ch08/test_ticket_history.py tests/ch08/test_ticket_resume.py tests/ch08/test_ticket_restart.py -q`。确认新结构化生成不会损坏已确认的上下文/权限/只读回执。
+- [x] **5a. 核对并更新必要路由校准。** `ch06.evaluation.runtime_hash`包含整个ch05/schemas.py，新响应字段会使旧router产物失效。所有受指纹覆盖的代码改动完成后，`python -m mewhelp.ch08.evaluation calibrate-router --dataset eval/ch08 --outdir artifacts/ch09/<run>/router` 实际跑16条独立calibration，验证新hash并保存原产物；不手改成功产物hash。后续若修改覆盖文件，只对确实失效的校准重做并记录原因，不能重复旧26条验收充数；启动用该新路径。
+- [x] **6. 记录与提交。** 记检索/生成拒答和ID合同证据；`git commit -m 'feat(ch09): connect main workflow to evidence flywheel'`。
 
 ### Task 5: 后端负反馈与历史轮次恢复
 

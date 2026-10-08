@@ -28,6 +28,10 @@ class RetrievedChunk(BaseModel):
     section_path: str | None = None
     content_hash: str | None = None
     relevance_score: float | None = Field(default=None, ge=0, le=1, allow_inf_nan=False)
+    category: str | None = None
+    product_category: str | None = None
+    content_type: str | None = None
+    is_key_clause: bool | None = None
 
 
 class EvidenceSnapshot(BaseModel):

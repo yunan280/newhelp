@@ -172,6 +172,8 @@ class TurnResult(StrictDTO):
     sources: list[SourceDTO] = Field(default_factory=list)
     refused: bool = False
     low_confidence_question_id: str | None = None
+    answer_message_id: str | None = None
+    feedback_status: Literal['none', 'down'] = 'none'
     intent: Intent
     route: Route
     actions: list[Action] = Field(default_factory=list)

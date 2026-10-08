@@ -291,6 +291,9 @@ async def execute_agent_tools(state, context, emit) -> dict:
 
 
 async def stream_answer(state, context, emit) -> dict:
+    if state.get('route') == 'knowledge' and context.confidence_profile is not None:
+        from mewhelp.ch09.generation import generate_knowledge_answer
+        return await generate_knowledge_answer(state, context, emit)
     if remaining(state, context) <= 0:
         return stopped("deadline")
     messages = final_messages(state)
