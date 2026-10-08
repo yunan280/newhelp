@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, HTTPException, Path, Query, Request
@@ -230,3 +231,35 @@ def eval_runs(runtime: RuntimeDep, page: Page = 1, page_size: PageSize = 20):
             "page": page,
             "page_size": page_size,
         }
+
+
+@router.get("/eval-trends")
+def eval_trends(runtime: RuntimeDep, limit: Annotated[int, Query(ge=1, le=100)] = 50):
+    from sqlalchemy import select
+
+    from mewhelp.db.models import EvalRun
+
+    from .costs import eval_trend
+
+    with runtime.context.session_factory() as db:
+        rows = list(db.scalars(select(EvalRun).order_by(
+            EvalRun.created_at.desc(), EvalRun.id.desc()).limit(limit)))
+        return {"items": eval_trend(rows)}
+
+
+@router.get("/token-costs")
+async def token_costs(request: Request,
+                      from_time: Annotated[datetime, Query(alias="from")],
+                      to_time: Annotated[datetime, Query(alias="to")]):
+    from .costs import read_token_costs
+
+    ch09 = getattr(request.app.state, "ch09_runtime", None)
+    client = ch09.observation_runtime.client if ch09 else None
+    if client is None:
+        raise HTTPException(status_code=503, detail="本地Langfuse尚未启用")
+    try:
+        return await read_token_costs(client=client, from_time=from_time, to_time=to_time)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail="Langfuse读取失败，统计未完成") from exc

@@ -59,8 +59,8 @@ class ObservationRuntime:
             self.client = Langfuse(public_key=settings.public_key, secret_key=settings.secret_key,
                                    base_url=settings.base_url, environment='ch09-local', timeout=5)
         if self.client is not None:
-            from langfuse.langchain import CallbackHandler
-            factory = callback_factory or CallbackHandler
+            from .costs import ProviderUsageCallback
+            factory = callback_factory or ProviderUsageCallback
             self.callbacks = (factory(public_key=public_key or
                                        (settings.public_key if settings else None)),)
 

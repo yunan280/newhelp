@@ -282,7 +282,7 @@ assert summary['faithfulness'] is None  # 拒答/无声明的NA样例
 - `eval_trend(rows: Sequence[EvalRun]) -> list[dict]`；相邻同数据/config/指标分母口径才给变化，NA为null，不同hash标 `comparable=False`。
 - PowerShell启动默认 `-Port 9030`，载入忽略的本地Ch09/Langfuse环境、独立checkpoint及Task 3正式profile，复用MCP9021/9022配置；评估脚本参数 `-RunId`, `-TriggeredBy 手动|定时`, `-Resume`, `-BaseUrl http://127.0.0.1:9030`。
 
-- [ ] **1. 写失败测试。** `test_all_cursor_pages_and_only_generation_usage` 跨2页根和2页子观测，父聚合不再加、观察ID重复去重、真实generation每次重试独立计；先分类耗时归最终intent，后台任务不混入chat；缺usage记unknown，实测0仍有效；导出/查询失败返回错误。`test_window_is_half_open_and_timezone_explicit`；`test_na_and_config_drift_not_compared_as_drop`。
+- [x] **1. 写失败测试。** `test_all_cursor_pages_and_only_generation_usage` 跨2页根和2页子观测，父聚合不再加、观察ID重复去重、真实generation每次重试独立计；先分类耗时归最终intent，后台任务不混入chat；缺usage记unknown，实测0仍有效；导出/查询失败返回错误。`test_window_is_half_open_and_timezone_explicit`；`test_na_and_config_drift_not_compared_as_drop`。
 
 ```python
 # 跨页chat样例实测input合计8、output4，另有1条usage缺失和后台generation
@@ -290,11 +290,11 @@ assert sum(item['total_tokens'] for item in report['items']) == 12
 assert sum(item['unknown_usage_count'] for item in report['items']) == 1
 assert incomplete_intent['per_request_mean'] is None
 ```
-- [ ] **2. 验证红。** `python -m pytest tests/ch09/test_costs.py tests/ch09/test_trends.py -q`。
-- [ ] **3. 实现查询与趋势。** Context7已核对v2 `api.observations.get_many`支持cursor、is_root_observation、trace_id、时间窗；按SDK4.17.0精确fields/metadata/usage类型实现Task 1参考，完整读根/生成子观测，按root最终intent归属。不要照搬旧v2/v3 trace-only示例；引用失效需先查Context7。只能对真实tokens求和，不回填预算估算。金额无真实价格不展示。
-- [ ] **4. 实现命令与定时。** 启动先验证9030占用归属、DB SELECT1、MySQL结构、Milvus集合及本地Langfuse项目，不以healthz代替依赖验证。Task Scheduler独立 `MewHelp-Ch09-Evaluation` 默认Sunday04:00 Asia/Shanghai、可配置，保留Ch03任务；调用服务提交/轮询，故障exit非零。宿主时区不同则明确转换/拒绝隐式本地解释。只注册计划要求的本地任务，不创建Codex提醒。
-- [ ] **5. 验证绿与调度状态。** 重跑第2步；`powershell -NoProfile -File scripts/register_ch09_evaluation.ps1 -At 04:00`；保存TaskName/Enabled/NextRunTime/时区，检查action调用正确脚本/环境。不额外手动触发第三轮充当“已日历执行”；本次两轮真实执行在Task 11。
-- [ ] **6. 记录与提交。** 初版演示写实际配置文件/命令与统计字段，不写尚未验证的成功数字；`git commit -m 'feat(ch09): report intent usage and schedule evaluations'`。
+- [x] **2. 验证红。** `python -m pytest tests/ch09/test_costs.py tests/ch09/test_trends.py -q`。
+- [x] **3. 实现查询与趋势。** Context7已核对v2 `api.observations.get_many`支持cursor、is_root_observation、trace_id、时间窗；按SDK4.17.0精确fields/metadata/usage类型实现Task 1参考，完整读根/生成子观测，按root最终intent归属。不要照搬旧v2/v3 trace-only示例；引用失效需先查Context7。只能对真实tokens求和，不回填预算估算。金额无真实价格不展示。
+- [x] **4. 实现命令与定时。** 启动先验证9030占用归属、DB SELECT1、MySQL结构、Milvus集合及本地Langfuse项目，不以healthz代替依赖验证。Task Scheduler独立 `MewHelp-Ch09-Evaluation` 默认Sunday04:00 Asia/Shanghai、可配置，保留Ch03任务；调用服务提交/轮询，故障exit非零。宿主时区不同则明确转换/拒绝隐式本地解释。只注册计划要求的本地任务，不创建Codex提醒。
+- [x] **5. 验证绿与调度状态。** 重跑第2步；`powershell -NoProfile -File scripts/register_ch09_evaluation.ps1 -At 04:00`；保存TaskName/Enabled/NextRunTime/时区，检查action调用正确脚本/环境。不额外手动触发第三轮充当“已日历执行”；本次两轮真实执行在Task 11。
+- [x] **6. 记录与提交。** 初版演示写实际配置文件/命令与统计字段，不写尚未验证的成功数字；`git commit -m 'feat(ch09): report intent usage and schedule evaluations'`。
 
 ### Task 10: 前端 Vibe Coding 对接
 
