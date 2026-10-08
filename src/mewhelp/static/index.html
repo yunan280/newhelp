@@ -337,6 +337,15 @@
     padding: 8px; font: inherit; }
   .ticket-confirmation textarea { min-height: 80px; resize: vertical; }
   .ticket-confirmation .controls { display: flex; gap: 8px; }
+  .ticket-preview { margin-top: 14px; padding: 16px; border: 1px solid #dccbbe;
+    border-radius: 14px; background: #fffaf2; display: grid; gap: 10px; }
+  .ticket-preview .ticket-problem { white-space: pre-wrap; overflow-wrap: anywhere;
+    padding: 10px; border-radius: 8px; background: #fff; line-height: 1.65; }
+  .ticket-preview .business-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ticket-preview button { border: 1px solid #bba595; border-radius: 9px;
+    padding: 8px 14px; background: white; cursor: pointer; }
+  .ticket-preview .ticket-submit { background: #704b38; color: white; border-color: #704b38; }
+  .ticket-preview button:disabled { cursor: default; opacity: .55; }
   .order-picker, .refund-form { margin-top: 14px; padding: 14px; border: 1px solid var(--line);
     border-radius: 12px; display: grid; gap: 10px; background: var(--bg); }
   .order-card { text-align: left; padding: 12px; border: 1px solid var(--line); border-radius: 9px;
@@ -775,6 +784,7 @@ function makeDots() {
 }
 
 const pendingCards = new Map();
+const pendingTickets = new Map();
 const recordReplies = new WeakMap();
 const REFUND_REASONS = ['七天无理由', '商品质量问题', '与描述不符', '破损或缺件', '发错货', '其他'];
 const price = value => '¥' + Number(value).toFixed(2);
@@ -794,6 +804,113 @@ function expireCards() {
     status.textContent = '已失效：已开始新的问题。';
   }
   pendingCards.clear();
+  for (const {record, buttons, status} of pendingTickets.values()) {
+    record.ticket_expired = true;
+    buttons.forEach(button => { button.disabled = true; });
+    status.textContent = '已失效：已开始新的问题。';
+  }
+  pendingTickets.clear();
+}
+
+function attachTicketPreview(reply, record, preview) {
+  if (!reply || !preview?.confirmation_id || !['售后', '投诉', '咨询'].includes(preview.ticket_type)
+      || typeof preview.description !== 'string') return;
+  reply.bubble.querySelector('.pending-check')?.remove();
+  reply.bubble.querySelector('.ticket-preview')?.remove();
+  const box = businessNode(reply.bubble, 'div', '', 'ticket-preview');
+  box.dataset.confirmationId = preview.confirmation_id;
+  businessNode(box, 'strong', '提交前，请核对工单');
+  businessNode(box, 'div', '工单类型：' + preview.ticket_type);
+  businessNode(box, 'div', preview.description, 'ticket-problem');
+  const status = businessNode(box, 'div', '确认后提交给客服处理。', 'business-status');
+  status.setAttribute('role', 'status');
+  const controls = businessNode(box, 'div', '', 'business-controls');
+  const confirm = businessNode(controls, 'button', '确认提交', 'ticket-submit');
+  const cancel = businessNode(controls, 'button', '取消', 'ticket-preview-cancel');
+  const buttons = [confirm, cancel];
+  buttons.forEach(button => { button.type = 'button'; });
+  record.ticket_preview = preview; record.ticket_expired = false;
+  const submit = async action => {
+    if (busy || record.ticket_expired || record.ticket_receipt || record.ticket_status === 'cancelled') return;
+    busy = true; setChatBusy(true);
+    buttons.forEach(button => { button.disabled = true; });
+    status.textContent = action === 'confirm' ? '正在提交，请稍候…' : '正在取消…';
+    record.ticket_action = action; saveHistory();
+    try {
+      await send('', {kind:'ticket', reply, record, preview, action});
+      if (record.ticket_receipt) {
+        status.textContent = '工单已提交：' + record.ticket_receipt.ticket_no;
+        controls.remove(); pendingTickets.delete(preview.confirmation_id);
+      } else if (record.complete) {
+        status.textContent = record.ticket_status === 'cancelled' ? '已取消，本次未提交工单。' : record.text;
+        controls.remove(); pendingTickets.delete(preview.confirmation_id);
+      } else if (record.ticket_expired) {
+        status.textContent = '工单卡片已失效，请重新提出请求。';
+      } else {
+        status.textContent = '未收到处理结果。可点同一按钮核对回执，请勿另建工单。';
+        // A lost response must not change the action already sent to the server.
+        (action === 'confirm' ? confirm : cancel).disabled = false;
+      }
+    } finally { busy = false; setChatBusy(false); }
+  };
+  confirm.addEventListener('click', () => submit('confirm'));
+  cancel.addEventListener('click', () => submit('cancel'));
+  if (record.ticket_action) (record.ticket_action === 'confirm' ? cancel : confirm).disabled = true;
+  if (record.ticket_receipt || record.ticket_status === 'cancelled' || (record.complete && record.ticket_expired)) {
+    status.textContent = record.ticket_receipt ? '工单已提交：' + record.ticket_receipt.ticket_no
+      : record.ticket_status === 'cancelled' ? '已取消，本次未提交工单。' : record.text;
+    controls.remove();
+  } else pendingTickets.set(preview.confirmation_id, {reply, record, buttons, status});
+  log.scrollTop = log.scrollHeight;
+}
+
+async function restoreTicketPending() {
+  if (!sessionId || busy) return;
+  const targetSession = sessionId, epoch = conversationRequest;
+  try {
+    const response = await fetch('/ch08/sessions/' + encodeURIComponent(targetSession)
+      + '/pending?user_id=' + encodeURIComponent(userId));
+    if (!response.ok) throw new Error('无法核对工单预览');
+    const pending = await response.json();
+    if (targetSession !== sessionId || epoch !== conversationRequest || busy) return;
+    if (!pending?.ticket_preview) {
+      for (const record of history.filter(item => item.waiting_kind === 'ticket' && !item.complete)) {
+        const nonce = record.ticket_preview?.confirmation_id;
+        if (nonce) {
+          const receiptResponse = await fetch('/ch08/sessions/' + encodeURIComponent(targetSession)
+            + '/receipts/' + encodeURIComponent(nonce) + '?user_id=' + encodeURIComponent(userId));
+          if (!receiptResponse.ok) throw new Error('无法核对工单回执');
+          const result = await receiptResponse.json();
+          if (targetSession !== sessionId || epoch !== conversationRequest || busy) return;
+          if (result) {
+            Object.assign(record, {text:result.answer, complete:true, waiting:false,
+              ticket_receipt:result.ticket_receipt, ticket_status:result.stop_reason === 'cancelled' ? 'cancelled' : result.stop_reason,
+              ticket_expired:true});
+            const reply = recordReplies.get(record);
+            if (reply) { reply.text.textContent = record.text; attachTicketPreview(reply, record, record.ticket_preview); }
+            saveHistory();
+            continue;
+          }
+        }
+        const checking = recordReplies.get(record)?.bubble.querySelector('.pending-check');
+        if (checking) checking.textContent = '这张工单卡片已处理或失效。';
+      }
+      return;
+    }
+    const preview = pending.ticket_preview;
+    let record = history.find(item => item.ticket_preview?.confirmation_id === preview.confirmation_id)
+      || [...history].reverse().find(item => item.who === 'ai' && item.text === pending.answer);
+    if (!record) {
+      record = {who:'ai', text:pending.answer, session_id:targetSession, sources:[], answer_id:freshAnswerId()};
+      history.push(record); recordReplies.set(record, bubble('ai', record.text));
+    }
+    Object.assign(record, {complete:false, waiting:true, waiting_kind:'ticket', error:false, truncated:false});
+    recordReplies.get(record)?.bubble.querySelector('.feedback')?.remove();
+    attachTicketPreview(recordReplies.get(record), record, preview); saveHistory();
+  } catch (error) {
+    if (targetSession === sessionId && epoch === conversationRequest && !busy)
+      note('工单卡片核对失败，请刷新后重试。');
+  }
 }
 
 function attachOrderPicker(reply, record, selection) {
@@ -922,7 +1039,7 @@ async function restorePending() {
     if (targetSession !== sessionId || epoch !== conversationRequest || busy) return;
     expireCards();
     if (!pending?.order_selection) {
-      for (const record of history.filter(item => item.waiting)) {
+      for (const record of history.filter(item => item.waiting && item.waiting_kind !== 'ticket')) {
         const checking = recordReplies.get(record)?.bubble.querySelector('.pending-check');
         if (checking) checking.textContent = '这张订单卡片已失效，请重新提问。';
       }
@@ -945,7 +1062,7 @@ async function restorePending() {
   } catch (error) {
     if (targetSession === sessionId && epoch === conversationRequest && !busy)
       note('订单卡片核对失败，请刷新后重试。');
-  }
+  } finally { await restoreTicketPending(); }
 }
 
 async function send(text, continuation = null) {
@@ -1053,6 +1170,7 @@ async function send(text, continuation = null) {
       log.scrollTop = log.scrollHeight;
     } else if (event === 'error') {
       if (payload.code === 'selection_error' && [403, 409].includes(payload.status)) record.selection_expired = true;
+      if (payload.code === 'ticket_confirmation_error' && [403, 404, 409].includes(payload.status)) record.ticket_expired = true;
       failed = true; record.error = true; record.complete = false;
       // 服务端契约:这一轮**没有**写进会话历史,重发同一条消息即可重试,不用换会话。
       if (!started) start();
@@ -1064,8 +1182,20 @@ async function send(text, continuation = null) {
       record.offer = normalizeOffer(payload.offer);
     } else if (event === 'order_selection') {
       record.order_selection = payload.order_selection || payload;
+    } else if (event === 'ticket_preview') {
+      record.ticket_preview = payload.ticket_preview || payload;
+    } else if (event === 'ticket_receipt') {
+      record.ticket_receipt = payload;
+      record.ticket_status = 'submitted'; saveHistory();
+    } else if (event === 'waiting_for_ticket' && !failed) {
+      waiting = true; record.waiting = true; record.waiting_kind = 'ticket';
+      record.ticket_preview = payload.ticket_preview || record.ticket_preview;
+      record.text = payload.answer || record.text || '请核对工单后确认提交，或取消。';
+      renderAnswer(reply.text, record.text, []);
+      attachTicketPreview(reply, record, record.ticket_preview); saveHistory();
     } else if (event === 'waiting_for_order' && !failed) {
       waiting = true; record.waiting = true;
+      record.waiting_kind = 'order';
       record.order_selection = payload.order_selection || record.order_selection;
       record.text = payload.answer || record.text || '请选择要处理的订单。';
       renderAnswer(reply.text, record.text, []);
@@ -1074,6 +1204,11 @@ async function send(text, continuation = null) {
     } else if (event === 'done' && !failed && gotAnything && record.text.trim()) {
       completed = true; record.complete = true;
       record.waiting = false;
+      if (continuation?.kind === 'ticket') {
+        record.ticket_receipt = payload.ticket_receipt || record.ticket_receipt;
+        record.ticket_status = record.ticket_receipt ? 'submitted'
+          : continuation.action === 'cancel' ? 'cancelled' : 'failed';
+      }
       record.refund_offer = payload.refund_offer || null;
       record.finish_reason = payload.finish_reason || payload.stop_reason || 'completed';
       attachFeedback(reply, record);
@@ -1084,12 +1219,15 @@ async function send(text, continuation = null) {
   };
 
   try {
-    const resp = await fetch(continuation ? '/ch06/orders/selection/stream' : '/ch05/chat/stream', {
+    const resp = await fetch(continuation?.kind === 'ticket' ? '/ch08/tickets/resume/stream'
+      : continuation ? '/ch06/orders/selection/stream' : '/ch05/chat/stream', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       // session_id 可能是 null —— **不能**把它换成空串:服务端那条"空白一律 422"的
       // 规则对空串同样生效。null 表示"我还没有会话"，服务端会发一个新的。
-      body: JSON.stringify(continuation ? {session_id: sessionId, user_id: userId,
+      body: JSON.stringify(continuation?.kind === 'ticket' ? {session_id:sessionId, user_id:userId,
+        confirmation_id:continuation.preview.confirmation_id, action:continuation.action}
+        : continuation ? {session_id: sessionId, user_id: userId,
         selection_id: continuation.selection.selection_id, order_id: continuation.order.order_id}
         : { session_id: sessionId, user_id: userId, message: text }),
     });
@@ -1224,7 +1362,7 @@ async function loadConversationList() {
 }
 
 function renderHistory() {
-  log.replaceChildren(); pendingCards.clear();
+  log.replaceChildren(); pendingCards.clear(); pendingTickets.clear();
   if (!history.length) {
     const hint = document.createElement('div'); hint.className = 'hint';
     hint.textContent = '你好~ 我是 MewHelp 的智能客服。发货、售后、退换货都可以问我。';
@@ -1236,7 +1374,9 @@ function renderHistory() {
       renderAnswer(reply.text, record.text, record.sources);
       if (record.error) reply.bubble.classList.add('err');
       attachFeedback(reply, record); attachActions(reply, record); attachRefund(reply, record);
-      if (record.waiting) businessNode(reply.bubble, 'div', '正在核对订单卡片…', 'business-status pending-check');
+      if (record.ticket_preview && (record.ticket_receipt || record.ticket_status === 'cancelled'))
+        attachTicketPreview(reply, record, record.ticket_preview);
+      else if (record.waiting) businessNode(reply.bubble, 'div', record.waiting_kind === 'ticket' ? '正在核对工单卡片…' : '正在核对订单卡片…', 'business-status pending-check');
     }
   }
 }
@@ -1312,7 +1452,9 @@ try {
         attachFeedback(reply, record);
         attachActions(reply, record);
         attachRefund(reply, record);
-        if (record.waiting) businessNode(reply.bubble, 'div', '正在核对订单卡片…', 'business-status pending-check');
+        if (record.ticket_preview && (record.ticket_receipt || record.ticket_status === 'cancelled'))
+          attachTicketPreview(reply, record, record.ticket_preview);
+        else if (record.waiting) businessNode(reply.bubble, 'div', record.waiting_kind === 'ticket' ? '正在核对工单卡片…' : '正在核对订单卡片…', 'business-status pending-check');
       }
     }
   }
