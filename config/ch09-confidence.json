@@ -1,0 +1,29 @@
+{
+  "top_k": 5,
+  "effective_cutoff": 0.003920442890375853,
+  "weights": [
+    0.75,
+    0.25,
+    0.0
+  ],
+  "threshold": 0.7438707113265991,
+  "model_metadata": {
+    "embedding": {
+      "model_id": "BAAI/bge-m3",
+      "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+      "dimension": 1024,
+      "normalize_embeddings": true
+    },
+    "reranker": {
+      "model_id": "BAAI/bge-reranker-v2-m3",
+      "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+      "max_length": 8192,
+      "score_transform": "sigmoid"
+    }
+  },
+  "dataset_hashes": {
+    "corpus_hash": "4348decce0c4b8f81edebb0d15df8afc5213aa8ca85ee0f555c5fbc46cca55a4",
+    "query_hash": "aed316a9d3560560d2828abfc72b1e2468d96c721c7b8e38f20f66fe2d93adc8"
+  },
+  "retrieval_config_hash": "84e63b43577e41376e38ac4708fa6852c0ad7234195fa10358a7a755c26d3775"
+}

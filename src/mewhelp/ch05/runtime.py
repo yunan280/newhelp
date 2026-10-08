@@ -39,6 +39,8 @@ async def open_runtime(
     context_profile=None,
     tool_runtime=None,
     observation_runtime=None,
+    confidence_profile=None,
+    ch09_settings=None,
 ):
     @lru_cache(maxsize=1)
     def default_rag_factory():
@@ -48,6 +50,9 @@ async def open_runtime(
         return get_rag_runtime(session_factory, calibration_path=calibration)
 
     context_settings = context_settings or ContextSettings()
+    if confidence_profile is None:
+        from mewhelp.ch09.confidence import load_workflow_confidence
+        confidence_profile = load_workflow_confidence(ch09_settings)
     router_settings = router_settings or Ch06Settings()
     profile = context_profile or load_profile(context_settings.context_calibration_path)
     try:
@@ -82,6 +87,7 @@ async def open_runtime(
             settings=context_settings, profile=profile, summary_manager=manager,
             tool_runtime=tool_runtime,
             observation_runtime=observation_runtime,
+            confidence_profile=confidence_profile,
         )
         try:
             callbacks = observation_runtime.callbacks if observation_runtime else ()

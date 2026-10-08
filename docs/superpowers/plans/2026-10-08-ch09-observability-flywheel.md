@@ -125,7 +125,7 @@ assert answer_row_count == 1
 - `retrieve_current_evidence(question: str, *, rag: RagRuntime, filters: SearchFilters) -> RetrievalResult`：现有原问题passthrough路径的共享接口，无二次改写。`retrieve_knowledge`调用它构造现有Envelope，并保留Top5原始ChunkSnapshot用于生成/快照；评估直接消费原Top10/候选Top50。
 - `calibrate_current_path(*, dataset: Path, workdir: Path, run_id: str, retrieval_runtime: RetrievalRuntime) -> Path`（async）：只取20 calibration，建立隔离SQLite/集合，产物绑定冻结语料与当前模型/config，不绑定线上库hash。
 
-- [ ] **1. 写公式失败测试。** 权重非负、和1、s1/gap/n(c)/5按spec公式；一条证据gap0且missing_top2=True；空证据拒绝；NaN/Inf/None/越界、未按rank排序报配置故障；profile模型/TopK/config不一致拒绝加载，线上普通FAQ新增不使profile失效。
+- [x] **1. 写公式失败测试。** 权重非负、和1、s1/gap/n(c)/5按spec公式；一条证据gap0且missing_top2=True；空证据拒绝；NaN/Inf/None/越界、未按rank排序报配置故障；profile模型/TopK/config不一致拒绝加载，线上普通FAQ新增不使profile失效。
 
 ```python
 # profile: TopK=5, cutoff=.6, weights=(.5,.25,.25), threshold=.5
@@ -133,11 +133,11 @@ result = score_evidence([.8, .6], profile=profile)
 assert result.value == pytest.approx(.5 * .8 + .25 * 2 / 5 + .25 * .2)
 assert score_evidence([], profile=profile).passed is False
 ```
-- [ ] **2. 验证红。** `python -m pytest tests/ch09/test_confidence.py tests/ch09/test_calibration_contract.py -q`。这里只测运算/隔离合同，不拿假的高分证明真实门控效果。
-- [ ] **3. 实现公式与搜索。** 权重步长0.25、w_s≥0.5；cutoff来自实测评分，threshold含全拒候选；按误放、误拒、较高阈值、固定参数顺序选择。函数保留原Top10/候选和真实Top5原文，不因prompt布局重排分数。耗时预算/无证据/上下文超限继续独立处理。正式profile通过CH09配置单独加载；旧RagRuntime构造所需RAG_CALIBRATION_PATH按旧格式保留，不把confidence新文件塞给旧load_relevance_threshold解析器；主力闸不使用该旧阈值。
-- [ ] **4. 数据验证代替Prompt TDD。** 先 `python -m mewhelp.knowledge.evaluation.dataset --validate eval/ch04`。`python -m mewhelp.ch09.calibration --dataset eval/ch04 --workdir artifacts/ch09/<run>/confidence --run-id ch09_cal_<date>` 实跑20题原路径，保存全部候选/误放误拒/特征/召回/模型revision/hash。40 test留给Task 8，不能用于选参数；旧calibration-scores不复用。若全拒或真实语料不够支撑则公开结果，闭环不得假称通过。
-- [ ] **5. 验证绿。** 重跑第2步；正式profile重载校验通过，修改test标签不会改变calibration候选选择；报告注明这是校准证据，不是两轮评估。
-- [ ] **6. 记录与提交。** 记实际参数、错误及产物路径；`git commit -m 'feat(ch09): calibrate formal evidence confidence'`。
+- [x] **2. 验证红。** `python -m pytest tests/ch09/test_confidence.py tests/ch09/test_calibration_contract.py -q`。这里只测运算/隔离合同，不拿假的高分证明真实门控效果。
+- [x] **3. 实现公式与搜索。** 权重步长0.25、w_s≥0.5；cutoff来自实测评分，threshold含全拒候选；按误放、误拒、较高阈值、固定参数顺序选择。函数保留原Top10/候选和真实Top5原文，不因prompt布局重排分数。耗时预算/无证据/上下文超限继续独立处理。正式profile通过CH09配置单独加载；旧RagRuntime构造所需RAG_CALIBRATION_PATH按旧格式保留，不把confidence新文件塞给旧load_relevance_threshold解析器；主力闸不使用该旧阈值。
+- [x] **4. 数据验证代替Prompt TDD。** 先 `python -m mewhelp.knowledge.evaluation.dataset --validate eval/ch04`。`python -m mewhelp.ch09.calibration --dataset eval/ch04 --workdir artifacts/ch09/<run>/confidence --run-id ch09_cal_<date>` 实跑20题原路径，保存全部候选/误放误拒/特征/召回/模型revision/hash。40 test留给Task 8，不能用于选参数；旧calibration-scores不复用。若全拒或真实语料不够支撑则公开结果，闭环不得假称通过。
+- [x] **5. 验证绿。** 重跑第2步；正式profile重载校验通过，修改test标签不会改变calibration候选选择；报告注明这是校准证据，不是两轮评估。
+- [x] **6. 记录与提交。** 记实际参数、错误及产物路径；`git commit -m 'feat(ch09): calibrate formal evidence confidence'`。
 
 ### Task 4: 主力生成充分性、三入口证据基础和持久回答ID
 

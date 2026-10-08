@@ -37,7 +37,8 @@ async def lifespan(app: FastAPI):
     from mewhelp.ch09.runtime import open_ch09_runtime
     async with open_ch09_runtime(SessionLocal, settings=Ch09Settings()) as ch09:
         async with open_runtime(SessionLocal, settings=Ch05Settings(), tool_runtime=tools,
-                                observation_runtime=ch09.observation_runtime) as runtime:
+                                observation_runtime=ch09.observation_runtime,
+                                ch09_settings=ch09.settings) as runtime:
             app.state.ch05_runtime = runtime
             app.state.tool_runtime = tools
             app.state.ch09_runtime = ch09

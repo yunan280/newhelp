@@ -25,6 +25,7 @@ class EvidenceEnvelope(BaseModel):
     threshold: float
     context_budget: int
     unsupported_reason: str | None = None
+    retrieved_chunks: dict | None = None
 
 
 class GateDecision(BaseModel):
@@ -108,11 +109,10 @@ async def retrieve_policy(question, order, queries, *, rag, filters, calibration
 
 
 async def retrieve_knowledge(question: str, *, rag, filters: SearchFilters) -> EvidenceEnvelope:
-    query = QueryUnderstanding(question, question, question, "knowledge", ["ch05_passthrough"])
     try:
         result = await asyncio.to_thread(observed_sync_call, 'retrieval.hybrid_rerank',
             {'question': question, 'filters': filters.model_dump()},
-            retrieve_evidence, rag.retrieval, query, filters)
+            retrieve_current_evidence, question, rag=rag, filters=filters)
     except UnsupportedContextError as exc:
         return EvidenceEnvelope(
             sources=[],
@@ -129,7 +129,18 @@ async def retrieve_knowledge(question: str, *, rag, filters: SearchFilters) -> E
         threshold=rag.relevance_threshold,
         context_budget=rag.context_budget,
         unsupported_reason=result.unsupported_context_reason,
+        retrieved_chunks=_raw_snapshot(result, question, filters),
     )
+
+
+def retrieve_current_evidence(question: str, *, rag, filters: SearchFilters):
+    query = QueryUnderstanding(question, question, question, 'knowledge', ['ch05_passthrough'])
+    return retrieve_evidence(rag.retrieval, query, filters)
+
+
+def _raw_snapshot(result, question, filters):
+    from mewhelp.ch09.snapshots import snapshot_result
+    return snapshot_result(result, query=question, filters=filters, top_k=5).model_dump(mode='json')
 
 
 def evaluate_gate(evidence: EvidenceEnvelope, *, prompt_bytes: int) -> GateDecision:

@@ -101,3 +101,4 @@ class WorkflowContext:
     tool_runtime: object | None = field(default=None, kw_only=True)
     tool_snapshot: object | None = field(default=None, kw_only=True)
     observation_runtime: object | None = field(default=None, kw_only=True)
+    confidence_profile: object | None = field(default=None, kw_only=True)
