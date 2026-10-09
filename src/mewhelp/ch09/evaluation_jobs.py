@@ -19,6 +19,7 @@ from .contracts import RequestTraceContext
 from .evaluation import atomic_json, evaluate_current_path, settled_thread, validate_run
 from .locks import named_lock
 from .observability import get_observation_runtime
+from .snapshots import same_json_value
 
 
 class EvaluationRequest(BaseModel):
@@ -73,7 +74,7 @@ def persist_eval_run(factory, *, request, summary, engine):
                 .with_for_update()
             )
             if row:
-                if row.metrics != metrics or row.triggered_by != request.triggered_by:
+                if not same_json_value(row.metrics, metrics) or row.triggered_by != request.triggered_by:
                     raise ValueError("同一run_id对应不同评估结果或触发方式")
                 return str(row.id)
             row = EvalRun(

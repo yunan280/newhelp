@@ -1,5 +1,6 @@
 """Preserve this round's original text and rank, never re-run historical retrieval."""
 from copy import deepcopy
+from math import isclose
 
 from .contracts import EvidenceSnapshot, RetrievedChunk
 
@@ -28,6 +29,25 @@ def immutable_message_snapshot(snapshot):
     value.pop('feedback_lcq_id', None)
     value.pop('trace_id', None)
     return value
+
+
+def same_json_value(left, right):
+    """Allow only double serialization noise; IDs, text and types stay exact."""
+    if type(left) is not type(right):
+        return False
+    if isinstance(left, float):
+        return isclose(left, right, rel_tol=1e-15, abs_tol=1e-15)
+    if isinstance(left, dict):
+        return left.keys() == right.keys() and all(
+            same_json_value(value, right[key]) for key, value in left.items())
+    if isinstance(left, list):
+        return len(left) == len(right) and all(
+            same_json_value(a, b) for a, b in zip(left, right, strict=True))
+    return left == right
+
+
+def same_message_snapshot(left, right):
+    return same_json_value(immutable_message_snapshot(left), immutable_message_snapshot(right))
 
 
 def resolve_evidence_snapshot(raw, *, retrieval_performed=None, citations=None):

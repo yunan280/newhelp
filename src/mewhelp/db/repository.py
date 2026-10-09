@@ -80,12 +80,12 @@ def append_messages_once(session: Session, *, conversation_id: int, rows: list[T
         session.execute(statement)
         saved = session.scalar(select(Message).where(Message.ch06_event_key == row.ch06_event_key)
                                .with_for_update().execution_options(populate_existing=True))
-        from mewhelp.ch09.snapshots import immutable_message_snapshot
+        from mewhelp.ch09.snapshots import same_message_snapshot
         if saved is not None and any([
             saved.conversation_id != conversation_id, saved.role != row.role,
             saved.content != row.content, saved.tool_calls != row.tool_calls,
             saved.tool_call_id != row.tool_call_id, saved.citations != row.citations,
-            immutable_message_snapshot(saved.retrieval_snapshot) != immutable_message_snapshot(row.retrieval_snapshot),
+            not same_message_snapshot(saved.retrieval_snapshot, row.retrieval_snapshot),
         ]):
             raise ValueError("message idempotency key reused with different content")
 

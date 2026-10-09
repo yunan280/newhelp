@@ -63,3 +63,16 @@ def test_mysql_partial_and_changed_completion_are_not_inserted(ch09_mysql):
         persist_eval_run(factory, request=request, summary=changed, engine=ch09_mysql)
     with factory() as db:
         assert len(db.scalars(select(EvalRun)).all()) == 1
+
+
+def test_mysql_measured_fraction_replay_preserves_run_identity(ch09_mysql):
+    factory = sessionmaker(ch09_mysql, expire_on_commit=False)
+    request = EvaluationRequest(run_id='fraction_control')
+    measured = summary(request.run_id)
+    measured['metrics']['faithfulness'] = 0.9987983703613281
+    measured['metrics']['faithfulness_N'] = 35
+    first = persist_eval_run(factory, request=request, summary=measured, engine=ch09_mysql)
+    assert persist_eval_run(factory, request=request, summary=measured, engine=ch09_mysql) == first
+    measured['metrics']['faithfulness'] += .00001
+    with pytest.raises(ValueError, match='不同评估结果'):
+        persist_eval_run(factory, request=request, summary=measured, engine=ch09_mysql)
