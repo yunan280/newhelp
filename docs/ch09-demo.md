@@ -13,7 +13,7 @@ powershell -NoProfile -File scripts/run_ch09.ps1 -Port 9030
 powershell -NoProfile -File scripts/register_ch09_evaluation.ps1 -At 04:00
 ```
 
-聊天`http://127.0.0.1:9030/`，审核页`/admin/ch09`，本地Langfuse`http://127.0.0.1:3039/`。前端与真实功能验收结果将在后续阶段追加，本段只给命令，不声称页面已验收。
+聊天`http://127.0.0.1:9030/`，审核页`http://127.0.0.1:9030/review`，统计页`http://127.0.0.1:9030/ch09/stats`，本地Langfuse`http://127.0.0.1:3039/`。真实功能验收结果将在后续阶段追加，本段只给命令，不声称页面已验收。
 
 ```powershell
 powershell -NoProfile -File scripts/run_ch09_evaluation.ps1 -RunId ch09_20261008_r01

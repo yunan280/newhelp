@@ -81,6 +81,17 @@ async def knowledge_entry_page() -> FileResponse:
     return FileResponse(STATIC_DIR / "kb.html")
 
 
+@app.get("/review")
+@app.get("/admin/ch09", include_in_schema=False)
+async def ch09_review_page() -> FileResponse:
+    return FileResponse(STATIC_DIR / "review.html")
+
+
+@app.get("/ch09/stats")
+async def ch09_statistics_page() -> FileResponse:
+    return FileResponse(STATIC_DIR / "ch09-stats.html")
+
+
 @app.get("/kb/source/{chunk_id}")
 def knowledge_source_page(chunk_id: int, runtime: RuntimeDep) -> FileResponse:
     if read_published_chunk(runtime.session_factory, chunk_id) is None:

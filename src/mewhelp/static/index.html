@@ -569,7 +569,8 @@ function renderAnswer(body, text, sources) {
 }
 
 function attachFeedback(reply, record) {
-  if (!record.complete || record.error || record.finish_reason === 'output_limit'
+  if (!record.complete || record.error || record.waiting || record.local_simulation
+    || record.finish_reason === 'output_limit'
     || reply.bubble.querySelector('.feedback')) return;
   const group = document.createElement('div');
   group.className = 'feedback'; group.setAttribute('role', 'group'); group.setAttribute('aria-label', '回答满意度');
@@ -578,17 +579,33 @@ function attachFeedback(reply, record) {
     const button = document.createElement('button');
     button.type = 'button'; button.textContent = choice === 'up' ? '👍' : '👎';
     button.setAttribute('aria-label', choice === 'up' ? '满意' : '不满意');
-    button.addEventListener('click', () => {
-      if (record.feedback) return;
+    button.addEventListener('click', async () => {
+      if (pending || record.feedback_status === 'down' || (choice === 'up' && record.feedback)) return;
+      if (choice === 'down') {
+        if (!eligible) return;
+        pending = true; failure = ''; refresh();
+        try {
+          const response = await fetch('/api/ch09/feedback', {method:'POST',
+            headers:{'Content-Type':'application/json'}, body:JSON.stringify({
+              user_id:userId, session_id:record.session_id,
+              answer_message_id:record.answer_message_id, choice:'down'})});
+          const receipt = await response.json();
+          if (!response.ok) throw new Error(typeof receipt.detail === 'string' ? receipt.detail : '反馈保存失败，请重试');
+          record.feedback_status = 'down'; record.feedback_pool_id = receipt.pool_id;
+        } catch (error) {
+          failure = error.message || '反馈未保存，请重试';
+          return;
+        } finally { pending = false; refresh(); }
+      }
       record.feedback = {answer_id: record.answer_id, session_id: record.session_id || sessionId,
         choice, created_at: new Date().toISOString()};
-      refresh(); // 先锁定，再尝试存储；存储失败也不能改选。
+      refresh();
       try {
         const stored = JSON.parse(localStorage.getItem(FEEDBACK_KEY) || '[]');
         const signals = Array.isArray(stored) ? stored : [];
         signals.push(record.feedback);
         localStorage.setItem(FEEDBACK_KEY, JSON.stringify(signals));
-      } catch (e) { /* 纯前端信号，当前页面锁定仍保留。 */ }
+      } catch (e) { /* 👍为本地采集；👎已在后端保存，不依赖本地存储。 */ }
       saveHistory();
     });
     group.append(button);
@@ -596,13 +613,20 @@ function attachFeedback(reply, record) {
   });
   function refresh() {
     buttons.forEach((button, i) => {
-      const selected = record.feedback && record.feedback.choice === (i === 0 ? 'up' : 'down');
-      button.disabled = Boolean(record.feedback);
+      const selected = i === 1 ? record.feedback_status === 'down'
+        : record.feedback_status !== 'down' && record.feedback?.choice === 'up';
+      button.disabled = pending || record.feedback_status === 'down'
+        || (i === 1 && !eligible) || (i === 0 && Boolean(record.feedback));
       button.classList.toggle('selected', Boolean(selected));
       button.setAttribute('aria-pressed', selected ? 'true' : 'false');
     });
-    status.textContent = record.feedback ? '已反馈' : '';
+    status.textContent = failure || (pending ? '正在保存…' : record.feedback_status === 'down'
+      ? '已反馈，我们会改进答案' : record.feedback?.choice === 'up' ? '已记录满意'
+      : !eligible ? '回答尚无可反馈记录' : '');
   }
+  const eligible = typeof record.answer_message_id === 'string'
+    && /^[1-9][0-9]{0,19}$/.test(record.answer_message_id) && Boolean(record.session_id);
+  let pending = false, failure = '';
   group.append(status); reply.bubble.append(group); refresh();
 }
 
@@ -1074,7 +1098,8 @@ async function send(text, continuation = null) {
   const record = continuation?.record || {who: 'ai', text: '', sources: [], answer_id: freshAnswerId(),
     session_id: sessionId, feedback: null, complete: false, error: false};
   if (!continuation) history.push(record);
-  else { record.text = ''; record.sources = []; record.error = false; record.waiting = false; }
+  else { record.text = ''; record.sources = []; record.error = false; record.waiting = false;
+    record.answer_message_id = null; record.feedback_status = 'none'; record.feedback = null; }
   const reply = continuation?.reply || bubble('ai', '');
   recordReplies.set(record, reply);
   reply.text.textContent = '';
@@ -1211,6 +1236,8 @@ async function send(text, continuation = null) {
       }
       record.refund_offer = payload.refund_offer || null;
       record.finish_reason = payload.finish_reason || payload.stop_reason || 'completed';
+      record.answer_message_id = typeof payload.answer_message_id === 'string' ? payload.answer_message_id : null;
+      record.feedback_status = payload.feedback_status === 'down' ? 'down' : 'none';
       attachFeedback(reply, record);
       attachActions(reply, record);
       attachRefund(reply, record);
@@ -1402,6 +1429,10 @@ async function switchConversation(conversationId) {
       if (index >= 0) used.add(index);
       return {...(index >= 0 ? cached[index] : {}), who, text:message.content, ledger_id:message.id,
         session_id:data.session_id, sources:normalizeSources(message.citations), complete:true,
+        answer_message_id:message.answer_message_id || null,
+        feedback_status:message.feedback_status === 'down' ? 'down' : 'none',
+        feedback:message.feedback_status === 'down' ? {choice:'down'}
+          : (index >= 0 && cached[index].feedback?.choice === 'up' ? cached[index].feedback : null),
         answer_id:index >= 0 ? cached[index].answer_id || freshAnswerId() : freshAnswerId()};
     });
     sessionId = data.session_id; storeSessionId(sessionId); saveHistory(); renderHistory();
