@@ -122,6 +122,32 @@ def remaining(state, context) -> float:
     return context.limits.turn_seconds - (time.time() - state["started_at"])
 
 
+def pending_ticket_request(state) -> bool:
+    evidence = state.get('ticket_request') or {}
+    return bool(evidence.get('explicit_request') and not evidence.get('cancelled')
+                and not evidence.get('request_completed')
+                and state.get('ticket_status') not in ('submitted', 'unknown', 'cancelled', 'denied', 'failed'))
+
+
+def required_ticket_choice(state, registry):
+    """Constrain selection from trusted user facts, never authorize execution."""
+    from mewhelp.ch08.ticket_intent import validate_ticket_draft
+
+    spec = registry.get('create_ticket')
+    if (not pending_ticket_request(state) or spec is None or spec.source != 'builtin'
+            or spec.permission != 'write' or not spec.available or not spec.model_visible):
+        return None
+    evidence = state['ticket_request']
+    # Check whether grounded required fields exist. These candidates are never
+    # sent to the tool: the model still extracts its args and the engine checks them.
+    for utterance in evidence.get('utterances', []):
+        for kind in ('售后', '投诉', '咨询'):
+            if not validate_ticket_draft({'description': utterance.get('text', ''),
+                                          'ticket_type': kind}, evidence):
+                return 'create_ticket'
+    return None
+
+
 async def decide_agent(state, context) -> dict:
     limits = context.limits
     if state.get("stop_reason"):
@@ -150,7 +176,9 @@ async def decide_agent(state, context) -> dict:
         return window_stop(error)
     except BudgetExceeded:
         return stopped("token_budget")
-    model = context.model_factory(limits.decision_max_tokens).bind_tools(registry.tools())
+    required = required_ticket_choice(state, registry)
+    model = context.model_factory(limits.decision_max_tokens).bind_tools(
+        registry.tools(), **({'tool_choice': required} if required else {}))
     log_model(messages, schemas, state=state, purpose='decision',
               model_name=getattr(model, 'model_name', get_settings().llm_model), profile=context.profile)
     response = await asyncio.wait_for(
@@ -167,6 +195,8 @@ async def decide_agent(state, context) -> dict:
     )
     update = {"decision_count": count, "calls": calls, "usage": usage.model_dump()}
     tool_calls = response.tool_calls
+    if required and not any(call['name'] == required for call in tool_calls):
+        return invalid_control(update, state.get('agent_messages', []))
     if tool_calls:
         if state["tool_count"] + len(tool_calls) > limits.max_tools:
             return {**update, **stopped("tool_limit")}
@@ -228,6 +258,14 @@ async def decide_agent(state, context) -> dict:
             decision = AgentDecision.model_validate_json(repaired.content)
         except (ValidationError, TypeError):
             return invalid_control(update, state.get('agent_messages', []))
+    if context.tool_runtime is not None and pending_ticket_request(state):
+        spec = registry.get('create_ticket')
+        available = spec is not None and spec.permission == 'write' and spec.available and spec.model_visible
+        return {**update, 'decision': decision.model_copy(update={'reply_mode': 'clarify'}).model_dump(),
+                'pending_tool_calls': [], 'actions': [],
+                'stop_reason': 'clarification' if available else 'ticket_unavailable',
+                'answer': '请补充具体问题描述，并说明工单类型（售后、投诉或咨询）。' if available
+                          else '当前无法发起工单，请联系人工客服。'}
     return {
         **update,
         "agent_messages": state.get('agent_messages', []),

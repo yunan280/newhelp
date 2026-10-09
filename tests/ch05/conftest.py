@@ -43,7 +43,7 @@ class FakeModel:
     def __init__(self, owner, kind):
         self.owner, self.kind = owner, kind
 
-    def bind_tools(self, tools):
+    def bind_tools(self, tools, **kwargs):
         return self
 
     async def ainvoke(self, messages):
