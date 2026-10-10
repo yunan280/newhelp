@@ -1,6 +1,6 @@
 # Ch09 交付报告
 
-2026-10-10。功能代码交付提交97b0df6，分支`codex/ch09-observability-flywheel`，独立工作树`C:/Users/27497/projects/mewhelp-wt/ch09-observability-flywheel`。后续提交保存本报告、执行账本与证据检查脚本；最终提交可用`git rev-parse HEAD`查看。已保留工作树和运行服务，未合并、未推送，原Ch08工作树未改动。
+2026-10-10。功能代码交付提交97b0df6，分支`codex/ch09-observability-flywheel`，独立工作树`C:/Users/27497/projects/mewhelp-wt/ch09-observability-flywheel`。后续提交保存本报告、执行账本与证据检查脚本；最终提交可用`git rev-parse HEAD`查看。用户随后要求「推送到github上」，已将该分支推送到[yunan280/newhelp](https://github.com/yunan280/newhelp/tree/codex/ch09-observability-flywheel)。工作树和运行服务保留，未合并主分支，原Ch08工作树未改动。
 
 聊天：http://127.0.0.1:9030/；审核：http://127.0.0.1:9030/review；统计：http://127.0.0.1:9030/ch09/stats；自部署Langfuse：http://127.0.0.1:3039/。原Ch08仍在http://127.0.0.1:9020/。Langfuse登录凭据只在本机忽略文件`.env.ch09.langfuse`，不在报告中公开。
 
