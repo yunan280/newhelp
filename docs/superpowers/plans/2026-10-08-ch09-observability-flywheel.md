@@ -318,13 +318,13 @@ assert incomplete_intent['per_request_mean'] is None
 - Create: `scripts/smoke_ch09_acceptance.py`, `docs/ch09-final-report.md`；修改 `docs/ch09-demo.md`, `dev-notes/ch09.md`；证据 `artifacts/ch09/<run>/acceptance/`。
 - 若发现bug：先按 `superpowers:systematic-debugging` 找根因，再写所属后端失败测试修复；Prompt用失败样例验证，前端直接改，分别归回相应任务。
 
-- [ ] **1. 运行一次最终所需回归。** `python -X utf8 -m pytest -m 'not eval and not mysql' -q`；随后 `python -m pytest tests/ch09 -m mysql -q`（真实专用DB）。`python -m ruff check src/mewhelp/ch09 tests/ch09 scripts/migrate_ch09_schema.py` 和 `python -m pip check`。保存实际pass/skip/fail；旧项目已有lint问题单列，不修无关文件。检查红绿日志，不能只用全绿结果声称TDD。
-- [ ] **2. 启动与trace证据。** 用Task 9命令启动9030并核对原9020仍可用；请求知识/业务MCP/拒答/确认/取消/并发，各自保存实际trace ID与origin关联，确认prompt、工具调用/拒绝/耗时、原文检索、真实usage完整。Langfuse UI实际展开与服务端observations证据分别保留；缺任何必要信息不写“任意请求完整通过”。
-- [ ] **3. 完整飞轮。** 问明确标识的演示业务未知问题，保存真实兜底→pool→matched_review_id→review；管理页看原话/当轮片段，人工提交有依据的核准答案，验证MySQL+Milvuspublished；同问再真实命中新知识并正确引用回答。演示数据与真实政策区分，禁止导入Ch04评估语料；无核心代码修改/无服务重启。
-- [ ] **4. 负反馈与统计。** 对旧轮回答点👎并刷新重试、切会话，保存同一原问题/快照/唯一pool/语义归并次数；另验明确未检索的闲聊/业务为NULL。至少两类intent的真实generation usage对照统计，覆盖率/分页/时间窗口与未知用量如实显示。
-- [ ] **5. 两轮真实40题评估。** 顺序运行：`powershell -NoProfile -File scripts/run_ch09_evaluation.ps1 -RunId ch09_<date>_r01 -TriggeredBy 手动`，随后新 `ch09_<date>_r02`。每轮40 test都实际检索/生成/判定，保存cases/summary/manifest、真实耗时/模型消耗、两条eval_runs及同口径趋势；不是跑两次历史report导入。存在错误/全部NA按实际状态报告并修根因，不擅自重复整轮；新改动确实影响口径时才再跑并记录原因。
-- [ ] **6. 独立后端审查。** 使用 `superpowers:requesting-code-review` 派一个全新、最强可用审查代理，以隔离树基线到HEAD审查后端/脚本/Prompt/数据合同、事务/并发/原栈兼容及spec对照；不审前端视觉代码。按 `superpowers:receiving-code-review` 核实结论，修正高风险问题并做受影响验证，追记带路径和触发场景的审查结论。
-- [ ] **7. Finish与最终交付。** 按 `superpowers:verification-before-completion` 和 `superpowers:finishing-a-development-branch`，确认必要验证有实际证据。交付树路径/分支/提交、可复制部署/启动/页面/评估命令、实际测试数字、校准产物、两轮指标/分母/趋势、Langfuse请求链接、真实页面状态和dev-notes路径；保留未满足验收，不把API通过写成UI通过。无用户授权不合并/推送；独立树保留供测试，不主动停服务或删除运行产物。
+- [x] **1. 运行一次最终所需回归。** `python -X utf8 -m pytest -m 'not eval and not mysql' -q`；随后 `python -m pytest tests/ch09 -m mysql -q`（真实专用DB）。`python -m ruff check src/mewhelp/ch09 tests/ch09 scripts/migrate_ch09_schema.py` 和 `python -m pip check`。保存实际pass/skip/fail；旧项目已有lint问题单列，不修无关文件。检查红绿日志，不能只用全绿结果声称TDD。
+- [x] **2. 启动与trace证据。** 用Task 9命令启动9030并核对原9020仍可用；请求知识/业务MCP/拒答/确认/取消/并发，各自保存实际trace ID与origin关联，确认prompt、工具调用/拒绝/耗时、原文检索、真实usage完整。Langfuse UI实际展开与服务端observations证据分别保留；缺任何必要信息不写“任意请求完整通过”。
+- [x] **3. 完整飞轮。** 问明确标识的演示业务未知问题，保存真实兜底→pool→matched_review_id→review；管理页看原话/当轮片段，人工提交有依据的核准答案，验证MySQL+Milvuspublished；同问再真实命中新知识并正确引用回答。演示数据与真实政策区分，禁止导入Ch04评估语料；无核心代码修改/无服务重启。
+- [x] **4. 负反馈与统计。** 对旧轮回答点👎并刷新重试、切会话，保存同一原问题/快照/唯一pool/语义归并次数；另验明确未检索的闲聊/业务为NULL。至少两类intent的真实generation usage对照统计，覆盖率/分页/时间窗口与未知用量如实显示。
+- [x] **5. 两轮真实40题评估。** 顺序运行：`powershell -NoProfile -File scripts/run_ch09_evaluation.ps1 -RunId ch09_<date>_r01 -TriggeredBy 手动`，随后新 `ch09_<date>_r02`。每轮40 test都实际检索/生成/判定，保存cases/summary/manifest、真实耗时/模型消耗、两条eval_runs及同口径趋势；不是跑两次历史report导入。存在错误/全部NA按实际状态报告并修根因，不擅自重复整轮；新改动确实影响口径时才再跑并记录原因。
+- [x] **6. 独立后端审查。** 使用 `superpowers:requesting-code-review` 派一个全新、最强可用审查代理，以隔离树基线到HEAD审查后端/脚本/Prompt/数据合同、事务/并发/原栈兼容及spec对照；不审前端视觉代码。按 `superpowers:receiving-code-review` 核实结论，修正高风险问题并做受影响验证，追记带路径和触发场景的审查结论。
+- [x] **7. Finish与最终交付。** 按 `superpowers:verification-before-completion` 和 `superpowers:finishing-a-development-branch`，确认必要验证有实际证据。交付树路径/分支/提交、可复制部署/启动/页面/评估命令、实际测试数字、校准产物、两轮指标/分母/趋势、Langfuse请求链接、真实页面状态和dev-notes路径；保留未满足验收，不把API通过写成UI通过。无用户授权不合并/推送；独立树保留供测试，不主动停服务或删除运行产物。
 
 ## 计划自查与交接
 
