@@ -1,4 +1,5 @@
 import asyncio
+import threading
 from contextlib import contextmanager
 
 import pytest
@@ -253,3 +254,44 @@ async def test_scan_failure_is_visible_not_an_empty_queue(ch09_db, lock):
         assert status["pending_count"] is None and "database unavailable" in status["scan_error"]
     finally:
         await worker.aclose()
+
+
+async def test_cancelled_commit_keeps_queue_lock_until_sql_thread_settles(ch09_db, monkeypatch):
+    from mewhelp.ch09 import flywheel
+
+    held, entered, release = threading.Event(), threading.Event(), threading.Event()
+    original_commit = flywheel.commit_match
+
+    @contextmanager
+    def named(*args, **kwargs):
+        held.set()
+        try:
+            yield True
+        finally:
+            held.clear()
+
+    def blocked(*args):
+        entered.set()
+        assert release.wait(3)
+        return original_commit(*args)
+
+    monkeypatch.setattr(flywheel, 'named_lock', named)
+    monkeypatch.setattr(flywheel, 'commit_match', blocked)
+    pid = pool(ch09_db)
+    task = asyncio.create_task(flywheel.process_gap(
+        pid, factory=ch09_db, engine=ch09_db.kw['bind'], normalize=normalized, dedup=None))
+    try:
+        assert await asyncio.to_thread(entered.wait, 2)
+        task.cancel()
+        await asyncio.sleep(.03)
+        assert held.is_set() and not task.done()
+        task.cancel()  # A second shutdown signal must not release an active commit.
+        await asyncio.sleep(.03)
+        assert held.is_set() and not task.done()
+    finally:
+        release.set()
+        with pytest.raises(asyncio.CancelledError):
+            await task
+    assert not held.is_set()
+    with ch09_db() as db:
+        assert db.get(LowConfidenceQuestion, pid).matched_review_id is not None

@@ -138,5 +138,6 @@ async def generate_knowledge_answer(state, context, emit, *, record_pool=True):
         'low_confidence_question_id':result.low_confidence_question_id,
         'usage':outcome.usage.model_dump(), 'calls':calls,
         'knowledge_raw_usage':outcome.raw_usage,
+        'knowledge_refusal_reason':result.refusal_reason_code,
         'knowledge_assessment':parsed.model_dump() if isinstance(parsed, AnswerAssessment) else None,
         'stop_reason':'insufficient_knowledge' if result.refused else 'completed'}

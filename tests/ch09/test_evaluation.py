@@ -69,6 +69,37 @@ def raw():
     return RetrievalResult(chunks, [RankedChunk(c, 0.99 - i * 0.01) for i, c in enumerate(chunks)])
 
 
+@pytest.mark.parametrize('parsed,expected', [
+    (None, 'invalid_generation'),
+    ({'answerable': True, 'reason': '有依据', 'answer': '答案[99]。', 'citation_numbers': [99]}, 'invalid_citation'),
+    ({'answerable': False, 'reason': '知识不足', 'answer': '', 'citation_numbers': []}, None),
+])
+async def test_real_generation_failure_is_not_counted_as_normal_refusal(monkeypatch, parsed, expected):
+    from langchain_core.messages import AIMessage
+
+    from mewhelp.ch09 import evaluation
+    from mewhelp.knowledge.answering import AnswerAssessment
+
+    class Model:
+        def with_structured_output(self, schema, **kwargs):
+            return self
+
+        async def ainvoke(self, messages):
+            return {'raw': AIMessage('provider result', usage_metadata={'input_tokens': 10, 'output_tokens': 2, 'total_tokens': 12}),
+                    'parsed': AnswerAssessment.model_validate(parsed) if parsed else None,
+                    'parsing_error': ValueError('malformed provider JSON') if parsed is None else None}
+
+    monkeypatch.setattr(evaluation, 'retrieve_current_evidence', lambda *a, **kw: raw())
+    workflow = WorkflowContext(None, lambda *a, **kw: Model(), None, AgentLimits())
+    row = await evaluation.evaluate_case(case(), retrieval=None, workflow=workflow, profile=profile())
+    assert row['refused'] is True
+    if expected:
+        assert expected in row['error'] and row['error_stage'] == 'generation'
+        assert evaluation.summarize_rows([row])['errors'] == 1
+    else:
+        assert row['error'] is None and evaluation.summarize_rows([row])['errors'] == 0
+
+
 async def test_eval_uses_raw_question_gate_and_generation_top5(monkeypatch):
     from mewhelp.ch09 import evaluation
     from mewhelp.knowledge.evaluation.judge import JudgeResult

@@ -13,6 +13,8 @@ from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from sqlalchemy.orm import Session
 
+from mewhelp.ch09.observability import observed_sync_call, trace_knowledge
+
 from .filters import SearchFilters
 from .prompts import ANSWER_SYSTEM
 from .query import QueryUnderstanding
@@ -21,7 +23,6 @@ from .reranking import UnsupportedContextError
 from .retrieval import RankedChunk, RetrievalResult, RetrievalRuntime, retrieve_evidence
 from .store import KnowledgeChunk, snapshot_chunk
 from .vectors import Strategy
-from mewhelp.ch09.observability import observed_sync_call, trace_knowledge
 
 REFUSAL_MESSAGE = (
     "目前知识库没有足够可靠的依据回答这个问题，我无法确认。请补充具体信息或联系人工客服核实。"
@@ -65,6 +66,7 @@ class AnswerResult:
     refused: bool
     low_confidence_question_id: str | None
     retrieval: RetrievalResult
+    refusal_reason_code: str | None = None
 
 
 @dataclass(frozen=True)
@@ -252,7 +254,7 @@ async def answer_question(
                     retrieved_chunks=refusal_snapshot if refusal_snapshot is not None else _refusal_snapshot(result, query, filters),
                 ),
             )
-        return AnswerResult(REFUSAL_MESSAGE, [], True, pool_id, result)
+        return AnswerResult(REFUSAL_MESSAGE, [], True, pool_id, result, refusal_reason_code=code)
 
     if evidence is None:
         try:

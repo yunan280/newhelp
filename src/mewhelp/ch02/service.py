@@ -27,6 +27,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from mewhelp.ch01.service import EmptyCompletionError
+from mewhelp.ch09.observability import current_request, model_kwargs, trace_legacy
 from mewhelp.config import HISTORY_TOKEN_BUDGET, get_settings
 from mewhelp.db.repository import (
     TurnMessage,
@@ -45,7 +46,6 @@ from mewhelp.knowledge.filters import SearchFilters
 from mewhelp.knowledge.query import QueryUnderstanding, requires_knowledge, understand_query
 from mewhelp.llm import get_chat_model
 from mewhelp.memory import store, trim_history
-from mewhelp.ch09.observability import current_request, model_kwargs, trace_legacy
 from mewhelp.tools.contracts import ToolCallContext
 from mewhelp.tools.infra import ToolResult
 from mewhelp.tools.registry import ToolRegistry
@@ -155,6 +155,9 @@ async def _prepare_turn_events(
         history_rows = load_replay_messages(session, conversation_id=conversation_id)
         history = trim_history(_to_messages(history_rows), max_tokens=HISTORY_TOKEN_BUDGET)
 
+    root = current_request()
+    if root:
+        root.bind(session_id=session_id, conversation_id=conversation_id)
     yield SessionEvent(session_id=session_id, resumed=resumed)
 
     messages: list[BaseMessage] = [

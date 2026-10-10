@@ -202,11 +202,13 @@ class EvalJobManager:
                 return existing
             workdir = self.root / request.run_id
             validate_run(request.run_id, workdir)
-            if (workdir.exists() or receipt.exists()) and not request.resume:
+            if workdir.exists() or receipt.exists():
                 old = await asyncio.to_thread(self.get, request.run_id)
                 if old.eval_run_id:
+                    self.jobs[request.run_id] = old
                     return old
-                raise ValueError("旧轮未完成登记，必须显式resume或使用新run_id")
+                if not request.resume:
+                    raise ValueError("旧轮未完成登记，必须显式resume或使用新run_id")
             lock = evaluation_lock(self.engine)
             await lock.__aenter__()
             job = EvaluationJob(
@@ -252,7 +254,7 @@ class EvalJobManager:
                     on_progress=progress,
                     triggered_by=request.triggered_by,
                 )
-                row_id = await asyncio.to_thread(
+                row_id = await settled_thread(
                     persist_eval_run,
                     self.factory,
                     request=request,

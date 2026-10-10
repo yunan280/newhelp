@@ -5,7 +5,6 @@ import hashlib
 import importlib.metadata
 import inspect
 import json
-import logging
 import re
 import time
 from dataclasses import asdict, replace
@@ -32,24 +31,13 @@ from .confidence import current_profile_identity, score_evidence
 from .generation import KNOWLEDGE_ANSWER_SYSTEM, generate_knowledge_answer
 from .observability import observed_sync_call
 from .snapshots import snapshot_result
+from .threads import settled_thread
 
 
 def digest(value):
     return hashlib.sha256(
         json.dumps(value, ensure_ascii=False, sort_keys=True, allow_nan=False, default=str).encode()
     ).hexdigest()
-
-
-async def settled_thread(function, *args, **kwargs):
-    task = asyncio.create_task(asyncio.to_thread(function, *args, **kwargs))
-    try:
-        return await asyncio.shield(task)
-    except asyncio.CancelledError:
-        try:
-            await task
-        except Exception:
-            logging.getLogger(__name__).exception("评估取消时同步任务也发生错误")
-        raise
 
 
 def atomic_text(path, text):
@@ -298,8 +286,12 @@ async def evaluate_case(
             generation_usage=result.get("knowledge_raw_usage"),
             assessment=result.get("knowledge_assessment"),
             generation_stop_reason=result.get("stop_reason"),
+            generation_refusal_reason=result.get('knowledge_refusal_reason'),
         )
         if row["refused"]:
+            reason = result.get('knowledge_refusal_reason')
+            if reason in {'invalid_generation', 'invalid_citation', 'unsupported_context_size'}:
+                row.update(error=f'GenerationFailure: {reason}', error_stage='generation')
             return row
         stage = "judge"
         from mewhelp.knowledge.answering import SourceDTO

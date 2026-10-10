@@ -9,6 +9,7 @@ from uuid import uuid4
 from langchain_core.messages import ToolMessage
 from langgraph.types import Command, interrupt
 
+from mewhelp.ch09.observability import current_request, trace_graph_stream
 from mewhelp.tools.contracts import (
     PreparedToolCall,
     ToolCallContext,
@@ -19,7 +20,6 @@ from mewhelp.tools.contracts import (
 from mewhelp.tools.permissions import arguments_hash, permission_error
 
 from .schemas import TicketResumeRequest
-from mewhelp.ch09.observability import current_request, trace_graph_stream
 
 
 def make_ticket_preview(prepared: PreparedToolCall, context: ToolCallContext) -> dict:
@@ -260,15 +260,19 @@ async def readonly_ticket_receipt(runtime, session_id, user_id, confirmation_id)
 
 
 async def cancel_ticket_locked(runtime, config, reason):
+    from mewhelp.ch09.observability import auto_cancel_request
+
     snapshot = await runtime.graph.aget_state(config)
     preview = active_ticket_preview(snapshot)
     if preview:
         context = runtime.context
         if context.tool_runtime is not None:
             context = replace(context, tool_snapshot=await context.tool_runtime.refresh())
-        await runtime.graph.ainvoke(Command(resume={'action': 'cancel', 'abandon': True,
-            'confirmation_id': preview['confirmation_id'], 'reason': reason}), config,
-            context=context, durability='sync')
+        incoming = {'action': 'cancel', 'abandon': True,
+                    'confirmation_id': preview['confirmation_id'], 'reason': reason}
+        with auto_cancel_request(runtime, snapshot.values, entry_point='auto_ticket_cancel', input=incoming) as root:
+            await runtime.graph.ainvoke(Command(resume=incoming), config, context=context, durability='sync')
+            root.finish(status='completed', output={'ticket_status': 'cancelled'})
 
 
 @trace_graph_stream('ticket_resume')

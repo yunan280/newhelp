@@ -36,6 +36,7 @@ class WorkflowState(TypedDict, total=False):
     feedback_status: str
     knowledge_raw_usage: dict | None
     knowledge_assessment: dict | None
+    knowledge_refusal_reason: str | None
     agent_messages: list[AnyMessage]
     pending_tool_calls: list[dict]
     tool_trace: list[dict]

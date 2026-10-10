@@ -68,6 +68,7 @@ async def begin_turn(state, context, emit):
         'knowledge_tool_gate_pending': False,
         'answer_message_id': None, 'feedback_status': 'none',
         'knowledge_raw_usage': None, 'knowledge_assessment': None,
+        'knowledge_refusal_reason': None,
         "agent_messages": [],
         "pending_tool_calls": [],
         "tool_trace": [],

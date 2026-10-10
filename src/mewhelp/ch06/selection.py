@@ -11,8 +11,8 @@ from sqlalchemy import select
 from mewhelp.ch05.events import event
 from mewhelp.ch05.schemas import OrderSelection, TurnResult
 from mewhelp.ch07.context import prepare_request_context
+from mewhelp.ch09.observability import auto_cancel_request, current_request, trace_graph_stream
 from mewhelp.db.models import Conversation
-from mewhelp.ch09.observability import current_request, trace_graph_stream
 
 from .orders import list_demo_orders
 
@@ -89,10 +89,11 @@ async def cancel_pending_locked(runtime, config):
     snapshot = await runtime.graph.aget_state(config)
     selection = active_selection(snapshot)
     if selection:
-        await runtime.graph.ainvoke(
-            Command(resume={"cancel": True, "selection_id": selection["selection_id"]}),
-            config, context=runtime.context, durability="sync",
-        )
+        incoming = {"cancel": True, "selection_id": selection["selection_id"]}
+        with auto_cancel_request(runtime, snapshot.values, entry_point='auto_order_cancel', input=incoming) as root:
+            await runtime.graph.ainvoke(Command(resume=incoming), config,
+                                       context=runtime.context, durability="sync")
+            root.finish(status='completed', output={'selection_status': 'cancelled'})
 
 
 async def _remember_result(runtime, config, request, result):

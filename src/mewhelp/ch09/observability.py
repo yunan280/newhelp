@@ -113,7 +113,8 @@ class ObservationRuntime:
         try:
             yield observation
         except (GeneratorExit, asyncio.CancelledError):
-            observation.finish(status='disconnected', output={})
+            if not observation.finished:
+                observation.finish(status='disconnected', output={})
             raise
         except BaseException as exc:
             observation.finish(status='error', output={'error_type': type(exc).__name__})
@@ -154,6 +155,19 @@ def current_request():
 
 def get_observation_runtime():
     return _active_runtime.get() or _default_runtime or _disabled
+
+
+@contextmanager
+def auto_cancel_request(workflow, state, *, entry_point, input):
+    """Old-turn cancellation owns a root, even inside the next user request."""
+    observations = getattr(workflow.context, 'observation_runtime', None) or get_observation_runtime()
+    ctx = RequestTraceContext(session_id=state.get('session_id'), user_id=state.get('user_id'),
+        conversation_id=state.get('conversation_id'), turn_id=state.get('turn_id'),
+        origin_trace_id=state.get('trace_id'), entry_point=entry_point)
+    with observations.request(ctx, input=input) as root:
+        root.bind(graph_bound=True)
+        root.set_intent(state.get('intent') or '其他')
+        yield root
 
 
 def set_default_runtime(runtime):

@@ -16,6 +16,7 @@ from .dedup import DedupDecision
 from .locks import named_lock
 from .normalization import NormalizedGap
 from .observability import get_observation_runtime
+from .threads import settled_thread
 
 
 class LockBusy(TimeoutError):
@@ -131,7 +132,7 @@ async def process_gap(pool_id, *, factory, engine, normalize, dedup):
                 matches.update(decision.matched_ids)
                 after = int(candidates[-1][0])
             chosen = min(matches, key=int) if matches else None
-            result = await asyncio.to_thread(commit_match, factory, pool_id, gap, chosen)
+            result = await settled_thread(commit_match, factory, pool_id, gap, chosen)
             if result:
                 return result
         raise LockBusy("候选审核状态连续变化，请重试")

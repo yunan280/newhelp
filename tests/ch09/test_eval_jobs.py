@@ -146,3 +146,25 @@ async def test_setup_failure_is_durable_and_explicit_resume_can_register(ch09_db
     await replacement.submit(EvaluationRequest(run_id="x", resume=True))
     await replacement.task
     assert replacement.get("x").status == "completed_all_na" and replacement.get("x").eval_run_id
+
+
+async def test_restart_resume_of_registered_run_returns_existing_receipt(ch09_db, tmp_path, lock):
+    from mewhelp.ch09.evaluation_jobs import EvalJobManager, EvaluationRequest
+
+    calls = []
+
+    async def runner(**kwargs):
+        calls.append(kwargs['run_id'])
+        return summary(kwargs['run_id'])
+
+    manager = EvalJobManager(ch09_db, dataset=tmp_path, artifact_dir=tmp_path, profile=None, runner=runner)
+    await manager.submit(EvaluationRequest(run_id='x'))
+    await manager.task
+    first = manager.get('x')
+    replacement = EvalJobManager(ch09_db, dataset=tmp_path, artifact_dir=tmp_path, profile=None, runner=runner)
+    replay = await replacement.submit(EvaluationRequest(run_id='x', resume=True))
+    if replacement.task:
+        await replacement.task
+    assert replay.eval_run_id == first.eval_run_id
+    assert replay.status == first.status
+    assert calls == ['x']
