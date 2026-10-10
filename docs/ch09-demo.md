@@ -13,15 +13,19 @@ powershell -NoProfile -File scripts/run_ch09.ps1 -Port 9030
 powershell -NoProfile -File scripts/register_ch09_evaluation.ps1 -At 04:00
 ```
 
-聊天`http://127.0.0.1:9030/`，审核页`http://127.0.0.1:9030/review`，统计页`http://127.0.0.1:9030/ch09/stats`，本地Langfuse`http://127.0.0.1:3039/`。真实功能验收结果将在后续阶段追加，本段只给命令，不声称页面已验收。
+聊天`http://127.0.0.1:9030/`，审核页`http://127.0.0.1:9030/review`，统计页`http://127.0.0.1:9030/ch09/stats`，本地Langfuse`http://127.0.0.1:3039/`。当前均已启动。真实验收、两轮指标、截图和局限见[ch09-final-report.md](ch09-final-report.md)，只读核验命令如下，不重复模型请求：
 
 ```powershell
-powershell -NoProfile -File scripts/run_ch09_evaluation.ps1 -RunId ch09_20261008_r01
-powershell -NoProfile -File scripts/run_ch09_evaluation.ps1 -RunId ch09_20261008_r02
+./.venv-ch09/Scripts/python.exe -X utf8 scripts/verify_ch09_delivery.py
+```
+
+```powershell
+# 交付已有ch09_20261009_r01/r02，各真实40题；确需新评估才执行
+powershell -NoProfile -File scripts/run_ch09_evaluation.ps1 -RunId ch09_manual_20261010_01 -TriggeredBy 手动
 # 仅故障/中止的同轮按原配置补齐未完成题
 # powershell -NoProfile -File scripts/run_ch09_evaluation.ps1 -RunId <原run_id> -Resume
 Invoke-RestMethod 'http://127.0.0.1:9030/api/ch09/eval-trends'
-Invoke-RestMethod 'http://127.0.0.1:9030/api/ch09/token-costs?from=2026-10-08T00:00:00Z&to=2026-10-09T00:00:00Z'
+Invoke-RestMethod 'http://127.0.0.1:9030/api/ch09/token-costs?from=2026-10-08T00:00:00Z&to=2026-10-11T00:00:00Z'
 ```
 
 统计窗口UTC `[from,to)`，只读取chat根的最终intent及实际provider generation计数；后台评估/飞轮不混入。缺input/output任一项记unknown，覆盖率按generation计算，未知时每请求均值为null；没有模型调用的已结束请求为0。只统计token，无真实价格不估金额。历史观测未保存provider原始用量凭证时标未知，不用Langfuse推算补齐。
